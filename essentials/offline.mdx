@@ -1,0 +1,294 @@
+---
+title: 'Offline Install'
+description: 'How to install Pigsty without the Internet?'
+icon: 'download'
+---
+
+
+
+
+Pigsty's [**Installation**](install) procedure requires Internet access, but production database servers are often isolated from the Internet.
+
+To address this issue, Pigsty supports offline installation from [**offline packages**](#offline-package), which can help you install Pigsty in an environment without Internet access, and increase the certainty, reliability, speed and consistency of the installation process.
+
+- [Build Local Repo](#build-local-repo)
+- [Make Offline Pacakge](#make-offline-pacakge)
+- [Use Offline Package](#use-offline-pacakge)
+- [Compatibility Notes](#compatibility-notes)
+- [Download Pre-made Package](#download-pre-made-package)
+- [Bootstrap](#bootstrap)
+
+
+----------------
+
+## Build Local Repo
+
+Pigsty's [**install**](install) procedure will download all the required rpm/deb packages and all its dependencies from the upstream yum/apt repo, and build a local repo before installing the software.
+
+The repo is served by Nginx and is available to all nodes in the deployment environment, including itself. All the installation will go through this local repo without further internet access.
+
+There are certain benefits to using a local repo:
+
+1. It can avoid repetitive download requests and traffic consumption, significantly speeding up the installation and improving its reliability.
+2. It will take a **snapshot** of current software versions, ensuring the consistency of the software versions installed across nodes in the environment.
+3. The snapshot contains all the deps, so it can avoid upstream dependency changes that may cause installation failures. One successful node can ensure all nodes in the same env.
+4. The built local software repo can be packaged as a whole tarball and copied to an isolated environment with the same operating system for **offline installation**.
+
+The default location for local repo is `/www/pigsty` (customizable by [`nginx_home`](/docs/reference/param#nginx_home) & [`repo_name`](/docs/reference/param#repo_name)).
+The repo will be created by `createrepo_c` or `dpkg_dev` according to the OS distro, and referenced by all nodes in the environment through [**`repo_upstream`**](/docs/reference/param#repo_upstream) entry with `module=local`.
+
+You can perform install on one node with the exact same OS version, then copy the local repo directory to another node with the same OS version for offline installation.
+
+A more common practice is to package the local software repo directory into an [**offline package**](#make-offline-pacakge) and copy it to the isolated node for installation.
+
+
+
+----------------
+
+## Make Offline Pacakge
+
+Pigsty offers a [**`cache.yml`**](https://github.com/Vonng/pigsty/blob/main/cache.yml) playbook to make offline package.
+For example, the following command will take the local software repo on the infra node `/www/pigsty` and package it into an offline package, and retrieve it to the local `dist/${version}` directory.
+
+```bash
+./cache.yml -l infra
+```
+
+You can customize the output directory and name of the offline package with the `cache_pkg_dir` and `cache_pkg_name` parameters.
+For example, the following command will fetch the made offline package to `files/pkg.tgz`.
+
+```bash
+./cache.yml -l 10.10.10.10 -e '{"cache_pkg_dir":"files","cache_pkg_name":"pkg.tgz"}'
+```
+
+----------------
+
+## Use Offline Pacakge
+
+The offline package is a tarball made by `gzip` and `tar`, and extract to `/www/pigsty` for use.
+
+```bash
+sudo rm -rf /www/pigsty ； sudo tar -xf /tmp/pkg.tgz -C /www
+```
+
+The simpler way is to copy the offline package to `/tmp/pkg.tgz` on the isolated node to be installed, and Pigsty will automatically unpack it during the [**`bootstrap`**](#bootstrap) process and install from it.
+
+When building the local software repo, Pigsty will generate a marker file `repo_complete` to mark it as a finished Pigsty local software repo.
+When Pigsty [**install.yml**](install#install) playbook finds that the local software repo already exists, it will enter offline install mode.
+
+In offline install mode, pigsty will no longer download software from the internet, but install from the local software repo directly.
+
+{{% alert title="Criteria for Offline Install Mode" color="secondary" %}} <br>
+
+The criteria for the existence of a local repo is the **presence** of a marker file located by default at `/www/pigsty/repo_complete`.
+
+This marker file is automatically generated after the download is complete during the standard installation procedure, indicating a usable local software repo is done.
+
+Deleting the `repo_complete` marker file of the local repo will mark the procedure for re-download **missing** packages from upstream.
+{{% /alert %}}
+
+
+----------------
+
+## Compatibility Notes
+
+The software packages (rpm/deb) can be roughly divided into 3 categories:
+
+- [**INFRA**](/docs/infra) Packages such as Prometheus & Grafana stacks and monitoring agents, which are OS distro/version **independent**.
+- [**PGSQL**](/docs/pgsql) Packages such as pgsql kernel & extensions, which are optionally bound to the Linux distro **major** version.
+- [**NODE**](/docs/node) Packages such as so libs, utils, deps, which are bound to the Linux distro **major & minor** version.
+
+Therefore, the compatibility of offline packages depends on the **OS major version** and **minor version** because it contains all three types of packages.
+
+Usually, offline packages can be used in an environment with the exact same OS major/minor version.
+If the major version does not match, INFRA packages can usually be installed successfully, while PGSQL and NODE packages may have missing or conflicting dependencies.
+If the minor version does not match, INFRA and PGSQL packages can usually be installed successfully, while NODE packages have a chance of success and a chance of failure.
+
+For example, offline packages made on RockLinux 8.9 **may** have a greater chance of success when offline installed on RockyLinux 8.10 environment.
+While offline packages made on Ubuntu 22.04.3 is most likely to fail on Ubuntu 22.04.4.
+(Yes the minor version here in [**Ubuntu**](https://wiki.ubuntu.com/Releases) is final `.3` rather than `.04`, and the major version is `22.04|jammy`)
+
+If the OS minor version is not exactly matched, you can use a hybrid strategy to install, that is, after the [**bootstrap**](#bootstrap) process,
+remove the `/www/pigsty/repo_complete` marker file, so that Pigsty will re-download the **missing** NODE packages and related dependencies during the installation process.
+Which can effectively solve the dependency conflict problem when using offline packages, and don't lose the benefits of offline installation.
+
+
+--------
+
+### Download Pre-made Package
+
+Pigsty does not offer pre-made offline packages for download starting from Pigsty v3.0.0.
+
+It will use online installation by default, since it can download the exact NODE packages from the official repo to avoid dependency conflicts.
+Besides, there are too much maintenance overhead to keep the offline packages for so many OS distros / major / minor version combinations.
+
+BUT, we do offer pre-made offline packages for the following precise OS versions, which include Docker and pljava/jdbc_fw components, ready to use with a fair price.
+
+- RockyLinux 8.9
+- RockyLinux 9.3
+- Ubuntu 22.04.3
+- Debian 12.4
+
+All the integration tests of Pigsty are based on the pre-made offline package snapshot before release,
+Using these can effectively reduce the delivery risk caused by upstream dependency changes, save you the trouble and waiting time.
+And show your support for the open-source cause, with a fair price of **$99**, please contact @Vonng (rh@vonng.com) to get the download link.
+
+We use offline package to deliver our **pro** version, which is precisely matched to your specific OS distro major/minor version and has been tested after integration.
+
+
+----------------
+
+## Offline Package
+
+
+Therefore, Pigsty offers an offline installation feature, allowing you to complete the installation and deployment in an environment without internet access.
+
+If you have internet access, downloading the pre-made [**Offline Package**](#offline-package) in advance can help speed up the installation process and enhance the certainty and reliability of the installation.
+
+> Pigsty will no longer provide offline software packages for download starting from v3.0.0
+>
+> You can make your own with the `bin/cache` script after the standard installation process.
+>
+> Pigsty [**Pro**](/docs/about/service) offers pre-made offline packages for various OS distros.
+
+
+
+
+
+
+----------------
+
+## Bootstrap
+
+Pigsty needs `ansible` to run the [**playbooks**](/docs/setup/playbook), so it is not suitable to install Ansible through playbooks.
+The Bootstrap script is used to solve this problem: it will try its best to ensure that Ansible is installed on the node before the real installation.
+
+```bash
+./bootstrap       # make suare ansible installed (if offline package available, setup & use offline install)
+```
+
+If you are [**using offline package**](#use-offline-pacakge), the Bootstrap script will automatically recognize and process the offline package located at `/tmp/pkg.tgz`, and install Ansible from it if applicable.
+Otherwise, if you have internet access, Bootstrap will automatically add the upstrema yum/apt repo of the corresponding OS/region and install Ansible from it.
+If neither internet nor offline package is available, Bootstrap will leave it to the user to handle this issue, and the user needs to ensure that the repo configured on the node contains a usable Ansible.
+
+There are some optional parameters for the Bootstrap script, you can use the `-p|--path` parameter to specify a different offline package location other than `/tmp/pkg.tgz`. or designate a region with the `-r|--region` parameter:
+
+```bash
+./boostrap
+   [-r|--region <region]   [default,china,europe]
+   [-p|--path <path>]      specify another offline pkg path
+   [-k|--keep]             keep existing upstream repo during bootstrap
+```
+
+And bootstrap will automatically backup and remove the current repo (`/etc/yum.repos.d/backup` / `/etc/apt/source.list.d/backup`) of the node during the process to avoid software source conflicts. If this is not the behavior you expected, or you have already configured a local software repo, you can use the `-k|--keep` parameter to keep the existing software repo.
+
+
+<details><summary>Example: Use offline package (EL8)</summary><br>
+
+Bootstrap with offline package on a RockyLinux 8.9 node:
+
+```bash
+[vagrant@el8 pigsty]$ ls -alh /tmp/pkg.tgz
+-rw-r--r--. 1 vagrant vagrant 1.4G Sep  1 10:20 /tmp/pkg.tgz
+[vagrant@el8 pigsty]$ ./bootstrap
+bootstrap pigsty v3.2.0 begin
+[ OK ] region = china
+[ OK ] kernel = Linux
+[ OK ] machine = x86_64
+[ OK ] package = rpm,dnf
+[ OK ] vendor = rocky (Rocky Linux)
+[ OK ] version = 8 (8.9)
+[ OK ] sudo = vagrant ok
+[ OK ] ssh = vagrant@127.0.0.1 ok
+[ OK ] cache = /tmp/pkg.tgz exists
+[ OK ] repo = extract from /tmp/pkg.tgz
+[WARN] old repos = moved to /etc/yum.repos.d/backup
+[ OK ] repo file = use /etc/yum.repos.d/pigsty-local.repo
+[WARN] rpm cache = updating, may take a while
+pigsty local 8 - x86_64                                                                                                                               49 MB/s | 1.3 MB     00:00
+Metadata cache created.
+[ OK ] repo cache = created
+[ OK ] install el8 utils
+
+........ yum install output
+Installed:
+
+  createrepo_c-0.17.7-6.el8.x86_64        createrepo_c-libs-0.17.7-6.el8.x86_64 drpm-0.4.1-3.el8.x86_64   modulemd-tools-0.7-8.el8.noarch python3-createrepo_c-0.17.7-6.el8.x86_64
+  python3-libmodulemd-2.13.0-1.el8.x86_64 python3-pyyaml-3.12-12.el8.x86_64     sshpass-1.09-4.el8.x86_64 unzip-6.0-46.el8.x86_64
+  ansible-9.2.0-1.el8.noarch                 ansible-core-2.16.3-2.el8.x86_64              git-core-2.43.5-1.el8_10.x86_64                 mpdecimal-2.5.1-3.el8.x86_64
+  python3-cffi-1.11.5-6.el8.x86_64           python3-cryptography-3.2.1-7.el8_9.x86_64     python3-jmespath-0.9.0-11.el8.noarch            python3-pycparser-2.14-14.el8.noarch
+  python3.12-3.12.3-2.el8_10.x86_64          python3.12-cffi-1.16.0-2.el8.x86_64           python3.12-cryptography-41.0.7-1.el8.x86_64     python3.12-jmespath-1.0.1-1.el8.noarch
+  python3.12-libs-3.12.3-2.el8_10.x86_64     python3.12-pip-wheel-23.2.1-4.el8.noarch      python3.12-ply-3.11-2.el8.noarch                python3.12-pycparser-2.20-2.el8.noarch
+  python3.12-pyyaml-6.0.1-2.el8.x86_64
+
+Complete!
+[ OK ] ansible = ansible [core 2.16.3]
+[ OK ] boostrap pigsty complete
+proceed with ./configure
+```
+
+</details><br>
+
+
+<details><summary>Example: Bootstrap from Internet without offline Package (Debian 12)</summary><br>
+
+On a debian 12 node with internet access, Pigsty add the upstream repo and install `ansible` and its dependencies using apt:
+
+```bash
+vagrant@d12:~/pigsty$ ./bootstrap
+bootstrap pigsty v3.2.0 begin
+[ OK ] region = china
+[ OK ] kernel = Linux
+[ OK ] machine = x86_64
+[ OK ] package = deb,apt
+[ OK ] vendor = debian (Debian GNU/Linux)
+[ OK ] version = 12 (12)
+[ OK ] sudo = vagrant ok
+[ OK ] ssh = vagrant@127.0.0.1 ok
+[WARN] old repos = moved to /etc/apt/backup
+[ OK ] repo file = add debian bookworm china upstream
+[WARN] apt cache = updating, may take a while
+
+....... apt install output
+
+[ OK ] ansible = ansible [core 2.14.16]
+[ OK ] boostrap pigsty complete
+proceed with ./configure
+```
+
+</details><br>
+
+
+
+
+<details><summary>Example: Bootstrap from the Default (Ubuntu 20.04)</summary><br>
+
+One an Ubuntu 20.04 node without internet access & offline package, Pigsty will assume you already have resolved this issue with your own way:
+Such as a local software repo / mirror / CDROM / intranet repo, etc...
+
+You can explicitly keep the current repo config with the `-k` parameter, or Pigsty will keep it by default if it detects no internet access and no offline package.
+
+```bash
+vagrant@ubuntu20:~/pigsty$ ./bootstrap -k
+bootstrap pigsty v3.2.0 begin
+[ OK ] region = china
+[ OK ] kernel = Linux
+[ OK ] machine = x86_64
+[ OK ] package = deb,apt
+[ OK ] vendor = ubuntu (Ubuntu)
+[ OK ] version = 20 (20.04)
+[ OK ] sudo = vagrant ok
+[WARN] ubuntu 20 focal does not have corresponding offline package, use online install
+[WARN] cache = missing and skip download
+[WARN] repo = skip (/tmp/pkg.tgz not exists)
+[ OK ] repo file = add ubuntu focal china upstream
+[WARN] apt cache = updating, make take a while
+
+...(apt update/install output)
+
+[ OK ] ansible = ansible 2.10.8
+[ OK ] boostrap pigsty complete
+proceed with ./configure
+```
+
+</details><br>

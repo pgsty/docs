@@ -60,6 +60,9 @@
     {
       "group": "Essentials",
       "pages": [
+        "essentials/install",
+        "essentials/offline",
+        "essentials/slim",
         "essentials/markdown",
         "essentials/code",
         "essentials/images",
