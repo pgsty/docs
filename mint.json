@@ -53,17 +53,11 @@
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Setup",
       "pages": [
-        "essentials/install",
-        "essentials/offline",
-        "essentials/slim",
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "setup/install",
+        "setup/offline",
+        "setup/slim"
       ]
     },
     {
