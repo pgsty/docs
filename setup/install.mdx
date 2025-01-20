@@ -88,30 +88,9 @@ For a complete list of supported operating systems, please refer to [**Compatibi
 Public key `ssh` access to localhost and NOPASSWD `sudo` privilege is required to perform the installation, Try not using the `root` user.
 If you wish to manage more nodes, these nodes needs to be `ssh` / `sudo` accessible via your current admin node & admin user.
 
-{{% alert title="DO NOT use the root user" color="danger" %}}
-While it is possible to install Pigsty as the `root` user, It would be much safer using a dedicate admin user (`dba`, `admin`, ...). due to [**security**](security) consideration
-which has to be different from `root` and dbsu (`postgres`). Pigsty will create an optional admin user `dba` according to the config by default.
-{{% /alert %}}
 
 Pigsty relies on Ansible to execute playbooks. you have to install `ansible` and `jmespath` packages fist before [**install**](#install) procedure.
 This can be done with the following command, or through the [**`bootstrap`**](offline#bootstrap) procedure, especially when you don't have internet access.
-
-{{< tabpane persist="disabled" >}}
-{{% tab header="Install Ansible" disabled=true /%}}
-{{< tab header="EL 8 / 9" lang="Bash" >}}
-sudo dnf install -y ansible python3.12-jmespath python3-cryptography
-{{% /tab %}}
-{{< tab header="EL 7" lang="Bash" >}}
-sudo yum install -y ansible   # EL7 does not need to install jmespath explicitly
-{{< /tab >}}
-{{< tab header="Debian / Ubuntu" lang="Bash" >}}
-sudo apt install -y ansible python3-jmespath
-{{< /tab >}}
-{{< tab header="MacOS" lang="Bash" >}}
-brew install ansible
-{{< /tab >}}
-{{< /tabpane >}}
-
 
 
 
@@ -167,10 +146,6 @@ You can also use `git` to download the Pigsty source. Please make sure to **chec
 git clone https://github.com/Vonng/pigsty; cd pigsty; git checkout v3.2.0
 ```
 
-{{% alert title="Checkout a specific version" color="danger" %}}
-The `main` branch may in an unstable development status.
-Always checkout a version when using `git`, check [Release Notes](/docs/releasenote) for available versions.
-{{% /alert %}}
 
 
 
@@ -232,9 +207,6 @@ If your machine's network interface have multiple IP addresses, you'll need to e
 
 You can check and modify the generated config file `~/pigsty/pigsty.yml` before installation.
 
-{{% alert title="Change the default passwords!" color="danger" %}}
-PLEASE CHANGE THE DEFAULT PASSWORDs in the config file before installation, check [secure password](/docs/setup/security/#passwords) for details.{{% /alert %}}
-
 
 
 
@@ -275,16 +247,6 @@ It's a standard ansible [**playbook**](/docs/setup/playbook), you can have fine-
 * `-e`: passing extra args
 * `-i`: use another config
 * ...
-
-{{% alert title="DON'T EVER RUN THIS PLAYBOOK AGAIN!" color="danger" %}}
-It's very DANGEROUS to re-run [**`install.yml`**](https://github.com/Vonng/pigsty/blob/main/install.yml) on existing deployment!
-
-It may nuke your entire deployment!!! Only do this when you know what you are doing.
-
-Otherwise, consider `rm install.yml` or `chmod a-x install.yml` to avoid accidental execution.
-{{% /alert %}}
-
-
 
 
 

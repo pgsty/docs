@@ -78,14 +78,14 @@ When Pigsty [**install.yml**](install#install) playbook finds that the local sof
 
 In offline install mode, pigsty will no longer download software from the internet, but install from the local software repo directly.
 
-{{% alert title="Criteria for Offline Install Mode" color="secondary" %}} <br>
+### Criteria for Offline Install Mode
 
 The criteria for the existence of a local repo is the **presence** of a marker file located by default at `/www/pigsty/repo_complete`.
 
 This marker file is automatically generated after the download is complete during the standard installation procedure, indicating a usable local software repo is done.
 
 Deleting the `repo_complete` marker file of the local repo will mark the procedure for re-download **missing** packages from upstream.
-{{% /alert %}}
+
 
 
 ----------------
