@@ -1,0 +1,20 @@
+{
+  "title": "MINIO",
+  "description": "MinIO, the object storage service",
+  "root": true,
+  "pages": [
+    "[Pigsty Docs](/docs)",
+    "index",
+    "concept",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "dashboard",
+    "user",
+    "db",
+    "extension",
+    "faq",
+    "..."
+  ]
+}

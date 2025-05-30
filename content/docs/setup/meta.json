@@ -1,0 +1,11 @@
+{
+    "title": "Getting Started",
+    "description": "Deploy Pigsty on Production",
+    "pages": [
+        "index",
+        "install",
+        "offline",
+        "slim",
+        "prepare"
+    ]
+}

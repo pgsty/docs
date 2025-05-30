@@ -1,0 +1,17 @@
+{
+  "title": "REDIS",
+  "description": "Redis, the data structure service",
+  "root": true,
+  "pages": [
+    "[Pigsty Docs](/docs)",
+    "index",
+    "concept",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "dashboard",
+    "faq",
+    "..."
+  ]
+}

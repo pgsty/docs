@@ -1,0 +1,29 @@
+---
+title: Installation
+description: how to install pigsty on your linux machine?
+---
+
+Check [offline](/docs/setup/offline)
+
+Prepare a fresh x86_64/aarch64 node that runs any compatible Linux OS Distros, then Download Pigsty with:
+
+```bash title="install"
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+```
+
+You can run the optional bootstrap and configure to install ansible and generate pigsty.yml config file.
+
+Next, run the install.yml playbook with an admin user (nopass ssh & sudo):
+
+```bash
+./bootstrap; ./configure; ./install.yml;
+```
+
+bootstrap: OPTIONAL, make sure ansible is installed, and use offline package /tmp/pkg.tgz if applicable
+configure: OPTIONAL, recommend & generate pigsty.yml config according to your env.
+install.yml: REQUIRED, install Pigsty modules according to your config file.
+It may take several minutes to complete the installation according to your network speed and hardware spec.
+
+After that, you will get a pigsty singleton node ready, with Web service on port 80/443 and Postgres on port 5432.
+
+BTW: If you feel Pigsty is too complicated, you can consider the [Slim Installation](slim), which only installs the necessary components for HA PostgreSQL clusters.

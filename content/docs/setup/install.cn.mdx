@@ -1,0 +1,29 @@
+---
+title: Installation
+description: how to install pigsty on your linux machine?
+---
+
+准备 一个安装了 兼容 操作系统的 Linux x86_64 / aarch64 节点，使用带有免密 sudo 权限的用户，执行以下命令：
+
+```
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty;
+```
+
+该命令会 下载 并解压 Pigsty 源码至家目录，依次完成 配置 与安装 即可完成安装。
+
+```
+./bootstrap; ./configure; ./install.yml; # 准备依赖，生成配置，安装 Pigsty 三步走！
+```
+
+
+- `bootstrap`：【可选】用于确保 Ansible 正常安装，如果 /tmp/pkg.tgz 离线包存在则使用它
+- `configure`：【可选】检测环境并自动生成相应的推荐配置文件，如果知道如何 配置 Pigsty可以直接跳过
+- `install.yml`：根据生成的配置文件开始在当前节点上执行安装，
+
+整个安装过程根据服务器规格/网络条件需 5 到 10 分钟不等，离线安装可以显著加速。
+
+安装完成后，您可以通过域名或 `80/443` 端口通过 Nginx 访问 WEB 界面， 通过 5432 端口 访问 默认的 PostgreSQL 数据库 服务。 您可以继续使用 Pigsty 纳管 更多 节点，并部署各种 模块。
+
+如果您觉得 Pigsty 的组件过于复杂，还可以考虑使用 最小化安装 ，仅安装高可用 PostgreSQL 集群所必需的组件。
+
+视频样例：在线单机安装（EL9）

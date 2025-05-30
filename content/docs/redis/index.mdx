@@ -1,9 +1,7 @@
 ---
-title: Pigsty Docs
-description: Pigsty v3.5 Documentation
+title: Redis
+description: The open source object storage service
 ---
-
-Welcome to the docs! You can start writing documents in `/content/docs`.
 
 
 import { getPageTreePeers } from 'fumadocs-core/server';
@@ -11,7 +9,7 @@ import { source } from '@/lib/source';
 
 <Cards>
 
-    {getPageTreePeers(source.pageTree, '/docs/').map((peer) => (
+    {getPageTreePeers(source.pageTree, '/docs/redis').map((peer) => (
         <Card key={peer.url} title={peer.name} href={peer.url}>
             {peer.description}
         </Card>
