@@ -2,3 +2,83 @@
 title: Playbook
 description: control primitives
 ---
+
+You have to [configure](https://pigsty.io/docs/minio/config/) minio cluster in the [config inventory](https://pigsty.io/docs/setup/config/#inventory) before running the playbook.
+
+------
+
+## Playbook
+
+There’s a built-in playbook: [`minio.yml`](https://pigsty.io/docs/minio/playbook/#minioyml) for installing the MinIO cluster.
+
+### `minio.yml`
+
+[`minio.yml`](https://github.com/pgsty/pigsty/blob/main/minio.yml)
+
+- `minio-id` : generate minio identity
+- `minio_install` : install minio/mcli
+    - `minio_os_user` : create os user minio
+    - `minio_pkg` : install minio/mcli package
+    - `minio_clean` : remove minio data (not default)
+    - `minio_dir` : create minio directories
+- `minio_config` : generate minio config
+    - `minio_conf` : minio main config
+    - `minio_cert` : minio ssl cert
+    - `minio_dns` : write minio dns records
+- `minio_launch` : launch minio service
+- `minio_register` : register minio to prometheus
+- `minio_provision` : create minio aliases/buckets/users
+    - `minio_alias` : create minio client alias
+    - `minio_bucket` : create minio buckets
+    - `minio_user` : create minio biz users
+
+
+
+Trusted ca file: `/etc/pki/ca.crt` should exist on all nodes already. which is generated in `role: ca` and loaded & trusted by default in `role: node`.
+
+You should install [`MINIO`](https://pigsty.io/docs/minio/) module on Pigsty-managed nodes (i.e., Install [`NODE`](https://pigsty.io/docs/node/) first)
+
+[![asciicast](https://asciinema.org/a/566415.svg)](https://asciinema.org/a/566415)
+
+------
+
+## Commands
+
+MINIO Playbook cheatsheet and common commands
+
+```bash
+./minio.yml -l <cls>                      # init MINIO module on group <cls>
+./minio.yml -l minio -e minio_clean=true  # init MINIO, and remove existing MinIO & Data (DANGEROUS!)
+./minio.yml -l minio -e minio_clean=true -t minio_clean # Remove existing MinIO & Data (DANGEROUS!)
+./minio.yml -l minio -t minio_instal      # install MinIO, setup dirs, without configure & launch
+./minio.yml -l minio -t minio_config      # generate MinIO config & certs
+./minio.yml -l minio -t minio_launch      # restart MinIO cluster
+```
+
+------
+
+## Safeguard
+
+Minio has a safeguard to prevent accidental deletion. Control by the following parameter:
+
+- [`minio_clean`](https://pigsty.io/docs/minio/param/#minio_clean), `false` by default, which means Pigsty will not remove existing MinIO data by default
+
+If you wish to remove existing minio data during init, please set this parameter to `true` in the config file, or override it with command-line parameter `-e minio_clean=true`.
+
+```bash
+./minio.yml -l <cls> -e minio_clean=true
+```
+
+If you just want to clean existing MinIO data without installing a new instance, simply execute the `minio_clean` subtask:
+
+```bash
+./minio.yml -l <cls> -e minio_clean=true -t minio_clean
+```
+
+------
+
+## Demo
+
+[![asciicast](https://asciinema.org/a/566415.svg)](https://asciinema.org/a/566415)
+
+------

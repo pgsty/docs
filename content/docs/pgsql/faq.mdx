@@ -2,3 +2,195 @@
 title: FAQ
 description: frequently asked questions
 ---
+
+## ABORT due to postgres exists
+
+> Set `pg_clean` = `true` and `pg_safeguard` = `false` to force clean postgres data during `pgsql.yml`
+
+This happens when you run `pgsql.yml` on a node with postgres running, and [`pg_clean`](https://pigsty.io/docs/pgsql/param/#pg_clean) is set to `false`.
+
+If `pg_clean` is true (and the `pg_safeguard` is `false`, too), the `pgsql.yml` playbook will remove the existing pgsql data and re-init it as a new one, which makes this playbook fully idempotent.
+
+You can still purge the existing PostgreSQL data by using a special task tag `pg_purge`
+
+```bash
+./pgsql.yml -t pg_clean      # honor pg_clean and pg_safeguard
+./pgsql.yml -t pg_purge      # ignore pg_clean and pg_safeguard
+```
+
+------
+
+## ABORT due to pg_safeguard enabled
+
+> Disable `pg_safeguard` to remove the Postgres instance.
+
+If [`pg_safeguard`](https://pigsty.io/docs/pgsql/param/#pg_safeguard) is enabled, you can not remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
+
+To disable `pg_safeguard`, you can set `pg_safeguard` to `false` in the inventory or pass `-e pg_safeguard=false` as cli arg to the playbook:
+
+```bash
+./pgsql-rm.yml -e pg_safeguard=false -l <cls_to_remove>    # force override pg_safeguard
+```
+
+------
+
+## Fail to wait for postgres/patroni primary
+
+There are several possible reasons for this error, and you need to [check](https://github.com/pgsty/pigsty/discussions/338) the system logs to determine the actual cause.
+
+This usually happens when the cluster is misconfigured, or the previous primary is improperly removed. (e.g., trash metadata in DCS with the same cluster name).
+
+You must check `/pg/log/*` to find the reason.
+
+To delete trash meta from etcd, you can use `etcdctl del --prefix /pg/<cls>`, do with caution!
+
+- 1: Misconfiguration. Identify the incorrect parameters, modify them, and apply the changes.
+- 2: Another cluster with the same cls name already exists in the deployment
+- 3: The previous cluster on the node, or previous cluster with same name was not correctly removed.
+- To remove obsolete cluster metadata, you can use `etcdctl del --prefix /pg/<cls>` to manually delete the residual data.
+- 4: The RPM packages related to your PostgreSQL or node were not successfully installed.
+- 5: Your Watchdog kernel module was not correctly enabled or loaded, but required.
+- 6: The locale or ctype specified `pg_lc_collate` and `pg_lc_ctype` does not exist in OS
+
+Feel free to submit an issue or seek help from the community.
+
+------
+
+## Fail to wait for postgres/patroni replica
+
+**Failed Immediately**: Usually, this happens because of misconfiguration, network issues, broken DCS metadata, etc…, you have to inspect `/pg/log` to find out the actual reason.
+
+**Failed After a While**: This may be due to source instance data corruption. Check PGSQL FAQ: How to create replicas when data is corrupted?
+
+**Timeout**: If the `wait for postgres replica` task takes 30min or more and fails due to timeout, This is common for a huge cluster (e.g., 1TB+, which may take hours to create a replica). In this case, the underlying creating replica procedure is still proceeding. You can check cluster status with `pg list <cls>` and wait until the replica catches up with the primary. Then continue the following tasks:
+
+```bash
+./pgsql.yml -t pg_hba,pg_param,pg_backup,pgbouncer,pg_vip,pg_dns,pg_service,pg_exporter,pg_register -l <problematic_replica>
+```
+
+------
+
+## Install PostgreSQL 12 - 15
+
+To install PostgreSQL 12 - 15, you have to set `pg_version` to `12`, `13`, `14`, or `15` in the inventory. (usually at cluster level)
+
+```yaml
+pg_version: 16                    # install pg 16 in this template
+pg_libs: 'pg_stat_statements, auto_explain' # remove timescaledb from pg 16 beta
+pg_extensions: []                 # missing pg16 extensions for now
+```
+
+------
+
+## How enable hugepage for PostgreSQL?
+
+> use `node_hugepage_count` and `node_hugepage_ratio` or `/pg/bin/pg-tune-hugepage`
+
+If you plan to enable hugepage, consider using `node_hugepage_count` and `node_hugepage_ratio` and apply with `./node.yml -t node_tune` .
+
+It’s good to allocate **enough** hugepage before postgres start, and use `pg_tune_hugepage` to shrink them later.
+
+If your postgres is already running, you can use `/pg/bin/pg-tune-hugepage` to enable hugepage on the fly. Note that this only works on PostgreSQL 15+
+
+```bash
+sync; echo 3 > /proc/sys/vm/drop_caches   # drop system cache (ready for performance impact)
+sudo /pg/bin/pg-tune-hugepage             # write nr_hugepages to /etc/sysctl.d/hugepage.conf
+pg restart <cls>                          # restart postgres to use hugepage
+```
+
+------
+
+## How to guarantee zero data loss during failover?
+
+> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](https://pigsty.io/docs/pgsql/admin/#config-cluster) with synchronous mode.
+
+Consider using [Sync Standby](https://pigsty.io/docs/pgsql/config/#sync-standby) and [Quorum Comit](https://pigsty.io/docs/pgsql/config/#quorum-commit) to guarantee 0 data loss during failover.
+
+------
+
+## How to survive from disk full?
+
+> `rm -rf /pg/dummy` will free some emergency space.
+
+The [`pg_dummy_filesize`](https://pigsty.io/docs/pgsql/param/#pg_dummy_filesize) is set to `64MB` by default. Consider increasing it to `8GB` or larger in the production environment.
+
+It will be placed on `/pg/dummy` same disk as the PGSQL main data disk. You can remove that file to free some emergency space. At least you can run some shell scripts on that node.
+
+------
+
+## How to create replicas when data is corrupted?
+
+> Disable `clonefrom` on bad instances and reload patroni config.
+
+Pigsty sets the `cloneform: true` tag on all instances’ patroni config, which marks the instance available for cloning replica.
+
+If this instance has corrupt data files, you can set `clonefrom: false` to avoid pulling data from the evil instance. To do so:
+
+```bash
+$ vi /pg/bin/patroni.yml
+
+tags:
+  nofailover: false
+  clonefrom: true      # ----------> change to false
+  noloadbalance: false
+  nosync: false
+  version:  '15'
+  spec: '4C.8G.50G'
+  conf: 'oltp.yml'
+
+$ systemctl reload patroni
+```
+
+------
+
+## How to create replicas when data is corrupted?
+
+> Disable `clonefrom` on bad instances and reload patroni config.
+
+Pigsty sets the `cloneform: true` tag on all instances’ patroni config, which marks the instance available for cloning replica.
+
+If this instance has corrupt data files, you can set `clonefrom: false` to avoid pulling data from the evil instance. To do so:
+
+```bash
+$ vi /pg/bin/patroni.yml
+
+tags:
+  nofailover: false
+  clonefrom: true      # ----------> change to false
+  noloadbalance: false
+  nosync: false
+  version:  '15'
+  spec: '4C.8G.50G'
+  conf: 'oltp.yml'
+
+$ systemctl reload patroni
+```
+
+------
+
+## Performance impact of monitoring exporter
+
+Not very much, 200ms per 10 ~ 15 seconds, won’t affect the database performance.
+
+The default scrape interval for prometheus is 10s in pigsty, make sure the exporter can finish the scrape within that period.
+
+------
+
+## How to monitor an existing PostgreSQL instance?
+
+Check [PGSQL Monitor](https://pigsty.io/docs/pgsql/monitor/) for details.
+
+------
+
+## How to remove monitor targets from prometheus?
+
+```bash
+./pgsql-rm.yml -t prometheus -l <cls>     # remove prometheus targets of cluster 'cls'
+```
+
+Or
+
+```bash
+bin/pgmon-rm <ins>     # shortcut for removing prometheus targets of pgsql instance 'ins'
+```
+

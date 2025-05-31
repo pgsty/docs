@@ -3,16 +3,12 @@ title: Etcd
 description: The distributive consensus storage
 ---
 
+ETCD is a distributed, reliable key-value store for the most critical data of a distributed system
 
-import { getPageTreePeers } from 'fumadocs-core/server';
-import { source } from '@/lib/source';
+[Configuration](https://pigsty.io/docs/etcd/#configuration) | [Administration](https://pigsty.io/docs/etcd/#administration) | [Playbook](https://pigsty.io/docs/etcd/#playbook) | [Dashboard](https://pigsty.io/docs/etcd/#dashboard) | [Parameter](https://pigsty.io/docs/etcd/#parameter)
 
-<Cards>
+Pigsty use [**etcd**](https://etcd.io/) as [**DCS**](https://patroni.readthedocs.io/en/latest/dcs_failsafe_mode.html): Distributed configuration storage (or distributed consensus service). Which is critical to PostgreSQL High-Availability & Auto-Failover.
 
-    {getPageTreePeers(source.pageTree, '/docs/infra').map((peer) => (
-        <Card key={peer.url} title={peer.name} href={peer.url}>
-            {peer.description}
-        </Card>
-    ))}
+You have to install [`ETCD`](https://pigsty.io/docs/etcd/) module before any [`PGSQL`](https://pigsty.io/docs/pgsql/) modules, since patroni & vip-manager will rely on etcd to work. Unless you are using an external etcd cluster.
 
-</Cards>
+You don’t need [`NODE`](https://pigsty.io/docs/node/) module to install [`ETCD`](https://pigsty.io/docs/etcd/), but it requires a valid `CA` on your local `files/pki/ca`. Check [ETCD Administration SOP](https://pigsty.io/docs/etcd/#administration) for more details.

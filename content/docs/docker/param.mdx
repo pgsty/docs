@@ -1,0 +1,130 @@
+---
+title: Parameter
+description: customize docker with 8 parameters
+---
+
+
+## Parameters
+
+There are **8** parameters for the Docker module:
+
+| Name                                                         | Type       | Level | Comment                                                   |
+| ------------------------------------------------------------ | ---------- | ----- | --------------------------------------------------------- |
+| [`docker_enabled`](https://pigsty.io/docs/docker/param/#docker_enabled) | `bool`     | G/C/I | enable docker on this node?                               |
+| [`docker_data`](https://pigsty.io/docs/docker/param/#docker_data) | `path`     | G/C/I | Docker data directory, `/var/lib/docker` by default       |
+| [`docker_storage_driver`](https://pigsty.io/docs/docker/param/#docker_storage_driver) | `enum`     | G/C/I | Docker storage driver, `overlay2` by default              |
+| [`docker_cgroups_driver`](https://pigsty.io/docs/docker/param/#docker_cgroups_driver) | `enum`     | G/C/I | docker cgroup fs driver: cgroupfs,systemd                 |
+| [`docker_registry_mirrors`](https://pigsty.io/docs/docker/param/#docker_registry_mirrors) | `string[]` | G/C/I | docker registry mirror list                               |
+| [`docker_exporter_port`](https://pigsty.io/docs/docker/param/#docker_exporter_port) | `port`     | G     | Docker metrics exporter port, `9323` by default           |
+| [`docker_image`](https://pigsty.io/docs/docker/param/#docker_image) | `path[]`   | G/C/I | docker image to be pulled, [] by default                  |
+| [`docker_image_cache`](https://pigsty.io/docs/docker/param/#docker_image_cache) | `path`     | G/C/I | docker image cache tarball glob, `/tmp/docker` by default |
+
+------
+
+## Defaults
+
+Docker’s default parameters are defined in [`roles/docker/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/docker/defaults/main.yml)
+
+```yaml
+docker_enabled: false             # enable docker on this node?
+docker_data: /var/lib/docker      # docker data directory, /var/lib/docker by default
+docker_storage_driver: overlay2   # docker storage driver, can be zfs, btrfs
+docker_cgroups_driver: systemd    # docker cgroup fs driver: cgroupfs,systemd
+docker_registry_mirrors: []       # docker registry mirror list
+docker_exporter_port: 9323        # docker metrics exporter port, 9323 by default
+docker_image: []                  # docker image to be pulled after bootstrap
+docker_image_cache: /tmp/docker/*.tgz # docker image cache glob pattern
+```
+
+------
+
+## `docker_enabled`
+
+name: `docker_enabled`, type: `bool`, level: `G/C/I`
+
+enable docker on this node? default value is `false`
+
+------
+
+## `docker_data`
+
+name: `docker_data`, type: `path`, level: `C`
+
+Docker data directory, `/var/lib/docker` by default.
+
+------
+
+## `docker_storage_driver`
+
+name: `docker_storage_driver`, type: `enum`, level: `C`
+
+Docker storage driver, `overlay2` by default.
+
+Please refer to: https://docs.docker.com/engine/storage/drivers/select-storage-driver/
+
+- overlay2
+- fuse-overlayfs
+- brtfs
+- zfs
+- vfs
+
+------
+
+## `docker_cgroups_driver`
+
+name: `docker_cgroups_driver`, type: `enum`, level: `G/C/I`
+
+docker cgroup fs driver, could be `cgroupfs` or `systemd`, default values: `systemd`
+
+------
+
+## `docker_registry_mirrors`
+
+name: `docker_registry_mirrors`, type: `string[]`, level: `G/C/I`
+
+docker registry mirror list, default values: `[]`, Example:
+
+Here are some examples of using the internal network image of each cloud vendor:
+
+```yaml
+["https://docker.m.daocloud.io"]                # domestic DaoCloud image site
+["https://docker.1ms.run"]                      # domestic millisecond image site
+["https://mirror.ccs.tencentyun.com"]           # tencent cloud intranet image site
+["https://registry.cn-hangzhou.aliyuncs.com"]   # aliyun cloud intranet image site, login required
+```
+
+Consider using Cloudflare Worker [Docker Proxy](https://github.com/cmliu/CF-Workers-docker.io)
+
+If the pull speed is too slow, you can also consider: `docker login quay.io` use other Registry.
+
+------
+
+## `docker_exporter_port`
+
+name: `docker_exporter_port`, type: `port`, level: `G`
+
+Docker metrics exporter port, `9323` by default.
+
+------
+
+## `docker_image`
+
+name: `docker_image`, type: `string[]`, level: `G/C/I`
+
+docker image to be pulled, `[]` by default
+
+Image listed here will be pulled during docker provisioning.
+
+------
+
+## `docker_image_cache`
+
+name: `docker_image_cache`, type: `path`, level: `G/C/I`
+
+docker image cache tarball glob list, `"/tmp/docker/*.tgz"` by default.
+
+The local docker image cache with `.tgz` suffix match this glob list will be loaded into docker one by one:
+
+```bash
+cat *.tgz | gzip -d -c - | docker load
+```

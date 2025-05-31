@@ -2,3 +2,157 @@
 title: Parameter
 description: customize with options
 ---
+
+
+Etcd is a distributed, reliable key-value store used to store the most critical config/consensus data in the system.
+
+Etcd is used as the DCS used by the HA agent Patroni, which is very important for the high availability of PostgreSQL in Pigsty.
+
+Pigsty use the hard-coded group `etcd` for etcd cluster, which can be an external etcd cluster, r a new etcd cluster created by Pigsty using the [etcd.yml](https://pigsty.io/docs/etcd/playbook/#etcdyml) playbook.
+
+------
+
+## Parameters
+
+There are 10 parameters about the `ETCD` module.
+
+| Parameter                                                    |  Type  | Level | Comment                                      |
+| ------------------------------------------------------------ | :----: | :---: | -------------------------------------------- |
+| [`etcd_seq`](https://pigsty.io/docs/etcd/param/#etcd_seq)    |  int   |   I   | etcd instance identifier, REQUIRED           |
+| [`etcd_cluster`](https://pigsty.io/docs/etcd/param/#etcd_cluster) | string |   C   | etcd cluster & group name, etcd by default   |
+| [`etcd_safeguard`](https://pigsty.io/docs/etcd/param/#etcd_safeguard) |  bool  | G/C/A | prevent purging running etcd instance?       |
+| [`etcd_clean`](https://pigsty.io/docs/etcd/param/#etcd_clean) |  bool  | G/C/A | purging existing etcd during initialization? |
+| [`etcd_data`](https://pigsty.io/docs/etcd/param/#etcd_data)  |  path  |   C   | etcd data directory, /data/etcd by default   |
+| [`etcd_port`](https://pigsty.io/docs/etcd/param/#etcd_port)  |  port  |   C   | etcd client port, 2379 by default            |
+| [`etcd_peer_port`](https://pigsty.io/docs/etcd/param/#etcd_peer_port) |  port  |   C   | etcd peer port, 2380 by default              |
+| [`etcd_init`](https://pigsty.io/docs/etcd/param/#etcd_init)  |  enum  |   C   | etcd initial cluster state, new or existing  |
+| [`etcd_election_timeout`](https://pigsty.io/docs/etcd/param/#etcd_election_timeout) |  int   |   C   | etcd election timeout, 1000ms by default     |
+| [`etcd_heartbeat_interval`](https://pigsty.io/docs/etcd/param/#etcd_heartbeat_interval) |  int   |   C   | etcd heartbeat interval, 100ms by default    |
+
+------
+
+## Defaults
+
+The default parameters of Etcd is defined in [`roles/etcd/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/etcd/defaults/main.yml)
+
+```yaml
+#-----------------------------------------------------------------
+# etcd
+#-----------------------------------------------------------------
+#etcd_seq: 1                      # etcd instance identifier, explicitly required
+etcd_cluster: etcd                # etcd cluster & group name, etcd by default
+etcd_safeguard: false             # prevent purging running etcd instance?
+etcd_clean: true                  # purging existing etcd during initialization?
+etcd_data: /data/etcd             # etcd data directory, /data/etcd by default
+etcd_port: 2379                   # etcd client port, 2379 by default
+etcd_peer_port: 2380              # etcd peer port, 2380 by default
+etcd_init: new                    # etcd initial cluster state, new or existing
+etcd_election_timeout: 1000       # etcd election timeout, 1000ms by default
+etcd_heartbeat_interval: 100      # etcd heartbeat interval, 100ms by default
+```
+
+------
+
+## `etcd_seq`
+
+name: `etcd_seq`, type: `int`, level: `I`
+
+etcd instance identifier, REQUIRED
+
+no default value, you have to specify it explicitly. Here is a 3-node etcd cluster example:
+
+```yaml
+etcd: # dcs service for postgres/patroni ha consensus
+  hosts:  # 1 node for testing, 3 or 5 for production
+    10.10.10.10: { etcd_seq: 1 }  # etcd_seq required
+    10.10.10.11: { etcd_seq: 2 }  # assign from 1 ~ n
+    10.10.10.12: { etcd_seq: 3 }  # odd number please
+  vars: # cluster level parameter override roles/etcd
+    etcd_cluster: etcd  # mark etcd cluster name etcd
+    etcd_safeguard: false # safeguard against purging
+    etcd_clean: true # purge etcd during init process
+```
+
+------
+
+## `etcd_cluster`
+
+name: `etcd_cluster`, type: `string`, level: `C`
+
+etcd cluster & group name, etcd by default
+
+default values: `etcd`, which is a fixed group name, can be useful when you want to use deployed some extra etcd clusters
+
+------
+
+## `etcd_safeguard`
+
+name: `etcd_safeguard`, type: `bool`, level: `G/C/A`
+
+prevent purging running etcd instance? default value is `false`
+
+If enabled, running etcd instance will not be purged by [`etcd.yml`](https://pigsty.io/docs/etcd/playbook/#etcdyml) playbook.
+
+------
+
+## `etcd_clean`
+
+name: `etcd_clean`, type: `bool`, level: `G/C/A`
+
+purging existing etcd during initialization? default value is `true`
+
+If enabled, running etcd instance will be purged by [`etcd.yml`](https://pigsty.io/docs/etcd/playbook/#etcdyml) playbook, which makes the playbook fully idempotent.
+
+But if [`etcd_safeguard`](https://pigsty.io/docs/etcd/param/#etcd_safeguard) is enabled, it will still abort on any running etcd instance.
+
+------
+
+## `etcd_data`
+
+name: `etcd_data`, type: `path`, level: `C`
+
+etcd data directory, `/data/etcd` by default
+
+------
+
+## `etcd_port`
+
+name: `etcd_port`, type: `port`, level: `C`
+
+etcd client port, `2379` by default
+
+------
+
+## `etcd_peer_port`
+
+name: `etcd_peer_port`, type: `port`, level: `C`
+
+etcd peer port, `2380` by default
+
+------
+
+## `etcd_init`
+
+name: `etcd_init`, type: `enum`, level: `C`
+
+etcd initial cluster state, `new` or `existing`
+
+default values: `new`, which will create a standalone new etcd cluster.
+
+The value `existing` is used when trying to [**add new member**](https://pigsty.io/docs/etcd/admin/#add-member) to existing etcd cluster.
+
+------
+
+## `etcd_election_timeout`
+
+name: `etcd_election_timeout`, type: `int`, level: `C`
+
+etcd election timeout, `1000` (ms) by default
+
+------
+
+## `etcd_heartbeat_interval`
+
+name: `etcd_heartbeat_interval`, type: `int`, level: `C`
+
+etcd heartbeat interval, `100` (ms) by default

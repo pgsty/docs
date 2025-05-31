@@ -2,3 +2,278 @@
 title: Admin
 description: run administrative tasks
 ---
+
+Here are some administration SOP for MinIO:
+
+- [Create Cluster](https://pigsty.io/docs/minio/admin/#create-cluster)
+- [Remove Cluster](https://pigsty.io/docs/minio/admin/#remove-cluster)
+- [Expand Cluster](https://pigsty.io/docs/minio/admin/#expand-cluster)
+- [Shrink Cluster](https://pigsty.io/docs/minio/admin/#shrink-cluster)
+- [Upgrade Cluster](https://pigsty.io/docs/minio/admin/#upgrade-cluster)
+- [Node Failure Recovery](https://pigsty.io/docs/minio/admin/#node-failure-recovery)
+- [Disk failure Recovery](https://pigsty.io/docs/minio/admin/#disk-failure-recovery)
+
+Check [ETCD: FAQ](https://pigsty.io/docs/minio/faq/) for more questions.
+
+------
+
+## Create Cluster
+
+To create a MinIO cluster, define the `minio` cluster in [inventory](https://pigsty.io/docs/setup/config/#inventory) first:
+
+```yaml
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+```
+
+The [`minio_cluster`](https://pigsty.io/docs/minio/param/#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
+
+This snippet defines a single-node MinIO cluster, using the following command to create the MinIO cluster:
+
+```bash
+./minio.yml -l minio  # init MinIO module on the minio group
+```
+
+------
+
+## Remove Cluster
+
+To destroy an existing MinIO cluster, use the `minio_clean` subtask of [`minio.yml`](https://pigsty.io/docs/minio/playbook/#minioyml), DO THINK before you type.
+
+```bash
+./minio.yml -l minio -t minio_clean -e minio_clean=true   # Stop MinIO and Remove Data Dir
+```
+
+If you wish to remove prometheus monitor target too:
+
+```bash
+ansible infra -b -a 'rm -rf /etc/prometheus/targets/minio/minio-1.yml'  # delete the minio monitoring target
+```
+
+------
+
+## Expand Cluster
+
+- [Tutorial: Expand MinIO Deployment](https://min.io/docs/minio/linux/operations/install-deploy-manage/expand-minio-deployment.html)
+
+You can not scale MinIO at node/disk level, but you can scale at storage pool (multiple nodes) level.
+
+Assume you have a 4-node MinIO cluster and want to double the capacity by adding another four-node storage pool.
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 , nodename: minio-1 }
+    10.10.10.11: { minio_seq: 2 , nodename: minio-2 }
+    10.10.10.12: { minio_seq: 3 , nodename: minio-3 }
+    10.10.10.13: { minio_seq: 4 , nodename: minio-4 }
+  vars:
+    minio_cluster: minio
+    minio_data: '/data{1...4}'
+    minio_buckets: [ { name: pgsql }, { name: infra }, { name: redis } ]
+    minio_users:
+      - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
+      - { access_key: pgbackrest , secret_key: S3User.SomeNewPassWord , policy: readwrite }
+
+    # bind a node l2 vip (10.10.10.9) to minio cluster (optional)
+    node_cluster: minio
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.9
+    vip_interface: eth1
+
+    # expose minio service with haproxy on all nodes
+    haproxy_services:
+      - name: minio                    # [REQUIRED] service name, unique
+        port: 9002                     # [REQUIRED] service port, unique
+        balance: leastconn             # [OPTIONAL] load balancer algorithm
+        options:                       # [OPTIONAL] minio health check
+          - option httpchk
+          - option http-keep-alive
+          - http-check send meth OPTIONS uri /minio/health/live
+          - http-check expect status 200
+        servers:
+          - { name: minio-1 ,ip: 10.10.10.10 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-2 ,ip: 10.10.10.11 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-3 ,ip: 10.10.10.12 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+Step 1, add 4 node definition in the group, allocate sequence number 5 to 8. The key step is to modify the [`minio_volumes`](https://pigsty.io/docs/minio/param/#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 , nodename: minio-1 }
+    10.10.10.11: { minio_seq: 2 , nodename: minio-2 }
+    10.10.10.12: { minio_seq: 3 , nodename: minio-3 }
+    10.10.10.13: { minio_seq: 4 , nodename: minio-4 }
+    # new nodes
+    10.10.10.14: { minio_seq: 5 , nodename: minio-5 }
+    10.10.10.15: { minio_seq: 6 , nodename: minio-6 }
+    10.10.10.16: { minio_seq: 7 , nodename: minio-7 }
+    10.10.10.17: { minio_seq: 8 , nodename: minio-8 }
+
+  vars:
+    minio_cluster: minio
+    minio_data: '/data{1...4}'
+    minio_volumes: 'https://minio-{1...4}.pigsty:9000/data{1...4} https://minio-{5...8}.pigsty:9000/data{1...4}'  # 新增的集群配置
+    # misc params
+```
+
+Step 2, adding these nodes to Pigsty:
+
+```bash
+./node.yml -l 10.10.10.14,10.10.10.15,10.10.10.16,10.10.10.17
+```
+
+Step 3, Provisioning MinIO on new nodes with `minio_install` subtask (user, dir, pkg, …):
+
+```bash
+./minio.yml -l 10.10.10.14,10.10.10.15,10.10.10.16,10.10.10.17 -t minio_install
+```
+
+Step 4: Reconfigure the entire MinIO cluster on the **whole cluster** with `minio_config` subtask
+
+```bash
+./minio.yml -l minio -t minio_config
+```
+
+> That is to say, the existing 4-nodes’ `MINIO_VOLUMES` configuration will be updated, too
+
+Step 5: Restart the entire MinIO cluster simultaneously (be careful, do not rolling restart!):
+
+```bash
+./minio.yml -l minio -t minio_launch -f 10   # with 10 parallel
+```
+
+Step 6: This is **optional**, if you are using a load balancer, make sure the load balancer configuration is updated.
+
+For example, add the new four nodes to the load balancer configuration:
+
+```yaml
+# expose minio service with haproxy on all nodes
+haproxy_services:
+  - name: minio                    # [REQUIRED] service name, unique
+    port: 9002                     # [REQUIRED] service port, unique
+    balance: leastconn             # [OPTIONAL] load balancer algorithm
+    options:                       # [OPTIONAL] minio health check
+      - option httpchk
+      - option http-keep-alive
+      - http-check send meth OPTIONS uri /minio/health/live
+      - http-check expect status 200
+    servers:
+      - { name: minio-1 ,ip: 10.10.10.10 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-2 ,ip: 10.10.10.11 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-3 ,ip: 10.10.10.12 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+
+      - { name: minio-5 ,ip: 10.10.10.14 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-6 ,ip: 10.10.10.15 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-7 ,ip: 10.10.10.16 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-8 ,ip: 10.10.10.17 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+Then Tun the `haproxy` subtask of the `node.yml` playbook to update the load balancer configuration:
+
+```bash
+./node.yml -l minio -t haproxy_config,haproxy_reload   # re-configure and reload haproxy service definition
+```
+
+If node L2 VIP is also used to ensure reliable load balancer access, you also need to add new nodes (if any) to the existing NODE VIP group:
+
+```bash
+./node.yml -l minio -t node_vip  # reload node l2 vip configuration
+```
+
+------
+
+## Shrink Cluster
+
+MinIO cannot scale down at the node/disk level, but you can retire at the storage pool (multiple nodes) level —— Add a new storage pool, drain the old storage pool, migrate to the new storage pool, and then retire the old storage pool.
+
+- [Tutorial: Decommission Server Pool](https://min.io/docs/minio/linux/operations/install-deploy-manage/decommission-server-pool.html)
+
+------
+
+## Upgrade Cluster
+
+- [Tutorial: Upgrade MinIO Deployment](https://min.io/docs/minio/linux/operations/install-deploy-manage/upgrade-minio-deployment.html)
+
+First, download the new version of the MinIO software package to the local software repository of the INFRA node:
+
+- minio
+
+:
+
+- amd64: https://dl.min.io/server/minio/release/linux-amd64/
+- arm64: https://dl.min.io/server/minio/release/linux-arm64/
+
+- mcli
+
+:
+
+- amd64: https://dl.min.io/client/mc/release/linux-amd64/
+- arm64: https://dl.min.io/client/mc/release/linux-arm64/
+
+and then rebuild the software repo with:
+
+```bash
+./infra.yml -t repo_create
+```
+
+You can upgrade all MinIO software packages with Ansible `package` module:
+
+```bash
+ansible minio -m package -b -a 'name=minio state=latest'  # upgrade MinIO server
+ansible minio -m package -b -a 'name=mcli state=latest'   # upgrade mcli client
+```
+
+Finlly, notify the MinIO cluster to restart with the `mc` command line tool:
+
+```bash
+mc admin service restart sss
+```
+
+------
+
+## Node Failure Recovery
+
+- [Tutorial: Restore Hardware Failure Node](https://min.io/docs/minio/linux/operations/data-recovery/recover-after-node-failure.html#minio-restore-hardware-failure-node)
+
+```bash
+# 1. remove failure node
+bin/node-rm <your_old_node_ip>
+
+# 2. replace failure node with the same name (modify the inventory in case of IP change)
+bin/node-add <your_new_node_ip>
+
+# 3. provisioning MinIO on new node
+./minio.yml -l <your_new_node_ip>
+
+# 4. instruct MinIO to perform heal action
+mc admin heal
+```
+
+------
+
+## Disk Failure Recovery
+
+- [Tutorial: Restore Hardware Failure Disk](https://min.io/docs/minio/linux/operations/data-recovery/recover-after-drive-failure.html#minio-restore-hardware-failure-drive)
+
+```bash
+# 1. umount failure disk
+umount /dev/<your_disk_device>
+
+# 2. replace with new driver, format with xfs
+mkfs.xfs /dev/sdb -L DRIVE1
+
+# 3. don't forget to setup fstab for auto-mount
+vi /etc/fstab
+# LABEL=DRIVE1     /mnt/drive1    xfs     defaults,noatime  0       2
+
+# 4. remount the new disk
+mount -a
+
+# 5. instruct MinIO to perform heal action
+mc admin heal
+```

@@ -2,3 +2,128 @@
 title: Service
 description: reliable service access via lb, proxy, pool
 ---
+
+## Service Implementation
+
+In Pigsty, services are implemented using [haproxy](https://pigsty.io/docs/node/param/#haproxy) on [nodes](https://pigsty.io/docs/node/), differentiated by different ports on the host node.
+
+Every node has Haproxy enabled to expose services. From the database perspective, nodes in the cluster may be primary or replicas, but from the service perspective, all nodes are the same. This means even if you access a replica node, as long as you use the correct service port, you can still use the primary’s read-write service. This design seals the complexity: as long as you can access any instance on the PostgreSQL cluster, you can fully access all services.
+
+This design is akin to the NodePort service in Kubernetes. Similarly, in Pigsty, every service includes these two core elements:
+
+1. Access endpoints exposed via NodePort (port number, from where to access?)
+2. Target instances chosen through Selectors (list of instances, who will handle it?)
+
+The boundary of Pigsty’s service delivery stops at the cluster’s HAProxy. Users can access these load balancers in various ways. Please refer to [Access Service](https://pigsty.io/docs/concept/svc/#access-service).
+
+All services are declared through configuration files. For instance, the default PostgreSQL service is defined by the [`pg_default_services`](https://pigsty.io/docs/pgsql/param/#pg_default_services) parameter:
+
+```yaml
+- { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
+- { name: replica ,port: 5434 ,dest: default  ,check: /read-only ,selector: "[]" , backup: "[? pg_role == `primary` || pg_role == `offline` ]" }
+- { name: default ,port: 5436 ,dest: postgres ,check: /primary   ,selector: "[]" }
+- { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
+```
+
+You can also define new service in [`pg_services`](https://pigsty.io/docs/pgsql/param/#pg_services). And `pg_default_services` 与 `pg_services` are both array of [Service Definition](https://pigsty.io/docs/pgsql/svc/#define-service).
+
+------
+
+## Define Service
+
+The default services are defined in [`pg_default_services`](https://pigsty.io/docs/pgsql/param/#pg_default_services).
+
+While you can define your extra PostgreSQL services with [`pg_services`](https://pigsty.io/docs/pgsql/param/#pg_services) @ the global or cluster level.
+
+These two parameters are both arrays of service objects. Each service definition will be rendered as a haproxy config in `/etc/haproxy/<svcname>.cfg`, check [`service.j2`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/service.j2) for details.
+
+Here is an example of an extra service definition: `standby`
+
+```yaml
+- name: standby                   # required, service name, the actual svc name will be prefixed with `pg_cluster`, e.g: pg-meta-standby
+  port: 5435                      # required, service exposed port (work as kubernetes service node port mode)
+  ip: "*"                         # optional, service bind ip address, `*` for all ip by default
+  selector: "[]"                  # required, service member selector, use JMESPath to filter inventory
+  dest: default                   # optional, destination port, default|postgres|pgbouncer|<port_number>, 'default' by default
+  check: /sync                    # optional, health check url path, / by default
+  backup: "[? pg_role == `primary`]"  # backup server selector
+  maxconn: 3000                   # optional, max allowed front-end connection
+  balance: roundrobin             # optional, haproxy load balance algorithm (roundrobin by default, other: leastconn)
+  options: 'inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100'
+```
+
+And it will be translated to a haproxy config file `/etc/haproxy/pg-test-standby.conf`:
+
+```ini
+#---------------------------------------------------------------------
+# service: pg-test-standby @ 10.10.10.11:5435
+#---------------------------------------------------------------------
+# service instances 10.10.10.11, 10.10.10.13, 10.10.10.12
+# service backups   10.10.10.11
+listen pg-test-standby
+    bind *:5435
+    mode tcp
+    maxconn 5000
+    balance roundrobin
+    option httpchk
+    option http-keep-alive
+    http-check send meth OPTIONS uri /sync  # <--- true for primary & sync standby
+    http-check expect status 200
+    default-server inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100
+    # servers
+    server pg-test-1 10.10.10.11:6432 check port 8008 weight 100 backup   # the primary is used as backup server
+    server pg-test-3 10.10.10.13:6432 check port 8008 weight 100
+    server pg-test-2 10.10.10.12:6432 check port 8008 weight 100
+```
+
+------
+
+## Reload Service
+
+When cluster membership has changed, such as append / remove replicas, switchover/failover, or adjust relative weight, You have to [reload service](https://pigsty.io/docs/pgsql/admin/#reload-service) to make the changes take effect.
+
+```bash
+bin/pgsql-svc <cls> [ip...]         # reload service for lb cluster or lb instance
+# ./pgsql.yml -t pg_service         # the actual ansible task to reload service
+```
+
+------
+
+## Override Service
+
+You can override default service configuration with several ways:
+
+**Bypass Pgbouncer**
+
+When defining a service, if `svc.dest='default'`, this parameter [`pg_default_service_dest`](https://pigsty.io/docs/pgsql/param/#pg_default_service_dest) will be used as the default value. `pgbouncer` is used by default, you can use `postgres` instead, so the default primary & replica service will bypass pgbouncer and route traffic to postgres directly
+
+If you don’t need connection pooling at all, you can change [`pg_default_service_dest`](https://pigsty.io/docs/pgsql/param/#pg_default_service_dest) to `postgres`, and remove `default` and `offline` services.
+
+If you don’t need read-only replicas for online traffic, you can remove `replica` from `pg_default_services` too.
+
+```yaml
+pg_default_services:
+  - { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
+  - { name: replica ,port: 5434 ,dest: default  ,check: /read-only ,selector: "[]" , backup: "[? pg_role == `primary` || pg_role == `offline` ]" }
+  - { name: default ,port: 5436 ,dest: postgres ,check: /primary   ,selector: "[]" }
+  - { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
+```
+
+------
+
+## Delegate Service
+
+Pigsty expose PostgreSQL services with haproxy on node. All haproxy instances among the cluster are configured with the same service definition.
+
+However, you can delegate pg service to a specific node group (e.g. dedicate haproxy lb cluster) rather than cluster members.
+
+To do so, you will have to override the default service definition with [`pg_default_services`](https://pigsty.io/docs/pgsql/param/#pg_default_services) and set [`pg_service_provider`](https://pigsty.io/docs/pgsql/param/#pg_service_provider) to the proxy group name.
+
+For example, this configuration will expose pg cluster primary service on haproxy node group `proxy` with port 10013.
+
+```yaml
+pg_service_provider: proxy       # use load balancer on group `proxy` with port 10013
+pg_default_services:  [{ name: primary ,port: 10013 ,dest: postgres  ,check: /primary   ,selector: "[]" }]
+```
+
+It’s user’s responsibility to make sure each delegate service port is **unique** among the proxy cluster.

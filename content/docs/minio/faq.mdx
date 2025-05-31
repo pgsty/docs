@@ -1,0 +1,39 @@
+---
+title: FAQ
+description: frequently asked questions
+---
+
+
+## Fail to launch multi-node / multi-driver MinIO cluster.
+
+In [Multi-Driver](https://pigsty.io/docs/minio/#single-node-multi-drive) or [Multi-Node](https://pigsty.io/docs/minio/#multi-node-multi-drive) mode, MinIO will refuse to start if the data dir is not a valid mount point.
+
+Use mounted disks for MinIO data dir rather than some regular directory. You can use the regular directory only in the [single node, single drive](https://pigsty.io/docs/minio/#single-node-single-drive) mode.
+
+------
+
+## How to deploy a multi-node multi-drive MinIO cluster?
+
+> Check [Create Multi-Node Multi-Driver MinIO Cluster](https://pigsty.io/docs/minio/#multi-node-multi-drive)
+
+------
+
+## How to add a member to the existing MinIO cluster?
+
+> You’d better plan the MinIO cluster before deployment… Since this requires a global restart
+
+Check this: [Expand MinIO Deployment](https://min.io/docs/minio/linux/operations/install-deploy-manage/expand-minio-deployment.html)
+
+------
+
+## How to use a HA MinIO deployment for PGSQL?
+
+> Access the HA MinIO cluster with an optional load balancer and different ports.
+
+Here is an example: [Access MinIO Service](https://pigsty.io/docs/minio/#access-service)
+
+
+
+Was this page helpful?
+
+Yes

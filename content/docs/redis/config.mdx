@@ -2,3 +2,70 @@
 title: Config
 description: describe the cluster you want
 ---
+
+The entity model of Redis is almost the same as that of [PostgreSQL](https://pigsty.io/docs/concept/model/#er-diagram), which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
+
+The core difference between the REDIS module and the [PGSQL](https://pigsty.io/docs/pgsql/) module is that Redis uses a **single-node multi-instance** deployment rather than the 1:1 deployment: multiple Redis instances are typically deployed on a physical/virtual machine node to utilize multi-core CPUs fully. Therefore, the ways to [configure](https://pigsty.io/docs/redis/config/#configuration) and [administer](https://pigsty.io/docs/redis/config/#administration) Redis instances are slightly different from PGSQL.
+
+In Redis managed by Pigsty, nodes are entirely subordinate to the cluster, which means that currently, it is not allowed to deploy Redis instances of two different clusters on one node. However, this does not affect deploying multiple independent Redis primary replica instances on one node.
+
+## Configuration
+
+------
+
+## Redis Identity
+
+Redis [**identity parameters**](https://pigsty.io/docs/redis/param/#redis_id) are required parameters when defining a Redis cluster.
+
+|                             Name                             |          Attribute          |     Description      |          Example          |
+| :----------------------------------------------------------: | :-------------------------: | :------------------: | :-----------------------: |
+| [`redis_cluster`](https://pigsty.io/docs/redis/param/#redis_cluster) | **REQUIRED**, cluster level |     cluster name     |       `redis-test`        |
+| [`redis_node`](https://pigsty.io/docs/redis/param/#redis_node) |  **REQUIRED**, node level   | Node Sequence Number |          `1`,`2`          |
+| [`redis_instances`](https://pigsty.io/docs/redis/param/#redis_instances) |  **REQUIRED**, node level   | Instance Definition  | `{ 6001 : {} ,6002 : {}}` |
+
+------
+
+## Redis Mode
+
+There are three [`redis_mode`](https://pigsty.io/docs/redis/param/#redis_mode) available in Pigsty:
+
+- `standalone`: setup Redis in standalone (master-slave) mode
+- `cluster`: setup this Redis cluster as a Redis native cluster
+- `sentinel`: setup Redis as a sentinel for standalone Redis HA
+
+Here are three examples:
+
+- A 1-node, one master & one slave Redis Standalone cluster: `redis-ms`
+- A 1-node, 3-instance Redis Sentinel cluster: `redis-sentinel`
+- A 2-node, 6-instance Redis Cluster: `redis-cluster`
+
+```yaml
+redis-ms: # redis classic primary & replica
+  hosts: { 10.10.10.10: { redis_node: 1 , redis_instances: { 6379: { }, 6380: { replica_of: '10.10.10.10 6379' } } } }
+  vars: { redis_cluster: redis-ms ,redis_password: 'redis.ms' ,redis_max_memory: 64MB }
+
+redis-meta: # redis sentinel x 3
+  hosts: { 10.10.10.11: { redis_node: 1 , redis_instances: { 26379: { } ,26380: { } ,26381: { } } } }
+  vars:
+    redis_cluster: redis-meta
+    redis_password: 'redis.meta'
+    redis_mode: sentinel
+    redis_max_memory: 16MB
+    redis_sentinel_monitor: # primary list for redis sentinel, use cls as name, primary ip:port
+      - { name: redis-ms, host: 10.10.10.10, port: 6379 ,password: redis.ms, quorum: 2 }
+
+redis-test: # redis native cluster: 3m x 3s
+  hosts:
+    10.10.10.12: { redis_node: 1 ,redis_instances: { 6379: { } ,6380: { } ,6381: { } } }
+    10.10.10.13: { redis_node: 2 ,redis_instances: { 6379: { } ,6380: { } ,6381: { } } }
+  vars: { redis_cluster: redis-test ,redis_password: 'redis.test' ,redis_mode: cluster, redis_max_memory: 32MB }
+```
+
+------
+
+## Limitation
+
+- A Redis node can only belong to one Redis cluster, which means you cannot assign a node to two different Redis clusters simultaneously.
+- On each Redis node, you need to assign a unique port number to the Redis instance to avoid port conflicts.
+- Typically, the same Redis cluster will use the same password, but multiple Redis instances on a Redis node cannot set different passwords (because redis_exporter only allows one password).
+- Redis Cluster has built-in HA, while standalone HA requires manually configured in Sentinel because we are unsure if you have any sentinels available. Fortunately, configuring standalone Redis HA is straightforward: [Configure HA with sentinel](https://pigsty.io/docs/redis/admin/#configure-ha-with-sentinel).

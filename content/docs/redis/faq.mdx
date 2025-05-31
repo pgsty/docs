@@ -1,0 +1,33 @@
+---
+title: FAQ
+description: frequently asked questions
+---
+
+
+## ABORT due to existing redis instance
+
+> use `redis_clean = true` and `redis_safeguard = false` to force clean redis data
+
+This happens when you run `redis.yml` to init a redis instance that is already running, and [`redis_clean`](https://pigsty.io/docs/redis/param/#redis_clean) is set to `false`.
+
+If `redis_clean` is set to `true` (and the `redis_safeguard` is set to `false`, too), the `redis.yml` playbook will remove the existing redis instance and re-init it as a new one, which makes the `redis.yml` playbook fully idempotent.
+
+------
+
+## ABORT due to redis_safeguard enabled
+
+> This happens when removing a redis instance with [`redis_safeguard`](https://pigsty.io/docs/redis/param/#redis_safeguard) set to `true`.
+
+You can disable [`redis_safeguard`](https://pigsty.io/docs/redis/param/#redis_safeguard) to remove the Redis instance. This is redis_safeguard is what it is for.
+
+------
+
+## How to add a single new redis instance on this node?
+
+> Use `bin/redis-add <ip> <port>` to deploy a new redis instance on node.
+
+------
+
+## How to remove a single redis instance from the node?
+
+> `bin/redis-rm <ip> <port>` to remove a single redis instance from node

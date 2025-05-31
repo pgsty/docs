@@ -1,4 +1,96 @@
 ---
 title: Config
-description: describe the cluster you want
+description: configure infra nodes, nginx, repo, dns, ntp, monitor system
 ---
+
+## Configuration Overview
+
+The INFRA module primarily provides **monitoring** infrastructure and is **optional** for PostgreSQL databases.
+
+Unless you have manually configured dependencies on DNS/NTP services from INFRA nodes elsewhere, failures in the INFRA module typically won’t affect the normal operation of PostgreSQL database clusters.
+
+In most cases, a single INFRA node is sufficient for typical scenarios. For production environments with higher requirements, we recommend using **2-3** INFRA nodes for high availability.
+
+To improve resource utilization, PostgreSQL high availability typically relies on the [**`ETCD`**](https://pigsty.io/docs/etcd/) module, which can share nodes with the INFRA module.
+
+Using more than 3 INFRA nodes provides limited benefits, but you can use more ETCD nodes (e.g., 5) to enhance the availability and reliability of DCS services.
+
+------
+
+## Configuration Examples
+
+To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](https://pigsty.io/docs/setup/config/) and assign them an Infra instance number [`infra_seq`](https://pigsty.io/docs/infra/param/#infra_seq).
+
+By default, a single INFRA node configuration meets most requirements. All configuration templates include a default `infra` group definition:
+
+```yaml
+all:
+  children:
+    infra: { hosts: { 10.10.10.10: { infra_seq: 1 } }}
+```
+
+The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](https://pigsty.io/docs/setup/prepare/#network-configuration) during [**configuration**](https://pigsty.io/docs/setup/install/#configure), meaning the INFRA module will be installed on the current node.
+
+Then use the [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml) playbook to initialize the INFRA module on the node.
+
+### Additional Nodes
+
+To configure two INFRA nodes, add new IPs to `infra.hosts`:
+
+```yaml
+all:
+  children:
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+        10.10.10.11: { infra_seq: 2 }
+```
+
+To configure three INFRA nodes with custom cluster/node parameters:
+
+```yaml
+all:
+  children:
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+        10.10.10.11: { infra_seq: 2, repo_enabled: false }
+        10.10.10.12: { infra_seq: 3, repo_enabled: false }
+      vars:
+        grafana_clean: false
+        prometheus_clean: false
+        loki_clean: false
+```
+
+------
+
+## Infra High Availability
+
+Most components in the Infra module are “stateless/shared-state”. For these components, high availability primarily requires addressing load balancing.
+
+Infra component load balancing can be achieved through two methods: Keepalived L2 VIP or HAProxy Layer 4 Load Balancing.
+
+If your network environment supports Layer 2 connectivity, you can use Keepalived L2 VIP for high availability:
+
+```yaml
+infra:
+  hosts:
+    10.10.10.10: { infra_seq: 1 }
+    10.10.10.11: { infra_seq: 2 }
+    10.10.10.12: { infra_seq: 3 }
+  vars:
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.8
+    vip_interface: eth1
+
+    infra_portal:
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "10.10.10.8:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "10.10.10.8:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "10.10.10.8:9093" }
+      blackbox     : { endpoint: "10.10.10.8:9115" }
+      loki         : { endpoint: "10.10.10.8:3100" }
+```
+
+In addition to configuring VIP-related parameters like [`vip_address`](https://pigsty.io/docs/node/param/#vip_address), you need to modify endpoints for Infra services in [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal).

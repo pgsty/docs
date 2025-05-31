@@ -2,3 +2,346 @@
 title: Admin
 description: run administrative tasks
 ---
+
+> How to maintain an existing PostgreSQL cluster with Pigsty?
+
+Here are some SOP for common pgsql admin tasks
+
+- Case 1: [Create Cluster](https://pigsty.io/docs/pgsql/admin/#create-cluster)
+- Case 2: [Create User](https://pigsty.io/docs/pgsql/admin/#create-user)
+- Case 3: [Create Database](https://pigsty.io/docs/pgsql/admin/#create-database)
+- Case 4: [Reload Service](https://pigsty.io/docs/pgsql/admin/#reload-service)
+- Case 5: [Reload HBARule](https://pigsty.io/docs/pgsql/admin/#reload-hbarule)
+- Case 6: [Config Cluster](https://pigsty.io/docs/pgsql/admin/#config-cluster)
+- Case 7: [Append Replica](https://pigsty.io/docs/pgsql/admin/#append-replica)
+- Case 8: [Remove Replica](https://pigsty.io/docs/pgsql/admin/#remove-replica)
+- Case 9: [Remove Cluster](https://pigsty.io/docs/pgsql/admin/#remove-cluster)
+- Case 10: [Switchover](https://pigsty.io/docs/pgsql/admin/#switchover)
+- Case 11: [Backup Cluster](https://pigsty.io/docs/pgsql/admin/#backup-cluster)
+- Case 12: [Restore Cluster](https://pigsty.io/docs/pgsql/admin/#restore-cluster)
+- Case 13: [Adding Packages](https://pigsty.io/docs/pgsql/admin/#adding-packages)
+- Case 14: [Install Extension](https://pigsty.io/docs/pgsql/admin/#install-extension)
+- Case 15: [Minor Upgrade](https://pigsty.io/docs/pgsql/admin/#minor-upgrade)
+- Case 16: [Major Upgrade](https://pigsty.io/docs/pgsql/admin/#major-upgrade)
+
+------
+
+## Cheatsheet
+
+PGSQL playbooks and shortcuts:
+
+```bash
+bin/pgsql-add   <cls>                   # create pgsql cluster <cls>
+bin/pgsql-user  <cls> <username>        # create pg user <username> on <cls>
+bin/pgsql-db    <cls> <dbname>          # create pg database <dbname> on <cls>
+bin/pgsql-svc   <cls> [...ip]           # reload pg service of cluster <cls>
+bin/pgsql-hba   <cls> [...ip]           # reload postgres/pgbouncer HBA rules of cluster <cls>
+bin/pgsql-add   <cls> [...ip]           # append replicas for cluster <cls>
+bin/pgsql-rm    <cls> [...ip]           # remove replicas from cluster <cls>
+bin/pgsql-rm    <cls>                   # remove pgsql cluster <cls>
+```
+
+Patroni admin command and shortcuts:
+
+```bash
+pg list        <cls>                    # print cluster info
+pg edit-config <cls>                    # edit cluster config
+pg reload      <cls> [ins]              # reload cluster config
+pg restart     <cls> [ins]              # restart pgsql cluster
+pg reinit      <cls> [ins]              # reinit cluster members
+pg pause       <cls>                    # entering maintenance mode (no auto failover)
+pg resume      <cls>                    # exiting maintenance mode
+pg switchover  <cls>                    # switchover on cluster <cls>
+pg failover    <cls>                    # failover on cluster <cls>
+```
+
+pgBackRest backup & restore command and shortcuts:
+
+```bash
+pb info                                 # print pgbackrest repo info
+pg-backup                               # make a backup, incr, or full backup if necessary
+pg-backup full                          # make a full backup
+pg-backup diff                          # make a differential backup
+pg-backup incr                          # make a incremental backup
+pg-pitr -i                              # restore to the time of latest backup complete (not often used)
+pg-pitr --time="2022-12-30 14:44:44+08" # restore to specific time point (in case of drop db, drop table)
+pg-pitr --name="my-restore-point"       # restore TO a named restore point create by pg_create_restore_point
+pg-pitr --lsn="0/7C82CB8" -X            # restore right BEFORE a LSN
+pg-pitr --xid="1234567" -X -P           # restore right BEFORE a specific transaction id, then promote
+pg-pitr --backup=latest                 # restore to latest backup set
+pg-pitr --backup=20221108-105325        # restore to a specific backup set, which can be checked with pgbackrest info
+```
+
+Systemd components quick reference
+
+```bash
+systemctl stop patroni                  # start stop restart reload
+systemctl stop pgbouncer                # start stop restart reload
+systemctl stop pg_exporter              # start stop restart reload
+systemctl stop pgbouncer_exporter       # start stop restart reload
+systemctl stop node_exporter            # start stop restart
+systemctl stop haproxy                  # start stop restart reload
+systemctl stop vip-manager              # start stop restart reload
+systemctl stop postgres                 # only when patroni_mode == 'remove'
+```
+
+------
+
+## Create Cluster
+
+To create a new Postgres cluster, define it in the inventory first, then init with:
+
+```bash
+bin/node-add <cls>                # init nodes for cluster <cls>           # ./node.yml  -l <cls>
+bin/pgsql-add <cls>               # init pgsql instances of cluster <cls>  # ./pgsql.yml -l <cls>
+```
+
+> Beware, perform `bin/node-add` first, then `bin/pgsql-add`, PGSQL works on managed nodes only.
+
+
+
+------
+
+## Create User
+
+To create a new business user on the existing Postgres cluster, add user definition to `all.children.<cls>.pg_users`, then create the user as follows:
+
+```bash
+bin/pgsql-user <cls> <username>   # ./pgsql-user.yml -l <cls> -e username=<username>
+```
+
+
+
+------
+
+## Create Database
+
+To create a new database user on the existing Postgres cluster, add database definition to `all.children.<cls>.pg_databases`, then create the database as follows:
+
+```bash
+bin/pgsql-db <cls> <dbname>       # ./pgsql-db.yml -l <cls> -e dbname=<dbname>
+```
+
+Note: If the database has specified an owner, the user should already exist, or you’ll have to [Create User](https://pigsty.io/docs/pgsql/admin/#create-user) first.
+
+
+
+------
+
+## Reload Service
+
+Services are exposed access point served by HAProxy.
+
+This task is used when cluster membership has changed, e.g., [append](https://pigsty.io/docs/pgsql/admin/#append-replica)/[remove](https://pigsty.io/docs/pgsql/admin/#remove-replica) replicas, [switchover](https://pigsty.io/docs/pgsql/admin/#switchover)/failover / exposing new service or updating existing service’s config (e.g., LB Weight)
+
+To create new services or reload existing services on entire proxy cluster or specific instances:
+
+```bash
+bin/pgsql-svc <cls>               # pgsql.yml -l <cls> -t pg_service -e pg_reload=true
+bin/pgsql-svc <cls> [ip...]       # pgsql.yml -l ip... -t pg_service -e pg_reload=true
+```
+
+
+
+------
+
+## Reload HBARule
+
+This task is used when your Postgres/Pgbouncer HBA rules have changed, you *may* have to reload hba to apply changes.
+
+If you have any role-specific HBA rules, you may have to reload hba after a switchover/failover, too.
+
+To reload postgres & pgbouncer HBA rules on entire cluster or specific instances:
+
+```bash
+bin/pgsql-hba <cls>               # pgsql.yml -l <cls> -t pg_hba,pg_reload,pgbouncer_hba,pgbouncer_reload -e pg_reload=true
+bin/pgsql-hba <cls> [ip...]       # pgsql.yml -l ip... -t pg_hba,pg_reload,pgbouncer_hba,pgbouncer_reload -e pg_reload=true
+```
+
+
+
+------
+
+## Config Cluster
+
+To change the config of a existing Postgres cluster, you have to initiate control command on **admin node with admin user**:
+
+```bash
+pg edit-config <cls>              # interactive config a cluster with patronictl
+```
+
+Change patroni parameters & `postgresql.parameters`, save & apply changes with the wizard.
+
+
+
+
+
+
+
+------
+
+## Append Replica
+
+To add a new replica to the existing Postgres cluster, you have to add its definition to the inventory: `all.children.<cls>.hosts`, then:
+
+```bash
+bin/node-add <ip>                 # init node <ip> for the new replica
+bin/pgsql-add <cls> <ip>          # init pgsql instances on <ip> for cluster <cls>
+```
+
+It will add node `<ip>` to pigsty and init it as a replica of the cluster `<cls>`.
+
+Cluster services will be [reloaded](https://pigsty.io/docs/pgsql/admin/#reload-service) to adopt the new member
+
+
+
+------
+
+## Remove Replica
+
+To remove a replica from the existing PostgreSQL cluster:
+
+```bash
+bin/pgsql-rm <cls> <ip...>        # ./pgsql-rm.yml -l <ip>
+```
+
+It will remove instance `<ip>` from cluster `<cls>`. Cluster services will be [reloaded](https://pigsty.io/docs/pgsql/admin/#reload-service) to kick the removed instance from load balancer.
+
+
+
+------
+
+## Remove Cluster
+
+To remove the entire Postgres cluster, just run:
+
+```bash
+bin/pgsql-rm <cls>                # ./pgsql-rm.yml -l <cls>
+```
+
+
+
+
+
+------
+
+## Switchover
+
+You can perform a PostgreSQL cluster switchover with patroni cmd.
+
+```bash
+pg switchover <cls>   # interactive mode, you can skip that with following options
+pg switchover --leader pg-test-1 --candidate=pg-test-2 --scheduled=now --force pg-test
+```
+
+
+
+------
+
+## Backup Cluster
+
+To create a backup with pgBackRest, run as local dbsu:
+
+```bash
+pg-backup                         # make a postgres base backup
+pg-backup full                    # make a full backup
+pg-backup diff                    # make a differential backup
+pg-backup incr                    # make a incremental backup
+pb info                           # check backup information
+```
+
+Check [Backup](https://pigsty.io/docs/pgsql/pitr/) & PITR for details.
+
+
+
+
+
+------
+
+## Restore Cluster
+
+To restore a cluster to a previous time point (PITR), run as local dbsu:
+
+```bash
+pg-pitr -i                              # restore to the time of latest backup complete (not often used)
+pg-pitr --time="2022-12-30 14:44:44+08" # restore to specific time point (in case of drop db, drop table)
+pg-pitr --name="my-restore-point"       # restore TO a named restore point create by pg_create_restore_point
+pg-pitr --lsn="0/7C82CB8" -X            # restore right BEFORE a LSN
+pg-pitr --xid="1234567" -X -P           # restore right BEFORE a specific transaction id, then promote
+pg-pitr --backup=latest                 # restore to latest backup set
+pg-pitr --backup=20221108-105325        # restore to a specific backup set, which can be checked with pgbackrest info
+```
+
+And follow the instructions wizard, Check Backup & [PITR](https://pigsty.io/docs/pgsql/pitr/) for details.
+
+
+
+------
+
+## Adding Packages
+
+To add newer version of RPM packages, you have to add them to [`repo_packages`](https://pigsty.io/docs/infra/param/#repo_packages) and [`repo_url_packages`](https://pigsty.io/docs/infra/param/#repo_url_packages)
+
+Then rebuild repo on infra nodes with `./infra.yml -t repo_build` subtask, Then you can install these packages with `ansible` module `package`:
+
+```bash
+ansible pg-test -b -m package -a "name=pg_cron_15,topn_15,pg_stat_monitor_15*"  # install some packages
+```
+
+
+
+------
+
+## Install Extension
+
+If you want to install extension on pg clusters, Add them to [`pg_extensions`](https://pigsty.io/docs/pgsql/param/#pg_extensions) and make sure them installed with:
+
+```bash
+./pgsql.yml -t pg_extension     # install extensions
+```
+
+Some extension needs to be loaded in `shared_preload_libraries`, You can add them to [`pg_libs`](https://pigsty.io/docs/pgsql/param/#pg_libs), or [Config](https://pigsty.io/docs/pgsql/admin/#config-cluster) an existing cluster.
+
+Finally, `CREATE EXTENSION <extname>;` on the cluster primary instance to install it.
+
+
+
+Check [PGSQL Extensions: Install](https://pigsty.io/ext/usage/install/) for details.
+
+------
+
+## Minor Upgrade
+
+To perform a minor server version upgrade/downgrade, you have to [add packages](https://pigsty.io/docs/pgsql/admin/#adding-packages) to yum/apt repo first.
+
+Then perform a rolling upgrade/downgrade from all replicas, then switchover the cluster to upgrade the leader.
+
+```bash
+ansible <cls> -b -a "yum upgrade/downgrade -y <pkg>"    # upgrade/downgrade packages
+pg restart --force <cls>                                # restart cluster
+```
+
+
+
+
+
+------
+
+## Major Upgrade
+
+The simplest way to achieve a major version upgrade is to create a new cluster with the new version, then [migration](https://pigsty.io/docs/pgsql/migration/) with logical replication & green/blue deployment.
+
+You can also perform an in-place major upgrade, which is not recommended especially when certain extensions are installed. But it is possible.
+
+Assume you want to upgrade PostgreSQL 14 to 15, you have to [add packages](https://pigsty.io/docs/pgsql/admin/#adding-packages) to yum/apt repo, and guarantee the extensions has exact same version too.
+
+```bash
+./pgsql.yml -t pg_pkg -e pg_version=15                         # install packages for pg 15
+sudo su - postgres; mkdir -p /data/postgres/pg-meta-15/data/   # prepare directories for 15
+pg_upgrade -b /usr/pgsql-14/bin/ -B /usr/pgsql-15/bin/ -d /data/postgres/pg-meta-14/data/ -D /data/postgres/pg-meta-15/data/ -v -c # preflight
+pg_upgrade -b /usr/pgsql-14/bin/ -B /usr/pgsql-15/bin/ -d /data/postgres/pg-meta-14/data/ -D /data/postgres/pg-meta-15/data/ --link -j8 -v -c
+rm -rf /usr/pgsql; ln -s /usr/pgsql-15 /usr/pgsql;             # fix binary links
+mv /data/postgres/pg-meta-14 /data/postgres/pg-meta-15         # rename data directory
+rm -rf /pg; ln -s /data/postgres/pg-meta-15 /pg                # fix data dir links
+```
+

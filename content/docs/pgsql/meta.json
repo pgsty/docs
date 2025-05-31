@@ -15,9 +15,10 @@
     "cluster",
     "service",
     "user",
-    "auth",
     "database",
     "extension",
+    "hba",
+    "acl",
     "--- ---",
     "faq",
     "..."

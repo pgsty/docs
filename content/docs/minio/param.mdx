@@ -2,3 +2,252 @@
 title: Parameter
 description: customize with options
 ---
+
+MinIO is a S3 compatible object storage service. Which is used as an optional central backup storage repo for PostgreSQL.
+
+You may also use it for other purposes, such as storing large files, documents, pictures & videos.
+
+------
+
+## Parameters
+
+There are **15** related parameters in MinIO module:
+
+| Parameter                               |   Type   | Level | Comment                                                            |
+|:----------------------------------------|:--------:|:-----:|--------------------------------------------------------------------|
+| [`minio_seq`](#minio_seq)               |   int    |   I   | minio instance identifier, REQUIRED                                |
+| [`minio_cluster`](#minio_cluster)       |  string  |   C   | minio cluster name, minio by default                               |
+| [`minio_clean`](#minio_clean)           |   bool   | G/C/A | cleanup minio during init?, false by default                       |
+| [`minio_user`](#minio_user)             | username |   C   | minio os user, `minio` by default                                  |
+| [`minio_node`](#minio_node)             |  string  |   C   | minio node name pattern                                            |
+| [`minio_data`](#minio_data)             |   path   |   C   | minio data dir(s), use `{x...y}` to specify multi drivers          |
+| [`minio_volumes`](#minio_volumes)       |  string  |   C   | minio core parameter, specify nodes and disks, auto-gen by default |
+| [`minio_domain`](#minio_domain)         |  string  |   G   | minio external domain name, `sss.pigsty` by default                |
+| [`minio_port`](#minio_port)             |   port   |   C   | minio service port, 9000 by default                                |
+| [`minio_admin_port`](#minio_admin_port) |   port   |   C   | minio console port, 9001 by default                                |
+| [`minio_access_key`](#minio_access_key) | username |   C   | root access key, `minioadmin` by default                           |
+| [`minio_secret_key`](#minio_secret_key) | password |   C   | root secret key, `minioadmin` by default                           |
+| [`minio_extra_vars`](#minio_extra_vars) |  string  |   C   | extra environment variables for minio server                       |
+| [`minio_alias`](#minio_alias)           |  string  |   G   | alias name for local minio deployment                              |
+| [`minio_endpoint`](#minio_endpoint)     |  string  |   C   | corresponding host:port for above minio alias                      |
+| [`minio_buckets`](#minio_buckets)       | bucket[] |   C   | list of minio bucket to be created                                 |
+| [`minio_users`](#minio_users)           |  user[]  |   C   | list of minio user to be created                                   |
+
+The [`minio_volumes`](#minio_volumes) and [`minio_endpoint`](minio_volumes) are auto-generated parameters, but you can explicitly override these two parameters.
+
+------
+
+## Defaults
+
+The default parameters of MinIO is defined in [`roles/minio/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/minio/defaults/main.yml)
+
+```yaml
+#-----------------------------------------------------------------
+# MINIO
+#-----------------------------------------------------------------
+#minio_seq: 1                     # minio instance identifier, REQUIRED
+minio_cluster: minio              # minio cluster identifier, REQUIRED
+minio_clean: false                # cleanup minio during init?, false by default
+minio_user: minio                 # minio os user, `minio` by default
+minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio node name pattern
+minio_data: '/data/minio'         # minio data dir(s), use {x...y} to specify multi drivers
+#minio_volumes:                   # minio data volumes, override defaults if specified
+minio_domain: sss.pigsty          # minio external domain name, `sss.pigsty` by default
+minio_port: 9000                  # minio service port, 9000 by default
+minio_admin_port: 9001            # minio console port, 9001 by default
+minio_access_key: minioadmin      # root access key, `minioadmin` by default
+minio_secret_key: minioadmin      # root secret key, `minioadmin` by default
+minio_extra_vars: ''              # extra environment variables
+minio_alias: sss                  # alias name for local minio deployment
+#minio_endpoint: https://sss.pigsty:9000 # if not specified, overwritten by defaults
+minio_buckets: [ { name: pgsql }, { name: infra },  { name: redis } ]
+minio_users:
+  - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
+  - { access_key: pgbackrest , secret_key: S3User.Backup, policy: readwrite }
+```
+
+------
+
+## `minio_seq`
+
+name: `minio_seq`, type: `int`, level: `I`
+
+minio instance identifier, REQUIRED identity parameters. no default value, you have to assign it manually
+
+------
+
+## `minio_cluster`
+
+name: `minio_cluster`, type: `string`, level: `C`
+
+minio cluster name, `minio` by default. This is useful when deploying multiple MinIO clusters
+
+------
+
+## `minio_clean`
+
+name: `minio_clean`, type: `bool`, level: `G/C/A`
+
+cleanup minio during init?, `false` by default
+
+------
+
+## `minio_user`
+
+name: `minio_user`, type: `username`, level: `C`
+
+minio os user name, `minio` by default
+
+------
+
+## `minio_node`
+
+name: `minio_node`, type: `string`, level: `C`
+
+minio node name pattern, this is used for [multi-node](https://pigsty.io/docs/minio/config/#multi-node-multi-drive) deployment
+
+default values: `${minio_cluster}-${minio_seq}.pigsty`
+
+------
+
+## `minio_data`
+
+name: `minio_data`, type: `path`, level: `C`
+
+minio data dir(s)
+
+default values: `/data/minio`, which is a common dir for [single-node](https://pigsty.io/docs/minio/config/#single-node-single-drive) deployment.
+
+For a [multi-drive](https://pigsty.io/docs/minio/config/#single-node-multi-drive) deployment, you can use `{x...y}` notion to specify multi drivers.
+
+------
+
+## `minio_volumes`
+
+name: `minio_volumes`, type: `string`, level: `C`
+
+The only core parameter of MinIO, if not specified, it will be auto-generated by the following rule:
+
+```yaml
+minio_volumes: "{% if minio_cluster_size|int > 1 %}https://{{ minio_node|replace('${minio_cluster}', minio_cluster)|replace('${minio_seq}',minio_seq_range) }}:{{ minio_port|default(9000) }}{% endif %}{{ minio_data }}"
+```
+
+- In case of [SNSD](https://pigsty.io/docs/minio/config/) or [SNMD](https://pigsty.io/docs/minio/config/) deployment, `minio_volumes` directly uses the value of [`minio_data`](#minio_data)
+- In case of [MNMD](https://pigsty.io/docs/minio/config/) deployment, `minio_volumes` uses the values of `minio_node`, `minio_port`, `minio_data` to generate this param:
+- In case of multiple storage pool, you have to override `minio_volumes` to specify multiple node pools explicitly.
+
+It user’s responsibility to make sure the parameters used in `minio_volumes` are consistent with `minio_node`, `minio_port`, `minio_data`.
+
+------
+
+## `minio_domain`
+
+name: `minio_domain`, type: `string`, level: `G`
+
+minio service domain name, `sss.pigsty` by default.
+
+The client can access minio S3 service via this domain name. This name will be registered to local DNSMASQ and included in SSL certs.
+
+------
+
+## `minio_port`
+
+name: `minio_port`, type: `port`, level: `C`
+
+minio service port, `9000` by default
+
+------
+
+## `minio_admin_port`
+
+name: `minio_admin_port`, type: `port`, level: `C`
+
+minio console port, `9001` by default
+
+------
+
+## `minio_access_key`
+
+name: `minio_access_key`, type: `username`, level: `C`
+
+root access key, `minioadmin` by default
+
+------
+
+## `minio_secret_key`
+
+name: `minio_secret_key`, type: `password`, level: `C`
+
+root secret key, `minioadmin` by default
+
+default values: `minioadmin`
+
+> **PLEASE CHANGE THIS IN YOUR DEPLOYMENT**
+
+------
+
+## `minio_extra_vars`
+
+name: `minio_extra_vars`, type: `string`, level: `C`
+
+extra environment variables for minio server. Check [Minio Server](https://min.io/docs/minio/linux/reference/minio-server/minio-server.html) for the complete list.
+
+default value is empty string, you can use multiline string to passing multiple environment variables.
+
+------
+
+## `minio_alias`
+
+name: `minio_alias`, type: `string`, level: `G`
+
+MinIO alias name for the local MinIO cluster
+
+default values: `sss`, which will be written to infra nodes’ / admin users’ client alias profile.
+
+------
+
+## `minio_endpoint`
+
+name: `minio_endpoint`, type: `string`, level: `C`
+
+The corresponding host:port for the above MinIO alias. This parameter is not defined by default.
+
+If not defined, it will be overwritten by the following default value:
+
+```bash
+mcli alias set {{ minio_alias }} {% if minio_endpoint is defined and minio_endpoint != '' %}{{ minio_endpoint }}{% else %}https://{{ minio_domain }}:{{ minio_port }}{% endif %} {{ minio_access_key }} {{ minio_secret_key }}
+```
+
+This alias & endpoint will be added to the admin user on the admin node.
+
+------
+
+## `minio_buckets`
+
+name: `minio_buckets`, type: `bucket[]`, level: `C`
+
+list of minio bucket to be created by default:
+
+```yaml
+minio_buckets: [ { name: pgsql }, { name: infra },  { name: redis } ]
+```
+
+Three default buckets are created for module [`PGSQL`](https://pigsty.io/docs/pgsql/), [`INFRA`](https://pigsty.io/docs/infra/), and [`REDIS`](https://pigsty.io/docs/redis/)
+
+------
+
+## `minio_users`
+
+name: `minio_users`, type: `user[]`, level: `C`
+
+list of minio user to be created, default value:
+
+```yaml
+minio_users:
+  - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
+  - { access_key: pgbackrest , secret_key: S3User.Backup, policy: readwrite }
+```
+
+Two default users are created for PostgreSQL DBA and pgBackREST.
+
+#### It's dangerous to use default passwords!

@@ -1,0 +1,133 @@
+---
+title: FAQ
+description: frequently asked questions
+---
+
+## Which components are included in INFRA
+
+- Ansible for automation, deployment, and administration;
+- Nginx for exposing any WebUI service and serving the yum/apt repo;
+- Self-Signed CA for SSL/TLS certificates;
+- Prometheus for monitoring metrics
+- Grafana for monitoring/visualization
+- Loki for logging collection
+- AlertManager for alerts aggregation
+- Chronyd for NTP time sync on the admin node.
+- DNSMasq for DNS registration and resolution.
+- ETCD as DCS for PGSQL HA; (dedicated module)
+- PostgreSQL on meta nodes as CMDB; (optional)
+- Docker for stateless applications & tools (optional)
+
+------
+
+## How to restore Prometheus targets
+
+If you accidentally deleted the Prometheus targets dir, you can register monitoring targets to Prometheus again with the:
+
+```bash
+./infra.yml -t register_prometheus  # register all infra targets to prometheus on infra nodes
+./node.yml  -t register_prometheus  # register all node  targets to prometheus on infra nodes
+./etcd.yml  -t register_prometheus  # register all etcd targets to prometheus on infra nodes
+./minio.yml -t register_prometheus  # register all minio targets to prometheus on infra nodes
+./pgsql.yml -t register_prometheus  # register all pgsql targets to prometheus on infra nodes
+```
+
+------
+
+## How to restore Grafana datasource
+
+PGSQL Databases in [`pg_databases`](https://pigsty.io/docs/pgsql/param/#pg_databases) are registered as Grafana datasource by default.
+
+If you accidentally deleted the registered postgres datasource in Grafana, you can register them again with
+
+```bash
+./pgsql.yml -t register_grafana  # register all pgsql database (in pg_databases) as grafana datasource
+```
+
+------
+
+## How to restore the HAProxy admin page proxy
+
+The haproxy admin page is proxied by Nginx under the default server.
+
+If you accidentally deleted the registered haproxy proxy settings in `/etc/nginx/conf.d/haproxy`, you can restore them again with
+
+```bash
+./node.yml -t register_nginx     # register all haproxy admin page proxy settings to nginx on infra nodes
+```
+
+------
+
+## How to restore the DNS registration
+
+PGSQL cluster/instance domain names are registered to `/etc/hosts.d/<name>` on infra nodes by default.
+
+You can restore them again with the following:
+
+```bash
+./pgsql.yml -t pg_dns   # register pg DNS names to dnsmasq on infra nodes
+```
+
+------
+
+## How to expose new Nginx upstream service
+
+If you wish to expose a new WebUI service via the Nginx portal, you can add the service definition to the [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal) parameter.
+
+And re-run `./infra.yml -t nginx_config,nginx_launch` to update & apply the Nginx configuration.
+
+If you wish to access with HTTPS, you must remove `files/pki/csr/pigsty.csr`, `files/pki/nginx/pigsty.{key,crt}` to force re-generating the Nginx SSL/TLS certificate to include the new upstream’s domain name.
+
+------
+
+## How to expose web service through Nginx?
+
+While you can directly access services via IP:Port, we still recommend consolidating access points by using domain names and uniformly accessing various web-based services through the Nginx portal. This approach helps centralize access, reduce the number of exposed ports, and facilitates access control and auditing.
+
+If you wish to expose a new WebUI service through the Nginx portal, you can add the service definition to the [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal) parameter. For example, here is the config used by the public demo site, which exposes several additional web services:
+
+```yaml
+infra_portal:
+  home         : { domain: home.pigsty.io }
+  grafana      : { domain: demo.pigsty.io ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty.io ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty.io ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+  # 新增的 Web 门户
+  minio        : { domain: sss.pigsty  ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
+  postgrest    : { domain: api.pigsty.io  ,endpoint: "127.0.0.1:8884"   }
+  pgadmin      : { domain: adm.pigsty.io  ,endpoint: "127.0.0.1:8885"   }
+  pgweb        : { domain: cli.pigsty.io  ,endpoint: "127.0.0.1:8886"   }
+  bytebase     : { domain: ddl.pigsty.io  ,endpoint: "127.0.0.1:8887"   }
+  gitea        : { domain: git.pigsty.io  ,endpoint: "127.0.0.1:8889"   }
+  wiki         : { domain: wiki.pigsty.io ,endpoint: "127.0.0.1:9002"   }
+  noco         : { domain: noco.pigsty.io ,endpoint: "127.0.0.1:9003"   }
+  supa         : { domain: supa.pigsty.io ,endpoint: "127.0.0.1:8000", websocket: true }
+```
+
+After completing the Nginx upstream service definition, use the following configuration and command to register the new service with Nginx.
+
+```bash
+./infra.yml -t nginx_config           # regenerate Nginx config
+./infra.yml -t nginx_launch           # update and apply nginx config
+
+# you can reload nginx with ansible
+ansible infra -b -a 'nginx -s reload'  # reload nginx with ansible
+```
+
+If you wish to access via HTTPS, you must delete `files/pki/csr/pigsty.csr` and `files/pki/nginx/pigsty.{key,crt}` to force the regeneration of the Nginx SSL/TLS certificate to include the new upstream domain names. If you prefer to use an SSL certificate issued by an authoritative organization instead of a certificate issued by Pigsty’s self-signed CA, you can place it in the `/etc/nginx/conf.d/cert/` directory and modify the corresponding configuration: `/etc/nginx/conf.d/<name>.conf`.
+
+------
+
+## How to manually add upstream repo files
+
+Pigsty has a built-in wrap script `bin/repo-add`, which will invoke ansible playbook `node.yml` to adding repo files to corresponding nodes.
+
+```bash
+bin/repo-add <selector> [modules]
+bin/repo-add 10.10.10.10           # add node repos for node 10.10.10.10
+bin/repo-add infra   node,infra    # add node and infra repos for group infra
+bin/repo-add infra   node,local    # add node repos and local pigsty repo
+bin/repo-add pg-test node,pgsql    # add node & pgsql repos for group pg-test
+```

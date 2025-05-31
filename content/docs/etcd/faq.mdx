@@ -1,0 +1,155 @@
+---
+title: FAQ
+description: frequently asked questions
+---
+
+## What is the role of the etcd in pigsty?
+
+etcd is a distributed, reliable key-value store used to store the most critical config / consensus data in the deployment. Pigsty uses etcd as the DCS (Distributed Configuration Store) service for Patroni, which will store the high availability status information of the PostgreSQL cluster.
+
+------
+
+## How many etcd instance should I choose?
+
+If more than (include) half of the etcd instances are down, the etcd cluster and its service will be unavailable.
+
+For example, a 3-node etcd cluster can tolerate at most one node failure, and the other two nodes can still work normally; while a 5-node etcd cluster can tolerate 2 node failures.
+
+Beware that the **learner** instances in the etcd cluster do not count in the member number, so in a 3-node etcd cluster, if there is a learner instance, the actual member count is 2, so no node failure can be tolerated.
+
+It is advisable to choose an odd number of etcd instances to avoid split-brain scenarios. It is recommended to use 3 or 5 nodes for the production environment.
+
+------
+
+## What is the impact of etcd failure?
+
+If etcd cluster is unavailable, it will affect the control plane of Pigsty, but not the data plane - the existing PostgreSQL cluster will continue to serve, but admin operations through Patroni will not work.
+
+During etcd failure, PostgreSQL HA is unable to perform automatic failover, and most of the Patroni operations will be blocked, such as edit-config, restart, switchover, etc… Admin tasks through Ansible playbooks are usually not affected by etcd failure, such as create database, create user, reload HBA and Service, etc…, And you can always operate the PostgreSQL cluster directly to achieve most of the patroni functions.
+
+Beware that the above description is only applicable to newer versions of Patroni `(>=3.0, Pigsty >= 2.0)`. If you are using an older version of Patroni (`<3.0`, corresponding to Pigsty version `1.x`), etcd / consul failure will cause a serious impact: All PostgreSQL clusters will be demoted and reject write requests, and etcd failure will be amplified as a global PostgreSQL failure. After Patroni 3.0’s DCS Failsafe feature, this situation has been significantly improved.
+
+
+------
+
+## What data is stored in the etcd cluster?
+
+etcd is only used for PostgreSQL HA consensus in Pigsty, no other data is stored in etcd by default.
+
+These consensus data are managed by Patroni, and when these data are lost in etcd, Patroni will automatically rebuild them.
+
+Thus, by default, the **etcd** in Pigsty can be regarded as a “stateless service” that is disposable, which brings great convenience to maintenance work.
+
+If you use etcd for other purposes, such as storing metadata for Kubernetes, or storing other data, you need to back up the etcd data yourself and restore the data after the etcd cluster is restored.
+
+------
+
+## How to recover from etcd failure?
+
+Since etcd is disposable in Pigsty, you can quickly stop the bleeding by “restarting” or “redeploying” etcd in case of failure.
+
+To **Restart** the etcd cluster, you can use the following Ansible command (or `systemctl restart etcd`):
+
+```bash
+./etcd.yml -t etcd_launch
+```
+
+To **Reset** the etcd cluster, you can run this playbook, it will **nuke** the etcd cluster and redeploy it:
+
+```bash
+./etcd.yml
+```
+
+Beware that if you use etcd to store other data, don’t forget to backup etcd data before nuking the etcd cluster.
+
+------
+
+## Is any maintenance work for etcd cluster?
+
+In short: do not use all the **quota** of etcd.
+
+etcd has a default quota for database size of 2GB, if your etcd database size exceeds this limit, etcd will reject write requests. Meanwhile, as etcd’s [data model](https://etcd.io/docs/v3.5/learning/data_model/) illustrates, each write will generate a new version (a.k.a. revision), so if your etcd cluster writes frequently, even with very few keys, the etcd database size may continue to grow, and may fail when it reaches the quota limit.
+
+You can achieve this by **Auto Compact**, **Manual Compact**, **Defragmentation**, and **Quota Increase**, etc., please refer to the etcd [official maintenance guide](https://etcd.io/docs/v3.5/op-guide/maintenance/).
+
+Pigsty has auto compact enabled by default since v2.6, so you usually don’t have to worry about etcd full. For versions before v2.6, we **strongly recommend** enabling etcd’s auto compact feature in the production environment.
+
+#### Fill etcd may lead to PostgreSQL failure!
+
+For Pigsty v2.0 - v2.5 users, we strongly recommend upgrading to a newer version, or following the instructions below to enable etcd auto compaction!
+
+------
+
+## How to enable etcd auto compaction?
+
+If you are using an earlier version of Pigsty (v2.0 - v2.5), we strongly recommend that you enable etcd’s auto compaction feature in the production environment.
+
+Edit the etcd config template in [`roles/etcd/templates/etcd.conf.j2`](https://github.com/pgsty/pigsty/blob/main/roles/etcd/templates/etcd.conf.j2#L30) with these 3 new lines:
+
+```yaml
+auto-compaction-mode: periodic
+auto-compaction-retention: "24h"
+quota-backend-bytes: 17179869184
+```
+
+You can set all the PostgreSQL cluster to **maintenance mode** and then redeploy the etcd cluster with `./etcd.yml` to apply the these changes.
+
+It will increase the etcd default quota from 2 GiB to 16 GiB, and ensure that only the most recent day’s write history is retained, avoiding the infinite growth of the etcd database size.
+
+------
+
+## Where does the PostgreSQL HA data stored in etcd?
+
+Patroni will use the [**`pg_namespace`**](https://pigsty.io/docs/pgsql/param/#pg_namespace) (default is `/pg`) as the prefix for all metadata keys in etcd, followed by the PostgreSQL cluster name.
+
+For example, a PG cluster named `pg-meta`, its metadata keys will be stored under `/pg/pg-meta`, which may look like this:
+
+```bash
+/pg/pg-meta/config
+{"ttl":30,"loop_wait":10,"retry_timeout":10,"primary_start_timeout":10,"maximum_lag_on_failover":1048576,"maximum_lag_on_syncnode":-1,"primary_stop_timeout":30,"synchronous_mode":false,"synchronous_mode_strict":false,"failsafe_mode":true,"pg_version":16,"pg_cluster":"pg-meta","pg_shard":"pg-meta","pg_group":0,"postgresql":{"use_slots":true,"use_pg_rewind":true,"remove_data_directory_on_rewind_failure":true,"parameters":{"max_connections":100,"superuser_reserved_connections":10,"max_locks_per_transaction":200,"max_prepared_transactions":0,"track_commit_timestamp":"on","wal_level":"logical","wal_log_hints":"on","max_worker_processes":16,"max_wal_senders":50,"max_replication_slots":50,"password_encryption":"scram-sha-256","ssl":"on","ssl_cert_file":"/pg/cert/server.crt","ssl_key_file":"/pg/cert/server.key","ssl_ca_file":"/pg/cert/ca.crt","shared_buffers":"7969MB","maintenance_work_mem":"1993MB","work_mem":"79MB","max_parallel_workers":8,"max_parallel_maintenance_workers":2,"max_parallel_workers_per_gather":0,"hash_mem_multiplier":8.0,"huge_pages":"try","temp_file_limit":"7GB","vacuum_cost_delay":"20ms","vacuum_cost_limit":2000,"bgwriter_delay":"10ms","bgwriter_lru_maxpages":800,"bgwriter_lru_multiplier":5.0,"min_wal_size":"7GB","max_wal_size":"28GB","max_slot_wal_keep_size":"42GB","wal_buffers":"16MB","wal_writer_delay":"20ms","wal_writer_flush_after":"1MB","commit_delay":20,"commit_siblings":10,"checkpoint_timeout":"15min","checkpoint_completion_target":0.8,"archive_mode":"on","archive_timeout":300,"archive_command":"pgbackrest --stanza=pg-meta archive-push %p","max_standby_archive_delay":"10min","max_standby_streaming_delay":"3min","wal_receiver_status_interval":"1s","hot_standby_feedback":"on","wal_receiver_timeout":"60s","max_logical_replication_workers":8,"max_sync_workers_per_subscription":6,"random_page_cost":1.1,"effective_io_concurrency":1000,"effective_cache_size":"23907MB","default_statistics_target":200,"log_destination":"csvlog","logging_collector":"on","log_directory":"/pg/log/postgres","log_filename":"postgresql-%Y-%m-%d.log","log_checkpoints":"on","log_lock_waits":"on","log_replication_commands":"on","log_statement":"ddl","log_min_duration_statement":100,"track_io_timing":"on","track_functions":"all","track_activity_query_size":8192,"log_autovacuum_min_duration":"1s","autovacuum_max_workers":2,"autovacuum_naptime":"1min","autovacuum_vacuum_cost_delay":-1,"autovacuum_vacuum_cost_limit":-1,"autovacuum_freeze_max_age":1000000000,"deadlock_timeout":"50ms","idle_in_transaction_session_timeout":"10min","shared_preload_libraries":"timescaledb, pg_stat_statements, auto_explain","auto_explain.log_min_duration":"1s","auto_explain.log_analyze":"on","auto_explain.log_verbose":"on","auto_explain.log_timing":"on","auto_explain.log_nested_statements":true,"pg_stat_statements.max":5000,"pg_stat_statements.track":"all","pg_stat_statements.track_utility":"off","pg_stat_statements.track_planning":"off","timescaledb.telemetry_level":"off","timescaledb.max_background_workers":8,"citus.node_conninfo":"sslm
+ode=prefer"}}}
+/pg/pg-meta/failsafe
+{"pg-meta-2":"http://10.10.10.11:8008/patroni","pg-meta-1":"http://10.10.10.10:8008/patroni"}
+/pg/pg-meta/initialize
+7418384210787662172
+/pg/pg-meta/leader
+pg-meta-1
+/pg/pg-meta/members/pg-meta-1
+{"conn_url":"postgres://10.10.10.10:5432/postgres","api_url":"http://10.10.10.10:8008/patroni","state":"running","role":"primary","version":"4.0.1","tags":{"clonefrom":true,"version":"16","spec":"8C.32G.125G","conf":"tiny.yml"},"xlog_location":184549376,"timeline":1}
+/pg/pg-meta/members/pg-meta-2
+{"conn_url":"postgres://10.10.10.11:5432/postgres","api_url":"http://10.10.10.11:8008/patroni","state":"running","role":"replica","version":"4.0.1","tags":{"clonefrom":true,"version":"16","spec":"8C.32G.125G","conf":"tiny.yml"},"xlog_location":184549376,"replication_state":"streaming","timeline":1}
+/pg/pg-meta/status
+{"optime":184549376,"slots":{"pg_meta_2":184549376,"pg_meta_1":184549376},"retain_slots":["pg_meta_1","pg_meta_2"]}
+```
+
+------
+
+## How to use existing external etcd cluster?
+
+The hard-coded group, `etcd`, will be used as DCS servers for PGSQL. You can initialize them with `etcd.yml` or assume it is an existing external etcd cluster.
+
+To use an existing external etcd cluster, define them as usual and make sure your current etcd cluster certificate is signed by the same CA as your self-signed CA for PGSQL.
+
+------
+
+## How to add a new member to the existing etcd cluster?
+
+Check [Add a member to etcd cluster](https://pigsty.io/docs/etcd/admin/#add-member)
+
+```bash
+etcdctl member add <etcd-?> --learner=true --peer-urls=https://<new_ins_ip>:2380 # on admin node
+./etcd.yml -l <new_ins_ip> -e etcd_init=existing                                 # init new etcd member
+etcdctl member promote <new_ins_server_id>                                       # on admin node
+```
+
+------
+
+## How to remove a member from an existing etcd cluster?
+
+Check [Remove member from etcd cluster](https://pigsty.io/docs/etcd/admin/#remove-member)
+
+```bash
+etcdctl member remove <etcd_server_id>   # kick member out of the cluster (on admin node)
+./etcd.yml -l <ins_ip> -t etcd_purge     # purge etcd instance
+```
+

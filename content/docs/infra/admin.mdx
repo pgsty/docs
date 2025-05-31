@@ -2,3 +2,130 @@
 title: Admin
 description: run administrative tasks
 ---
+
+
+Here are some admin tasks related to the INFRA module (because who doesn’t love infrastructure management?):
+
+------
+
+## Install INFRA
+
+Use the [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml) playbook to install the INFRA module on Infra nodes:
+
+```bash
+./infra.yml     # Install INFRA module on infra group
+```
+
+------
+
+## Remove INFRA
+
+Use the [`infra-rm.yml`](https://pigsty.io/docs/infra/playbook/#infra-rmyml) playbook to uninstall the INFRA module from Infra nodes:
+
+```bash
+./infra-rm.yml  # Uninstall INFRA module from infra group
+```
+
+------
+
+## Expand INFRA
+
+To scale out an existing INFRA deployment, first modify the `infra` group by adding new node IPs and assigning unique [`infra_seq`](https://pigsty.io/docs/infra/param/#infra_seq) numbers:
+
+```yaml
+all:
+  children:
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 } # Existing node #1
+        10.10.10.11: { infra_seq: 2 } # New node #2 (fresh meat!)
+```
+
+Then use the [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml) playbook to install INFRA on the new node:
+
+```bash
+./infra.yml -l 10.10.10.11    # Install INFRA on the new node
+```
+
+------
+
+## Local Repo
+
+Use these playbook tasks to manage local package repositories (YUM/APT) on Infra nodes (because who doesn’t love a good package party?):
+
+```bash
+./infra.yml -t repo              # Create local repo from internet or offline packages
+
+./infra.yml -t repo_dir          # Create local repo directory
+./infra.yml -t repo_check        # Check if local repo exists
+./infra.yml -t repo_prepare      # Use existing local repo if available
+./infra.yml -t repo_build        # Build local repo from upstream if not exists
+./infra.yml     -t repo_upstream     # Add upstream repo/list files
+./infra.yml     -t repo_remove       # Remove existing repo files if repo_remove=true
+./infra.yml     -t repo_add          # Add upstream repo files to /etc/yum.repos.d (or apt)
+./infra.yml     -t repo_url_pkg      # Download packages defined in repo_url_packages
+./infra.yml     -t repo_cache        # Create metadata cache with yum makecache / apt update
+./infra.yml     -t repo_boot_pkg     # Install bootstrap packages (createrepo_c, yum-utils, etc)
+./infra.yml     -t repo_pkg          # Download packages & deps from upstream
+./infra.yml     -t repo_create       # Create local repo with createrepo_c / dpkg-dev
+./infra.yml     -t repo_use          # Add new repo to /etc/yum.repos.d | apt sources
+./infra.yml -t repo_nginx        # Start nginx as file server if not running
+```
+
+Commonly used commands (the greatest hits):
+
+```bash
+./infra.yml     -t repo_upstream     # Add upstream repos defined in repo_upstream
+./infra.yml     -t repo_pkg          # Download packages and their dependencies
+./infra.yml     -t repo_create       # Create/update local yum/apt repo
+```
+
+------
+
+## Managing Nginx
+
+```bash
+./infra.yml -t nginx                       # Reset Nginx component
+./infra.yml -t nginx_index                 # Re-render Nginx homepage
+./infra.yml -t nginx_config,nginx_reload   # Re-render config & expose new upstream services
+```
+
+If users specify a cert name in the `certbot` field of `infra_portal`, you can get free HTTPS certs with certbot:
+
+```bash
+# Get free HTTPS certs for real domains with certbot (SSL all the things!)
+./infra.yml -t nginx_certbot,nginx_reload -e certbot_sign=true
+```
+
+------
+
+## Manage Infra Components
+
+Use these playbook tasks to manage infrastructure components on Infra nodes (it’s like conducting an orchestra, but with servers):
+
+```bash
+./infra.yml -t infra           # Configure infrastructure
+./infra.yml -t infra_env       # Configure env vars: env_dir, env_pg, env_pgadmin, env_var
+./infra.yml -t infra_pkg       # Install required packages: infra_pkg_yum, infra_pkg_pip
+./infra.yml -t infra_user      # Setup infra OS user group
+./infra.yml -t infra_cert      # Issue certs for infra components
+./infra.yml -t dns             # Configure DNSMasq: dns_config, dns_record, dns_launch
+./infra.yml -t nginx           # Configure Nginx: nginx_config, nginx_cert, nginx_static, nginx_launch, nginx_exporter
+./infra.yml -t prometheus      # Configure Prometheus: prometheus_clean, prometheus_dir, prometheus_config, prometheus_launch, prometheus_reload
+./infra.yml -t alertmanager    # Configure AlertManager: alertmanager_config, alertmanager_launch
+./infra.yml -t pushgateway     # Configure PushGateway: pushgateway_config, pushgateway_launch
+./infra.yml -t blackbox        # Configure Blackbox Exporter: blackbox_launch
+./infra.yml -t grafana         # Configure Grafana: grafana_clean, grafana_config, grafana_plugin, grafana_launch, grafana_provision
+./infra.yml -t loki            # Configure Loki: loki_clean, loki_dir, loki_config, loki_launch
+./infra.yml -t infra_register  # Register infra components to prometheus
+```
+
+Other useful tasks (for when you need that extra infrastructure TLC):
+
+```bash
+./infra.yml -t nginx_index                        # Re-render Nginx homepage
+./infra.yml -t nginx_config,nginx_reload          # Re-render config & expose new upstream services
+./infra.yml -t prometheus_conf,prometheus_reload   # Re-generate Prometheus config & reload
+./infra.yml -t prometheus_rule,prometheus_reload   # Re-copy rules & alerts, then reload
+./infra.yml -t grafana_plugin                     # Download Grafana plugins (VPN might be needed)
+```

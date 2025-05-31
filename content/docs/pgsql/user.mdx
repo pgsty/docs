@@ -1,5 +1,210 @@
 ---
-title: User / Role
+title: User Role
 description: manage in-database roles
 icon: HomeIcon
 ---
+
+> In this context, **User** refers to **logical objects** created by SQL `CREATE USER/ROLE` commands.
+
+In PostgreSQL, users belong directly to the database cluster, not to specific databases.
+
+Therefore, when creating business databases and users, you should follow the principle of **“users first, then databases”**.
+
+------
+
+## Define User
+
+Pigsty defines roles and users in database clusters through two config parameters, both in the form of arrays of user objects:
+
+- [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles) : Define system-wide roles & global users
+- [`pg_users`](https://pigsty.io/docs/pgsql/param/#pg_users) : Define business users & roles at cluster level
+
+The former defines roles and users shared across the entire environment, while the latter defines business roles and users specific to a single cluster.
+
+```yaml
+pg-meta:
+  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-meta
+    pg_databases:
+      - {name: dbuser_meta     ,password: DBUser.Meta     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
+      - {name: dbuser_view     ,password: DBUser.Viewer   ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
+      - {name: dbuser_grafana  ,password: DBUser.Grafana  ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for grafana database    }
+      - {name: dbuser_bytebase ,password: DBUser.Bytebase ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for bytebase database   }
+      - {name: dbuser_kong     ,password: DBUser.Kong     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for kong api gateway    }
+      - {name: dbuser_gitea    ,password: DBUser.Gitea    ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for gitea service       }
+      - {name: dbuser_wiki     ,password: DBUser.Wiki     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for wiki.js service     }
+      - {name: dbuser_noco     ,password: DBUser.Noco     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for nocodb service      }
+```
+
+And each user definition may look like:
+
+```yaml
+- name: dbuser_meta               # REQUIRED, `name` is the only mandatory field of a user definition
+  password: DBUser.Meta           # optional, password, can be a scram-sha-256 hash string or plain text
+  login: true                     # optional, can log in, true by default  (new biz ROLE should be false)
+  superuser: false                # optional, is superuser? false by default
+  createdb: false                 # optional, can create database? false by default
+  createrole: false               # optional, can create role? false by default
+  inherit: true                   # optional, can this role use inherited privileges? true by default
+  replication: false              # optional, can this role do replication? false by default
+  bypassrls: false                # optional, can this role bypass row level security? false by default
+  pgbouncer: true                 # optional, add this user to pgbouncer user-list? false by default (production user should be true explicitly)
+  connlimit: -1                   # optional, user connection limit, default -1 disable limit
+  expire_in: 3650                 # optional, now + n days when this role is expired (OVERWRITE expire_at)
+  expire_at: '2030-12-31'         # optional, YYYY-MM-DD 'timestamp' when this role is expired  (OVERWRITTEN by expire_in)
+  comment: pigsty admin user      # optional, comment string for this user/role
+  roles: [dbrole_admin]           # optional, belonged roles. default roles are: dbrole_{admin,readonly,readwrite,offline}
+  parameters: {}                  # optional, role level parameters with `ALTER ROLE SET`
+  pool_mode: transaction          # optional, pgbouncer pool mode at user level, transaction by default
+  pool_connlimit: -1              # optional, max database connections at user level, default -1 disable limit
+  search_path: public             # key value config parameters according to postgresql documentation (e.g: use pigsty as default search_path)
+```
+
+- The only **required** field is `name`, which should be a valid & unique username in PostgreSQL.
+- Roles don’t need a `password`, while it could be necessary for a login-able user.
+- The `password` can be plain text or a scram-sha-256 / md5 hash string.
+- User/Role are created one by one in array order. So make sure role/group definition is ahead of its members
+- `login`, `superuser`, `createdb`, `createrole`, `inherit`, `replication`, `bypassrls` are boolean flags
+- `pgbouncer` is disabled by default. To add a business user to the pgbouncer user-list, you should set it to `true` explicitly.
+
+**ACL System**
+
+Pigsty has a battery-included [ACL](https://pigsty.io/docs/pgsql/acl/) system, which can be easily used by assigning roles to users:
+
+- `dbrole_readonly` : The role for global read-only access
+- `dbrole_readwrite` : The role for global read-write access
+- `dbrole_admin` : The role for object creation
+- `dbrole_offline` : The role for restricted read-only access ([offline](https://pigsty.io/docs/pgsql/config/#offline) instance)
+
+If you wish to re-design your ACL system, check the following parameters & templates.
+
+- [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles) : System-wide roles & global users
+- [`pg_default_privileges`](https://pigsty.io/docs/pgsql/param/#pg_default_privileges) : Default privileges for newly created objects
+- [`roles/pgsql/templates/pg-init-role.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-role.sql): Role creation SQL template
+- [`roles/pgsql/templates/pg-init-template.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-template.sql): Privilege SQL template
+
+------
+
+## Create User
+
+Users and roles defined in [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles) and [`pg_users`](https://pigsty.io/docs/pgsql/param/#pg_users) will be automatically created one by one during cluster initialization.
+
+If you want to [**create users**](https://pigsty.io/docs/pgsql/admin/#创建用户) on an existing cluster, you can use the `bin/pgsql-user` command line or directly use the [`pgsql-user.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-useryml) playbook.
+
+Add new user/role definitions to `all.children.<cls>.pg_users`, and create the database using one of the following methods:
+
+```bash
+bin/pgsql-user <cls> <username>                        # using command line
+./pgsql-user.yml -l <cls> -e username=<username>       # using playbook
+```
+
+Unlike databases, the user creation playbook is always idempotent. When the target user already exists, Pigsty will modify the user’s attributes to match the configuration.
+
+#### Use Playbook for User Creation
+
+We do not recommend manually creating new business users, especially when the users you want to create use the default pgbouncer connection pool: unless you are willing to manually maintain the user list in Pgbouncer and keep it in sync with PostgreSQL.
+
+When creating new databases using the **`bin/pgsql-user`** tool or [**`pgsql-user.yml`**](https://pigsty.io/docs/pgsql/playbook/#pgsql-useryml) playbook, the database will also be added to the [Pgbouncer Users](https://pigsty.io/docs/pgsql/user/#pgbouncer用户) list.
+
+------
+
+## Modify User
+
+The method to modify PostgreSQL user attributes is the same as [**creating users**](https://pigsty.io/docs/pgsql/user/#创建用户).
+
+First, adjust your user definition by modifying the attributes you want to change, then execute the following command to apply:
+
+```bash
+bin/pgsql-user <cls> <username>                        # using command line
+./pgsql-user.yml -l <cls> -e username=<username>       # using playbook
+```
+
+Note that modifying a user does not delete the user, but modifies user attributes using the `ALTER USER` command; it also does not revoke user permissions and group memberships, and uses the `GRANT` command to grant new roles.
+
+------
+
+## Delete User
+
+For security reasons, Pigsty does not automatically delete users, even if you remove user definitions from the configuration, Pigsty will not delete existing users.
+
+You need to use the SQL command `DROP USER` to manually delete users:
+
+```sql
+DROP USER "<username>";
+```
+
+If the role you want to delete is a group (has other users belonging to it), you need to first remove other users from the group before deleting the group:
+
+```sql
+REVOKE "<rolename>" FROM "<other_user>";
+```
+
+If the user you want to delete **owns** database objects, you need to first change the ownership of these objects to another user before deleting the user:
+
+```sql
+REASSIGN OWNED BY "<username>" TO "<another_user>";
+```
+
+------
+
+## Pgbouncer Users
+
+Pigsty installs and enables Pgbouncer connection pool by default and manages users in the connection pool.
+
+Pigsty will by default add users with the `pgbouncer: true` flag in [`pg_users`](https://pigsty.io/docs/pgsql/param/#pg_users) to the pgbouncer user list.
+
+### Configuration Files
+
+Users in the Pgbouncer connection pool are listed in `/etc/pgbouncer/userlist.txt`:
+
+```ini
+"postgres" ""
+"dbuser_wiki" "SCRAM-SHA-256$4096:+77dyhrPeFDT/TptHs7/7Q==$KeatuohpKIYzHPCt/tqBu85vI11o9mar/by0hHYM2W8=:X9gig4JtjoS8Y/o1vQsIX/gY1Fns8ynTXkbWOjUfbRQ="
+"dbuser_view" "SCRAM-SHA-256$4096:DFoZHU/DXsHL8MJ8regdEw==$gx9sUGgpVpdSM4o6A2R9PKAUkAsRPLhLoBDLBUYtKS0=:MujSgKe6rxcIUMv4GnyXJmV0YNbf39uFRZv724+X1FE="
+"dbuser_monitor" "SCRAM-SHA-256$4096:fwU97ZMO/KR0ScHO5+UuBg==$CrNsmGrx1DkIGrtrD1Wjexb/aygzqQdirTO1oBZROPY=:L8+dJ+fqlMQh7y4PmVR/gbAOvYWOr+KINjeMZ8LlFww="
+"dbuser_meta" "SCRAM-SHA-256$4096:leB2RQPcw1OIiRnPnOMUEg==$eyC+NIMKeoTxshJu314+BmbMFpCcspzI3UFZ1RYfNyU=:fJgXcykVPvOfro2MWNkl5q38oz21nSl1dTtM65uYR1Q="
+"dbuser_kong" "SCRAM-SHA-256$4096:bK8sLXIieMwFDz67/0dqXQ==$P/tCRgyKx9MC9LH3ErnKsnlOqgNd/nn2RyvThyiK6e4=:CDM8QZNHBdPf97ztusgnE7olaKDNHBN0WeAbP/nzu5A="
+"dbuser_grafana" "SCRAM-SHA-256$4096:HjLdGaGmeIAGdWyn2gDt/Q==$jgoyOB8ugoce+Wqjr0EwFf8NaIEMtiTuQTg1iEJs9BM=:ed4HUFqLyB4YpRr+y25FBT7KnlFDnan6JPVT9imxzA4="
+"dbuser_gitea" "SCRAM-SHA-256$4096:l1DBGCc4dtircZ8O8Fbzkw==$tpmGwgLuWPDog8IEKdsaDGtiPAxD16z09slvu+rHE74=:pYuFOSDuWSofpD9OZhG7oWvyAR0PQjJBffgHZLpLHds="
+"dbuser_dba" "SCRAM-SHA-256$4096:zH8niABU7xmtblVUo2QFew==$Zj7/pq+ICZx7fDcXikiN7GLqkKFA+X5NsvAX6CMshF0=:pqevR2WpizjRecPIQjMZOm+Ap+x0kgPL2Iv5zHZs0+g="
+"dbuser_bytebase" "SCRAM-SHA-256$4096:OMoTM9Zf8QcCCMD0svK5gg==$kMchqbf4iLK1U67pVOfGrERa/fY818AwqfBPhsTShNQ=:6HqWteN+AadrUnrgC0byr5A72noqnPugItQjOLFw0Wk="
+```
+
+User-level connection pool parameters are maintained in a separate file: `/etc/pgbouncer/useropts.txt`, for example:
+
+```ini
+dbuser_dba                  = pool_mode=session max_user_connections=16
+dbuser_monitor              = pool_mode=session max_user_connections=8
+```
+
+The connection pool user configuration files `userlist.txt` and `useropts.txt` will be automatically refreshed when you [create users](https://pigsty.io/docs/pgsql/user/#创建用户) and take effect through online configuration reload, normally without affecting existing connections.
+
+When you [create databases](https://pigsty.io/docs/pgsql/db/#创建数据库), the Pgbouncer database list definition file will be refreshed and take effect through online configuration reload, without affecting existing connections.
+
+### Manage Users
+
+Pgbouncer runs with the same `dbsu` as PostgreSQL, defaulting to the `postgres` operating system user. You can use the `pgb` alias to access pgbouncer management functions using dbsu.
+
+```bash
+sudo su - postgres
+pgb   # login to pgbouncer command line interface using admin user
+```
+
+Pigsty also provides a utility function `pgb-route` that can quickly switch pgbouncer database traffic to other nodes in the cluster, useful for zero-downtime migration:
+
+### Delete Users
+
+For security reasons, Pigsty does not provide commands to delete database/connection pool users by default.
+
+To remove a user from the pgbouncer connection pool, simply delete the corresponding line from the configuration file and reload pgbouncer.
+
+The connection pool user list is managed through full refresh coverage. If you ensure all database users are created by Pigsty playbooks/command line, you can use the following command to fully refresh and overwrite the user list in the pgbouncer connection pool:
+
+```bash
+./pgsql.yml -t pgbouncer_user,pgbouncer_reload -e pg_reload=true
+```
+
+### Dynamic User Authentication
+
+Note that the [`pgbouncer_auth_query`](https://pigsty.io/docs/pgsql/param/#pgbouncer_auth_query) parameter allows you to use dynamic queries to complete connection pool user authentication, which is a compromise when you don’t want to manage users in the connection pool.

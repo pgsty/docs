@@ -2,3 +2,380 @@
 title: Config
 description: describe the cluster you want
 ---
+
+## Configuration
+
+You have to define a MinIO cluster in the [config inventory](https://pigsty.io/docs/setup/config/#inventory) before deploying it.
+
+There are 3 major deployment modes for MinIO clusters:
+
+- [SNSD: Single-Node Single-Drive](https://pigsty.io/docs/minio/config/#single-node-single-drive): you can use any dir as driver in this mode, convenient for dev/test/demo.
+- [SNMD: Single-Node Multi-Drive](https://pigsty.io/docs/minio/config/#single-node-multi-drive): a compromise mode, use multiple disks (>=2) on a single server, only when resources are extremely limited.
+- [MNMD: Multi-Node Multi-Drive](https://pigsty.io/docs/minio/config/#multi-node-multi-drive): standard production deployment with the best reliability, but requires multiple servers and real drivers.
+
+We recommend using SNSD and MNMD for development and production deployment, respectively, and SNMD only when resources are extremely limited (only one server).
+
+Besides, you can use [multi-pool deployment](https://pigsty.io/docs/minio/config/#multi-pool) to scale an existing MinIO cluster, or directly deploy [multiple clusters](https://pigsty.io/docs/minio/config/#multiple-clusters).
+
+When using a multi-node MinIO cluster, you can access the service from any node, so the best practice is to use a load balancer and HA [access](https://pigsty.io/docs/minio/config/#access-service).
+
+------
+
+## Core Param
+
+There’s one and only one core param for MinIO deployment, which is `MINIO_VOLUMES`, which specify the nodes, drivers, pools of a minio cluster
+
+Pigsty will auto-generate `MINIO_VOLUMES` according to the config inventory for you, but you can always override it directly. If not explicitly specified, Pigsty will generate it according to the following rules:
+
+- SNSD: `MINIO_VOLUMES` is point to any dir on local node, from [`minio_data`](https://pigsty.io/docs/minio/param/#minio_data)
+- SNMD: `MINIO_VOLUMES` is point to a series of real driver on local node, from [`minio_data`](https://pigsty.io/docs/minio/param/#minio_data)
+- MNMD: `MINIO_VOLUMES` is point to multiple node & multiple drivers, according to  `minio_data`  and  `minio_node`
+
+- Use [`minio_data`](https://pigsty.io/docs/minio/param/#minio_data) to specify drivers on each node, such as `/data{1...4}`
+- Use [`minio_node`](https://pigsty.io/docs/minio/param/#minio_node) to specify node name pattern, such as `${minio_cluster}-${minio_seq}.pigsty`
+
+- Multi-Pool: `MINIO_VOLUMES` need to be explicitly specified
+
+------
+
+## Single-Node Single-Drive
+
+Tutorial: [deploy-minio-single-node-single-drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html)
+
+To define a singleton MinIO instance, it’s straightforward:
+
+```yaml
+# 1 Node 1 Driver (DEFAULT)
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+```
+
+The only required params are [`minio_seq`](https://pigsty.io/docs/minio/param/#minio_seq) and [`minio_cluster`](https://pigsty.io/docs/minio/param/#minio_cluster), which generate a unique identity for each MinIO instance.
+
+Single-Node Single-Driver mode is for dev purposes, so you can use a common dir as the data dir. The default data dir for SNSD minio is specified by [`minio_data`](https://pigsty.io/docs/minio/param/#minio_data), which is `/data/minio` by default. Beware that in multi-driver or multi-node mode, MinIO will refuse to start if using a common dir as the data dir rather than a mount point.
+
+We strongly recommend using a static domain name record to access MinIO. For example, the default `sss.pigsty` if [`minio_domain`](https://pigsty.io/docs/minio/param/#minio_domain) can be added to all nodes through:
+
+```yaml
+node_etc_hosts: ["10.10.10.10 sss.pigsty"] # domain name to access minio from all nodes (required)
+```
+
+------
+
+## Single-Node Multi-Drive
+
+Reference: [deploy-minio-single-node-multi-drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-multi-drive.html)
+
+To use multiple disks on a single node, you have to specify the [`minio_data`](https://pigsty.io/docs/minio/param/#minio_data) in the format of `{{ prefix }}{x...y}`, which defines a series of disk mount points.
+
+```yaml
+minio:
+  hosts: { 10.10.10.10: { minio_seq: 1 } }
+  vars:
+    minio_cluster: minio         # minio cluster name, minio by default
+    minio_data: '/data{1...4}'   # minio data dir(s), use {x...y} to specify multi drivers
+```
+
+#### Use real drivers and mountpoint
+
+Beware that in multi-driver or multi-node mode, MinIO will refuse to start if using a common dir as the data dir rather than a mount point.
+
+This example defines a single-node MinIO cluster with 4 drivers: `/data1`, `/data2`, `/data3`, `/data4`. You have to mount them properly before launching MinIO:
+
+The vagrant MinIO [sandbox](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/minio.rb) has pre-defined 4-node MinIO cluster with 4 drivers. You have to properly mount them before starting MinIO (be sure to format disks with `xfs`):
+
+```bash
+mkfs.xfs /dev/vdb; mkdir /data1; mount -t xfs /dev/sdb /data1;
+mkfs.xfs /dev/vdc; mkdir /data2; mount -t xfs /dev/sdb /data2;
+mkfs.xfs /dev/vdd; mkdir /data3; mount -t xfs /dev/sdb /data3;
+mkfs.xfs /dev/vde; mkdir /data4; mount -t xfs /dev/sdb /data4;
+```
+
+Disk management is beyond this topic, just make sure your `/etc/fstab` is properly configured to auto-mount disks after reboot.
+
+```bash
+/dev/vdb /data1 xfs defaults,noatime,nodiratime 0 0
+/dev/vdc /data2 xfs defaults,noatime,nodiratime 0 0
+/dev/vdd /data3 xfs defaults,noatime,nodiratime 0 0
+/dev/vde /data4 xfs defaults,noatime,nodiratime 0 0
+```
+
+SNMD mode can utilize multiple disks on a single server to provide higher performance and capacity, and tolerate partial disk failures.
+
+But it can do nothing with node failure, and you can’t add new nodes at runtime, so we don’t recommend using SNMD mode in production unless you have a special reason.
+
+------
+
+## Multi-Node Multi-Drive
+
+Reference: [deploy-minio-multi-node-multi-drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html)
+
+The extra [`minio_node`](https://pigsty.io/docs/minio/param/#minio_node) param will be used for a multi-node deployment in addition to the [`minio_data`](https://pigsty.io/docs/minio/param/#minio_data)
+
+For example, this configuration defines a 4-node MinIO cluster with 4 drivers per node:
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 }  # nodename: minio-1.pigsty
+    10.10.10.11: { minio_seq: 2 }  # nodename: minio-2.pigsty
+    10.10.10.12: { minio_seq: 3 }  # nodename: minio-3.pigsty
+    10.10.10.13: { minio_seq: 4 }  # nodename: minio-4.pigsty
+  vars:
+    minio_cluster: minio
+    minio_data: '/data{1...4}'                         # 4-disk per node
+    minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio name pattern
+```
+
+The [`minio_node`](https://pigsty.io/docs/minio/param/#minio_node) param specifies the MinIO node name pattern, which is `${minio_cluster}-${minio_seq}.pigsty` by default. The server name is very important for MinIO to identify and access other nodes in the cluster. It will be populated with `minio_cluster` and `minio_seq`, and write to `/etc/hosts` of all minio cluster members.
+
+In this case, the `MINIO_VOLUMES` will be set to `https://minio-{1...4}.pigsty/data{1...4}` to identify the 16 disks on 4 nodes.
+
+------
+
+## Multi-Pool
+
+MinIO’s architecture allows for [cluster expansion](https://pigsty.io/docs/minio/admin/#expand-cluster) by adding new storage pools. In Pigsty, you can achieve this by explicitly specifying the [`minio_volumes`](https://pigsty.io/docs/minio/param/#minio_volumes) param to specify nodes/disks for each pool.
+
+For example, suppose you have already created a MinIO cluster as defined in the [Multi-Node Multi-Disk](https://pigsty.io/docs/minio/config/#multi-node-multi-drive) example, and now you want to add a new storage pool consisting of four nodes.
+
+You can specify [`minio_volumes`](https://pigsty.io/docs/minio/param/#minio_volumes) here to allocate nodes for each pool to scale out the cluster.
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 }
+    10.10.10.11: { minio_seq: 2 }
+    10.10.10.12: { minio_seq: 3 }
+    10.10.10.13: { minio_seq: 4 }
+
+    10.10.10.14: { minio_seq: 5 }
+    10.10.10.15: { minio_seq: 6 }
+    10.10.10.16: { minio_seq: 7 }
+    10.10.10.17: { minio_seq: 8 }
+  vars:
+    minio_cluster: minio
+    minio_data: "/data{1...4}"
+    minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio 节点名称规则
+    minio_volumes: 'https://minio-{1...4}.pigsty:9000/data{1...4} https://minio-{5...8}.pigsty:9000/data{1...4}'
+```
+
+Here, the two space-separated parameters represent two storage pools, each with four nodes and four disks per node.
+
+For more information on storage pools, please refer to [Management Plan: MinIO Cluster Expansion](https://pigsty.io/docs/minio/admin/).
+
+------
+
+## Multiple Clusters
+
+You can deploy new MinIO nodes as a completely new MinIO cluster by defining a new group with a different cluster name.
+
+The following configuration declares two independent MinIO clusters:
+
+```yaml
+minio1:
+  hosts:
+    10.10.10.10: { minio_seq: 1 }
+    10.10.10.11: { minio_seq: 2 }
+    10.10.10.12: { minio_seq: 3 }
+    10.10.10.13: { minio_seq: 4 }
+  vars:
+    minio_cluster: minio2
+    minio_data: "/data{1...4}"
+
+minio2:
+  hosts:
+    10.10.10.14: { minio_seq: 5 }
+    10.10.10.15: { minio_seq: 6 }
+    10.10.10.16: { minio_seq: 7 }
+    10.10.10.17: { minio_seq: 8 }
+  vars:
+    minio_cluster: minio2
+    minio_data: "/data{1...4}"
+    minio_alias: sss2
+    minio_domain: sss2.pigsty
+    minio_endpoint: sss2.pigsty:9000
+```
+
+Please note that by default, Pigsty allows only one MinIO cluster per deployment. If you need to deploy multiple MinIO clusters, some parameters with default values need to be explicitly set and cannot be omitted to avoid naming conflicts, as shown above.
+
+------
+
+## Expose Service
+
+MinIO will serve on port `9000` by default. If a multi-node MinIO cluster is deployed, you can access its service via any node. It would be better to expose MinIO service via a load balancer, such as the default [`haproxy`](https://pigsty.io/docs/node/param/#haproxy) on [`NODE`](https://pigsty.io/docs/node/), or use the L2 [vip](https://pigsty.io/docs/node/param/#node_vip).
+
+To expose MinIO service with haproxy, you have to define an extra service with [`haproxy_services`](https://pigsty.io/docs/node/param/#haproxy_services):
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 , nodename: minio-1 }
+    10.10.10.11: { minio_seq: 2 , nodename: minio-2 }
+    10.10.10.12: { minio_seq: 3 , nodename: minio-3 }
+  vars:
+    minio_cluster: minio
+    node_cluster: minio
+    minio_data: '/data{1...2}'         # use two disk per node
+    minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio node name pattern
+    haproxy_services:                  # EXPOSING MINIO SERVICE WITH HAPROXY
+      - name: minio                    # [REQUIRED] service name, unique
+        port: 9002                     # [REQUIRED] service port, unique
+        options:                       # [OPTIONAL] minio health check
+          - option httpchk
+          - option http-keep-alive
+          - http-check send meth OPTIONS uri /minio/health/live
+          - http-check expect status 200
+        servers:
+          - { name: minio-1 ,ip: 10.10.10.10 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-2 ,ip: 10.10.10.11 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-3 ,ip: 10.10.10.12 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+MinIO uses port `9000` by default. A multi-node MinIO cluster can be accessed by connecting to **any one of its nodes**.
+
+Service access falls under the scope of the [NODE](https://pigsty.io/docs/node/) module, and we’ll provide only a basic introduction here.
+
+High-availability access to a multi-node MinIO cluster can be achieved using an L2 VIP or HAProxy. For example, you can use Keepalived to bind an L2 [VIP](https://pigsty.io/docs/node/param/#node_vip) to the MinIO cluster, or use the [`haproxy`](https://pigsty.io/docs/node/param/#haproxy) component provided by the [`NODE`](https://pigsty.io/docs/node/) module to expose MinIO services through a load balancer.
+
+```yaml
+# minio cluster with 4 nodes and 4 drivers per node
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 , nodename: minio-1 }
+    10.10.10.11: { minio_seq: 2 , nodename: minio-2 }
+    10.10.10.12: { minio_seq: 3 , nodename: minio-3 }
+    10.10.10.13: { minio_seq: 4 , nodename: minio-4 }
+  vars:
+    minio_cluster: minio
+    minio_data: '/data{1...4}'
+    minio_buckets: [ { name: pgsql }, { name: infra }, { name: redis } ]
+    minio_users:
+      - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
+      - { access_key: pgbackrest , secret_key: S3User.SomeNewPassWord , policy: readwrite }
+
+    # bind a node l2 vip (10.10.10.9) to minio cluster (optional)
+    node_cluster: minio
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.9
+    vip_interface: eth1
+
+    # expose minio service with haproxy on all nodes
+    haproxy_services:
+      - name: minio                    # [REQUIRED] service name, unique
+        port: 9002                     # [REQUIRED] service port, unique
+        balance: leastconn             # [OPTIONAL] load balancer algorithm
+        options:                       # [OPTIONAL] minio health check
+          - option httpchk
+          - option http-keep-alive
+          - http-check send meth OPTIONS uri /minio/health/live
+          - http-check expect status 200
+        servers:
+          - { name: minio-1 ,ip: 10.10.10.10 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-2 ,ip: 10.10.10.11 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-3 ,ip: 10.10.10.12 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+In the configuration above, HAProxy is enabled on all nodes of the MinIO cluster, exposing MinIO services on port `9002`, and a Layer 2 VIP is bound to the cluster. When in use, users should point the `sss.pigsty` domain name to the VIP address `10.10.10.9` and access MinIO services using port `9002`. This ensures high availability, as the VIP will automatically switch to another node if any node fails.
+
+In this scenario, you may also need to globally modify the destination of domain name resolution and adjust the [`minio_endpoint`](https://pigsty.io/docs/minio/param/#minio_endpoint) parameter to change the endpoint address corresponding to the MinIO alias on the management node:
+
+```yaml
+minio_endpoint: https://sss.pigsty:9002   # Override the default https://sss.pigsty:9000
+node_etc_hosts: ["10.10.10.9 sss.pigsty"] # Other nodes will use the sss.pigsty domain
+```
+
+------
+
+## Dedicate Proxies
+
+Pigsty allow using dedicate load balancer cluster instead of the node cluster itself to run VIP & HAProxy.
+
+For example, the [`prod`](https://pigsty.io/docs/conf/prod) template uses this way.
+
+```yaml
+proxy:
+  hosts:
+    10.10.10.18 : { nodename: proxy1 ,node_cluster: proxy ,vip_interface: eth1 ,vip_role: master }
+    10.10.10.19 : { nodename: proxy2 ,node_cluster: proxy ,vip_interface: eth1 ,vip_role: backup }
+  vars:
+    vip_enabled: true
+    vip_address: 10.10.10.20
+    vip_vrid: 20
+
+    haproxy_services:      # expose minio service : sss.pigsty:9000
+      - name: minio        # [REQUIRED] service name, unique
+        port: 9000         # [REQUIRED] service port, unique
+        balance: leastconn # Use leastconn algorithm and minio health check
+        options: [ "option httpchk", "option http-keep-alive", "http-check send meth OPTIONS uri /minio/health/live", "http-check expect status 200" ]
+        servers:           # reload service with ./node.yml -t haproxy_config,haproxy_reload
+          - { name: minio-1 ,ip: 10.10.10.21 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-2 ,ip: 10.10.10.22 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-3 ,ip: 10.10.10.23 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-4 ,ip: 10.10.10.24 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-5 ,ip: 10.10.10.25 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+In this case, you need to manually configure the DNS resolution to point `sss.pigsty` to the VIP address of dedicate proxies cluster
+
+```yaml
+minio_endpoint: https://sss.pigsty:9002    # overwrite the defaults: https://sss.pigsty:9000
+node_etc_hosts: ["10.10.10.20 sss.pigsty"] # domain name to access minio from all nodes (required)
+```
+
+------
+
+## Access Service
+
+To use the [exposed service](https://pigsty.io/docs/minio/config/#expose-service), you have to update/append the MinIO credential in the [`pgbackrest_repo`](https://pigsty.io/docs/pgsql/param/#pgbackrest_repo) section:
+
+```yaml
+# This is the newly added HA MinIO Repo definition, USE THIS INSTEAD!
+minio_ha:
+  type: s3
+  s3_endpoint: minio-1.pigsty   # s3_endpoint could be any load balancer: 10.10.10.1{0,1,2}, or domain names point to any of the 3 nodes
+  s3_region: us-east-1          # you could use external domain name: sss.pigsty , which resolve to any members  (`minio_domain`)
+  s3_bucket: pgsql              # instance & nodename can be used : minio-1.pigsty minio-1.pigsty minio-1.pigsty minio-1 minio-2 minio-3
+  s3_key: pgbackrest            # Better using a new password for MinIO pgbackrest user
+  s3_key_secret: S3User.SomeNewPassWord
+  s3_uri_style: path
+  path: /pgbackrest
+  storage_port: 9002            # Use the load balancer port 9002 instead of default 9000 (direct access)
+  storage_ca_file: /etc/pki/ca.crt
+  bundle: y
+  cipher_type: aes-256-cbc      # Better using a new cipher password for your production environment
+  cipher_pass: pgBackRest.With.Some.Extra.PassWord.And.Salt.${pg_cluster}
+  retention_full_type: time
+  retention_full: 14
+```
+
+------
+
+## Expose Console
+
+MinIO has a built-in console that can be accessed via HTTPS @ [`minio_admin_port`](https://pigsty.io/docs/minio/param/#minio_admin_port). If you want to expose the MinIO console to the outside world, you can add MinIO to [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal).
+
+```yaml
+# ./infra.yml -t nginx
+infra_portal:
+  home         : { domain: h.pigsty }
+  grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" , websocket: true }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+
+  # MinIO console require HTTPS / Websocket to work
+  minio        : { domain: m.pigsty     ,endpoint: "10.10.10.10:9001" ,scheme: https ,websocket: true }
+  minio10      : { domain: m10.pigsty   ,endpoint: "10.10.10.10:9001" ,scheme: https ,websocket: true }
+  minio11      : { domain: m11.pigsty   ,endpoint: "10.10.10.11:9001" ,scheme: https ,websocket: true }
+  minio12      : { domain: m12.pigsty   ,endpoint: "10.10.10.12:9001" ,scheme: https ,websocket: true }
+  minio13      : { domain: m13.pigsty   ,endpoint: "10.10.10.13:9001" ,scheme: https ,websocket: true }
+```
+
+Beware that MinIO console should be accessed via HTTPS, please **DO NOT** expose MinIO console without encryption in production.
+
+Which means you usually need to add `m.pigsty` resolution to your DNS server, or `/etc/hosts` on your local host, to access the MinIO console.
+
+Meanwhile, if you are using Pigsty’s self-signed CA rather than a regular public CA, you usually need to manually trust the CA or certificate to skip the “insecure” warning in the browser.

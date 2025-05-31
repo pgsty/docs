@@ -4,12 +4,11 @@
   "root": true,
   "pages": [
     "index",
-    "concept",
     "config",
     "param",
     "admin",
     "playbook",
-    "dashboard",
+    "monitor",
     "faq",
     "..."
   ]

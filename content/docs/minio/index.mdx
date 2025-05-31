@@ -4,15 +4,8 @@ description: The open source object storage service
 ---
 
 
-import { getPageTreePeers } from 'fumadocs-core/server';
-import { source } from '@/lib/source';
+[Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html): S3-Compatible Open-Source Multi-Cloud Object Storage
 
-<Cards>
+MinIO is an S3-compatible object storage server. It’s designed to be scalable, secure, and easy to use. It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups.
 
-    {getPageTreePeers(source.pageTree, '/docs/minio').map((peer) => (
-        <Card key={peer.url} title={peer.name} href={peer.url}>
-            {peer.description}
-        </Card>
-    ))}
-
-</Cards>
+Pigsty uses MinIO as an optional PostgreSQL backup storage repo, in addition to the default local posix FS repo. If the MinIO repo is used, the `MINIO` module should be installed before any [`PGSQL`](https://pigsty.io/docs/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it in addition to [`NODE`](https://pigsty.io/docs/node/) module.

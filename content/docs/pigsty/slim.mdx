@@ -1,4 +1,97 @@
 ---
 title: Slim Install
-description: how to install pigsty with minimal dependencies
+description: install HA Postgres with minimal dependencies
 ---
+
+Pigsty has an entire infrastructure stack as an enclosure of HA PostgreSQL clusters, BUT it is viable to install only the PostgreSQL components without the rest of the stack. This is called a slim installation.
+
+------
+
+## Overview
+
+The slim installation focus on Pure HA-PostgreSQL Cluster, and it only installs essential components for this purpose.
+
+There’s NO [**`Infra`**](https://pigsty.io/docs/infra/) modules, No monitoring, No [**local repo**](https://pigsty.io/docs/setup/offline/#build-local-repo) Just partial of [**`NODE`**](https://pigsty.io/docs/node/) module, along with [**`ETCD`**](https://pigsty.io/docs/etcd/) & [**`PGSQL`**](https://pigsty.io/docs/pgsql/) modules
+
+Systemd Service Installed in this mode:
+
+- patroni: **REQUIRED**, bootstrap HA PostgreSQL cluster
+- etcd: **REQUIRED**, DCS for patroni
+- pgbouncer: **OPTIONAL**, connection pooler for postgres
+- vip-manager: **OPTIONAL**, if you want to use a L2 VIP bind to primary
+- haproxy: **OPTIONAL**, if you wish to auto-routing [**service**](https://pigsty.io/docs/concept/svc/)
+- chronyd: **OPTIONAL**, if you wish to sync time with NTP server
+- tuned: **OPTIONAL**, manage node template and kernel parameters
+
+You can turn off the optional components, the only two essential components are `patroni` and `etcd`.
+
+------
+
+## Configure
+
+To perform a slim installation, you need to disable some switches in the `pigsty.yml` config file: (Example: [`conf/slim.yml`](https://pigsty.io/docs/conf/slim/))
+
+```yaml
+all:
+  children:
+
+    # actually not used
+    infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+
+    #----------------------------------#
+    # etcd cluster for HA postgres DCS
+    #----------------------------------#
+    etcd:
+      hosts:
+        10.10.10.10: { etcd_seq: 1 }
+      vars:
+        etcd_cluster: etcd
+
+    # postgres cluster 'pg-meta' with 2 instances
+    pg-meta:
+      hosts:
+        10.10.10.10: { pg_seq: 1, pg_role: primary }
+        10.10.10.11: { pg_seq: 2, pg_role: replica }
+      vars:
+        pg_cluster: pg-meta
+        pg_databases: [ { name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [{name: vector}]}]
+        pg_users:
+          - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [ dbrole_admin ]    ,comment: pigsty admin user }
+          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [ dbrole_readonly ] ,comment: read-only viewer for meta database }
+        node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
+
+  vars:                               # global parameters
+    version: v3.4.1                   # pigsty version string
+    admin_ip: 10.10.10.10             # admin node ip address
+    region: default                   # upstream mirror region: default,china,europe
+    node_tune: oltp                   # node tuning specs: oltp,olap,tiny,crit
+    pg_conf: oltp.yml                 # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
+
+    # slim installation setup
+    nginx_enabled: false              # nginx not exists
+    dns_enabled: false                # dnsmasq not exists
+    prometheus_enabled: false         # prometheus not exists
+    grafana_enabled: false            # grafana not exists
+    pg_exporter_enabled: false        # disable pg_exporter
+    pgbouncer_exporter_enabled: false
+    pg_vip_enabled: false
+
+    #----------------------------------#
+    # Repo, Node, Packages
+    #----------------------------------#
+    # if you wish to customize your own repo, change these settings:
+    repo_modules: infra,node,pgsql
+    repo_remove: true                 # remove existing repo on admin node during repo bootstrap
+    node_repo_modules: local          # install the local module in repo_upstream for all nodes
+    node_repo_remove: true            # remove existing node repo for node managed by pigsty
+    repo_packages: [ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-common ] #,docker]
+    repo_extra_packages: [ pg17-main ] #,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
+    pg_version: 17                    # default postgres version
+    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+```
+
+And use the [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/slim.yml) playbook instead of the [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) playbook:
+
+```bash
+./slim.yml
+```

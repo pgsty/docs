@@ -1,5 +1,5 @@
 {
-    "title": "PIGSTY",
+    "title": "PGSTY",
     "description": "Pigsty, the PostgreSQL Distribution",
     "root": true,
     "icon": "Building",
@@ -7,12 +7,22 @@
         "---Introduction---",
         "index",
         "intro",
+        "module",
+        "linux",
 
         "---Installation---",
         "install",
         "offline",
         "slim",
+
+
+        "---Deployment---",
         "prepare",
+        "security",
+        "vagrant",
+        "terraform",
+
+        "---About---",
 
         "..."
     ]

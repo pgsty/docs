@@ -6,6 +6,7 @@
         "node",
         "etcd",
         "redis",
-        "minio"
+        "minio",
+        "docker"
     ]
 }

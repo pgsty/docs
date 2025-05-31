@@ -1,4 +1,175 @@
 ---
 title: Preparation
-description: nodes, network, linux distro, admin user, ports and permissions
+description: pre nodes, network, linux distro, admin user, ports, etc...
 ---
+
+## Node
+
+Pigsty supports the `Linux` kernel and `x86_64/aarch64` arch, applicable to any node.
+
+A “node” refers to a resource that is SSH accessible and offers a bare OS environment, such as a physical machine, a virtual machine, or an OS container equipped with `systemd` and `sshd`.
+
+Deploying Pigsty requires at least 1 node. The minimum spec requirement is `1C1G`, but it is recommended to use at least `2C4G`, with no upper limit: parameters will automatically optimize and adapt.
+
+For demos, personal sites, devbox, or standalone monitoring infra, **1-2** nodes are recommended, while at least 3 nodes are suggested for an HA PostgreSQL cluster. For critical scenarios, **4-5** nodes are advisable.
+
+#### Leverage IaC Tools for chores
+
+Managing a large-scale prod env could be tedious and error-prone. We recommend using Infrastructure as Code (IaC) tools to address these issues.
+
+You can use the [**Terraform**](https://pigsty.io/docs/setup/provision/#terraform) and [**Vagrant**](https://pigsty.io/docs/setup/provision/#vagrant) templates provided by Pigsty, to create the required node environment with just one command through IaC, provisioning network, OS image, admin user, privileges, etc…
+
+------
+
+## Network
+
+Pigsty requires nodes to use **static IPv4 addresses**, which means you should explicitly assign your nodes a specific fixed IP address rather than using DHCP-assigned addresses.
+
+The IP address used by a node should be the primary IP address for internal network communications and will serve as the node’s unique identifier.
+
+If you wish to use the optional Node VIP and PG VIP features, ensure all nodes are located within an L2 network.
+
+Your firewall policy should ensure the required ports are open between nodes. For a detailed list of ports required by different modules, refer to [**Node: Ports**](https://pigsty.io/docs/node/concept/).
+
+#### Which Ports Should Be Exposed?
+
+For beginners or those who are just trying it out, you can just open ports `5432` (PostgreSQL database) and `3000` (Grafana visualization interface) to the world.
+
+For a serious prod env, you should only expose the necessary ports to the exterior, such as `80/443` for web services, open to the office network (or the entire Internet).
+
+Exposing database service ports directly to the Internet is not advisable. If you need to do this, consider consulting [Security Best Practices](https://pigsty.io/docs/setup/security/) and proceed cautiously.
+
+The method for exposing ports depends on your network implementation, such as security group policies, local iptables records, firewall configurations, etc.
+
+------
+
+## Operating System
+
+Pigsty supports various Linux OS. We recommend using **RockyLinux 9.4** or **Ubuntu 22.04.5** as the default OS for installing Pigsty.
+
+Pigsty supports RHEL (7,8,9), Debian (11,12), Ubuntu (20,22,24), and many other compatible OS distros. Check [**Compatibility**](https://pigsty.io/docs/reference/compatibility/) For a complete list of compatible OS distros.
+
+When deploying on multiple nodes, we **strongly recommend** using the **same version** of the OS distro and the Linux kernel on all nodes.
+
+We **strongly recommend** using a clean, minimally installed OS environment with `en_US` set as the primary language.
+
+#### How to enable en_US locale?
+
+To ensure the `en_US` locale is available when using other primary language:
+
+```bash
+yum install -y glibc-locale-source glibc-langpack-en
+localedef -i en_US -f UTF-8 en_US.UTF-8
+localectl set-locale LANG=en_US.UTF-8
+```
+
+Note: The PostgreSQL cluster deployed by Pigsty defaults to the `C.UTF8` locale, but character set definitions use `en_US` to ensure the `pg_trgm` extension functions properly. If you do not need this feature, you can configure the value of [**`pg_lc_ctype`**](https://pigsty.io/docs/pgsql/param/#pg_lc_ctype) to `C.UTF8` to avoid this issue when en locale is missing.
+
+------
+
+## Admin User
+
+You’ll need an “**admin user**” on all nodes where Pigsty is meant to be deployed — an OS user with nopass `ssh` login and nopass `sudo` permissions.
+
+On the nodes where Pigsty is installed, you need an “**administrative user**” who has nopass `ssh` login and nopass `sudo` permissions.
+
+No password `sudo` is required to execute commands during the installation process, such as installing packages, configuring system settings, etc.
+
+#### How to configure nopass sudo for admin user?
+
+Assuming your admin username is `vagrant`, you can create a file in `/etc/sudoers.d/vagrant` and add the following content:
+
+```bash
+%vagrant ALL=(ALL) NOPASSWD: ALL
+```
+
+This will allow the `vagrant` user to execute all commands without a sudo password. If your username is not `vagrant`, replace `vagrant` in the above steps with your username.
+
+#### Avoid using the root user
+
+While it is possible to install Pigsty using the `root` user, we do not recommend it.
+
+We recommend using a dedicated admin user, such as `dba`, different from the root user (`root`) and the database superuser (`postgres`).
+
+There is a dedicated playbook subtask that can use an existing admin user (e.g., `root`) with ssh/sudo password input to [create](https://pigsty.io/docs/node/admin/#create-admin) a dedicated admin user.
+
+------
+
+## SSH Permission
+
+In addition to nopass `sudo` privilege, Pigsty also requires the admin user to have nopass `ssh` login privilege (login via ssh key).
+
+For [single-host installations](https://pigsty.io/docs/concept/arch/#singleton-meta) setup, this means the admin user on the local node should be able to log in to the host itself via ssh without a password.
+
+If your Pigsty deployment involves multiple nodes, this means the admin user on the [admin node](https://pigsty.io/docs/node/#admin-node) should be able to log in to all nodes managed by Pigsty (including the local node) via ssh without a password, and execute `sudo` commands without a password as well.
+
+During the [**`configure`**](https://pigsty.io/docs/setup/install/#configuration) procedure, if your current admin user does not have any SSH key, it will attempt to address this issue by generating a new `id_rsa` key pair and adding it to the local `~/.ssh/authorized_keys` file to ensure local SSH login capability for the local admin user.
+
+By default, Pigsty creates an admin user `dba` (`uid=88`) on all managed nodes. If you are already using this user, we recommend that you change the [`node_admin_username`](https://pigsty.io/docs/node/param/#node_admin_username) to a new username with a different uid, or disable it using the [`node_admin_enabled`](https://pigsty.io/docs/node/param/#node_admin_enabled) parameter.
+
+#### How to configure nopass SSH login for admin user?
+
+Assuming your admin username is `vagrant`, execute the following command as the `vagrant` user will generate a public/private key pair for login. If a key pair already exists, there is no need to generate a new one.
+
+```bash
+ssh-keygen -t rsa -b 2048 -N '' -f ~/.ssh/id_rsa -q
+```
+
+The generated public key is by default located at: `/home/vagrant/.ssh/id_rsa.pub`, and the private key at: `/home/vagrant/.ssh/id_rsa`. If your OS username is not `vagrant`, replace `vagrant` in the above commands with your username.
+
+You should append the public key file (`id_rsa.pub`) to the `authorized_keys` file of the user you need to log into: `/home/vagrant/.ssh/authorized_keys`. If you already have password access to the remote machine, you can use `ssh-copy-id` to copy the public key:
+
+```bash
+ssh-copy-id <ip>                        # Enter password to complete public key copying
+sshpass -p <password> ssh-copy-id <ip>  # Or: you can embed the password directly in the command to avoid interactive password entry (cautious!)
+```
+
+Pigsty recommends provisioning the admin user during node provisioning and making it viable by default.
+
+------
+
+## SSH Accessibility
+
+If your environment has some restrictions on SSH access, such as a bastion server or ad hoc firewall rules that prevent simple SSH access via `ssh <ip>`, consider using SSH aliases.
+
+For example, if there’s a node with IP `10.10.10.10` that can not be accessed directly via ssh but can be accessed via an ssh alias `meta` defined in `~/.ssh/config`, then you can configure the `ansible_host` parameter for that node in the [**inventory**](https://pigsty.io/docs/setup/config/#inventory) to specify the SSH Alias on the host level:
+
+```yaml
+nodes:
+  hosts:  # 10.10.10.10 can not be accessed directly via ssh, but can be accessed via ssh alias 'meta'
+    10.10.10.10: { ansible_host: meta }
+```
+
+If the ssh alias does not meet your requirement, there are a plethora of custom [**ssh connection parameters**](https://docs.ansible.com/archive/ansible/2.4/intro_inventory.html#list-of-behavioral-inventory-parameters) that can bring fine-grained control over SSH connection behavior.
+
+If the following cmd can be successfully executed on the admin node by the admin user, it means that the target node’s admin user is properly configured.
+
+```bash
+ssh <ip|alias> 'sudo ls'
+```
+
+------
+
+## Software
+
+On the [**admin node**](https://pigsty.io/docs/node/concept/#admin-node), Pigsty requires [**`ansible`**](https://pigsty.io/docs/setup/playbook/#ansible) to initiate control. If you are using the singleton meta installation, Ansible is required on this node. It is not required for common nodes.
+
+The [**`bootstrap`**](https://pigsty.io/docs/setup/offline/#bootstrap) procedure will make every effort to do this for you. But you can always choose to install Ansible manually. The process of manually installing Ansible varies with different OS distros / major versions (usually involving an additional weak dependency `jmespath`):
+
+- Install Ansible
+- EL 8 / 9
+- EL 7
+- Debian / Ubuntu
+- MacOS
+
+```bash
+sudo dnf install -y ansible python3.12-jmespath
+```
+
+To install Pigsty, you also need to prepare the Pigsty source package. You can directly download a specific version from the [GitHub Release](https://github.com/pgsty/pigsty/releases/) page or use the following command to obtain the latest stable version:
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash
+```
+
+If your env does not have Internet access, consider using the [**offline packages**](https://pigsty.io/docs/setup/offline/#offline-packages), which are pre-packed for different OS distros, and can be downloaded from the GitHub Release page.

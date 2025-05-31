@@ -5,12 +5,11 @@
   "pages": [
     "[Pigsty Docs](/docs)",
     "index",
-    "concept",
     "config",
     "param",
     "admin",
     "playbook",
-    "dashboard",
+    "monitor",
     "faq",
     "..."
   ]

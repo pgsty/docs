@@ -1,0 +1,32 @@
+---
+title: Playbook
+description: setup docker with playbook
+---
+
+
+The DOCKER module has only one playbook: `docker.yml` to install docker daemon & docker compose on target node.
+
+------
+
+## `docker.yml`
+
+The raw playbook: [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml).
+
+Run this playbook on any host will install `docker-ce` and `docker-compose-plugin` on target node with `docker_enabled: true` flag.
+
+Here are the available subtasks in the `docker.yml` playbook:
+
+- `docker_install`: Install Docker and Docker Compose packages on the node.
+- `docker_admin`: Add specified users to the Docker administrator user group.
+- `docker_config`: Generate Docker daemon service configuration file.
+- `docker_launch`: Start the Docker daemon service.
+- `docker_register`: Register Docker daemon as a Prometheus monitoring target.
+- `docker_image`: Attempt to load prepackaged Docker images from `/tmp/docker/*.tgz` if present.
+
+The Docker module does not provide a dedicated playbook for uninstalling Docker. If you need to uninstall Docker, you can manually stop the Docker service and then uninstall it:
+
+```bash
+systemctl stop docker                        # Stop Docker daemon service
+yum remove docker-ce docker-compose-plugin   # Uninstall Docker on EL systems
+apt remove docker-ce docker-compose-plugin   # Uninstall Docker on Debian systems
+```

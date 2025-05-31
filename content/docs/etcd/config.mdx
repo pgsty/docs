@@ -2,3 +2,94 @@
 title: Config
 description: describe the cluster you want
 ---
+
+You have to define the etcd cluster in the [config inventory](https://pigsty.io/docs/setup/config/#inventory) before deploying it.
+
+Usually you can choose an etcd cluster with:
+
+- [One Node](https://pigsty.io/docs/etcd/config/#one-node), no high availability, just the functionality of etcd, suitable for development, testing, demonstration.
+- [Three Nodes](https://pigsty.io/docs/etcd/config/#three-nodes), basic high availability, tolerate one node failure, suitable for medium production environment.
+- [Five Nodes](https://pigsty.io/docs/etcd/config/#five-nodes), better high availability, tolerate two node failure, suitable for large production environment.
+
+Even number of etcd nodes is meaningless, and more than five nodes is not common.
+
+------
+
+## One Node
+
+Define the group `etcd` in the inventory, It will create a singleton etcd instance.
+
+```yaml
+# etcd cluster for ha postgres
+etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+```
+
+This line exists almost in all single-node [config](https://pigsty.io/docs/conf/) templates, where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
+
+The only necessary parameters are [`etcd_seq`](https://pigsty.io/docs/etcd/param/#etcd_seq) and [`etcd_cluster`](https://pigsty.io/docs/etcd/param/#etcd_cluster), which uniquely identify the cluster and each instance.
+
+------
+
+## Three Nodes
+
+It’s common to use a three-node etcd cluster, which can tolerate one node failure, suitable for medium prod env.
+
+The [`trio`](https://pigsty.io/docs/conf/trio/) and [`safe`](https://pigsty.io/docs/conf/safe/) config templates use a three-node etcd cluster, as shown below:
+
+```yaml
+etcd: # dcs service for postgres/patroni ha consensus
+  hosts:  # 1 node for testing, 3 or 5 for production
+    10.10.10.10: { etcd_seq: 1 }  # etcd_seq required
+    10.10.10.11: { etcd_seq: 2 }  # assign from 1 ~ n
+    10.10.10.12: { etcd_seq: 3 }  # odd number please
+  vars: # cluster level parameter override roles/etcd
+    etcd_cluster: etcd  # mark etcd cluster name etcd
+    etcd_safeguard: false # safeguard against purging
+    etcd_clean: true # purge etcd during init process
+```
+
+------
+
+## Five Nodes
+
+Five nodes etcd cluster can tolerate two node failure, suitable for large prod env.
+
+There’s a five-node etcd cluster example in the [`prod`](https://pigsty.io/docs/conf/prod) template:
+
+```yaml
+etcd:
+  hosts:
+    10.10.10.21 : { etcd_seq: 1 }
+    10.10.10.22 : { etcd_seq: 2 }
+    10.10.10.23 : { etcd_seq: 3 }
+    10.10.10.24 : { etcd_seq: 4 }
+    10.10.10.25 : { etcd_seq: 5 }
+  vars: { etcd_cluster: etcd    }
+```
+
+You can use more nodes for production environment, but 3 or 5 nodes are recommended. Remember to use odd number for cluster size.
+
+------
+
+## Etcd Usage
+
+These are the services that currently use Etcd:
+
+- patroni: Use etcd as a consensus backend for PostgreSQL HA
+- vip-manager: Read leader info from Etcd to bind an optional L2 VIP on the PostgreSQL cluster
+
+You’ll have to [**reload**](https://pigsty.io/docs/etcd/admin/#reload-config) etcd config after any permanent change to the etcd cluster members.
+
+e.g, update patroni reference to etcd endpoints:
+
+```bash
+./pgsql.yml -t pg_conf                            # generate patroni config
+ansible all -f 1 -b -a 'systemctl reload patroni' # reload patroni config
+```
+
+e.g, update vip-manager reference to etcd endpoints (if you are using PGSQL L2 VIP):
+
+```bash
+./pgsql.yml -t pg_vip_config                           # generate vip-manager config
+ansible all -f 1 -b -a 'systemctl restart vip-manager' # restart vip-manager to use
+```

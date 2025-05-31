@@ -2,3 +2,140 @@
 title: Admin
 description: run administrative tasks
 ---
+
+Here are some common administration tasks for Redis. Check [FAQ: Redis](https://pigsty.io/docs/redis/faq/) for more details.
+
+------
+
+## Init Redis
+
+**Init Cluster/Node/Instance**
+
+```bash
+# init all redis instances on group <cluster>
+./redis.yml -l <cluster>      # init redis cluster
+
+# init redis node
+./redis.yml -l 10.10.10.10    # init redis node
+
+# init one specific redis instance 10.10.10.11:6379
+./redis.yml -l 10.10.10.11 -e redis_port=6379 -t redis
+```
+
+You can also use wrapper script:
+
+```bash
+bin/redis-add redis-ms          # create redis cluster 'redis-ms'
+bin/redis-add 10.10.10.10       # create redis node '10.10.10.10'
+bin/redis-add 10.10.10.10 6379  # create redis instance '10.10.10.10:6379'
+```
+
+------
+
+## Remove Redis
+
+**Remove Cluster/Node/Instance**
+
+```bash
+# Remove cluster `redis-test`
+redis-rm.yml -l redis-test
+
+# Remove cluster `redis-test`, and uninstall packages
+redis-rm.yml -l redis-test -e redis_uninstall=true
+
+# Remove all instance on redis node 10.10.10.13
+redis-rm.yml -l 10.10.10.13
+
+# Remove one specific instance 10.10.10.13:6379
+redis-rm.yml -l 10.10.10.13 -e redis_port=6379
+```
+
+You can also use wrapper script:
+
+```bash
+bin/redis-rm redis-ms          # remove redis cluster 'redis-ms'
+bin/redis-rm 10.10.10.10       # remove redis node '10.10.10.10'
+bin/redis-rm 10.10.10.10 6379  # remove redis instance '10.10.10.10:6379'
+```
+
+------
+
+## Reconfigure Redis
+
+You can partially run [`redis.yml`](https://pigsty.io/docs/redis/playbook/#redisyml) tasks to re-configure redis.
+
+```bash
+./redis.yml -l <cluster> -t redis_config,redis_launch
+```
+
+Beware that redis can not be reload online, you have to restart redis to make config effective.
+
+------
+
+## Use Redis Client Tools
+
+Access redis instance with `redis-cli`:
+
+```bash
+$ redis-cli -h 10.10.10.10 -p 6379 # <--- connect with host and port
+10.10.10.10:6379> auth redis.ms    # <--- auth with password
+OK
+10.10.10.10:6379> set a 10         # <--- set a key
+OK
+10.10.10.10:6379> get a            # <--- get a key back
+"10"
+```
+
+Redis also has a `redis-benchmark` which can be used for benchmark and generate load on redis server:
+
+```bash
+redis-benchmark -h 10.10.10.13 -p 6379
+```
+
+------
+
+## Configure Redis Replica
+
+https://redis.io/commands/replicaof/
+
+```bash
+# promote a redis instance to primary
+> REPLICAOF NO ONE
+"OK"
+
+# make a redis instance replica of another instance
+> REPLICAOF 127.0.0.1 6799
+"OK"
+```
+
+------
+
+## Configure HA with Sentinel
+
+You have to enable HA for redis standalone m-s cluster manually with your redis sentinel.
+
+Take the 4-node sandbox as an example, a redis sentinel cluster `redis-meta` is used manage the `redis-ms` standalone cluster.
+
+```bash
+# for each sentinel, add redis master to the sentinel with:
+$ redis-cli -h 10.10.10.11 -p 26379 -a redis.meta
+10.10.10.11:26379> SENTINEL MONITOR redis-ms 10.10.10.10 6379 1
+10.10.10.11:26379> SENTINEL SET redis-ms auth-pass redis.ms      # if auth enabled, password has to be configured
+```
+
+If you wish to remove a redis master from sentinel, use `SENTINEL REMOVE <name>`.
+
+You can configure multiple redis master on sentinel cluster with [`redis_sentinel_monitor`](https://pigsty.io/docs/redis/param/#redis_sentinel_monitor).
+
+```yaml
+redis_sentinel_monitor: # primary list for redis sentinel, use cls as name, primary ip:port
+  - { name: redis-src, host: 10.10.10.45, port: 6379 ,password: redis.src, quorum: 1 }
+  - { name: redis-dst, host: 10.10.10.48, port: 6379 ,password: redis.dst, quorum: 1 }
+```
+
+And refresh master list on sentinel cluster with:
+
+```bash
+./redis.yml -l redis-meta -t redis-ha   # replace redis-meta if your sentinel cluster has different name
+```
+

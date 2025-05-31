@@ -2,3 +2,1126 @@
 title: Parameter
 description: customize with options
 ---
+
+Parameters about pigsty infrastructure components: local yum repo, nginx, dnsmasq, prometheus, grafana, loki, alertmanager, pushgateway, blackbox_exporter, etc…
+
+There are **9** sections in total, and **57** parameters in this module.
+
+- [`META`](#meta): infra meta data
+- [`CA`](#ca): self-signed CA
+- [`INFRA_ID`](#infra_id) : Portals and identity
+- [`REPO`](#repo): local yum/atp repo
+- [`INFRA_PACKAGE`](#infra_package) : packages to be installed
+- [`NGINX`](#nginx) : nginx web server
+- [`DNS`](#dns): dnsmasq nameserver
+- [`PROMETHEUS`](#prometheus) : prometheus, alertmanager, pushgateway & blackbox_exporter
+- [`GRAFANA`](#grafana) : Grafana, the visualization platform
+- [`LOKI`](#loki) : Loki, the logging server
+
+------
+
+## Parameters
+
+| Name                                                        | Section                           | Type         | Level | Comment                                            |
+|-------------------------------------------------------------|-----------------------------------|--------------|-------|----------------------------------------------------|
+| [`version`](#version)                                       | [`META`](#meta)                   | `string`     | G     | pigsty version string                              |
+| [`admin_ip`](#admin_ip)                                     | [`META`](#meta)                   | `ip`         | G     | admin node ip address                              |
+| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | upstream mirror region: default,china,europe       |
+| [`proxy_env`](#proxy_env)                                   | [`META`](#meta)                   | `dict`       | G     | global proxy env when downloading packages         |
+| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create,recreate,copy, create by default            |
+| [`ca_cn`](#ca_cn)                                           | [`CA`](#ca)                       | `string`     | G     | ca common name, fixed as pigsty-ca                 |
+| [`cert_validity`](#cert_validity)                           | [`CA`](#ca)                       | `interval`   | G     | cert validity, 20 years by default                 |
+| [`infra_seq`](#infra_seq)                                   | [`INFRA_ID`](#infra_id)           | `int`        | I     | infra node identity, REQUIRED                      |
+| [`infra_portal`](#infra_portal)                             | [`INFRA_ID`](#infra_id)           | `dict`       | G     | infra services exposed via portal                  |
+| [`repo_enabled`](#repo_enabled)                             | [`REPO`](#repo)                   | `bool`       | G/I   | create a yum repo on this infra node?              |
+| [`repo_home`](#repo_home)                                   | [`REPO`](#repo)                   | `path`       | G     | repo home dir, `/www` by default                   |
+| [`repo_name`](#repo_name)                                   | [`REPO`](#repo)                   | `string`     | G     | repo name, pigsty by default                       |
+| [`repo_endpoint`](#repo_endpoint)                           | [`REPO`](#repo)                   | `url`        | G     | access point to this repo by domain or ip:port     |
+| [`repo_remove`](#repo_remove)                               | [`REPO`](#repo)                   | `bool`       | G/A   | remove existing upstream repo                      |
+| [`repo_modules`](#repo_modules)                             | [`REPO`](#repo)                   | `string`     | G/A   | which repo modules are installed in repo_upstream  |
+| [`repo_upstream`](#repo_upstream)                           | [`REPO`](#repo)                   | `upstream[]` | G     | where to download upstream packages                |
+| [`repo_packages`](#repo_packages)                           | [`REPO`](#repo)                   | `string[]`   | G     | which packages to be included                      |
+| [`repo_extra_packages`](#repo_extra_packages)               | [`REPO`](#repo)                   | `string[]`   | G/C/I | extra packages to be included                      |
+| [`repo_url_packages`](#repo_url_packages)                   | [`REPO`](#repo)                   | `string[]`   | G     | extra packages from url                            |
+| [`infra_packages`](#infra_packages)                         | [`INFRA_PACKAGE`](#infra_package) | `string[]`   | G     | packages to be installed on infra nodes            |
+| [`infra_packages_pip`](#infra_packages_pip)                 | [`INFRA_PACKAGE`](#infra_package) | `string`     | G     | pip installed packages for infra nodes             |
+| [`nginx_enabled`](#nginx_enabled)                           | [`NGINX`](#nginx)                 | `bool`       | G/I   | enable nginx on this infra node?                   |
+| [`nginx_exporter_enabled`](#nginx_enabled)                  | [`NGINX`](#nginx)                 | `bool`       | G/I   | enable nginx_exporter on this infra node?          |
+| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx ssl mode? disable,enable,enforce             |
+| [`nginx_home`](#nginx_home)                                 | [`NGINX`](#nginx)                 | `path`       | G     | nginx content dir, `/www` by default               |
+| [`nginx_port`](#nginx_port)                                 | [`NGINX`](#nginx)                 | `port`       | G     | nginx listen port, 80 by default                   |
+| [`nginx_ssl_port`](#nginx_ssl_port)                         | [`NGINX`](#nginx)                 | `port`       | G     | nginx ssl listen port, 443 by default              |
+| [`nginx_navbar`](#nginx_navbar)                             | [`NGINX`](#nginx)                 | `index[]`    | G     | nginx index page navigation links                  |
+| [`certbot_sign`](#certbot_sign)                             | [`NGINX`](#nginx)                 | `bool`       | G/A   | sign nginx cert with certbot during setup?         |
+| [`certbot_email`](#certbot_email)                           | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot email address, used for free ssl           |
+| [`certbot_option`](#certbot_option)                         | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot extra options                              |
+| [`dns_enabled`](#dns_enabled)                               | [`DNS`](#dns)                     | `bool`       | G/I   | setup dnsmasq on this infra node?                  |
+| [`dns_port`](#dns_port)                                     | [`DNS`](#dns)                     | `port`       | G     | dns server listen port, 53 by default              |
+| [`dns_records`](#dns_records)                               | [`DNS`](#dns)                     | `string[]`   | G     | dynamic dns records resolved by dnsmasq            |
+| [`prometheus_enabled`](#prometheus_enabled)                 | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | enable prometheus on this infra node?              |
+| [`prometheus_clean`](#prometheus_clean)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/A   | clean prometheus data during init?                 |
+| [`prometheus_data`](#prometheus_data)                       | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus data dir, `/data/prometheus` by default |
+| [`prometheus_sd_dir`](#prometheus_sd_dir)                   | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus file service discovery directory        |
+| [`prometheus_sd_interval`](#prometheus_sd_interval)         | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus target refresh interval, 5s by default  |
+| [`prometheus_scrape_interval`](#prometheus_scrape_interval) | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus scrape & eval interval, 10s by default  |
+| [`prometheus_scrape_timeout`](#prometheus_scrape_timeout)   | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus global scrape timeout, 8s by default    |
+| [`prometheus_options`](#prometheus_options)                 | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | prometheus extra server options                    |
+| [`pushgateway_enabled`](#pushgateway_enabled)               | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | setup pushgateway on this infra node?              |
+| [`pushgateway_options`](#pushgateway_options)               | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | pushgateway extra server options                   |
+| [`blackbox_enabled`](#blackbox_enabled)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | setup blackbox_exporter on this infra node?        |
+| [`blackbox_options`](#blackbox_options)                     | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | blackbox_exporter extra server options             |
+| [`alertmanager_enabled`](#alertmanager_enabled)             | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | setup alertmanager on this infra node?             |
+| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `arg         | ` G   | alertmanager listen port, `9093` by default        |
+| [`alertmanager_options`](#alertmanager_options)             | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | alertmanager extra server options                  |
+| [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter metric path, `/metrics` by default        |
+| [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | how to install exporter? none,yum,binary           |
+| [`exporter_repo_url`](#exporter_repo_url)                   | [`PROMETHEUS`](#prometheus)       | `url`        | G     | exporter repo file url if install exporter via yum |
+| [`grafana_enabled`](#grafana_enabled)                       | [`GRAFANA`](#grafana)             | `bool`       | G/I   | enable grafana on this infra node?                 |
+| [`grafana_clean`](#grafana_clean)                           | [`GRAFANA`](#grafana)             | `bool`       | G/A   | clean grafana data during init?                    |
+| [`grafana_admin_username`](#grafana_admin_username)         | [`GRAFANA`](#grafana)             | `username`   | G     | grafana admin username, `admin` by default         |
+| [`grafana_admin_password`](#grafana_admin_password)         | [`GRAFANA`](#grafana)             | `password`   | G     | grafana admin password, `pigsty` by default        |
+| [`loki_enabled`](#loki_enabled)                             | [`LOKI`](#loki)                   | `bool`       | G/I   | enable loki on this infra node?                    |
+| [`loki_clean`](#loki_clean)                                 | [`LOKI`](#loki)                   | `bool`       | G/A   | whether remove existing loki data?                 |
+| [`loki_data`](#loki_data)                                   | [`LOKI`](#loki)                   | `path`       | G     | loki data dir, `/data/loki` by default             |
+| [`loki_retention`](#loki_retention)                         | [`LOKI`](#loki)                   | `interval`   | G     | loki log retention period, 15d by default          |
+
+------
+
+## `META`
+
+This section contains some metadata of current pigsty deployments, such as version string, admin node IP address, repo mirror [`region`](#region) and http(s) proxy when downloading pacakges.
+
+```yaml
+version: v3.4.1                   # pigsty version string
+admin_ip: 10.10.10.10             # admin node ip address
+region: default                   # upstream mirror region: default,china,europe
+proxy_env:                        # global proxy env when downloading packages
+  no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.myqcloud.com,*.tsinghua.edu.cn"
+  # http_proxy:  # set your proxy here: e.g http://user:pass@proxy.xxx.com
+  # https_proxy: # set your proxy here: e.g http://user:pass@proxy.xxx.com
+  # all_proxy:   # set your proxy here: e.g http://user:pass@proxy.xxx.com
+```
+
+------
+
+### `version`
+
+type: `string`, level: `G`
+
+pigsty version string
+
+default value:`v3.5.0`
+
+It will be used for pigsty introspection & content rendering.
+
+
+
+------
+
+### `admin_ip`
+
+type: `ip`, level: `G`
+
+admin node ip address
+
+default value:`10.10.10.10`
+
+Node with this ip address will be treated as admin node, usually point to the first node that install Pigsty.
+
+The default value `10.10.10.10` is a placeholder which will be replaced during [configure](https://pigsty.io/docs/setup/install/#configure)
+
+This parameter is referenced by many other parameters, such as:
+
+- [`infra_portal`](#infra_portal)
+- [`repo_endpoint`](#repo_endpoint)
+- [`dns_records`](#dns_records)
+- [`node_default_etc_hosts`](https://pigsty.io/docs/node/param/#node_default_etc_hosts)
+- [`node_etc_hosts`](https://pigsty.io/docs/node/param/#node_etc_hosts)
+- [`node_repo_modules`](https://pigsty.io/docs/node/param/#node_repo_modules)
+
+The exact string `${admin_ip}` will be replaced with the actual `admin_ip` for above parameters.
+
+------
+
+### `region`
+
+type: `enum`, level: `G`
+
+upstream mirror region: default,china,europe
+
+default value: `default`
+
+If a region other than `default` is set, and there’s a corresponding entry in `repo_upstream.[repo].baseurl`, it will be used instead of `default`.
+
+For example, if `china` is used, pigsty will use China mirrors designated in [`repo_upstream`](#repo_upstream) if applicable.
+
+------
+
+### `proxy_env`
+
+type: `dict`, level: `G`
+
+global proxy env when downloading packages
+
+default value:
+
+```yaml
+proxy_env: # global proxy env when downloading packages
+  http_proxy: 'http://username:password@proxy.address.com'
+  https_proxy: 'http://username:password@proxy.address.com'
+  all_proxy: 'http://username:password@proxy.address.com'
+  no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.aliyuncs.com,mirrors.tuna.tsinghua.edu.cn,mirrors.zju.edu.cn"
+```
+
+It’s quite important to use http proxy in restricted production environment, or your Internet access is blocked (e.g. Mainland China)
+
+Please note that if the Docker module is used, the proxy server configuration will also be written to the Docker Daemon configuration file.
+
+Please note that if the `-x` parameter is specified during `./configure`, the proxy configuration information in the current environment will be automatically filled into the generated `pigsty.yaml` file.
+
+
+
+------
+
+## `CA`
+
+Self-Signed CA used by pigsty. It is required to support advanced security features.
+
+```yaml
+ca_method: create                 # create,recreate,copy, create by default
+ca_cn: pigsty-ca                  # ca common name, fixed as pigsty-ca
+cert_validity: 7300d              # cert validity, 20 years by default
+```
+
+------
+
+### `ca_method`
+
+type: `enum`, level: `G`
+
+available options: create,recreate,copy
+
+default value: `create`
+
+- `create`: Create a new CA public-private key pair if not exists, use if exists
+- `recreate`: Always re-create a new CA public-private key pair
+- `copy`: Copy the existing CA public and private keys from local `files/pki/ca`, abort if missing
+
+If you already have a pair of `ca.crt` and `ca.key`, put them under `files/pki/ca` and set `ca_method` to `copy`.
+
+------
+
+### `ca_cn`
+
+type: `string`, level: `G`
+
+ca common name, not recommending to change it.
+
+default value: `pigsty-ca`
+
+you can check that with `openssl x509 -text -in /etc/pki/ca.crt`
+
+------
+
+### `cert_validity`
+
+type: `interval`, level: `G`
+
+cert validity, 20 years by default, which is enough for most scenarios
+
+default value: `7300d`
+
+------
+
+## `INFRA_ID`
+
+Infrastructure identity and portal definition.
+
+```yaml
+#infra_seq: 1                     # infra node identity, explicitly required
+infra_portal:                     # infra services exposed via portal
+  home         : { domain: h.pigsty }
+  grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+```
+
+------
+
+### `infra_seq`
+
+type: `int`, level: `I`
+
+infra node identity, **REQUIRED**, no default value, you have to assign it explicitly.
+
+------
+
+### `infra_portal`
+
+type: `dict`, level: `G`
+
+infra services exposed via portal.
+
+default value will expose home, grafana, prometheus, alertmanager via nginx with corresponding domain names.
+
+```yaml
+infra_portal:                     # infra services exposed via portal
+  home         : { domain: h.pigsty }
+  grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+```
+
+Each record consists of a Key and a Value dictionary, where `name` is the key, representing the component name, and the value is an object that can configure the following parameters:
+
+Each record consists of a Key and a Value dictionary, where name is the key, representing the component name, and the value is an object that can configure the following parameters:
+
+Each record consists of a Key and a Value dictionary, where name is the key, representing the component name, and the value is an object that can configure the following parameters:
+
+- name: **REQUIRED**, specify the name of the Nginx server
+    - Default records: home, grafana, prometheus, alertmanager, blackbox, loki are fixed names, please do not modify them.
+    - Used as part of the Nginx configuration file name, corresponding to the configuration file: `/etc/nginx/conf.d/<name>.conf`
+    - Nginx servers without the domain field will not generate configuration files, but will be used as references.
+- domain: **OPTIONAL**, when the service needs to be exposed to the outside world via Nginx, it is a **REQUIRED** field, specifying the domain name used
+    - In Pigsty self-signed Nginx HTTPS certificate, the domain name will be added to the SAN field of the Nginx SSL certificate
+    - Pigsty web page cross-references will use the default domain name here
+- endpoint: Usually used as an alternative to path, specifies the upstream server address. Setting endpoint indicates this is a reverse proxy server
+    - In the configuration, `${admin_ip}` can be used as a placeholder, and will be dynamically replaced with [admin_ip](https://pigsty.io/docs/infra/param/#admin_ip) during deployment
+    - The default reverse proxy server uses [endpoint.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/endpoint.conf) as the configuration template
+    - The reverse proxy server can also configure the websocket and schema parameters
+- path: Usually used as an alternative to endpoint, specifies the local file server path. Setting path means this is a local web server
+    - The local web server uses [path.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/path.conf) as the configuration template
+    - The local web server can also configure the index parameter, whether to enable the file index page
+- certbot: Certbot certificate name, if configured, will use Certbot to apply for a certificate
+    - If multiple servers specify the same certbot, Pigsty will merge the certificate application, and the final certificate name will be the name of this certbot
+- cert: Nginx certificate file path, if configured, will override the default certificate path
+- key: Nginx certificate key file path, if configured, will override the default certificate key path
+- websocket: Whether to enable WebSocket support
+    - Only reverse proxy servers can configure this parameter, if enabled it will allow upstream to use WebSocket connections
+- schema: Protocol used by the upstream server, if configured, will override the default protocol
+    - Default is http, if configured as https it will force HTTPS connections to the upstream server
+- index: Whether to enable file index page
+    - Only local web servers can configure this parameter, if enabled it will enable the autoindex configuration to automatically generate index pages for directories
+- log: Nginx log file path
+    - If specified, access logs will be written to this file, otherwise the default log file will be used according to the server type
+    - Reverse proxy servers use `/var/log/nginx/<name>.log` as the default log file path
+    - Local web servers use the default Access log
+- conf: Nginx configuration file path
+    - Explicitly specifies the configuration template file to use, located in [roles/infra/templates/nginx](https://github.com/pgsty/pigsty/tree/main/roles/infra/templates/nginx) or [templates/nginx](https://github.com/pgsty/pigsty/tree/main/templates/nginx) directory
+    - If this parameter is not specified, the default configuration template will be used, located in [roles/infra/templates/nginx](https://github.com/pgsty/pigsty/tree/main/roles/infra/templates/nginx) or [templates/nginx](https://github.com/pgsty/pigsty/tree/main/templates/nginx) directory
+- config: Nginx configuration code block
+    - Configuration text directly injected into the Nginx Server configuration block
+- enforce_https: Redirect HTTP to HTTPS
+    - Global configuration can be specified by nginx_sslmode: enforce
+    - This configuration does not affect the default home server, which will always listen on ports 80 and 443 simultaneously to ensure compatibility.
+
+------
+
+## `REPO`
+
+This section is about local software repo. Pigsty will create a local software repo (APT/YUM) when init an infra node.
+
+In the initialization process, Pigsty will download all packages and their dependencies (specified by [`repo_packages`](#repo_packages)) from the Internet upstream repo (specified by [`repo_upstream`](#repo_upstream)) to [`{{ nginx_home }}`](#nginx_home) / [`{{ repo_name }}`](#repo_name) (default is `/www/pigsty`), and the total size of all dependent software is about 1GB or so.
+
+When creating a local repo, Pigsty will skip the software download phase if the directory already exists and if there is a marker file named `repo_complete` in the dir.
+
+If the download speed of some packages is too slow, you can set the download proxy to complete the first download by using the [`proxy_env`](#proxy_env) config entry or directly download the pre-packaged [offline package](https://pigsty.io/docs/setup/offline/), which is essentially a local software source built on the same operating system.
+
+```yaml
+repo_enabled: true                # create a yum repo on this infra node?
+repo_home: /www                   # repo home dir, `/www` by default
+repo_name: pigsty                 # repo name, pigsty by default
+repo_endpoint: http://${admin_ip}:80 # access point to this repo by domain or ip:port
+repo_remove: true                 # remove existing upstream repo
+repo_modules: infra,node,pgsql    # install upstream repo during repo bootstrap
+#repo_upstream: []                # where to download
+#repo_packages: []                # which packages to download
+#repo_extra_packages: []          # extra packages to download
+repo_url_packages: []             # extra packages from url
+```
+
+------
+
+### `repo_enabled`
+
+type: `bool`, level: `G/I`
+
+create a yum repo on this infra node? default value: `true`
+
+If you have multiple infra nodes, you can disable yum repo on other standby nodes to reduce Internet traffic.
+
+------
+
+### `repo_home`
+
+type: `path`, level: `G`
+
+repo home dir, `/www` by default
+
+------
+
+### `repo_name`
+
+type: `string`, level: `G`
+
+repo name, `pigsty` by default, it is not wise to change this value
+
+------
+
+### `repo_endpoint`
+
+type: `url`, level: `G`
+
+access point to this repo by domain or ip:port, default value: `http://${admin_ip}:80`
+
+If you have changed the [`nginx_port`](#nginx_port) or [`nginx_ssl_port`](#nginx_ssl_port), or use a different infra node from admin node, please adjust this parameter accordingly.
+
+The `${admin_ip}` will be replaced with actual [`admin_ip`](#admin_ip) during runtime.
+
+------
+
+### `repo_remove`
+
+type: `bool`, level: `G/A`
+
+remove existing upstream repo, default value: `true`
+
+If you want to keep existing upstream repo, set this value to `false`.
+
+------
+
+### `repo_modules`
+
+type: `string`, level: `G/A`
+
+which repo modules are installed in repo_upstream, default value: `infra,node,pgsql`
+
+This is a comma separated value string, it is used to filter entries in [`repo_upstream`](#repo_upstream) with corresponding `module` field.
+
+For Ubuntu / Debian users, you can add redis to the list: `infra,node,pgsql,redis`
+
+------
+
+### `repo_upstream`
+
+type: `upstream[]`, level: `G`
+
+This param defines the upstream software repo for Pigsty. It **DOES NOT** have default values, you can specify it explicitly, or leaving it empty if you want to use the default values.
+
+When leaving it empty, Pigsty will use the default values from the `repo_upstream_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+
+For EL (7, 8, 9 ) system, the default values are:
+
+```yaml
+- { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty'  }} # used by intranet nodes
+- { name: pigsty-infra   ,description: 'Pigsty INFRA'       ,module: infra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/yum/infra/$basearch' ,china: 'https://repo.pigsty.cc/yum/infra/$basearch' }}
+- { name: pigsty-pgsql   ,description: 'Pigsty PGSQL'       ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/yum/pgsql/el$releasever.$basearch' ,china: 'https://repo.pigsty.cc/yum/pgsql/el$releasever.$basearch' }}
+- { name: nginx          ,description: 'Nginx Repo'         ,module: infra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://nginx.org/packages/rhel/$releasever/$basearch/' }}
+- { name: docker-ce      ,description: 'Docker CE'          ,module: infra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.docker.com/linux/centos/$releasever/$basearch/stable'        ,china: 'https://mirrors.aliyun.com/docker-ce/linux/centos/$releasever/$basearch/stable' ,europe: 'https://mirrors.xtom.de/docker-ce/linux/centos/$releasever/$basearch/stable' }}
+- { name: baseos         ,description: 'EL 8+ BaseOS'       ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/BaseOS/$basearch/os/'         ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/BaseOS/$basearch/os/'         ,europe: 'https://mirrors.xtom.de/rocky/$releasever/BaseOS/$basearch/os/'     }}
+- { name: appstream      ,description: 'EL 8+ AppStream'    ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/AppStream/$basearch/os/'      ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/AppStream/$basearch/os/'      ,europe: 'https://mirrors.xtom.de/rocky/$releasever/AppStream/$basearch/os/'  }}
+- { name: extras         ,description: 'EL 8+ Extras'       ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/extras/$basearch/os/'         ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/extras/$basearch/os/'         ,europe: 'https://mirrors.xtom.de/rocky/$releasever/extras/$basearch/os/'     }}
+- { name: powertools     ,description: 'EL 8 PowerTools'    ,module: node    ,releases: [  8  ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/PowerTools/$basearch/os/'     ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/PowerTools/$basearch/os/'     ,europe: 'https://mirrors.xtom.de/rocky/$releasever/PowerTools/$basearch/os/' }}
+- { name: crb            ,description: 'EL 9 CRB'           ,module: node    ,releases: [    9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/CRB/$basearch/os/'            ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/CRB/$basearch/os/'            ,europe: 'https://mirrors.xtom.de/rocky/$releasever/CRB/$basearch/os/'        }}
+- { name: epel           ,description: 'EL 8+ EPEL'         ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://download.fedoraproject.org/pub/epel/$releasever/Everything/$basearch/' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/epel/$releasever/Everything/$basearch/'    ,europe: 'https://mirrors.xtom.de/epel/$releasever/Everything/$basearch/'     }}
+- { name: pgdg-common    ,description: 'PostgreSQL Common'  ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/redhat/rhel-$releasever-$basearch' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg-el8fix    ,description: 'PostgreSQL EL8FIX'  ,module: pgsql   ,releases: [  8  ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/pgdg-centos8-sysupdates/redhat/rhel-8-x86_64/' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/pgdg-centos8-sysupdates/redhat/rhel-8-x86_64/' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/pgdg-centos8-sysupdates/redhat/rhel-8-x86_64/' } }
+- { name: pgdg-el9fix    ,description: 'PostgreSQL EL9FIX'  ,module: pgsql   ,releases: [    9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/pgdg-rocky9-sysupdates/redhat/rhel-9-x86_64/'  ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/pgdg-rocky9-sysupdates/redhat/rhel-9-x86_64/' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/pgdg-rocky9-sysupdates/redhat/rhel-9-x86_64/' }}
+- { name: pgdg13         ,description: 'PostgreSQL 13'      ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/13/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/13/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg14         ,description: 'PostgreSQL 14'      ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/14/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/14/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg15         ,description: 'PostgreSQL 15'      ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/15/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/15/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg16         ,description: 'PostgreSQL 16'      ,module: pgsql   ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/16/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/16/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/16/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg17         ,description: 'PostgreSQL 17'      ,module: pgsql   ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/17/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/17/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/17/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg-extras    ,description: 'PostgreSQL Extra'   ,module: extra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/pgdg-rhel$releasever-extras/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/pgdg-rhel$releasever-extras/redhat/rhel-$releasever-$basearch' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/pgdg-rhel$releasever-extras/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg13-nonfree ,description: 'PostgreSQL 13+'     ,module: extra   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/13/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/13/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/13/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg14-nonfree ,description: 'PostgreSQL 14+'     ,module: extra   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/14/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/14/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/14/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg15-nonfree ,description: 'PostgreSQL 15+'     ,module: extra   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/15/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/15/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/15/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg16-nonfree ,description: 'PostgreSQL 16+'     ,module: extra   ,releases: [  8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/16/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/16/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/16/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg17-nonfree ,description: 'PostgreSQL 17+'     ,module: extra   ,releases: [  8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/17/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/17/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/17/redhat/rhel-$releasever-$basearch' }}
+- { name: timescaledb    ,description: 'TimescaleDB'        ,module: extra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/timescale/timescaledb/el/$releasever/$basearch'  }}
+- { name: wiltondb       ,description: 'WiltonDB'           ,module: mssql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/yum/mssql/el$releasever.$basearch', china: 'https://repo.pigsty.cc/yum/mssql/el$releasever.$basearch' , origin: 'https://download.copr.fedorainfracloud.org/results/wiltondb/wiltondb/epel-$releasever-$basearch/' }}
+- { name: ivorysql       ,description: 'IvorySQL'           ,module: ivory   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://repo.pigsty.io/yum/ivory/el$releasever.$basearch', china: 'https://repo.pigsty.cc/yum/ivory/el$releasever.$basearch' }}
+- { name: groonga        ,description: 'Groonga'            ,module: groonga ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.groonga.org/almalinux/$releasever/$basearch/' }}
+- { name: mysql          ,description: 'MySQL'              ,module: mysql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mysql.com/yum/mysql-8.0-community/el/$releasever/$basearch/', china: 'https://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql-8.0-community-el7-$basearch/'}}
+- { name: mongo          ,description: 'MongoDB'            ,module: mongo   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/8.0/$basearch/' , 'https://mirrors.aliyun.com/mongodb/yum/redhat/$releasever/mongodb-org/8.0/$basearch/' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [7    ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://rpmfind.net/linux/remi/enterprise/$releasever/remi/$basearch/' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://rpmfind.net/linux/remi/enterprise/$releasever/redis72/$basearch/' }}
+- { name: grafana        ,description: 'Grafana'            ,module: grafana ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://rpm.grafana.com' }}
+- { name: kubernetes     ,description: 'Kubernetes'         ,module: kube    ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://pkgs.k8s.io/core:/stable:/v1.31/rpm/', china: 'https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.31/rpm/' }}
+- { name: gitlab         ,description: 'Gitlab'             ,module: gitlab  ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/el/$releasever/$basearch' }}
+```
+
+For Debian (11,12) or Ubuntu (22.04, 22.04) systems, the default values are:
+
+```yaml
+- { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty ./' }}
+- { name: pigsty-pgsql   ,description: 'Pigsty PgSQL'       ,module: pgsql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/pgsql/${distro_codename} ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/pgsql/${distro_codename} ${distro_codename} main' }}
+- { name: pigsty-infra   ,description: 'Pigsty Infra'       ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/infra/ generic main' ,china: 'https://repo.pigsty.cc/apt/infra/ generic main' }}
+- { name: nginx          ,description: 'Nginx'              ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://nginx.org/packages/${distro_name} ${distro_codename} nginx' }}
+- { name: docker-ce      ,description: 'Docker'             ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.docker.com/linux/${distro_name} ${distro_codename} stable'                               ,china: 'https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux//${distro_name} ${distro_codename} stable' }}
+- { name: base           ,description: 'Debian Basic'       ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename} main non-free-firmware'                                  ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename} main restricted universe multiverse' }}
+- { name: updates        ,description: 'Debian Updates'     ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename}-updates main non-free-firmware'                          ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename}-updates main restricted universe multiverse' }}
+- { name: security       ,description: 'Debian Security'    ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://security.debian.org/debian-security ${distro_codename}-security main non-free-firmware'            ,china: 'https://mirrors.aliyun.com/debian-security/ ${distro_codename}-security main non-free-firmware' }}
+- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}           main universe multiverse restricted' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}           main restricted universe multiverse' }}
+- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' }}
+- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' }}
+- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' }}
+- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}           main universe multiverse restricted'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}           main restricted universe multiverse' }}
+- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse' }}
+- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse' }}
+- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse' }}
+- { name: pgdg           ,description: 'PGDG'               ,module: pgsql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://apt.postgresql.org/pub/repos/apt/ ${distro_codename}-pgdg main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ ${distro_codename}-pgdg main' }}
+- { name: timescaledb    ,description: 'Timescaledb'        ,module: extra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/timescale/timescaledb/${distro_name}/ ${distro_codename} main' }}
+- { name: citus          ,description: 'Citus'              ,module: extra   ,releases: [11,12,20,22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/citusdata/community/${distro_name}/ ${distro_codename} main' } }
+- { name: pgml           ,description: 'PostgresML'         ,module: pgml    ,releases: [         22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.postgresml.org ${distro_codename} main'  }}
+- { name: wiltondb       ,description: 'WiltonDB'           ,module: mssql   ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/mssql/ ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/mssql/ ${distro_codename} main' , origin: 'https://ppa.launchpadcontent.net/wiltondb/wiltondb/ubuntu/ ${distro_codename} main'  }}
+- { name: groonga        ,description: 'Groonga Debian'     ,module: groonga ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.groonga.org/debian/ ${distro_codename} main' }}
+- { name: groonga        ,description: 'Groonga Ubuntu'     ,module: groonga ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/groonga/ppa/ubuntu/ ${distro_codename} main' }}
+- { name: mysql          ,description: 'MySQL'              ,module: mysql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mysql.com/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools', china: 'https://mirrors.tuna.tsinghua.edu.cn/mysql/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools' }}
+- { name: mongo          ,description: 'MongoDB'            ,module: mongo   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mongodb.org/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse', china: 'https://mirrors.aliyun.com/mongodb/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.redis.io/deb ${distro_codename} main' }}
+- { name: haproxyd       ,description: 'Haproxy Debian'     ,module: haproxy ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://haproxy.debian.net/ ${distro_codename}-backports-3.1 main' }}
+- { name: haproxyu       ,description: 'Haproxy Ubuntu'     ,module: haproxy ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/vbernat/haproxy-3.1/ubuntu/ ${distro_codename} main' }}
+- { name: grafana        ,description: 'Grafana'            ,module: grafana ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.grafana.com stable main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/grafana/apt/ stable main' }}
+- { name: kubernetes     ,description: 'Kubernetes'         ,module: kube    ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /', china: 'https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.31/deb/ /' }}
+- { name: gitlab         ,description: 'Gitlab'             ,module: gitlab  ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/${distro_name}/ ${distro_codename} main' }}
+```
+
+------
+
+### `repo_packages`
+
+type: `string[]`, level: `G`
+
+This param is an array os strings, each string is a list of software packages separated by space, specifying which packages to be included & downloaded.
+
+This param **DOES NOT** have a default value, you can specify it explicitly, or leaving it empty if you want to use the default values.
+
+When leaving it empty, Pigsty will use the default values from the `repo_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+
+```yaml
+[ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-utility, extra-modules ]
+```
+
+Each element in `repo_packages` will be translated into a list of package names according to the `package_map` defined in the above file, for specific OS distro version.
+
+For example, on EL systems, it will be translated into:
+
+```yaml
+node-bootstrap:          "ansible python3 python3-pip python3-virtualenv python3-requests python3-jmespath python3-cryptography dnf-utils modulemd-tools createrepo_c sshpass"
+infra-package:           "nginx dnsmasq etcd haproxy vip-manager node_exporter keepalived_exporter pg_exporter pgbackrest_exporter redis_exporter redis minio mcli pig"
+infra-addons:            "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox_exporter nginx_exporter pev2 certbot python3-certbot-nginx"
+extra-modules:           "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:           "lz4 unzip bzip2 zlib yum pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl grubby sysstat iotop htop rsync tcpdump perf flamegraph chkconfig"
+node-package2:           "netcat socat ftp lrzsz net-tools ipvsadm bind-utils telnet audit ca-certificates readline vim-minimal keepalived chrony openssl openssh-server openssh-clients"
+pgsql-utility:           "patroni patroni-etcd pgbouncer pgbackrest pgbadger pg_activity pg_timetable pgFormatter pg_filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb"
+```
+
+And on Debian/Ubuntu systems, it will be translated into:
+
+```yaml
+node-bootstrap:          "ansible python3 python3-pip python3-venv python3-jmespath dpkg-dev sshpass ftp linux-tools-generic"
+infra-package:           "nginx dnsmasq etcd haproxy vip-manager node-exporter keepalived-exporter pg-exporter pgbackrest-exporter redis-exporter redis minio mcli pig"
+infra-addons:            "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox-exporter nginx-exporter pev2 certbot python3-certbot-nginx"
+extra-modules:           "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:           "lz4 unzip bzip2 zlib1g pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl sysstat iotop htop rsync tcpdump acl chrony"
+node-package2:           "netcat-openbsd socat lrzsz net-tools ipvsadm dnsutils telnet ca-certificates libreadline-dev vim-tiny keepalived openssl openssh-server openssh-client"
+pgsql-utility:           "patroni pgbouncer pgbackrest pgbadger pg-activity pg-timetable pgformatter postgresql-filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb pgloader"
+```
+
+As a convention, `repo_packages` usually includes software packages that are not related to the major version of PostgreSQL (such as Infra, Node, and PGDG Common), while software packages related to the major version of PostgreSQL (kernel, extensions) are usually specified in `repo_extra_packages` to facilitate switching between PG major versions.
+
+------
+
+### `repo_extra_packages`
+
+type: `string[]`, level: `G/C/I`
+
+This parameter is same as [`repo_packages`](#repo_packages), but it is used for the additional software packages that need to be downloaded. (Usually PG version ad hoc packages)
+
+The default value is an empty list. You can override it at the cluster & instance level to specify additional software packages that need to be downloaded.
+
+If this parameter is not explicitly defined, Pigsty will load the default value from the `repo_extra_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/), which is:
+
+```yaml
+[ pgsql-main ]
+```
+
+Each element in `repo_packages` will be translated into a list of package names according to the `package_map` defined in the above file, for specific OS distro version.
+
+For example, on EL systems, it will be translated into:
+
+```yaml
+postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit pg_repack_$v* wal2json_$v* pgvector_$v*
+```
+
+And on Debian/Ubuntu systems, it will be translated into:
+
+```yaml
+postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector
+```
+
+Here `$v` will be replaced with the actual PostgreSQL major version number [`pg_version`](https://pigsty.io/docs/pgsql/param/#pg_version), So you can add any PG version related packages here, and Pigsty will download them for you.
+
+------
+
+### `repo_url_packages`
+
+type: `object[] | string[]`, level: `G`
+
+extra packages from url, default values: `[]`
+
+You can use object list or string list in this parameter, in the latter case, Pigsty will use the url basename as the filename.
+
+Beware that if the [`region`](#region) is set to `china`, the `pigsty.io` will be replaced with `pigsty.cc` automatically.
+
+------
+
+## `INFRA_PACKAGE`
+
+These packages are installed on infra nodes only, including common rpm/deb/pip packages.
+
+------
+
+### `infra_packages`
+
+type: `string[]`, level: `G`
+
+This param is an array os strings, each string is a list of common software packages separated by space, specifying which packages to be installed on INFRA nodes.
+
+This param **DOES NOT** have a default value, you can specify it explicitly, or leaving it empty if you want to use the default values.
+
+When leaving it empty, Pigsty will use the default values from the `repo_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+
+For EL (7/8/9) system, the default values are:
+
+```yaml
+infra_packages:                   # packages to be installed on infra nodes
+  - grafana,loki,logcli,promtail,prometheus,alertmanager,pushgateway,grafana-plugins,restic,certbot,python3-certbot-nginx
+  - node_exporter,blackbox_exporter,nginx_exporter,pg_exporter,pev2,nginx,dnsmasq,ansible,etcd,python3-requests,redis,mcli
+```
+
+For Debian (11,12) or Ubuntu (22.04, 22.04) systems, the default values are:
+
+```yaml
+infra_packages:                   # packages to be installed on infra nodes
+  - grafana,grafana-plugins,loki,logcli,promtail,prometheus,alertmanager,pushgateway,restic,certbot,python3-certbot-nginx
+  - node-exporter,blackbox-exporter,nginx-exporter,pg-exporter,pev2,nginx,dnsmasq,ansible,etcd,python3-requests,redis,mcli
+```
+
+------
+
+### `infra_packages_pip`
+
+type: `string`, level: `G`
+
+pip installed packages for infra nodes, default value is empty string
+
+------
+
+## `NGINX`
+
+Pigsty exposes all Web services through Nginx: Home Page, Grafana, Prometheus, AlertManager, etc…, and other optional tools such as PGWe, Jupyter Lab, Pgadmin, Bytebase ,and other static resource & report such as `pev`, `schemaspy` & `pgbadger`
+
+This nginx also serves as a local yum/apt repo.
+
+```yaml
+nginx_enabled: true               # enable nginx on this infra node?
+nginx_exporter_enabled: true      # enable nginx_exporter on this infra node?
+nginx_sslmode: enable             # nginx ssl mode? disable,enable,enforce
+nginx_home: /www                  # nginx content dir, `/www` by default
+nginx_port: 80                    # nginx listen port, 80 by default
+nginx_ssl_port: 443               # nginx ssl listen port, 443 by default
+nginx_navbar:                     # nginx index page navigation links
+  - { name: CA Cert ,url: '/ca.crt'   ,desc: 'pigsty self-signed ca.crt'   }
+  - { name: Package ,url: '/pigsty'   ,desc: 'local yum repo packages'     }
+  - { name: PG Logs ,url: '/logs'     ,desc: 'postgres raw csv logs'       }
+  - { name: Reports ,url: '/report'   ,desc: 'pgbadger summary report'     }
+  - { name: Explain ,url: '/pigsty/pev.html' ,desc: 'postgres explain visualizer' }
+certbot_sign: false               # sign nginx cert with certbot during setup?
+certbot_email: your@email.com     # certbot email address, used for free ssl
+certbot_options: ''               # certbot extra options
+```
+
+------
+
+### `nginx_enabled`
+
+type: `bool`, level: `G/I`
+
+enable nginx on this infra node? default value: `true`
+
+------
+
+### `nginx_exporter_enabled`
+
+type: `bool`, level: `G/I`
+
+enable nginx_exporter on this infra node? default value: `true`.
+
+set to false will disable `/nginx` health check stub too: If your nginx does not support `/nginx` stub, you can set this value to `false` to disable it.
+
+------
+
+### `nginx_sslmode`
+
+type: `enum`, level: `G`
+
+nginx ssl mode? which could be: `disable`, `enable`, `enforce`, the default value: `enable`
+
+- `disable`: listen on [`nginx_port`](#nginx_port) and serve plain HTTP only
+
+- `enable`: also listen on [`nginx_ssl_port`](#nginx_ssl_port) and serve HTTPS
+
+- ```
+enforce
+  ```
+
+: all links will be rendered as
+
+
+
+  ```
+  https://
+  ```
+
+
+
+by default
+
+  - also redirect 80 port to 443 port for all non-default servers in nginx [`infra_portal`](#infra_portal)
+
+------
+
+### `nginx_home`
+
+type: `path`, level: `G`
+
+nginx web server static content dir, `/www` by default
+
+Nginx root directory which contains static resource and repo resource. It’s wise to set this value same as [`repo_home`](#repo_home) so that local repo content is automatically served.
+
+------
+
+### `nginx_port`
+
+type: `port`, level: `G`
+
+nginx listen port which serves the HTTP requests, `80` by default.
+
+If your default 80 port is occupied or unavailable, you can consider using another port, and change [`repo_endpoint`](#repo_endpoint) and [`repo_upstream`](#repo_upstream) (the `local` entry) accordingly.
+
+------
+
+### `nginx_ssl_port`
+
+type: `port`, level: `G`
+
+nginx ssl listen port, `443` by default
+
+------
+
+### `nginx_navbar`
+
+type: `index[]`, level: `G`
+
+nginx index page navigation links
+
+default value:
+
+```yaml
+nginx_navbar:                     # nginx index page navigation links
+  - { name: CA Cert ,url: '/ca.crt'   ,desc: 'pigsty self-signed ca.crt'   }
+  - { name: Package ,url: '/pigsty'   ,desc: 'local yum repo packages'     }
+  - { name: PG Logs ,url: '/logs'     ,desc: 'postgres raw csv logs'       }
+  - { name: Reports ,url: '/report'   ,desc: 'pgbadger summary report'     }
+  - { name: Explain ,url: '/pigsty/pev.html' ,desc: 'postgres explain visualizer' }
+```
+
+Each record is rendered as a navigation link to the Pigsty home page App drop-down menu, and the apps are all optional, mounted by default on the Pigsty default server under `http://h.pigsty/`.
+
+The `url` parameter specifies the URL PATH for the app, with the exception that if the `${grafana}` string is present in the URL, it will be automatically replaced with the Grafana domain name defined in [`infra_portal`](#infra_portal).
+
+------
+
+### `certbot_sign`
+
+type: `bool`, level: `G/A`
+
+sign nginx cert with certbot during setup? default value: `false`
+
+When set to `true`, Pigsty will use certbot to automatically apply for free SSL certificates from Let’s Encrypt during the execution of `infra.yml` and `install.yml` playbooks (the `nginx` role).
+
+In the [`infra_portal`](#infra_portal) defined domain, if the `certbot` parameter is defined, Pigsty will use certbot to apply for the `domain` domain certificate, and the certificate name will be the value of the `certbot` parameter. If multiple servers/domains specify the same `certbot` parameter, Pigsty will merge and apply for a certificate for these domains, and use the value of the `certbot` parameter as the certificate name.
+
+Enabling this option requires:
+
+- The current node can be accessed through the public domain name, and the DNS resolution has been correctly pointed to the public IP of the current node
+- The current node can access the Let’s Encrypt API interface
+
+This option is disabled by default, you can manually execute the `make cert` command after installation to manually execute it, it actually calls the rendered `/etc/nginx/sign-cert` script, using certbot to update or apply certificates.
+
+------
+
+### `certbot_email`
+
+type: `string`, level: `G/A`
+
+The email address used to receive certificate expiration reminder emails, default value: `your@email.com`
+
+When `certbot_sign` is set to `true`, it is recommended to provide this parameter. Let’s Encrypt will send reminder emails to this email when the certificate is about to expire.
+
+------
+
+### `certbot_option`
+
+type: `string`, level: `G/A`
+
+Additional configuration parameters passed to certbot, default value: empty string.
+
+You can pass additional command line options to certbot through this parameter, for example `--dry-run`, then certbot will not actually apply for a certificate, but will preview and test it.
+
+------
+
+## `DNS`
+
+Pigsty will launch a default DNSMASQ server on infra nodes to serve DNS inquiry. such as `h.pigsty` `a.pigsty` `p.pigsty` `g.pigsty` and `sss.pigsty` for optional MinIO service.
+
+All records will be added to infra node’s `/etc/hosts.d/*`.
+
+You have to add `nameserver {{ admin_ip }}` to your `/etc/resolv` to use this dns server, and [`node_dns_servers`](https://pigsty.io/docs/node/param/#node_dns_servers) will do the trick.
+
+```yaml
+dns_enabled: true                 # setup dnsmasq on this infra node?
+dns_port: 53                      # dns server listen port, 53 by default
+dns_records:                      # dynamic dns records resolved by dnsmasq
+  - "${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"
+  - "${admin_ip} api.pigsty adm.pigsty cli.pigsty ddl.pigsty lab.pigsty git.pigsty sss.pigsty wiki.pigsty"
+```
+
+------
+
+### `dns_enabled`
+
+type: `bool`, level: `G/I`
+
+setup dnsmasq on this infra node? default value: `true`
+
+If you don’t want to use the default DNS server, you can set this value to `false` to disable it. And use [`node_default_etc_hosts`](https://pigsty.io/docs/node/param/#node_default_etc_hosts) and [`node_etc_hosts`](https://pigsty.io/docs/node/param/#node_etc_hosts) instead.
+
+------
+
+### `dns_port`
+
+type: `port`, level: `G`
+
+dns server listen port, `53` by default
+
+------
+
+### `dns_records`
+
+type: `string[]`, level: `G`
+
+dynamic dns records resolved by dnsmasq, Some auxiliary domain names will be written to `/etc/hosts.d/default` on infra nodes by default
+
+```yaml
+dns_records:                      # dynamic dns records resolved by dnsmasq
+  - "${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"
+  - "${admin_ip} api.pigsty adm.pigsty cli.pigsty ddl.pigsty lab.pigsty git.pigsty sss.pigsty wiki.pigsty"
+```
+
+------
+
+## `PROMETHEUS`
+
+Prometheus is used as time-series database for metrics scrape, storage & analysis.
+
+```yaml
+prometheus_enabled: true          # enable prometheus on this infra node?
+prometheus_clean: true            # clean prometheus data during init?
+prometheus_data: /data/prometheus # prometheus data dir, `/data/prometheus` by default
+prometheus_sd_dir: /etc/prometheus/targets # prometheus file service discovery directory
+prometheus_sd_interval: 5s        # prometheus target refresh interval, 5s by default
+prometheus_scrape_interval: 10s   # prometheus scrape & eval interval, 10s by default
+prometheus_scrape_timeout: 8s     # prometheus global scrape timeout, 8s by default
+prometheus_options: '--storage.tsdb.retention.time=15d' # prometheus extra server options
+pushgateway_enabled: true         # setup pushgateway on this infra node?
+pushgateway_options: '--persistence.interval=1m' # pushgateway extra server options
+blackbox_enabled: true            # setup blackbox_exporter on this infra node?
+blackbox_options: ''              # blackbox_exporter extra server options
+alertmanager_enabled: true        # setup alertmanager on this infra node?
+alertmanager_port: 9093           # alertmanager listen port, 9093 by default
+alertmanager_options: ''          # alertmanager extra server options
+exporter_metrics_path: /metrics   # exporter metric path, `/metrics` by default
+exporter_install: none            # how to install exporter? none,yum,binary
+exporter_repo_url: ''             # exporter repo file url if install exporter via yum
+```
+
+------
+
+### `prometheus_enabled`
+
+type: `bool`, level: `G/I`
+
+enable prometheus on this infra node?
+
+default value: `true`
+
+------
+
+### `prometheus_clean`
+
+type: `bool`, level: `G/A`
+
+clean prometheus data during init? default value: `true`
+
+------
+
+### `prometheus_data`
+
+type: `path`, level: `G`
+
+prometheus data dir, `/data/prometheus` by default
+
+------
+
+### `prometheus_sd_dir`
+
+type: `path`, level: `G`, default value: `/etc/prometheus/targets`
+
+prometheus static file service discovery target dir, prometheus will find dynamic monitoring targets from this directory.
+
+------
+
+### `prometheus_sd_interval`
+
+type: `interval`, level: `G`, default value: `5s`
+
+Prometheus will check [`prometheus_sd_interval`](#prometheus_sd_interval) dir per 5s by default to find out new monitoring targets.
+
+------
+
+### `prometheus_scrape_interval`
+
+type: `interval`, level: `G`
+
+prometheus scrape & eval interval, `10s` by default
+
+------
+
+### `prometheus_scrape_timeout`
+
+type: `interval`, level: `G`
+
+prometheus global scrape timeout, `8s` by default
+
+DO NOT set this larger than [`prometheus_scrape_interval`](#prometheus_scrape_interval)
+
+------
+
+### `prometheus_options`
+
+type: `arg`, level: `G`
+
+prometheus extra server options
+
+default value: `--storage.tsdb.retention.time=15d`
+
+Extra cli args for prometheus server, the default value will set up a 15-day data retention to limit disk usage.
+
+------
+
+### `pushgateway_enabled`
+
+type: `bool`, level: `G/I`
+
+setup pushgateway on this infra node? default value: `true`
+
+------
+
+### `pushgateway_options`
+
+type: `arg`, level: `G`
+
+pushgateway extra server options, default value: `--persistence.interval=1m`
+
+------
+
+### `blackbox_enabled`
+
+type: `bool`, level: `G/I`
+
+setup blackbox_exporter on this infra node? default value: `true`
+
+------
+
+### `blackbox_options`
+
+type: `arg`, level: `G`
+
+blackbox_exporter extra server options, default value is empty string
+
+------
+
+### `alertmanager_enabled`
+
+type: `bool`, level: `G/I`
+
+setup alertmanager on this infra node? default value: `true`
+
+------
+
+### `alertmanager_port`
+
+type: `port`, level: `G`
+
+The listening port for AlertManager, default value is `9093`.
+
+The reason for allowing a special setting for AlertManager’s port is because Kafka’s default port also uses `9093`, which can easily cause conflicts.
+
+------
+
+### `alertmanager_options`
+
+type: `arg`, level: `G`
+
+alertmanager extra server options, default value is empty string
+
+------
+
+### `exporter_metrics_path`
+
+type: `path`, level: `G`
+
+exporter metric path, `/metrics` by default
+
+------
+
+### `exporter_install`
+
+type: `enum`, level: `G`
+
+(**OBSOLETE**) how to install exporter? none,yum,binary
+
+default value: `none`
+
+Specify how to install Exporter:
+
+- `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](https://pigsty.io/docs/node/param/#node_default_packages) task)
+- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](https://pigsty.io/docs/pgsql/param/#pg_exporter) before deploying Exporter)
+- `binary`: Install using a copy binary (copy [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](https://pigsty.io/docs/pgsql/param/#pg_exporter) binary directly from the meta node, not recommended)
+
+When installing with `yum`, if `exporter_repo_url` is specified (not empty), the installation will first install the REPO file under that URL into `/etc/yum.repos.d`. This feature allows you to install Exporter directly without initializing the node infrastructure. It is not recommended for regular users to use `binary` installation. This mode is usually used for emergency troubleshooting and temporary problem fixes.
+
+```bash
+<meta>:<pigsty>/files/node_exporter ->  <target>:/usr/bin/node_exporter
+<meta>:<pigsty>/files/pg_exporter   ->  <target>:/usr/bin/pg_exporter
+```
+
+------
+
+### `exporter_repo_url`
+
+type: `url`, level: `G`
+
+(**OBSOLETE**) exporter repo file url if install exporter via yum
+
+default value is empty string
+
+Default is empty; when [`exporter_install`](#exporter_install) is `yum`, the repo specified by this parameter will be added to the node source list.
+
+------
+
+## `GRAFANA`
+
+Grafana is the visualization platform for Pigsty’s monitoring system.
+
+It can also be used as a low code data visualization environment
+
+```yaml
+grafana_enabled: true             # enable grafana on this infra node?
+grafana_clean: true               # clean grafana data during init?
+grafana_admin_username: admin     # grafana admin username, `admin` by default
+grafana_admin_password: pigsty    # grafana admin password, `pigsty` by default
+loki_enabled: true                # enable loki on this infra node?
+loki_clean: false                 # whether remove existing loki data?
+loki_data: /data/loki             # loki data dir, `/data/loki` by default
+loki_retention: 15d               # loki log retention period, 15d by default
+```
+
+------
+
+### `grafana_enabled`
+
+type: `bool`, level: `G/I`
+
+enable grafana on this infra node? default value: `true`
+
+------
+
+### `grafana_clean`
+
+type: `bool`, level: `G/A`
+
+clean grafana data during init? default value: `true`
+
+------
+
+### `grafana_admin_username`
+
+type: `username`, level: `G`
+
+grafana admin username, `admin` by default
+
+------
+
+### `grafana_admin_password`
+
+type: `password`, level: `G`
+
+grafana admin password, `pigsty` by default
+
+default value: `pigsty`
+
+> WARNING: Change this to a strong password before deploying to production environment
+
+------
+
+## `LOKI`
+
+------
+
+### `loki_enabled`
+
+type: `bool`, level: `G/I`
+
+enable loki on this infra node? default value: `true`
+
+------
+
+### `loki_clean`
+
+type: `bool`, level: `G/A`
+
+whether remove existing loki data? default value: `false`
+
+------
+
+### `loki_data`
+
+type: `path`, level: `G`
+
+loki data dir, default value: `/data/loki`
+
+------
+
+### `loki_retention`
+
+type: `interval`, level: `G`
+
+loki log retention period, `15d` by default

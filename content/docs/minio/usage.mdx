@@ -1,0 +1,157 @@
+---
+title: Usage
+description: Get started with MinIO and MCli, how to access the MinIO service?
+---
+
+After MinIO cluster is [configured](https://pigsty.io/docs/minio/config/) and deployed with the [playbook](https://pigsty.io/docs/minio/playbook/), you can start using and accessing the MinIO cluster by following the instructions here.
+
+------
+
+## Deploy Cluster
+
+It is straightforward to deploy a single-node MinIO instance with Pigsty.
+
+```yaml
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+```
+
+Define it in the [config inventory](https://pigsty.io/docs/setup/config/#inventory), then run the playbook:
+
+```bash
+./minio.yml -l minio
+```
+
+The [`install.yml`](https://pigsty.io/docs/setup/playbook/#installyml) playbook will automatically create the MinIO cluster defined in the inventory, so you don’t need to run the `minio.yml` playbook manually, if you choose the default one-pass installation.
+
+If you plan to deploy a production-grade large-scale multi-node MinIO cluster, we **strongly** recommend you to read the Pigsty MinIO [configuration document](https://pigsty.io/docs/minio/config/) and the MinIO [document](https://min.io/docs/minio/linux/operations/concepts.html) before proceeding.
+
+------
+
+## Access Cluster
+
+You have to access MinIO via HTTPS, so make sure the default minio service domain (`sss.pigsty`) point to the right place:
+
+1. You can add static resolution records in [`node_etc_hosts`](https://pigsty.io/docs/node/param/#node_etc_hosts) or manually modify the `/etc/hosts` file
+2. You can add a record on the internal DNS server if you are using an DNS service
+3. You can add a record in [`dns_records`](https://pigsty.io/docs/infra/param/#dns_records) if you are using the DNSMASQ on infra nodes
+
+It is recommended to use the first method: static DNS resolution records to avoid MinIO’s additional dependency on DNS in production environments.
+
+You have to point the MinIO service domain to the IP address and service port of the MinIO server node, or the IP address and service port of the load balancer. Pigsty will use the default domain name `sss.pigsty` and default port `9000`.
+
+For example, if you are using haproxy to expose MinIO service [like this](https://pigsty.io/docs/minio/config/#expose-service), the port may be `9002`.
+
+------
+
+## Adding Alias
+
+To access the MinIO server cluster using the `mcli` client, you need to configure the server alias first:
+
+```bash
+mcli alias ls  # list minio alias (the default is sss)
+mcli alias set sss https://sss.pigsty:9000 minioadmin minioadmin              # root user
+mcli alias set sss https://sss.pigsty:9002 minioadmin minioadmin              # root user, on load balancer port 9002
+
+mcli alias set pgbackrest https://sss.pigsty:9000 pgbackrest S3User.Backup    # use another user
+```
+
+There’s a pre-configured MinIO alias named `sss` on the admin user of the admin node, you can use it directly.
+
+For the full functionality of the MinIO client tool `mcli`, please refer to the documentation: [MinIO Client](https://min.io/docs/minio/linux/reference/minio-mc.html).
+
+------
+
+## Manage User
+
+You can manage biz users in MinIO using `mcli`, for example, you can create the two default biz users using the command line:
+
+```bash
+mcli admin user list sss     # list all users
+set +o history               # hide shell history
+mcli admin user add sss dba S3User.DBA
+mcli admin user add sss pgbackrest S3User.Backup
+set -o history
+```
+
+------
+
+## Manage Bucket
+
+You can manage bucket with mcli:
+
+```bash
+mcli ls sss/                         # list all bucket on 'sss'
+mcli mb --ignore-existing sss/hello  # create a bucket named 'hello'
+mcli rb --force sss/hello            # delete the 'hello' bucket
+```
+
+------
+
+## Mange Object
+
+You can perform object CRUD with cli, for example:
+
+```bash
+mcli cp /www/pigsty/* sss/infra/     # upload local repo content to infra bucket
+mcli cp sss/infra/plugins.tgz /tmp/  # download file to local from minio
+mcli ls sss/infra                    # list all files in the infra bucket
+mcli rm sss/infra/plugins.tgz        # delete file in infra bucket
+mcli cat sss/infra/repo_complete     # output the content of
+```
+
+Check the [Tutorial: Object Management](https://min.io/docs/minio/linux/administration/object-management.html) for detail
+
+------
+
+## Use rclone
+
+Pigsty repo has [rclone](https://rclone.org/) available, a convenient cloud object storage client that you can use to access MinIO services.
+
+```bash
+yum install rclone; # el compatible
+dnf install rclone; # debian/ubuntu
+
+mkdir -p ~/.config/rclone/;
+tee ~/.config/rclone/rclone.conf > /dev/null <<EOF
+[sss]
+type = s3
+access_key_id = minioadmin
+secret_access_key = minioadmin
+endpoint = sss.pigsty:9000
+EOF
+
+rclone ls sss:/
+```
+
+------
+
+## Backup Repo
+
+The MinIO is used as a backup repository for pgBackRest by default in Pigsty. When you modify the [`pgbackrest_method`](https://pigsty.io/docs/pgsql/param/#pgbackrest_method) to `minio`, the PGSQL module will automatically switch the backup repository to MinIO.
+
+```yaml
+pgbackrest_method: local          # pgbackrest repo method: local,minio,[user-defined...]
+pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/configuration.html#section-repository
+  local:                          # default pgbackrest repo with local posix fs
+    path: /pg/backup              # local backup directory, `/pg/backup` by default
+    retention_full_type: count    # retention full backups by count
+    retention_full: 2             # keep 2, at most 3 full backup when using local fs repo
+  minio:                          # optional minio repo for pgbackrest
+    type: s3                      # minio is s3-compatible, so s3 is used
+    s3_endpoint: sss.pigsty       # minio endpoint domain name, `sss.pigsty` by default
+    s3_region: us-east-1          # minio region, us-east-1 by default, useless for minio
+    s3_bucket: pgsql              # minio bucket name, `pgsql` by default
+    s3_key: pgbackrest            # minio user access key for pgbackrest
+    s3_key_secret: S3User.Backup  # minio user secret key for pgbackrest
+    s3_uri_style: path            # use path style uri for minio rather than host style
+    path: /pgbackrest             # minio backup path, default is `/pgbackrest`
+    storage_port: 9000            # minio port, 9000 by default
+    storage_ca_file: /pg/cert/ca.crt  # minio ca file path, `/pg/cert/ca.crt` by default
+    bundle: y                     # bundle small files into a single file
+    cipher_type: aes-256-cbc      # enable AES encryption for remote backup repo
+    cipher_pass: pgBackRest       # AES encryption password, default is 'pgBackRest'
+    retention_full_type: time     # retention full backup by time on minio repo
+    retention_full: 14            # keep full backup for last 14 days
+```
+
+Beware that if you are using MinIO through load balancer, you should use the corresponding domain name and port number here.
