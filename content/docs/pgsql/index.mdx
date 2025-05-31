@@ -1,18 +1,8 @@
 ---
 title: PostgreSQL
 description: The most advanced open source relational database in the world!
+icon: Database
 ---
 
-
-import { getPageTreePeers } from 'fumadocs-core/server';
-import { source } from '@/lib/source';
-
-<Cards>
-
-    {getPageTreePeers(source.pageTree, '/docs/pgsql').map((peer) => (
-        <Card key={peer.url} title={peer.name} href={peer.url}>
-            {peer.description}
-        </Card>
-    ))}
-
-</Cards>
+- [User Role](/docs/pgsql/user)
+- [Database](/docs/pgsql/database)

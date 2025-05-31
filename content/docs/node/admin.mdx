@@ -1,4 +1,112 @@
 ---
 title: Admin
-description: run administrative tasks
+description: Node admin standard operation procedure
 ---
+
+# Administration
+
+Node admin SOP, add & remove node, setup admin, bind vip and miscellany
+
+Here are some common administration tasks for [`NODE`](https://pigsty.io/docs/node/) module.
+
+- [Add Node](https://pigsty.io/docs/node/admin/#add-node)
+- [Remove Node](https://pigsty.io/docs/node/admin/#remove-node)
+- [Create Admin](https://pigsty.io/docs/node/admin/#create-admin)
+- [Bind VIP](https://pigsty.io/docs/node/admin/#bind-vip)
+- [Other Tasks](https://pigsty.io/docs/node/admin/#other-tasks)
+- [FAQ: NODE](https://pigsty.io/docs/node/faq/)
+
+------
+
+### Add Node
+
+To add a node into Pigsty, you need to have nopass ssh/sudo access to the node
+
+```bash
+# ./node.yml -l <cls|ip|group>        # the underlying playbook
+# bin/node-add <selector|ip...>       # add cluster/node to pigsty
+bin/node-add node-test                # init node cluster 'node-test'
+bin/node-add 10.10.10.10              # init node '10.10.10.10'
+```
+
+------
+
+### Remove Node
+
+To remove a node from Pigsty, you can use the following:
+
+```bash
+# ./node-rm.yml -l <cls|ip|group>    # the underlying playbook
+# bin/node-rm <selector|ip...>       # remove node from pigsty:
+bin/node-rm node-test                # remove node cluster 'node-test'
+bin/node-rm 10.10.10.10              # remove node '10.10.10.10'
+```
+
+------
+
+### Create Admin
+
+If the current user does not have nopass ssh/sudo access to the node, you can use another admin user to bootstrap the node:
+
+```bash
+node.yml -t node_admin -k -K -e ansible_user=<another admin>   # input ssh/sudo password for another admin
+```
+
+------
+
+### Bind VIP
+
+You can bind an optional L2 VIP on a node cluster with [`vip_enabled`](https://pigsty.io/docs/node/param/#vip_enabled).
+
+```bash
+proxy:
+  hosts:
+    10.10.10.29: { nodename: proxy-1 }
+    10.10.10.30: { nodename: proxy-2 } # , vip_role: master }
+  vars:
+    node_cluster: proxy
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.99
+    vip_interface: eth1
+./node.yml -l proxy -t node_vip     # enable for the first time
+./node.yml -l proxy -t vip_refresh  # refresh vip config (e.g. designated master)
+```
+
+------
+
+### Other Tasks
+
+```bash
+# Play
+./node.yml -t node                            # init node itself (haproxy monitor not included)
+./node.yml -t haproxy                         # setup haproxy on node to expose services
+./node.yml -t monitor                         # setup node_exporter & promtail for metrics & logs
+./node.yml -t node_vip                        # enable keepalived for node cluster L2 VIP
+./node.yml -t vip_config,vip_reload           # refresh L2 VIP configuration
+./node.yml -t haproxy_config,haproxy_reload   # refresh haproxy services definition on node cluster
+./node.yml -t register_prometheus             # register node to Prometheus
+./node.yml -t register_nginx                  # register haproxy admin page url to Nginx on infra nodes
+
+# Task
+./node.yml -t node-id        # generate node identity
+./node.yml -t node_name      # setup hostname
+./node.yml -t node_hosts     # setup /etc/hosts records
+./node.yml -t node_resolv    # setup dns resolver
+./node.yml -t node_firewall  # setup firewall & selinux
+./node.yml -t node_ca        # add & trust ca certificate
+./node.yml -t node_repo      # add upstream repo
+./node.yml -t node_pkg       # install yum packages
+./node.yml -t node_feature   # setup numa, grub, static network
+./node.yml -t node_kernel    # enable kernel modules
+./node.yml -t node_tune      # setup tuned profile
+./node.yml -t node_sysctl    # setup additional sysctl parameters
+./node.yml -t node_profile   # write /etc/profile.d/node.sh
+./node.yml -t node_ulimit    # setup resource limits
+./node.yml -t node_data      # setup main data dir
+./node.yml -t node_admin     # setup admin user and ssh key
+./node.yml -t node_timezone  # setup timezone
+./node.yml -t node_ntp       # setup ntp server/clients
+./node.yml -t node_crontab   # add/overwrite crontab tasks
+./node.yml -t node_vip       # setup optional l2 vrrp vip for node cluster
+```

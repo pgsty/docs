@@ -1,0 +1,19 @@
+{
+    "title": "PIGSTY",
+    "description": "Pigsty, the PostgreSQL Distribution",
+    "root": true,
+    "icon": "Building",
+    "pages": [
+        "---Introduction---",
+        "index",
+        "intro",
+
+        "---Installation---",
+        "install",
+        "offline",
+        "slim",
+        "prepare",
+
+        "..."
+    ]
+}

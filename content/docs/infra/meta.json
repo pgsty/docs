@@ -3,7 +3,6 @@
   "description": "Infra, portal & monitoring service",
   "root": true,
   "pages": [
-    "[Pigsty Docs](/docs)",
     "index",
     "concept",
     "config",

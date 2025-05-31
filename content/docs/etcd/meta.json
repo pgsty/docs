@@ -3,7 +3,6 @@
   "description": "Etcd, the DCS service for PG HA",
   "root": true,
   "pages": [
-    "[Pigsty Docs](/docs)",
     "index",
     "concept",
     "config",

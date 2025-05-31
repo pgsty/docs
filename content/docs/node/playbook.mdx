@@ -1,4 +1,89 @@
 ---
 title: Playbook
-description: control primitives
+description: manage node cluster with ansible playbooks
 ---
+
+# Playbook
+
+Hwo to manage node cluster with ansible playbooks
+
+There are two node playbooks [node.yml](https://pigsty.io/docs/node/playbook/#nodeyml) and [node-rm.yml](https://pigsty.io/docs/node/playbook/#node-rmyml)
+
+------
+
+## `node.yml`
+
+The playbook [`node.yml`](https://github.com/pgsty/pigsty/blob/main/node.yml) will init node for pigsty
+
+Subtasks of this playbook:
+
+```bash
+# node-id       : generate node identity
+# node_name     : setup hostname
+# node_hosts    : setup /etc/hosts records
+# node_resolv   : setup dns resolver
+# node_firewall : setup firewall & selinux
+# node_ca       : add & trust ca certificate
+# node_repo     : add upstream repo
+# node_pkg      : install yum packages
+# node_feature  : setup numa, grub, static network
+# node_kernel   : enable kernel modules
+# node_tune     : setup tuned profile
+# node_sysctl   : setup additional sysctl parameters
+# node_profile  : write /etc/profile.d/node.sh
+# node_ulimit   : setup resource limits
+# node_data     : setup main data dir
+# node_admin    : setup admin user and ssh key
+# node_timezone : setup timezone
+# node_ntp      : setup ntp server/clients
+# node_crontab  : add/overwrite crontab tasks
+# node_vip      : setup optional l2 vrrp vip for node cluster
+#   - vip_install
+#   - vip_config
+#   - vip_launch
+#   - vip_reload
+# haproxy       : setup haproxy on node to expose services
+#   - haproxy_install
+#   - haproxy_config
+#   - haproxy_launch
+#   - haproxy_reload
+# monitor       : setup node_exporter & promtail for metrics & logs
+#   - haproxy_register
+#   - vip_dns
+#   - node_exporter
+#     - node_exporter_config
+#     - node_exporter_launch
+#   - vip_exporter
+#     - vip_exporter_config
+#     - vip_exporter_launch
+#   - node_register
+#   - promtail
+#     - promtail_clean
+#     - promtail_config
+#     - promtail_install
+#     - promtail_launch
+```
+
+[![asciicast](https://asciinema.org/a/568807.svg)](https://asciinema.org/a/568807)
+
+------
+
+## `node-rm.yml`
+
+The playbook [`node-rm.yml`](https://github.com/pgsty/pigsty/blob/main/node-rm.yml) will remove node from pigsty.playbook
+
+Subtasks of this playbook:
+
+```bash
+# register       : remove register from prometheus & nginx
+#   - prometheus : remove registered prometheus monitor target
+#   - nginx      : remove nginx proxy record for haproxy admin
+# vip            : remove node keepalived if enabled
+# haproxy        : remove haproxy load balancer
+# node_exporter  : remove monitoring exporter
+# vip_exporter   : remove keepalived_exporter if enabled
+# promtail       : remove loki log agent
+# profile        : remove /etc/profile.d/node.sh
+```
+
+------

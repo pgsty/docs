@@ -1,0 +1,60 @@
+---
+title: Quick Start
+description: Getting Started with Pigsty
+icon: HomeIcon
+full: true
+---
+
+## Introduction
+
+**Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> is a battery-included, local-first, open-source & free <span className="text-blue-500 font-bold">PostgreSQL Distribution</span> based on **bare Linux**.
+
+
+import {
+    Database,
+    PanelsTopLeft,
+    CpuIcon,
+    Terminal,
+} from 'lucide-react';
+
+<Cards>
+
+    <Card icon={<Database className="text-blue-800" />} title='PostgreSQL' href={"/docs/pgsql"}>
+        Handles most of the logic, including document search, content source adapters, and Markdown extensions.
+    </Card>
+
+    <Card icon={<PanelsTopLeft className="text-blue-300" />} title='Fumadocs UI'>
+
+        The default theme of Fumadocs offers a beautiful look for documentation sites and interactive components.
+
+    </Card>
+
+    <Card icon={<Database />} title='Content Source'>
+
+        The source of your content, can be a CMS or local data layers like [Fumadocs MDX](/docs/mdx) (the official content source).
+
+    </Card>
+
+    <Card icon={<Terminal />} title='Fumadocs CLI'>
+
+        A command line tool to install UI components and automate things, useful for customizing layouts.
+
+    </Card>
+
+</Cards>
+
+<Callout title="Want to learn more?">
+    Read our in-depth [What is Pigsty](/docs/pigsty/intro) introduction.
+</Callout>
+
+
+- [Installation](setup/install)
+- [Offline](setup/offline)
+
+<Cards>
+    <Card title="Standard Installation" href="install" />
+    <Card title="Offline Install" href="offline" />
+    <Card title="Slim Install" href="offline" />
+</Cards>
+
+

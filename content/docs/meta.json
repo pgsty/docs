@@ -1,19 +1,11 @@
 {
-    "title": "Pigsty",
-    "icon": "Home",
-    "root": true,
     "pages": [
-        "index",
-        "intro",
-        "setup",
+        "pigsty",
         "pgsql",
         "infra",
         "node",
         "etcd",
         "redis",
-        "minio",
-        "docker",
-        "app",
-        "..."
+        "minio"
     ]
 }

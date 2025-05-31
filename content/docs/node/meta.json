@@ -3,13 +3,13 @@
   "description": "Node, enroll linux machine hosts",
   "root": true,
   "pages": [
-    "[Pigsty Docs](/docs)",
     "index",
     "concept",
     "config",
     "param",
     "admin",
     "playbook",
+    "monitor",
     "dashboard",
     "faq",
     "..."

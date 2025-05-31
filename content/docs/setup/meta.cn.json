@@ -1,6 +1,0 @@
-{
-    "title": "快速上手",
-    "icon": "Home",
-    "pages": ["index", "offline"],
-    "defaultOpen": true
-}

@@ -1,0 +1,10 @@
+{
+  "title": "pig",
+  "description": "Pigsty CLI & package manager",
+  "root": true,
+  "pages": [
+    "[Pigsty Docs](/docs)",
+    "index",
+    "..."
+  ]
+}

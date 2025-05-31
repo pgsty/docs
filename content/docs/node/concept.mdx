@@ -1,4 +1,93 @@
 ---
 title: Concept
-description: architecture and entities
+description: entities and architecture
 ---
+
+
+Node is an abstraction of hardware resources, which can be bare metal, virtual machines, or even k8s pods.
+
+There are different types of nodes in Pigsty:
+
+- [Common nodes](https://pigsty.io/docs/node/concept/#common-node), nodes that managed by Pigsty
+- [Admin node](https://pigsty.io/docs/node/concept/#admin-node), the node where pigsty is installed and issue admin commands
+- [Infra node](https://pigsty.io/docs/node/concept/#infra-node), the node where the [`INFRA`](https://pigsty.io/docs/infra/) module is installed
+
+The admin node is usually overlapped with the infra node, if there’s more than one infra node, the first one is often used as the default admin node, and the rest of the infra nodes can be used as backup admin nodes.
+
+------
+
+## Common Node
+
+You can manage nodes with Pigsty, and install modules on them. The `node.yml` playbook will adjust the node to desired state.
+
+Some services will be added to all nodes by default:
+
+|      Component      | Port | Description                      | Status     |
+|:-------------------:|:----:|----------------------------------|------------|
+|    Node Exporter    | 9100 | Node Monitoring Metrics Exporter | Enabled    |
+|    HAProxy Admin    | 9101 | HAProxy admin page               | Enabled    |
+|      Promtail       | 9080 | Log collecting agent             | Enabled    |
+|    Docker Daemon    | 9323 | Enable Container Service         | *Disabled* |
+|     Keepalived      |  -   | Manage Node Cluster L2 VIP       | *Disabled* |
+| Keepalived Exporter | 9650 | Monitoring Keepalived Status     | *Disabled* |
+
+Docker & Keepalived are optional components, enabled when required.
+
+------
+
+## ADMIN Node
+
+There is one and only one admin node in a pigsty deployment, which is specified by [`admin_ip`](https://pigsty.io/docs/infra/param/#admin_ip). It is set to the local primary IP during [configure](https://pigsty.io/docs/setup/install/#configure).
+
+The node will have ssh / sudo access to all other nodes, which is critical; ensure it’s fully secured.
+
+------
+
+## INFRA Node
+
+A pigsty deployment may have one or more infra nodes, usually 2 ~ 3, in a large production environment.
+
+The `infra` group specifies infra nodes in the inventory. And infra nodes will have [INFRA](https://pigsty.io/docs/infra/) module installed (DNS, Nginx, Prometheus, Grafana, etc…),
+
+The admin node is also the default and first infra node, and infra nodes can be used as ‘backup’ admin nodes.
+
+|    Component     | Port |   Domain   | Description                       |
+|:----------------:|:----:|:----------:|-----------------------------------|
+|      Nginx       |  80  | `h.pigsty` | Web Service Portal (YUM/APT Repo) |
+|   AlertManager   | 9093 | `a.pigsty` | Alert Aggregation and delivery    |
+|    Prometheus    | 9090 | `p.pigsty` | Monitoring Time Series Database   |
+|     Grafana      | 3000 | `g.pigsty` | Visualization Platform            |
+|       Loki       | 3100 |     -      | Logging Collection Server         |
+|   PushGateway    | 9091 |     -      | Collect One-Time Job Metrics      |
+| BlackboxExporter | 9115 |     -      | Blackbox Probing                  |
+|     Dnsmasq      |  53  |     -      | DNS Server                        |
+|     Chronyd      | 123  |     -      | NTP Time Server                   |
+|    PostgreSQL    | 5432 |     -      | Pigsty CMDB & default database    |
+|     Ansible      |  -   |     -      | Run playbooks                     |
+
+------
+
+## PGSQL Node
+
+The node with [PGSQL](https://pigsty.io/docs/pgsql/) module installed is called a PGSQL node. The node and pg instance is 1:1 deployed. And node instance can be borrowed from corresponding pg instances with [`node_id_from_pg`](https://pigsty.io/docs/node/param/#node_id_from_pg).
+
+|      Component      | Port | Description                                      | Status    |
+|:-------------------:|:----:|--------------------------------------------------|-----------|
+|     PostgreSQL      | 5432 | PostgreSQL Database                              | Enabled   |
+|      Pgbouncer      | 6432 | Pgbouncer Connection Pooling Service             | Enabled   |
+|       Patroni       | 8008 | Patroni HA Component                             | Enabled   |
+|   Haproxy Primary   | 5433 | Primary connection pool: Read/Write Service      | Enabled   |
+|   Haproxy Replica   | 5434 | Replica connection pool: Read-only Service       | Enabled   |
+|   Haproxy Default   | 5436 | Primary Direct Connect Service                   | Enabled   |
+|   Haproxy Offline   | 5438 | Offline Direct Connect: Offline Read Service     | Enabled   |
+|  Haproxy `service`  | 543x | Customized PostgreSQL Services                   | On Demand |
+|    Haproxy Admin    | 9101 | Monitoring metrics and traffic management        | Enabled   |
+|     PG Exporter     | 9630 | PG Monitoring Metrics Exporter                   | Enabled   |
+| PGBouncer Exporter  | 9631 | PGBouncer Monitoring Metrics Exporter            | Enabled   |
+|    Node Exporter    | 9100 | Node Monitoring Metrics Exporter                 | Enabled   |
+|      Promtail       | 9080 | Collect Postgres, Pgbouncer, Patroni logs        | Enabled   |
+|    Docker Daemon    | 9323 | Docker Container Service (disable by default)    | Disabled  |
+|     vip-manager     |  -   | Bind VIP to the primary                          | Disabled  |
+|     keepalived      |  -   | Node Cluster L2 VIP manager (disable by default) | Disabled  |
+| Keepalived Exporter | 9650 | Keepalived Metrics Exporter (disable by default) | Disabled  |
+

@@ -1,4 +1,1074 @@
 ---
 title: Parameter
-description: customize with options
+description:  64 parameters to customize node
+full: true
 ---
+
+
+# Parameter
+
+There are 64 parameters to customize node, monitor agent and haproxy load balancer
+
+There are 10 sections, 66 parameters in the `NODE` module.
+
+- [`NODE_ID`](#node_id) : Node identity parameters
+- [`NODE_DNS`](#node_dns) : Node Domain Name Resolution
+- [`NODE_PACKAGE`](#node_package) : Upstream Repo & Install Packages
+- [`NODE_TUNE`](#node_tune) : Node Tuning & Features
+- [`NODE_ADMIN`](#node_admin) : Admin User & SSH Keys
+- [`NODE_TIME`](#node_time) : Timezone, NTP, Crontab
+- [`NODE_VIP`](#node_vip) : Optional L2 VIP among cluster
+- [`HAPROXY`](#haproxy) : Expose services with HAProxy
+- [`NODE_EXPORTER`](#node_exporter) : Node monitoring agent
+- [`PROMTAIL`](#promtail) : Promtail logging agent
+
+------
+
+## Parameters
+
+| Name                                                  | Section                           | Type        | Level | Comment                                                         |
+|-------------------------------------------------------|-----------------------------------|-------------|-------|-----------------------------------------------------------------|
+| [`nodename`](#nodename)                               | [`NODE_ID`](#node_id)             | `string`    | I     | node instance identity, use hostname if missing, optional       |
+| [`node_cluster`](#node_cluster)                       | [`NODE_ID`](#node_id)             | `string`    | C     | node cluster identity, use ’nodes’ if missing, optional         |
+| [`nodename_overwrite`](#nodename_overwrite)           | [`NODE_ID`](#node_id)             | `bool`      | C     | overwrite node’s hostname with nodename?                        |
+| [`nodename_exchange`](#nodename_exchange)             | [`NODE_ID`](#node_id)             | `bool`      | C     | exchange nodename among play hosts?                             |
+| [`node_id_from_pg`](#node_id_from_pg)                 | [`NODE_ID`](#node_id)             | `bool`      | C     | use postgres identity as node identity if applicable?           |
+| [`node_write_etc_hosts`](#node_write_etc_hosts)       | [`NODE_DNS`](#node_dns)           | `bool`      | G/C/I | modify `/etc/hosts` on target node?                             |
+| [`node_default_etc_hosts`](#node_default_etc_hosts)   | [`NODE_DNS`](#node_dns)           | `string[]`  | G     | static dns records in `/etc/hosts`                              |
+| [`node_etc_hosts`](#node_etc_hosts)                   | [`NODE_DNS`](#node_dns)           | `string[]`  | C     | extra static dns records in `/etc/hosts`                        |
+| [`node_dns_method`](#node_dns_method)                 | [`NODE_DNS`](#node_dns)           | `enum`      | C     | how to handle dns servers: add,none,overwrite                   |
+| [`node_dns_servers`](#node_dns_servers)               | [`NODE_DNS`](#node_dns)           | `string[]`  | C     | dynamic nameserver in `/etc/resolv.conf`                        |
+| [`node_dns_options`](#node_dns_options)               | [`NODE_DNS`](#node_dns)           | `string[]`  | C     | dns resolv options in `/etc/resolv.conf`                        |
+| [`node_repo_modules`](#node_repo_modules)             | [`NODE_PACKAGE`](#node_package)   | `string`    | C     | upstream repo to be added on node, local by default             |
+| [`node_repo_remove`](#node_repo_remove)               | [`NODE_PACKAGE`](#node_package)   | `bool`      | C     | remove existing repo on node?                                   |
+| [`node_packages`](#node_packages)                     | [`NODE_PACKAGE`](#node_package)   | `string[]`  | C     | packages to be installed current nodes                          |
+| [`node_default_packages`](#node_default_packages)     | [`NODE_PACKAGE`](#node_package)   | `string[]`  | G     | default packages to be installed on all nodes                   |
+| [`node_disable_firewall`](#node_disable_firewall)     | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | disable node firewall? true by default                          |
+| [`node_disable_selinux`](#node_disable_selinux)       | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | disable node selinux? true by default                           |
+| [`node_disable_numa`](#node_disable_numa)             | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | disable node numa, reboot required                              |
+| [`node_disable_swap`](#node_disable_swap)             | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | disable node swap, use with caution                             |
+| [`node_static_network`](#node_static_network)         | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | preserve dns resolver settings after reboot                     |
+| [`node_disk_prefetch`](#node_disk_prefetch)           | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | setup disk prefetch on HDD to increase performance              |
+| [`node_kernel_modules`](#node_kernel_modules)         | [`NODE_TUNE`](#node_tune)         | `string[]`  | C     | kernel modules to be enabled on this node                       |
+| [`node_hugepage_count`](#node_hugepage_count)         | [`NODE_TUNE`](#node_tune)         | `int`       | C     | number of 2MB hugepage, take precedence over ratio              |
+| [`node_hugepage_ratio`](#node_hugepage_ratio)         | [`NODE_TUNE`](#node_tune)         | `float`     | C     | node mem hugepage ratio, 0 disable it by default                |
+| [`node_overcommit_ratio`](#node_overcommit_ratio)     | [`NODE_TUNE`](#node_tune)         | `float`     | C     | node mem overcommit ratio, 0 disable it by default              |
+| [`node_tune`](#node_tune)                             | [`NODE_TUNE`](#node_tune)         | `enum`      | C     | node tuned profile: none,oltp,olap,crit,tiny                    |
+| [`node_sysctl_params`](#node_sysctl_params)           | [`NODE_TUNE`](#node_tune)         | `dict`      | C     | sysctl parameters in k:v format in addition to tuned            |
+| [`node_data`](#node_data)                             | [`NODE_ADMIN`](#node_admin)       | `path`      | C     | node main data directory, `/data` by default                    |
+| [`node_admin_enabled`](#node_admin_enabled)           | [`NODE_ADMIN`](#node_admin)       | `bool`      | C     | create a admin user on target node?                             |
+| [`node_admin_uid`](#node_admin_uid)                   | [`NODE_ADMIN`](#node_admin)       | `int`       | C     | uid and gid for node admin user                                 |
+| [`node_admin_username`](#node_admin_username)         | [`NODE_ADMIN`](#node_admin)       | `username`  | C     | name of node admin user, `dba` by default                       |
+| [`node_admin_ssh_exchange`](#node_admin_ssh_exchange) | [`NODE_ADMIN`](#node_admin)       | `bool`      | C     | exchange admin ssh key among node cluster                       |
+| [`node_admin_pk_current`](#node_admin_pk_current)     | [`NODE_ADMIN`](#node_admin)       | `bool`      | C     | add current user’s ssh pk to admin authorized_keys              |
+| [`node_admin_pk_list`](#node_admin_pk_list)           | [`NODE_ADMIN`](#node_admin)       | `string[]`  | C     | ssh public keys to be added to admin user                       |
+| [`node_aliases`](#node_aliases)                       | [`NODE_ADMIN`](#node_admin)       | `dict`      | C     | extra shell aliases to be added, k:v dict                       |
+| [`node_timezone`](#node_timezone)                     | [`NODE_TIME`](#node_time)         | `string`    | C     | setup node timezone, empty string to skip                       |
+| [`node_ntp_enabled`](#node_ntp_enabled)               | [`NODE_TIME`](#node_time)         | `bool`      | C     | enable chronyd time sync service?                               |
+| [`node_ntp_servers`](#node_ntp_servers)               | [`NODE_TIME`](#node_time)         | `string[]`  | C     | ntp servers in `/etc/chrony.conf`                               |
+| [`node_crontab_overwrite`](#node_crontab_overwrite)   | [`NODE_TIME`](#node_time)         | `bool`      | C     | overwrite or append to `/etc/crontab`?                          |
+| [`node_crontab`](#node_crontab)                       | [`NODE_TIME`](#node_time)         | `string[]`  | C     | crontab entries in `/etc/crontab`                               |
+| [`vip_enabled`](#vip_enabled)                         | [`NODE_VIP`](#node_vip)           | `bool`      | C     | enable vip on this node cluster?                                |
+| [`vip_address`](#vip_address)                         | [`NODE_VIP`](#node_vip)           | `ip`        | C     | node vip address in ipv4 format, required if vip is enabled     |
+| [`vip_vrid`](#vip_vrid)                               | [`NODE_VIP`](#node_vip)           | `int`       | C     | required, integer, 1-254, should be unique among same VLAN      |
+| [`vip_role`](#vip_role)                               | [`NODE_VIP`](#node_vip)           | `enum`      | I     | optional, `master/backup`, backup by default, use as init role  |
+| [`vip_preempt`](#vip_preempt)                         | [`NODE_VIP`](#node_vip)           | `bool`      | C/I   | optional, `true/false`, false by default, enable vip preemption |
+| [`vip_interface`](#vip_interface)                     | [`NODE_VIP`](#node_vip)           | `string`    | C/I   | node vip network interface to listen, `eth0` by default         |
+| [`vip_dns_suffix`](#vip_dns_suffix)                   | [`NODE_VIP`](#node_vip)           | `string`    | C     | node vip dns name suffix, empty string by default               |
+| [`vip_exporter_port`](#vip_exporter_port)             | [`NODE_VIP`](#node_vip)           | `port`      | C     | keepalived exporter listen port, 9650 by default                |
+| [`haproxy_enabled`](#haproxy_enabled)                 | [`HAPROXY`](#haproxy)             | `bool`      | C     | enable haproxy on this node?                                    |
+| [`haproxy_clean`](#haproxy_clean)                     | [`HAPROXY`](#haproxy)             | `bool`      | G/C/A | cleanup all existing haproxy config?                            |
+| [`haproxy_reload`](#haproxy_reload)                   | [`HAPROXY`](#haproxy)             | `bool`      | A     | reload haproxy after config?                                    |
+| [`haproxy_auth_enabled`](#haproxy_auth_enabled)       | [`HAPROXY`](#haproxy)             | `bool`      | G     | enable authentication for haproxy admin page                    |
+| [`haproxy_admin_username`](#haproxy_admin_username)   | [`HAPROXY`](#haproxy)             | `username`  | G     | haproxy admin username, `admin` by default                      |
+| [`haproxy_admin_password`](#haproxy_admin_password)   | [`HAPROXY`](#haproxy)             | `password`  | G     | haproxy admin password, `pigsty` by default                     |
+| [`haproxy_exporter_port`](#haproxy_exporter_port)     | [`HAPROXY`](#haproxy)             | `port`      | C     | haproxy admin/exporter port, 9101 by default                    |
+| [`haproxy_client_timeout`](#haproxy_client_timeout)   | [`HAPROXY`](#haproxy)             | `interval`  | C     | client side connection timeout, 24h by default                  |
+| [`haproxy_server_timeout`](#haproxy_server_timeout)   | [`HAPROXY`](#haproxy)             | `interval`  | C     | server side connection timeout, 24h by default                  |
+| [`haproxy_services`](#haproxy_services)               | [`HAPROXY`](#haproxy)             | `service[]` | C     | list of haproxy service to be exposed on node                   |
+| [`node_exporter_enabled`](#node_exporter_enabled)     | [`NODE_EXPORTER`](#node_exporter) | `bool`      | C     | setup node_exporter on this node?                               |
+| [`node_exporter_port`](#node_exporter_port)           | [`NODE_EXPORTER`](#node_exporter) | `port`      | C     | node exporter listen port, 9100 by default                      |
+| [`node_exporter_options`](#node_exporter_options)     | [`NODE_EXPORTER`](#node_exporter) | `arg`       | C     | extra server options for node_exporter                          |
+| [`promtail_enabled`](#promtail_enabled)               | [`PROMTAIL`](#promtail)           | `bool`      | C     | enable promtail logging collector?                              |
+| [`promtail_clean`](#promtail_clean)                   | [`PROMTAIL`](#promtail)           | `bool`      | G/A   | purge existing promtail status file during init?                |
+| [`promtail_port`](#promtail_port)                     | [`PROMTAIL`](#promtail)           | `port`      | C     | promtail listen port, 9080 by default                           |
+| [`promtail_positions`](#promtail_positions)           | [`PROMTAIL`](#promtail)           | `path`      | C     | promtail position status file path                              |
+
+------
+
+# `NODE`
+
+Node module are tuning target nodes into desired state and take it into the Pigsty monitor system.
+
+------
+
+## `NODE_ID`
+
+Each node has **identity parameters** that are configured through the parameters in `<cluster>.hosts` and `<cluster>.vars`. Check [NODE Identity](https://pigsty.io/docs/node/#configuration) for details.
+
+------
+
+### `nodename`
+
+name: `nodename`, type: `string`, level: `I`
+
+node instance identity, use hostname if missing, optional
+
+no default value, Null or empty string means `nodename` will be set to node’s current hostname.
+
+If [`node_id_from_pg`](#node_id_from_pg) is `true` (by default) and `nodename` is not explicitly defined, [`nodename`](#nodename) will try to use `${pg_cluster}-${pg_seq}` first, if PGSQL is not defined on this node, it will fall back to default `HOSTNAME`.
+
+If [`nodename_overwrite`](#nodename_overwrite) is `true`, the node name will also be used as the HOSTNAME.
+
+------
+
+### `node_cluster`
+
+name: `node_cluster`, type: `string`, level: `C`
+
+node cluster identity, use ’nodes’ if missing, optional
+
+default values: `nodes`
+
+If [`node_id_from_pg`](#node_id_from_pg) is `true` (by default) and `node_cluster` is not explicitly defined, [`node_cluster`](#node_cluster) will try to use `${pg_cluster}` first, if PGSQL is not defined on this node, it will fall back to default `HOSTNAME`.
+
+------
+
+### `nodename_overwrite`
+
+name: `nodename_overwrite`, type: `bool`, level: `C`
+
+overwrite node’s hostname with nodename?
+
+default value is `true`, a non-empty node name [`nodename`](#nodename) will override the hostname of the current node.
+
+When the [`nodename`](#nodename) parameter is undefined or an empty string, but [`node_id_from_pg`](#node_id_from_pg) is `true`, the node name will try to use `{{ pg_cluster }}-{{ pg_seq }}`, borrow identity from the 1:1 PostgreSQL Instance’s ins name.
+
+No changes are made to the hostname if the `nodename` is undefined, empty, or an empty string and `node_id_from_pg` is `false`.
+
+------
+
+### `nodename_exchange`
+
+name: `nodename_exchange`, type: `bool`, level: `C`
+
+exchange nodename among play hosts?
+
+default value is `false`
+
+When this parameter is enabled, node names are exchanged between the same group of nodes executing the [`node.yml`](https://pigsty.io/docs/node/playbook/#nodeyml) playbook, written to `/etc/hosts`.
+
+------
+
+### `node_id_from_pg`
+
+name: `node_id_from_pg`, type: `bool`, level: `C`
+
+use postgres identity as node identity if applicable?
+
+default value is `true`
+
+Boworrow PostgreSQL cluster & instance identity if application.
+
+It’s useful to use same identity for postgres & node if there’s a 1:1 relationship
+
+------
+
+## `NODE_DNS`
+
+Pigsty configs static DNS records and dynamic DNS resolver for nodes.
+
+If you already have a DNS server, set [`node_dns_method`](#node_dns_method) to `none` to disable dynamic DNS setup.
+
+```yaml
+node_write_etc_hosts: true        # modify `/etc/hosts` on target node?
+node_default_etc_hosts:           # static dns records in `/etc/hosts`
+  - "${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"
+node_etc_hosts: []                # extra static dns records in `/etc/hosts`
+node_dns_method: add              # how to handle dns servers: add,none,overwrite
+node_dns_servers: ['${admin_ip}'] # dynamic nameserver in `/etc/resolv.conf`
+node_dns_options:                 # dns resolv options in `/etc/resolv.conf`
+  - options single-request-reopen timeout:1
+```
+
+------
+
+### node_write_etc_hosts
+
+name: `node_write_etc_hosts`, type: ‘bool’, level: `G|C|I`
+
+modify `/etc/hosts` on target node?
+
+For example, the docker VM can not modify `/etc/hosts` by default, so you can set this value to `false` to disable the modification.
+
+------
+
+### `node_default_etc_hosts`
+
+name: `node_default_etc_hosts`, type: `string[]`, level: `G`
+
+static dns records in `/etc/hosts`
+
+default value:
+
+```yaml
+["${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"]
+```
+
+[`node_default_etc_hosts`](#node_default_etc_hosts) is an array. Each element is a DNS record with format `<ip> <name>`.
+
+It is used for global static DNS records. You can use [`node_etc_hosts`](#node_etc_hosts) for ad hoc records for each cluster.
+
+Make sure to write a DNS record like `10.10.10.10 h.pigsty a.pigsty p.pigsty g.pigsty` to `/etc/hosts` to ensure that the local yum repo can be accessed using the domain name before the DNS Nameserver starts.
+
+------
+
+### `node_etc_hosts`
+
+name: `node_etc_hosts`, type: `string[]`, level: `C`
+
+extra static dns records in `/etc/hosts`
+
+default values: `[]`
+
+Same as [`node_default_etc_hosts`](#node_default_etc_hosts), but in addition to it.
+
+------
+
+### `node_dns_method`
+
+name: `node_dns_method`, type: `enum`, level: `C`
+
+how to handle dns servers: add,none,overwrite
+
+default values: `add`
+
+- `add`: Append the records in [`node_dns_servers`](#node_dns_servers) to `/etc/resolv.conf` and keep the existing DNS servers. (default)
+- `overwrite`: Overwrite `/etc/resolv.conf` with the record in [`node_dns_servers`](#node_dns_servers)
+- `none`: If a DNS server is provided in the production env, the DNS server config can be skipped.
+
+------
+
+### `node_dns_servers`
+
+name: `node_dns_servers`, type: `string[]`, level: `C`
+
+dynamic nameserver in `/etc/resolv.conf`
+
+default values: `["${admin_ip}"]` , the default nameserver on admin node will be added to `/etc/resolv.conf` as the first nameserver.
+
+------
+
+### `node_dns_options`
+
+name: `node_dns_options`, type: `string[]`, level: `C`
+
+dns resolv options in `/etc/resolv.conf`, default value:
+
+```yaml
+- options single-request-reopen timeout:1
+```
+
+------
+
+## `NODE_PACKAGE`
+
+This section is about upstream yum repos & packages to be installed.
+
+```yaml
+node_repo_modules: local          # upstream repo to be added on node, local by default
+node_repo_remove: true            # remove existing repo on node?
+node_packages: [openssh-server]   # packages to be installed current nodes with latest version
+#node_default_packages: []        # default packages to be installed on infra nodes, (defaults are load from node_id/vars)
+```
+
+------
+
+### `node_repo_modules`
+
+name: `node_repo_modules`, type: `string`, level: `C/A`
+
+upstream repo to be added on node, default value: `local`
+
+This parameter specifies the upstream repo to be added to the node. It is used to filter the [`repo_upstream`](#repo_upstream) entries and only the entries with the same `module` value will be added to the node’s software source. Which is similar to the [`repo_modules`](#repo_modules) parameter.
+
+------
+
+### `node_repo_remove`
+
+name: `node_repo_remove`, type: `bool`, level: `C/A`
+
+remove existing repo on node?
+
+default value is `true`, and thus Pigsty will move existing repo file in `/etc/yum.repos.d` to a backup dir: `/etc/yum.repos.d/backup` before adding upstream repos On Debian/Ubuntu, Pigsty will backup & move `/etc/apt/sources.list(.d)` to `/etc/apt/backup`.
+
+------
+
+### `node_packages`
+
+name: `node_packages`, type: `string[]`, level: `C`
+
+packages to be installed current nodes, default values: `[openssh-server]`.
+
+Each element is a comma-separated list of package names, which will be installed on the current node in addition to [`node_default_packages`](#node_default_packages)
+
+Packages specified in this parameter will be **upgraded** to the latest version, and the default value is `[openssh-server]`, which will upgrade `sshd` by default to avoid SSH CVE.
+
+This parameters is usually used to install additional software packages that is ad hoc for the current node/cluster.
+
+------
+
+### `node_default_packages`
+
+name: `node_default_packages`, type: `string[]`, level: `G`
+
+default packages to be installed on all nodes, the default values is not defined.
+
+This param is an array os strings, each string is a comma-separated list of package names, which will be installed on all nodes by default.
+
+This param **DOES NOT** have a default value, you can specify it explicitly, or leaving it empty if you want to use the default values.
+
+When leaving it empty, Pigsty will use the default values from the `node_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+
+For EL system, the default values are:
+
+```yaml
+- lz4,unzip,bzip2,pv,jq,git,ncdu,make,patch,bash,lsof,wget,uuid,tuned,nvme-cli,numactl,sysstat,iotop,htop,rsync,tcpdump
+- python3,python3-pip,socat,lrzsz,net-tools,ipvsadm,telnet,ca-certificates,openssl,keepalived,etcd,haproxy,chrony
+- zlib,yum,audit,bind-utils,readline,vim-minimal,node_exporter,grubby,openssh-server,openssh-clients
+```
+
+For debian / ubuntu nodes, use this default value explicitly:
+
+```yaml
+- lz4,unzip,bzip2,pv,jq,git,ncdu,make,patch,bash,lsof,wget,uuid,tuned,nvme-cli,numactl,sysstat,iotop,htop,rsync,tcpdump
+- python3,python3-pip,socat,lrzsz,net-tools,ipvsadm,telnet,ca-certificates,openssl,keepalived,etcd,haproxy,chrony
+- zlib1g,acl,dnsutils,libreadline-dev,vim-tiny,node-exporter,openssh-server,openssh-client
+```
+
+------
+
+## `NODE_TUNE`
+
+Configure tuned templates, features, kernel modules, sysctl params on node.
+
+```yaml
+node_disable_firewall: true       # disable node firewall? true by default
+node_disable_selinux: true        # disable node selinux? true by default
+node_disable_numa: false          # disable node numa, reboot required
+node_disable_swap: false          # disable node swap, use with caution
+node_static_network: true         # preserve dns resolver settings after reboot
+node_disk_prefetch: false         # setup disk prefetch on HDD to increase performance
+node_kernel_modules: [ softdog, br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+node_hugepage_count: 0            # number of 2MB hugepage, take precedence over ratio
+node_hugepage_ratio: 0            # node mem hugepage ratio, 0 disable it by default
+node_overcommit_ratio: 0          # node mem overcommit ratio, 0 disable it by default
+node_tune: oltp                   # node tuned profile: none,oltp,olap,crit,tiny
+node_sysctl_params: { }           # sysctl parameters in k:v format in addition to tuned
+```
+
+------
+
+### `node_disable_firewall`
+
+name: `node_disable_firewall`, type: `bool`, level: `C`
+
+disable node firewall? true by default
+
+default value is `true`
+
+------
+
+### `node_disable_selinux`
+
+name: `node_disable_selinux`, type: `bool`, level: `C`
+
+disable node selinux? true by default
+
+default value is `true`
+
+------
+
+### `node_disable_numa`
+
+name: `node_disable_numa`, type: `bool`, level: `C`
+
+disable node numa, reboot required
+
+default value is `false`
+
+Boolean flag, default is not off. Note that turning off NUMA requires a reboot of the machine before it can take effect!
+
+If you don’t know how to set the CPU affinity, it is recommended to turn off NUMA.
+
+------
+
+### `node_disable_swap`
+
+name: `node_disable_swap`, type: `bool`, level: `C`
+
+disable node swap, use with caution
+
+default value is `false`
+
+But turning off SWAP is not recommended. But SWAP should be disabled when your node is used for a Kubernetes deployment.
+
+If there is enough memory and the database is deployed exclusively. it may slightly improve performance
+
+------
+
+### `node_static_network`
+
+name: `node_static_network`, type: `bool`, level: `C`
+
+preserve dns resolver settings after reboot, default value is `true`
+
+Enabling static networking means that machine reboots will not overwrite your DNS Resolv config with NIC changes. It is recommended to enable it in production environment.
+
+------
+
+### `node_disk_prefetch`
+
+name: `node_disk_prefetch`, type: `bool`, level: `C`
+
+setup disk prefetch on HDD to increase performance
+
+default value is `false`, Consider enable this when using HDD.
+
+------
+
+### `node_kernel_modules`
+
+name: `node_kernel_modules`, type: `string[]`, level: `C`
+
+kernel modules to be enabled on this node
+
+default value:
+
+```yaml
+node_kernel_modules: [ softdog, br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+```
+
+An array consisting of kernel module names declaring the kernel modules that need to be installed on the node.
+
+------
+
+### `node_hugepage_count`
+
+name: `node_hugepage_count`, type: `int`, level: `C`
+
+number of 2MB hugepage, take precedence over ratio, 0 by default
+
+Take precedence over [`node_hugepage_ratio`](#node_hugepage_ratio). If a non-zero value is given, it will be written to `/etc/sysctl.d/hugepage.conf`
+
+If `node_hugepage_count` and `node_hugepage_ratio` are both `0` (default), hugepage will be disabled at all.
+
+Negative value will not work, and number higher than 90% node mem will be ceil to 90% of node mem.
+
+It should slightly larger than [`pg_shared_buffer_ratio`](https://pigsty.io/docs/pgsql/param/#pg_shared_buffer_ratio), if not zero.
+
+------
+
+### `node_hugepage_ratio`
+
+name: `node_hugepage_ratio`, type: `float`, level: `C`
+
+node mem hugepage ratio, 0 disable it by default, valid range: 0 ~ 0.40
+
+default values: `0`, which will set `vm.nr_hugepages=0` and not use HugePage at all.
+
+Percent of this memory will be allocated as HugePage, and reserved for PostgreSQL.
+
+It should be equal or slightly larger than [`pg_shared_buffer_ratio`](https://pigsty.io/docs/pgsql/param/#pg_shared_buffer_ratio), if not zero.
+
+For example, if you have default 25% mem for postgres shard buffers, you can set this value to 0.27 ~ 0.30, Wasted hugepage can be reclaimed later with `/pg/bin/pg-tune-hugepage`
+
+------
+
+### `node_overcommit_ratio`
+
+name: `node_overcommit_ratio`, type: `int`, level: `C`
+
+node mem overcommit ratio, 0 disable it by default. this is an integer from 0 to 100+ .
+
+default values: `0`, which will set `vm.overcommit_memory=0`, otherwise `vm.overcommit_memory=2` will be used, and this value will be used as `vm.overcommit_ratio`.
+
+It is recommended to set use a `vm.overcommit_ratio` on dedicated pgsql nodes. e.g. 50 ~ 100.
+
+------
+
+### `node_tune`
+
+name: `node_tune`, type: `enum`, level: `C`
+
+node tuned profile: none,oltp,olap,crit,tiny
+
+default values: `oltp`
+
+- `tiny`: Micro Virtual Machine (1 ~ 3 Core, 1 ~ 8 GB Mem)
+- `oltp`: Regular OLTP templates with optimized latency
+- `olap `: Regular OLAP templates to optimize throughput
+- `crit`: Core financial business templates, optimizing the number of dirty pages
+
+Usually, the database tuning template [`pg_conf`](https://pigsty.io/docs/pgsql/param/#pg_conf) should be paired with the node tuning template: [`node_tune`](#node_tune)
+
+------
+
+### `node_sysctl_params`
+
+name: `node_sysctl_params`, type: `dict`, level: `C`
+
+sysctl parameters in k:v format in addition to tuned
+
+default values: `{}`
+
+Dictionary K-V structure, Key is kernel `sysctl` parameter name, Value is the parameter value.
+
+You can also define sysctl parameters with tuned profile
+
+------
+
+## `NODE_ADMIN`
+
+This section is about admin users and it’s credentials.
+
+```yaml
+node_data: /data                  # node main data directory, `/data` by default
+node_admin_enabled: true          # create a admin user on target node?
+node_admin_uid: 88                # uid and gid for node admin user
+node_admin_username: dba          # name of node admin user, `dba` by default
+node_admin_ssh_exchange: true     # exchange admin ssh key among node cluster
+node_admin_pk_current: true       # add current user's ssh pk to admin authorized_keys
+node_admin_pk_list: []            # ssh public keys to be added to admin user
+```
+
+------
+
+### `node_data`
+
+name: `node_data`, type: `path`, level: `C`
+
+node main data directory, `/data` by default
+
+default values: `/data`
+
+If specified, this path will be used as major data disk mountpoint. And a dir will be created and throwing a warning if path not exists.
+
+The data dir is owned by root with mode `0777`.
+
+------
+
+### `node_admin_enabled`
+
+name: `node_admin_enabled`, type: `bool`, level: `C`
+
+create a admin user on target node?
+
+default value is `true`
+
+Create an admin user on each node (password-free sudo and ssh), an admin user named `dba (uid=88)` will be created by default, which can access other nodes in the env and perform sudo from the meta node via SSH password-free.
+
+------
+
+### `node_admin_uid`
+
+name: `node_admin_uid`, type: `int`, level: `C`
+
+uid and gid for node admin user
+
+default values: `88`
+
+------
+
+### `node_admin_username`
+
+name: `node_admin_username`, type: `username`, level: `C`
+
+name of node admin user, `dba` by default
+
+default values: `dba`
+
+------
+
+### `node_admin_ssh_exchange`
+
+name: `node_admin_ssh_exchange`, type: `bool`, level: `C`
+
+exchange admin ssh key among node cluster
+
+default value is `true`
+
+When enabled, Pigsty will exchange SSH public keys between members during playbook execution, allowing admins [`node_admin_username`](#node_admin_username) to access each other from different nodes.
+
+------
+
+### `node_admin_pk_current`
+
+name: `node_admin_pk_current`, type: `bool`, level: `C`
+
+add current user’s ssh pk to admin authorized_keys
+
+default value is `true`
+
+When enabled, on the current node, the SSH public key (`~/.ssh/id_rsa.pub`) of the current user is copied to the `authorized_keys` of the target node admin user.
+
+When deploying in a production env, be sure to pay attention to this parameter, which installs the default public key of the user currently executing the command to the admin user of all machines.
+
+------
+
+### `node_admin_pk_list`
+
+name: `node_admin_pk_list`, type: `string[]`, level: `C`
+
+ssh public keys to be added to admin user
+
+default values: `[]`
+
+Each element of the array is a string containing the key written to the admin user `~/.ssh/authorized_keys`, and the user with the corresponding private key can log in as an admin user.
+
+When deploying in production envs, be sure to note this parameter and add only trusted keys to this list.
+
+------
+
+### `node_aliases`
+
+name: `node_aliases`, type: `dict`, level: `C/I`
+
+extra aliases to be added to admin user’s shell profile
+
+default values: `{}`
+
+You can add extra shell aliases to it, pigsty will add these aliases to the `/etc/profile.d/node.alias.sh` file on the target node:
+
+```yaml
+node_aliases:
+  g:   git
+  d:   docker
+```
+
+会生成：
+
+```bash
+alias g="git"
+alias d="docker"
+```
+
+------
+
+## `NODE_TIME`
+
+```yaml
+node_timezone: ''                 # setup node timezone, empty string to skip
+node_ntp_enabled: true            # enable chronyd time sync service?
+node_ntp_servers:                 # ntp servers in `/etc/chrony.conf`
+  - pool pool.ntp.org iburst
+node_crontab_overwrite: true      # overwrite or append to `/etc/crontab`?
+node_crontab: [ ]                 # crontab entries in `/etc/crontab`
+```
+
+------
+
+### `node_timezone`
+
+name: `node_timezone`, type: `string`, level: `C`
+
+setup node timezone, empty string to skip
+
+default value is empty string, which will not change the default timezone (usually UTC)
+
+------
+
+### `node_ntp_enabled`
+
+name: `node_ntp_enabled`, type: `bool`, level: `C`
+
+enable chronyd time sync service?
+
+default value is `true`, and thus Pigsty will override the node’s `/etc/chrony.conf` by with [`node_ntp_servers`](#node_ntp_servers).
+
+If you already a NTP server configured, just set to `false` to leave it be.
+
+------
+
+### `node_ntp_servers`
+
+name: `node_ntp_servers`, type: `string[]`, level: `C`
+
+ntp servers in `/etc/chrony.conf`, default value: `["pool pool.ntp.org iburst"]`
+
+It only takes effect if [`node_ntp_enabled`](#node_ntp_enabled) is true.
+
+You can use `${admin_ip}` to sync time with ntp server on admin node rather than public ntp server.
+
+```yaml
+node_ntp_servers: [ 'pool ${admin_ip} iburst' ]
+```
+
+------
+
+### `node_crontab_overwrite`
+
+name: `node_crontab_overwrite`, type: `bool`, level: `C`
+
+overwrite or append to `/etc/crontab`?
+
+default value is `true`, and pigsty will render records in [`node_crontab`](#node_crontab) in overwrite mode rather than appending to it.
+
+------
+
+### `node_crontab`
+
+name: `node_crontab`, type: `string[]`, level: `C`
+
+crontab entries in `/etc/crontab`
+
+default values: `[]`
+
+------
+
+## `NODE_VIP`
+
+You can bind an optional L2 VIP among one node cluster, which is disabled by default.
+
+L2 VIP can only be used in same L2 LAN, which may incurs extra restrictions on your network topology.
+
+If enabled, You have to manually assign the [`vip_address`](#vip_address) and [`vip_vrid`](#vip_vrid) for each node cluster.
+
+It is user’s responsibility to ensure that the address / vrid is **unique** among the same LAN.
+
+```yaml
+vip_enabled: false                # enable vip on this node cluster?
+# vip_address:         [IDENTITY] # node vip address in ipv4 format, required if vip is enabled
+# vip_vrid:            [IDENTITY] # required, integer, 1-254, should be unique among same VLAN
+vip_role: backup                  # optional, `master/backup`, backup by default, use as init role
+vip_preempt: false                # optional, `true/false`, false by default, enable vip preemption
+vip_interface: eth0               # node vip network interface to listen, `eth0` by default
+vip_dns_suffix: ''                # node vip dns name suffix, empty string by default
+vip_exporter_port: 9650           # keepalived exporter listen port, 9650 by default
+```
+
+------
+
+### `vip_enabled`
+
+name: `vip_enabled`, type: `bool`, level: `C`
+
+enable vip on this node cluster? default value is `false`, means no L2 VIP is created for this node cluster.
+
+L2 VIP can only be used in same L2 LAN, which may incurs extra restrictions on your network topology.
+
+------
+
+### `vip_address`
+
+name: `vip_address`, type: `ip`, level: `C`
+
+node vip address in IPv4 format, **required** if node [`vip_enabled`](#vip_enabled).
+
+no default value. This parameter must be explicitly assigned and unique in your LAN.
+
+------
+
+### `vip_vrid`
+
+name: `vip_vrid`, type: `int`, level: `C`
+
+integer, 1-254, should be unique in same VLAN, **required** if node [`vip_enabled`](#vip_enabled).
+
+no default value. This parameter must be explicitly assigned and unique in your LAN.
+
+------
+
+### `vip_role`
+
+name: `vip_role`, type: `enum`, level: `I`
+
+node vip role, could be `master` or `backup`, will be used as initial keepalived state.
+
+------
+
+### `vip_preempt`
+
+name: `vip_preempt`, type: `bool`, level: `C/I`
+
+optional, `true/false`, false by default, enable vip preemption
+
+default value is `false`, means no preempt is happening when a backup have higher priority than living master.
+
+------
+
+### `vip_interface`
+
+name: `vip_interface`, type: `string`, level: `C/I`
+
+node vip network interface to listen, `eth0` by default.
+
+It should be the same primary intranet interface of your node, which is the IP address you used in the inventory file.
+
+If your node have different interface, you can override it on instance vars
+
+------
+
+### `vip_dns_suffix`
+
+name: `vip_dns_suffix`, type: `string`, level: `C/I`
+
+node vip dns name suffix, empty string by default. It will be used as the DNS name of the node VIP.
+
+------
+
+### `vip_exporter_port`
+
+name: `vip_exporter_port`, type: `port`, level: `C/I`
+
+keepalived exporter listen port, 9650 by default.
+
+------
+
+## `HAPROXY`
+
+HAProxy is installed on every node by default, exposing services in a NodePort manner.
+
+It is used by [`PGSQL`](https://pigsty.io/docs/pgsql/) [Service](https://pigsty.io/docs/concept/svc/).
+
+```yaml
+haproxy_enabled: true             # enable haproxy on this node?
+haproxy_clean: false              # cleanup all existing haproxy config?
+haproxy_reload: true              # reload haproxy after config?
+haproxy_auth_enabled: true        # enable authentication for haproxy admin page
+haproxy_admin_username: admin     # haproxy admin username, `admin` by default
+haproxy_admin_password: pigsty    # haproxy admin password, `pigsty` by default
+haproxy_exporter_port: 9101       # haproxy admin/exporter port, 9101 by default
+haproxy_client_timeout: 24h       # client side connection timeout, 24h by default
+haproxy_server_timeout: 24h       # server side connection timeout, 24h by default
+haproxy_services: []              # list of haproxy service to be exposed on node
+```
+
+------
+
+### `haproxy_enabled`
+
+name: `haproxy_enabled`, type: `bool`, level: `C`
+
+enable haproxy on this node?
+
+default value is `true`
+
+------
+
+### `haproxy_clean`
+
+name: `haproxy_clean`, type: `bool`, level: `G/C/A`
+
+cleanup all existing haproxy config?
+
+default value is `false`
+
+------
+
+### `haproxy_reload`
+
+name: `haproxy_reload`, type: `bool`, level: `A`
+
+reload haproxy after config?
+
+default value is `true`, it will reload haproxy after config change.
+
+If you wish to check before apply, you can turn off this with cli args and check it.
+
+------
+
+### `haproxy_auth_enabled`
+
+name: `haproxy_auth_enabled`, type: `bool`, level: `G`
+
+enable authentication for haproxy admin page
+
+default value is `true`, which will require a http basic auth for admin page.
+
+disable it is not recommended, since your traffic control will be exposed
+
+------
+
+### `haproxy_admin_username`
+
+name: `haproxy_admin_username`, type: `username`, level: `G`
+
+haproxy admin username, `admin` by default
+
+------
+
+### `haproxy_admin_password`
+
+name: `haproxy_admin_password`, type: `password`, level: `G`
+
+haproxy admin password, `pigsty` by default
+
+> PLEASE CHANGE IT IN YOUR PRODUCTION ENVIRONMENT!
+
+------
+
+### `haproxy_exporter_port`
+
+name: `haproxy_exporter_port`, type: `port`, level: `C`
+
+haproxy admin/exporter port, `9101` by default
+
+------
+
+### `haproxy_client_timeout`
+
+name: `haproxy_client_timeout`, type: `interval`, level: `C`
+
+client side connection timeout, `24h` by default
+
+------
+
+### `haproxy_server_timeout`
+
+name: `haproxy_server_timeout`, type: `interval`, level: `C`
+
+server side connection timeout, `24h` by default
+
+------
+
+### `haproxy_services`
+
+name: `haproxy_services`, type: `service[]`, level: `C`
+
+list of haproxy service to be exposed on node, default values: `[]`
+
+Each element is a service definition, here is an ad hoc haproxy service example:
+
+```yaml
+haproxy_services:                   # list of haproxy service
+
+  # expose pg-test read only replicas
+  - name: pg-test-ro                # [REQUIRED] service name, unique
+    port: 5440                      # [REQUIRED] service port, unique
+    ip: "*"                         # [OPTIONAL] service listen addr, "*" by default
+    protocol: tcp                   # [OPTIONAL] service protocol, 'tcp' by default
+    balance: leastconn              # [OPTIONAL] load balance algorithm, roundrobin by default (or leastconn)
+    maxconn: 20000                  # [OPTIONAL] max allowed front-end connection, 20000 by default
+    default: 'inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100'
+    options:
+      - option httpchk
+      - option http-keep-alive
+      - http-check send meth OPTIONS uri /read-only
+      - http-check expect status 200
+    servers:
+      - { name: pg-test-1 ,ip: 10.10.10.11 , port: 5432 , options: check port 8008 , backup: true }
+      - { name: pg-test-2 ,ip: 10.10.10.12 , port: 5432 , options: check port 8008 }
+      - { name: pg-test-3 ,ip: 10.10.10.13 , port: 5432 , options: check port 8008 }
+```
+
+It will be rendered to `/etc/haproxy/<service.name>.cfg` and take effect after reload.
+
+------
+
+## `NODE_EXPORTER`
+
+```yaml
+node_exporter_enabled: true       # setup node_exporter on this node?
+node_exporter_port: 9100          # node exporter listen port, 9100 by default
+node_exporter_options: '--no-collector.softnet --no-collector.nvme --collector.tcpstat --collector.processes'
+```
+
+------
+
+### `node_exporter_enabled`
+
+name: `node_exporter_enabled`, type: `bool`, level: `C`
+
+setup node_exporter on this node? default value is `true`
+
+------
+
+### `node_exporter_port`
+
+name: `node_exporter_port`, type: `port`, level: `C`
+
+node exporter listen port, `9100` by default
+
+------
+
+### `node_exporter_options`
+
+name: `node_exporter_options`, type: `arg`, level: `C`
+
+extra server options for node_exporter, default value: `--no-collector.softnet --no-collector.nvme --collector.tcpstat --collector.processes`
+
+Pigsty enables `tcpstat`, `processes` collectors and disable `nvme`, `softnet` metrics collectors by default.
+
+------
+
+## `PROMTAIL`
+
+Promtail will collect logs from other modules, and send them to [`LOKI`](#loki)
+
+- `INFRA`: Infra logs, collected only on infra nodes.
+  - `nginx-access`: `/var/log/nginx/access.log`
+  - `nginx-error`: `/var/log/nginx/error.log`
+  - `grafana`: `/var/log/grafana/grafana.log`
+- `NODES`: Host node logs, collected on all nodes.
+  - `syslog`: `/var/log/messages`
+  - `dmesg`: `/var/log/dmesg`
+  - `cron`: `/var/log/cron`
+- `PGSQL`: PostgreSQL logs, collected when a node is defined with `pg_cluster`.
+  - `postgres`: `/pg/log/postgres/*`
+  - `patroni`: `/pg/log/patroni.log`
+  - `pgbouncer`: `/pg/log/pgbouncer/pgbouncer.log`
+  - `pgbackrest`: `/pg/log/pgbackrest/*.log`
+- `REDIS`: Redis logs, collected when a node is defined with `redis_cluster`.
+  - `redis`: `/var/log/redis/*.log`
+
+> Log directory are customizable according to [`pg_log_dir`](https://pigsty.io/docs/pgsql/param/#pg_log_dir), [`patroni_log_dir`](https://pigsty.io/docs/pgsql/param/#patroni_log_dir), [`pgbouncer_log_dir`](https://pigsty.io/docs/pgsql/param/#pgbouncer_log_dir), [`pgbackrest_log_dir`](https://pigsty.io/docs/pgsql/param/#pgbackrest_log_dir)
+
+```yaml
+promtail_enabled: true            # enable promtail logging collector?
+promtail_clean: false             # purge existing promtail status file during init?
+promtail_port: 9080               # promtail listen port, 9080 by default
+promtail_positions: /var/log/positions.yaml # promtail position status file path
+```
+
+------
+
+### `promtail_enabled`
+
+name: `promtail_enabled`, type: `bool`, level: `C`
+
+enable promtail logging collector?
+
+default value is `true`
+
+------
+
+### `promtail_clean`
+
+name: `promtail_clean`, type: `bool`, level: `G/A`
+
+purge existing promtail status file during init?
+
+default value is `false`, if you choose to clean, Pigsty will remove the existing state file defined by [`promtail_positions`](#promtail_positions) which means that Promtail will recollect all logs on the current node and send them to Loki again.
+
+------
+
+### `promtail_port`
+
+name: `promtail_port`, type: `port`, level: `C`
+
+promtail listen port, 9080 by default
+
+default values: `9080`
+
+------
+
+### `promtail_positions`
+
+name: `promtail_positions`, type: `path`, level: `C`
+
+promtail position status file path
+
+default values: `/var/log/positions.yaml`
+
+Promtail records the consumption offsets of all logs, which are periodically written to the file specified by [`promtail_positions`](#promtail_positions).

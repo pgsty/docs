@@ -1,0 +1,4 @@
+
+
+build:
+	next build
