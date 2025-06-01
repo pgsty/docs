@@ -8,40 +8,6 @@ Pigsty runs on nodes, which are Bare Metals or Virtual Machines. You can prepare
 
 ------
 
-## Sandbox
-
-Pigsty has a sandbox, which is a 4-node deployment with fixed IP addresses and other identifiers. Check [`conf/full.yml`](https://pigsty.io/docs/conf/full/) for details.
-
-The sandbox consists of 4 nodes with fixed IP addresses: `10.10.10.10`, `10.10.10.11`, `10.10.10.12`, `10.10.10.13`.
-
-There’s a primary singleton PostgreSQL cluster: `pg-meta` on the `meta` node, which can be used alone if you don’t care about PostgreSQL high availability.
-
-- `meta 10.10.10.10 pg-meta pg-meta-1`
-
-There are 3 additional nodes in the sandbox, form a 3-instance PostgreSQL HA cluster `pg-test`.
-
-- `node-1 10.10.10.11 pg-test.pg-test-1`
-- `node-2 10.10.10.12 pg-test.pg-test-2`
-- `node-3 10.10.10.13 pg-test.pg-test-3`
-
-Two optional L2 VIP are bind on primary instances of cluster `pg-meta` and `pg-test`:
-
-- `10.10.10.2 pg-meta`
-- `10.10.10.3 pg-test`
-
-There’s also a 1-instance `etcd` cluster, and 1-instance `minio` cluster on the `meta` node, too.
-
-![pigsty-sandbox.jpg](https://pigsty.io/img/pigsty/sandbox.jpg)
-
-You can run sandbox on local VMs or cloud VMs. Pigsty offers a local sandbox based on [Vagrant](https://pigsty.io/docs/setup/provision/#vagrant) (pulling up local VMs using Virtualbox or libvirt), and a cloud sandbox based on Terraform (creating VMs using the cloud vendor API).
-
-- Local sandbox can be run on your Mac/PC for free. Your Mac/PC should have at least 4C/8G to run the full 4-node sandbox.
-- Cloud sandbox can be easily created and shared. You will have to create a cloud account for that. VMs are created on-demand and can be destroyed with one command, which is also very cheap for a quick glance.
-
-
-
-------
-
 ## Terraform
 
 [Terraform](https://www.terraform.io/) is an open-source tool to practice ‘Infra as Code’. Describe the cloud resource you want and create them with one command.
@@ -107,14 +73,55 @@ aws_secret_access_key =  <AWS_ACCESS_SECRET>
 
 ## Terraform Images
 
-When deploying Pigsty on cloud servers, you might consider using the following operating system base images in Terraform, using Alibaba Cloud as an example:
+When deploying Pigsty on cloud servers, you might consider using the following operating system base images in Terraform,
 
-- CentOS 7.9 : `centos_7_9_x64_20G_alibase_20240628.vhd`
-- Rocky 8.10 : `rockylinux_8_10_x64_20G_alibase_20240923.vhd`
-- Rocky 9.5 : `rockylinux_9_5_x64_20G_alibase_20240925.vhd`
-- Ubuntu 20.04 : `ubuntu_20_04_x64_20G_alibase_20240925.vhd`
-- Ubuntu 22.04 : `ubuntu_22_04_x64_20G_alibase_20240926.vhd`
-- Ubuntu 24.04 : `ubuntu_24_04_x64_20G_alibase_20240923.vhd`
-- Debian 11.11 : `debian_11_11_x64_20G_alibase_20240923.vhd`
-- Debian 12.7 : `debian_12_7_x64_20G_alibase_20240927.vhd`
-- Anolis 8.8 : `anolisos_8_9_x64_20G_rhck_alibase_20240724.vhd`
+Here's example images from Alibaba Cloud: [`terraform.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/terraform.tf#L39)
+
+
+
+
+- CentOS 7.9    :  `centos_7_9_x64_20G_alibase_20240628.vhd`
+- Rocky 8.10    :  `rockylinux_8_10_x64_20G_alibase_20240923.vhd`
+- Rocky 9.5     :  `rockylinux_9_5_x64_20G_alibase_20240925.vhd`
+- Ubuntu 20.04  :  `ubuntu_20_04_x64_20G_alibase_20240925.vhd`
+- Ubuntu 22.04  :  `ubuntu_22_04_x64_20G_alibase_20240926.vhd`
+- Ubuntu 24.04  :  `ubuntu_24_04_x64_20G_alibase_20240923.vhd`
+- Debian 11.11  :  `debian_11_11_x64_20G_alibase_20240923.vhd`
+- Debian 12.7   :  `debian_12_7_x64_20G_alibase_20240927.vhd`
+- Anolis 8.8    :  `anolisos_8_9_x64_20G_rhck_alibase_20240724.vhd`
+
+
+
+
+------
+
+## Sandbox
+
+Pigsty has a sandbox, which is a 4-node deployment with fixed IP addresses and other identifiers. Check [`conf/full.yml`](https://pigsty.io/docs/conf/full/) for details.
+
+The sandbox consists of 4 nodes with fixed IP addresses: `10.10.10.10`, `10.10.10.11`, `10.10.10.12`, `10.10.10.13`.
+
+There’s a primary singleton PostgreSQL cluster: `pg-meta` on the `meta` node, which can be used alone if you don’t care about PostgreSQL high availability.
+
+- `meta 10.10.10.10 pg-meta pg-meta-1`
+
+There are 3 additional nodes in the sandbox, form a 3-instance PostgreSQL HA cluster `pg-test`.
+
+- `node-1 10.10.10.11 pg-test.pg-test-1`
+- `node-2 10.10.10.12 pg-test.pg-test-2`
+- `node-3 10.10.10.13 pg-test.pg-test-3`
+
+Two optional L2 VIP are bind on primary instances of cluster `pg-meta` and `pg-test`:
+
+- `10.10.10.2 pg-meta`
+- `10.10.10.3 pg-test`
+
+There’s also a 1-instance `etcd` cluster, and 1-instance `minio` cluster on the `meta` node, too.
+
+![pigsty-sandbox.jpg](https://pigsty.io/img/pigsty/sandbox.jpg)
+
+You can run sandbox on local VMs or cloud VMs. Pigsty offers a local sandbox based on [Vagrant](https://pigsty.io/docs/setup/provision/#vagrant) (pulling up local VMs using Virtualbox or libvirt), and a cloud sandbox based on Terraform (creating VMs using the cloud vendor API).
+
+- Local sandbox can be run on your Mac/PC for free. Your Mac/PC should have at least 4C/8G to run the full 4-node sandbox.
+- Cloud sandbox can be easily created and shared. You will have to create a cloud account for that. VMs are created on-demand and can be destroyed with one command, which is also very cheap for a quick glance.
+
