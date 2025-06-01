@@ -1,0 +1,14 @@
+{
+  "title": "DOCKER",
+  "description": "可选的容器服务，运行无状态应用",
+  "icon": "Container",
+  "root": true,
+  "pages": [
+    "index",
+    "usage",
+    "param",
+    "playbook",
+    "faq",
+    "..."
+  ]
+}

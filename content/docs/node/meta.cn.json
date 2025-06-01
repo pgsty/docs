@@ -1,0 +1,17 @@
+{
+  "title": "NODE",
+  "description": "节点，监控纳管 Linux 服务器",
+  "icon": "Server",
+  "root": true,
+  "pages": [
+    "index",
+    "concept",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "monitor",
+    "faq",
+    "..."
+  ]
+}

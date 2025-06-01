@@ -1,6 +1,7 @@
 ---
-title: Compatible OS
-description: List of compatible linux os distributions
+title: 兼容系统
+description: 与 Pigsty 兼容的 Linux 操作系统发行版列表
+icon: Cog
 ---
 
 import {
@@ -31,7 +32,7 @@ Pigsty 建议使用 EL9， U24， D12，推荐的小版本为： RockyLinux 9.5�
 
 ## EL
 
-Pigsty works on RHEL / Rocky / Alma / Anolis / CentOS 8, 9, EL 7 is no longer supported.
+Pigsty 可运行于 EL 7/8/9 兼容系统，如 RHEL / Rocky / Alma / Anolis / CentOS，建议使用 RockyLinux 9.5。
 
 | EL 发行版                 |                          版本代码                          |                           架构                            |                                             系统代码                                              |                      PG17                      |                      PG16                      |                      PG15                      |                      PG14                      |                      PG13                      |
 |:-----------------------|:------------------------------------------------------:|:-------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
@@ -43,10 +44,11 @@ Pigsty works on RHEL / Rocky / Alma / Anolis / CentOS 8, 9, EL 7 is no longer su
 | RHEL7 / CentOS7        |  <span className="font-bold text-red-600">EL7</span>   | <span className="font-bold text-red-600">aarch64</span> |                                               -                                               |                                                |                                                |                                                |                                                |                                                |
 
 <Callout title="EL 9.5 Recommended" type="success">
+    RockyLinux 9.5 提供了完整的扩展插件支持，是 Pigsty 首要支持并推荐使用的 EL 系统版本。
 </Callout>
 
 <Callout title="EL 7 EOL" type="error">
-For extended support on legacy os, consider our pro subscription.
+    EL 7 支持已经不再维护，如果您需要在过时系统上运行，考虑我们的专业服务。
 </Callout>
 
 
@@ -54,7 +56,7 @@ For extended support on legacy os, consider our pro subscription.
 
 ## Ubuntu
 
-Pigsty 可运行于 Ubuntu 24.04 / 22.04：
+Pigsty 可运行于 Ubuntu 24.04 / 22.04 / 20.04 ，建议使用 24.04.1 。
 
 | Ubuntu 发行版             |                          版本代码                          |                           架构                            |                                             系统代码                                              |                      PG17                      |                      PG16                      |                      PG15                      |                      PG14                      |                      PG13                      |
 |:-----------------------|:------------------------------------------------------:|:-------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|
@@ -65,18 +67,19 @@ Pigsty 可运行于 Ubuntu 24.04 / 22.04：
 | Ubuntu 20.04 (`focal`) |  <span className="font-bold text-red-600">U20</span>   | <span className="font-bold text-sky-600">x86_64</span>  |  [`u20.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u20.x86_64.yml)  |                                                |   <BadgeCheckIcon className="text-red-500"/>   |   <BadgeCheckIcon className="text-red-500"/>   |   <BadgeCheckIcon className="text-red-500"/>   |   <BadgeCheckIcon className="text-red-500"/>   |
 | Ubuntu 20.04 (`focal`) |  <span className="font-bold text-red-600">U20</span>   | <span className="font-bold text-red-600">aarch64</span> |                                               -                                               |                                                |                                                |                                                |                                                |                                                |
 
-<Callout title="Ubuntu 24.04.1 LTS Recommended" type="success">
+<Callout title="推荐使用 Ubuntu 24.04.1 LTS" type="success">
+    Ubuntu 24.04 提供了完整的扩展插件支持，是 Pigsty 首要支持并推荐使用的 Linux 系统版本。
 </Callout>
 
 <Callout title="Ubuntu 20.04 EOL" type="error">
-For extended support on legacy os, consider our pro subscription.
+    Ubuntu 20.04 支持已经不再维护，如果您需要在过时系统上运行，考虑我们的专业服务。
 </Callout>
 
 --------
 
 ## Debian
 
-Pigsty 可运行于 Debian 12，我们建议使用 Debian 12.7 版本：
+Pigsty 可运行于 Debian 12 / 11，建议使用 12.7 ：
 
 | Debian 发行版             |                        版本代码                         |                           架构                            |                                             系统代码                                              |                    PG17                     |                    PG16                     |                    PG15                     |                    PG14                     |                    PG13                     |
 |:-----------------------|:---------------------------------------------------:|:-------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|
@@ -85,9 +88,10 @@ Pigsty 可运行于 Debian 12，我们建议使用 Debian 12.7 版本：
 | Debian 11 (`bullseye`) | <span className="font-bold text-red-600">D11</span> | <span className="font-bold text-sky-600">x86_64</span>  |  [`d11.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d11.x86_64.yml)  |                                             | <BadgeCheckIcon className="text-red-500"/>  | <BadgeCheckIcon className="text-red-500"/>  | <BadgeCheckIcon className="text-red-500"/>  | <BadgeCheckIcon className="text-red-500"/>  |
 | Debian 11 (`bullseye`) | <span className="font-bold text-red-600">D11</span> | <span className="font-bold text-red-600">aarch64</span> |                                               -                                               |                                             |                                             |                                             |                                             |                                             |
 
-<Callout title="Debian 12.7 Recommended" type="success">
+<Callout title="推荐使用 Debian 12.7" type="success">
+    Debian 12 带有完整的扩展支持，是 Pigsty 首要支持并推荐使用的 Linux 系统版本。
 </Callout>
 
-<Callout title="Debian 11 nearing EOL" type="warn">
-For extended support on legacy os, consider our pro subscription.
+<Callout title="Debian 11 支持" type="warn">
+    Debian 11 支持已经不再维护，如果您需要在过时系统上运行，考虑我们的专业服务。
 </Callout>

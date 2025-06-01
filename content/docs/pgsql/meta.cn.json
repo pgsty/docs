@@ -1,0 +1,29 @@
+{
+  "title": "PGSQL",
+  "description": "PostgreSQL：数据库内核",
+  "root": true,
+  "pages": [
+    "index",
+
+    "---配置---",
+    "concept",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "dashboard",
+
+    "---实体---",
+    "cluster",
+    "service",
+    "user",
+    "database",
+    "extension",
+    "hba",
+    "acl",
+
+    "--- ---",
+    "faq",
+    "..."
+  ]
+}

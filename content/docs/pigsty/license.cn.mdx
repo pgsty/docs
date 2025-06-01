@@ -1,154 +1,133 @@
 ---
-title: License
-description: Open Source license and SBOM
+title: 开源协议
+description: 开源许可证，法律声明，以及 SBOM 清单
 icon: Scale
 ---
 
 
-Pigsty is open-sourced under the [AGPLv3](https://github.com/pgsty/pigsty/blob/main/LICENSE) license, which is a copyleft license.
-
 ------
 
-## Summary
+## 摘要
 
-Pigsty uses the [AGPLv3](https://github.com/pgsty/pigsty/blob/main/LICENSE) license, which is a strong copyleft license that requires you to also distribute the source code of your derivative works under the same license.
-It's no big deal if you <span className="text-sky-700 font-bold">"USE"</span> it, but if you <span className="text-red-500 font-bold">"Distribute"</span> Pigsty, you must make the source code of derivative work available under the same license.
+Pigsty 使用 [AGPLv3](https://github.com/pgsty/pigsty/blob/main/LICENSE) 开源协议，这是一种强制性的 Copyleft 许可证。
 
-<span className="font-bold text-sky-700">Permissions</span>
+如果您通过**网络分发**、托管或创建 Pigsty 软件的 **衍生作品**，
+GNU AGPLv3 许可证要求您也按照相同的 GNU AGPL v3 许可证分发组合作品的完整、相应的源代码。
+无论您是否修改了 Pigsty ，此要求都适用。
 
--  Commercial use
--  Modification
--  Distribution
--  Patent use
--  Private use
+<span className="font-bold text-sky-700">本协议授权您：</span>
 
-<span className="font-bold text-red-700">Limitations</span>
+-  商用
+-  修改
+-  分发
+-  专利授权
+-  私人使用
 
--  Liability
--  Warranty
+<span className="font-bold text-red-700">本协议不提供：</span>
 
-<span className="font-bold text-orange-400">Conditions</span>
+-  商标使用权
+-  责任与担保
 
--  License and copyright notice
--  State changes
--  Disclose source
--  Network use is distribution
--  Same license
+<span className="font-bold text-orange-400">本协议的条件：</span>
 
+-  包含本许可证并显著声明
+-  不得修改其开源状态
+-  公开源代码
+-  通过网络使用属于分发的一种
+-  使用同样的协议开源
 
-------
-
-## Exemptions
-
-While employing the **AGPLv3** license for Pigsty, we extend exemptions to common **end users** under terms akin to the **Apache 2.0** license. Common end users are defined as all entities except **public cloud** and **Database as a Service** vendors.
-
-These end users may utilize Pigsty for commercial activities and service provision without AGPL licensing concerns Our [subscription](https://pigsty.io/docs/about/service/) include written guarantees of these terms for additional assurance.
-
-We encourage cloud & databases vendors adhering to AGPLv3 to use Pigsty for derivative works and to contribute back to the community.
 
 
 ------
 
-## Why AGPLv3
+## 豁免条款
 
-We don’t like the idea that public cloud vendors take open-source code, provide as-a-service, and not give back equally (their admin controller & console) to the community. This is a vulnerability in the GPL license that AGPLv3 was designed to close.
+Pigsty 采用了 AGPLv3 许可证，但对于**普通终端用户**（即：**公有云厂商，数据库厂商除外的用户**），执行等效 Apache 2.0 许可证。
 
-The AGPLv3 does not affect regular end users: using Pigsty internally is not “distributing” it, so you don’t have to worry about whether your business code needs to be open-sourced. If you do worry about it, you can always choose the pro version with written guarantees.
+普通终端用户可以将 AGPLv3 用于商业目的，提供服务，二次开发，而无需担心许可证问题。
+即使普通终端用户对 Pigsty 进行二次开发，并违反了 AGPL 协议没有开源衍生作品，
+只要用途在合理范围内，我们不会对此进行追索，并豁免用户的相关开源义务。
+在 [订阅支持](https://pigsty.cc/docs/about/service/) 中，我们可以提供关于责任豁免的书面承诺。
 
-Wile you only need to consider AGPLv3 when you “distribute” Pigsty or modifications to it as part of a software/service offering. Such as database/software/cloud vendors who provide Pigsty as a service or part of their software to their customers.
+我们支持并欢迎遵循 AGPLv3 协议的 **PostgreSQL 服务提供商** 基于 Pigsty 交付，
+并提供自己的付费咨询与支持服务，并将二次开发成果回馈上游社区主干。
+请注意，PIGSTY® 是注册商标，在提供服务与咨询时，您应当尊重 PIGSTY 的知识产权，包括但不限于商标权与著作权。
+我们提供 OEM 合作方案，详情请参考 [**商业支持**](https://pigsty.cc/docs/about/service/)。
 
-- Frequently Asked Questions about the GNU Licenses
-- [Is making and using multiple copies within one organization or company “distribution”?](https://www.gnu.org/licenses/gpl-faq.html#InternalDistribution)
-- [Does the GPL require that source code of modified versions be posted to the public?](https://www.gnu.org/licenses/gpl-faq.html#GPLRequireSourcePostedPublic)
-- [Does the GPL allow me to sell copies of the program for money?](https://www.gnu.org/licenses/gpl-faq.html#DoesTheGPLAllowMoney)
-- [When is a program and its plug-ins considered a single combined program?](https://www.gnu.org/licenses/gpl-faq.html#GPLPlugins)
-- [Why did you decide to write the GNU Affero GPLv3 as a separate license?](https://www.gnu.org/licenses/gpl-faq.html#SeparateAffero)
-- [In GPLv3 and AGPLv3, what does it mean when it says “notwithstanding any other provision of this License”?](https://www.gnu.org/licenses/gpl-faq.html#v3Notwithstanding)
-- [In AGPLv3, what counts as “interacting with the software remotely through a computer network?”](https://www.gnu.org/licenses/gpl-faq.html#AGPLv3InteractingRemotely)
-- [If some network client software is released under AGPLv3, does it have to be able to provide source to the servers it interacts with?](https://www.gnu.org/licenses/gpl-faq.html#AGPLv3ServerAsUser)
-- [For software that runs a proxy server licensed under the AGPL, how can I provide an offer of source to users interacting with that code?](https://www.gnu.org/licenses/gpl-faq.html#AGPLProxy)
-- [HN: Why we picked AGPL](https://news.ycombinator.com/item?id=41227172): https://www.paradedb.com/blog/agpl
+
 
 ------
 
-## BOM Inventory
+## 为何使用AGPLv3
 
-Related software and open source project:
+AGPLv3 的精神实质是确保 “软件自由”：AGPLv3 不影响普通用户的使用：因为使用并不是一种 “发布”，您无需操心使用 Pigsty 的业务代码是否需要开源。
+当您将 Pigsty 或 Pigsty 的修改作为软件/服务的全部或一部分对外“发布”时，您才需要考虑到 AGPLv3 的约束。以下是 GNU 官方对 GPL 相关问题的解答：
 
-|  Module  |                             Software Name                              | License                                                                                                   |
-|:--------:|:----------------------------------------------------------------------:|-----------------------------------------------------------------------------------------------------------|
-|  PGSQL   |               [PostgreSQL](https://www.postgresql.org/)                | [PostgreSQL License](https://www.postgresql.org/about/licence/) (BSD-Like)                                |
-|  PGSQL   |         [pgbouncer](https://www.pgbouncer.org/community.html)          | [ISC License](https://github.com/pgbouncer/pgbouncer/blob/master/COPYRIGHT)                               |
-|  PGSQL   |          [patroni](https://patroni.readthedocs.io/en/latest/)          | [MIT License](https://github.com/zalando/patroni/blob/master/LICENSE)                                     |
-|  PGSQL   |                 [pgbackrest](https://pgbackrest.org/)                  | [MIT License](https://github.com/pgbackrest/pgbackrest/blob/main/LICENSE)                                 |
-|  PGSQL   |   [vip-manager](https://github.com/cybertec-postgresql/vip-manager)    | [BSD 2-Clause License](https://github.com/cybertec-postgresql/vip-manager/blob/master/LICENSE)            |
-|  PGSQL   |          [pg_exporter](https://github.com/Vonng/pg_exporter)           | [Apache License 2.0](https://github.com/Vonng/pg_exporter/blob/master/LICENSE)                            |
-|   NODE   |      [node_exporter](https://github.com/prometheus/node_exporter)      | [Apache License 2.0](https://github.com/prometheus/node_exporter/blob/master/LICENSE)                     |
-|   NODE   |                  [haproxy](https://www.haproxy.org/)                   | [HAPROXY’s License](https://www.haproxy.org/download/1.3/doc/LICENSE) (GPLv2)                             |
-|   NODE   |               [keepalived](https://www.keepalived.org/)                | [MIT License](https://github.com/umich-arc/keepalived/blob/master/LICENSE)                                |
-|  INFRA   | [Grafana](https://grafana.com/), [Loki](https://grafana.com/oss/loki/) | [GNU Affero General Public License v3.0](https://github.com/grafana/grafana/blob/main/LICENSE)            |
-|  INFRA   |                  [Prometheus](https://prometheus.io/)                  | [Apache License 2.0](https://github.com/prometheus/prometheus/blob/main/LICENSE)                          |
-|  INFRA   |         [DNSMASQ](https://thekelleys.org.uk/dnsmasq/doc.html)          | [GPLv2](https://thekelleys.org.uk/dnsmasq/doc.html) / [GPLv3](https://thekelleys.org.uk/dnsmasq/doc.html) |
-|  INFRA   |     [Ansible](https://docs.ansible.com/ansible/latest/index.html)      | [GNU General Public License v3.0](https://github.com/ansible/ansible/blob/devel/COPYING)                  |
-|   ETCD   |                        [etcd](https://etcd.io/)                        | [Apache License 2.0](https://github.com/etcd-io/etcd/blob/main/LICENSE)                                   |
-|  MINIO   |                        [MinIO](https://min.io/)                        | [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE)              |
-|  REDIS   |                       [Redis](https://redis.io/)                       | [Redis License](https://redis.io/docs/about/license/) (3-clause BSD)                                      |
-|  REDIS   |     [Redis Exporter](https://github.com/oliver006/redis_exporter)      | [MIT License](https://github.com/oliver006/redis_exporter/blob/master/LICENSE)                            |
-|  MONGO   |                  [FerretDB](https://www.ferretdb.io/)                  | [Apache License 2.0](https://github.com/FerretDB/FerretDB/blob/main/LICENSE)                              |
-|  DOCKER  |            [docker-ce](https://github.com/docker/docker-ce)            | [Apache License 2.0](https://github.com/docker/docker-ce/blob/master/LICENSE)                             |
-|  CLOUD   |     [Sealos](https://github.com/labring/sealos/blob/main/LICENSE)      | [Apache License 2.0](https://github.com/labring/sealos/blob/main/LICENSE)                                 |
-|  DUCKDB  |               [DuckDB](https://github.com/duckdb/duckdb)               | [MIT](https://github.com/duckdb/duckdb/blob/main/LICENSE)                                                 |
-| External |                 [Vagrant](https://www.vagrantup.com/)                  | [Business Source License 1.1](https://github.com/hashicorp/vagrant/blob/main/LICENSE)                     |
-| External |                 [Terraform](https://www.terraform.io/)                 | [Business Source License 1.1](https://github.com/hashicorp/terraform/blob/main/LICENSE)                   |
-| External |               [Virtualbox](https://www.virtualbox.org/)                | [GPLv2](https://www.virtualbox.org/wiki/Licensing_FAQ)                                                    |
+[GNU 许可证常见问题](https://www.gnu.org/licenses/gpl-faq.zh-cn.html)
 
-For PostgreSQL Extensions License, check the [extension list](https://pigsty.io/ext/list/)
+- [在组织或公司内部使用是不是“发布”？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#InternalDistribution)
+- [GPL是否要求修改版的源代码公开？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#GPLRequireSourcePostedPublic)
+- [GPL是否允许销售软件的拷贝来赚钱？](https://www.gnu.org/licenses/gpl-faq.html#DoesTheGPLAllowMoney)
+- [我写了一个GPL程序的插件，我要发布我的插件的话，我要使用的许可证有什么强制要求？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#GPLPlugins)
+- [为什么要专门写一个GNU Affero GPLv3作为单独的许可证？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#SeparateAffero)
+- [在GPLv3和AGPLv3中，“不承担本许可证的任何其他条款”是什么意思？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#v3Notwithstanding)
+- [在AGPLv3中，什么应该算作是“通过计算机网络和该软件远程交互？”](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#AGPLv3InteractingRemotely)
+- [如果一个网络客户端程序按照AGPLv3发布，那么它是否必须能够向其交互的服务器提供源代码？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#AGPLv3ServerAsUser)
+- [对于运行代理服务器的AGPL软件，我们怎样才能为和这些程序交互的用户提供源代码？](https://www.gnu.org/licenses/gpl-faq.zh-cn.html#AGPLProxy)
+
+
 
 ------
 
-## SBOM Inventory
+## BOM清单
 
-Related Open Source Project and their license. Please check the [extension list](https://pigsty.io/ext/list/) for the licences of 400 available pg extensions.
+本项目所依赖或相关的核心开源软件及其开源协议。421 个 PostgreSQL 扩展插件的许可证请参考 [PG扩展列表](https://pigsty.cc/ext/list/)。
 
-| Module   | Software Name                                                     | License                                                                                                   | Usage                                                                | Necessity    |
-|----------|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|--------------|
-| PGSQL    | [PostgreSQL](https://www.postgresql.org/)                         | [PostgreSQL License](https://www.postgresql.org/about/licence/)                                           | PostgreSQL core                                                      | **Required** |
-| PGSQL    | [patroni](https://patroni.readthedocs.io/en/latest/)              | [MIT License](https://github.com/zalando/patroni/blob/master/LICENSE)                                     | Enables high availability for PostgreSQL                             | **Required** |
-| ETCD     | [etcd](https://etcd.io/)                                          | [Apache License 2.0](https://github.com/etcd-io/etcd/blob/main/LICENSE)                                   | Provides high-availability consensus and distributed config storage  | **Required** |
-| INFRA    | [Ansible](https://docs.ansible.com/ansible/latest/index.html)     | [GPLv3](https://github.com/ansible/ansible/blob/devel/COPYING)                                            | Control tool for playbooks and management commands                   | **Required** |
-| INFRA    | [Nginx](https://github.com/nginx/nginx)                           | [BSD-2](https://github.com/nginx/nginx/blob/master/LICENSE)                                               | Exposes the web interface and local software sources                 | **Required** |
-| PGSQL    | [pgbackrest](https://pgbackrest.org/)                             | [MIT License](https://github.com/pgbackrest/pgbackrest/blob/main/LICENSE)                                 | Provides PITR backup/restore management capabilities                 | Recommended  |
-| PGSQL    | [pgbouncer](https://www.pgbouncer.org/community.html)             | [ISC License](https://github.com/pgbouncer/pgbouncer/blob/master/COPYRIGHT)                               | Enables PostgreSQL connection pooling                                | Recommended  |
-| PGSQL    | [vip-manager](https://github.com/cybertec-postgresql/vip-manager) | [BSD 2-Clause License](https://github.com/cybertec-postgresql/vip-manager/blob/master/LICENSE)            | Automates L2 VIP binding to PG cluster master                        | Recommended  |
-| PGSQL    | [pg_exporter](https://github.com/Vonng/pg_exporter)               | [Apache License 2.0](https://github.com/Vonng/pg_exporter/blob/master/LICENSE)                            | Enables monitoring of PostgreSQL and PgBouncer                       | Recommended  |
-| NODE     | [node_exporter](https://github.com/prometheus/node_exporter)      | [Apache License 2.0](https://github.com/prometheus/node_exporter/blob/master/LICENSE)                     | Provides node-level monitoring                                       | Recommended  |
-| NODE     | [haproxy](https://www.haproxy.org/)                               | [HAPROXY’s License](https://www.haproxy.org/download/1.3/doc/LICENSE)(GPLv2)                              | Provides load balancing and external service exposure                | Recommended  |
-| INFRA    | [Grafana](https://grafana.com/)                                   | [AGPLv3](https://github.com/grafana/grafana/blob/main/LICENSE)                                            | Database visualization platform                                      | Recommended  |
-| INFRA    | [Prometheus](https://prometheus.io/)Stack                         | [Apache License 2.0](https://github.com/prometheus/prometheus/blob/main/LICENSE)                          | Time-series database for monitoring, metric collection, and alerting | Recommended  |
-| INFRA    | [Loki](https://grafana.com/oss/loki/)                             | [AGPLv3](https://github.com/grafana/loki/blob/main/LICENSE)                                               | Centralized logging collection and query platform                    | Recommended  |
-| INFRA    | [DNSMASQ](https://thekelleys.org.uk/dnsmasq/doc.html)             | [GPLv2](https://thekelleys.org.uk/dnsmasq/doc.html) / [GPLv3](https://thekelleys.org.uk/dnsmasq/doc.html) | DNS resolution and cluster name lookup                               | Recommended  |
-| MINIO    | [MinIO](https://min.io/)                                          | [AGPLv3](https://github.com/minio/minio/blob/master/LICENSE)                                              | S3-compatible object storage service                                 | Optional     |
-| NODE     | [keepalived](https://www.keepalived.org/)                         | [MIT License](https://github.com/umich-arc/keepalived/blob/master/LICENSE)                                | Binds VIP to node clusters                                           | Optional     |
-| REDIS    | [Redis](https://redis.io/)                                        | [Redis License](https://redis.io/docs/about/license/) (BSD-3)                                             | Caching service for PG, version-locked at 7.2.6                      | Optional     |
-| REDIS    | [RedisExporter](https://github.com/oliver006/redis_exporter)      | [MIT License](https://github.com/oliver006/redis_exporter/blob/master/LICENSE)                            | Provides Redis monitoring capabilities                               | Optional     |
-| MONGO    | [FerretDB](https://www.ferretdb.io/)                              | [Apache License 2.0](https://github.com/FerretDB/FerretDB/blob/main/LICENSE)                              | MongoDB compatibility layer on PG                                    | Optional     |
-| DOCKER   | [docker-ce](https://github.com/docker/docker-ce)                  | [Apache License 2.0](https://github.com/docker/docker-ce/blob/master/LICENSE)                             | Container management capability                                      | Optional     |
-| CLOUD    | [SealOS](https://github.com/labring/sealos/blob/main/LICENSE)     | [Apache License 2.0](https://github.com/labring/sealos/blob/main/LICENSE)                                 | Fast K8S cluster deployment, replication, packaging                  | Optional     |
-| DUCKDB   | [DuckDB](https://github.com/duckdb/duckdb)                        | [MIT](https://github.com/duckdb/duckdb/blob/main/LICENSE)                                                 | High-performance analytics                                           | Optional     |
-| External | [Vagrant](https://www.vagrantup.com/)                             | [Business SourceLicense 1.1](https://github.com/hashicorp/vagrant/blob/main/LICENSE)                      | Launches local test environment VMs                                  | As Needed    |
-| External | [Terraform](https://www.terraform.io/)                            | [Business SourceLicense 1.1](https://github.com/hashicorp/terraform/blob/main/LICENSE)                    | One-click cloud resource provisioning                                | As Needed    |
-| External | [Virtualbox](https://www.virtualbox.org/)                         | [GPLv2](https://www.virtualbox.org/wiki/Licensing_FAQ)                                                    | Virtual machine management software                                  | As Needed    |
+|    模块    |                               软件名称                                | 许可证                                                                                                       | 必要性，用途与说明                       |  必要性   |
+|:--------:|:-----------------------------------------------------------------:|-----------------------------------------------------------------------------------------------------------|---------------------------------|:------:|
+|  PGSQL   |             [PostgreSQL](https://www.postgresql.org/)             | [PostgreSQL License](https://www.postgresql.org/about/licence/)                                           | PostgreSQL 内核                   | **必选** |
+|  PGSQL   |       [patroni](https://patroni.readthedocs.io/en/latest/)        | [MIT License](https://github.com/zalando/patroni/blob/master/LICENSE)                                     | 提供 PostgreSQL 高可用能力             | **必选** |
+|   ETCD   |                     [etcd](https://etcd.io/)                      | [Apache License 2.0](https://github.com/etcd-io/etcd/blob/main/LICENSE)                                   | 提供高可用共识与分布式配置存储                 | **必选** |
+|  INFRA   |   [Ansible](https://docs.ansible.com/ansible/latest/index.html)   | [GPLv3](https://github.com/ansible/ansible/blob/devel/COPYING)                                            | 管控工具，执行剧本，发起管控命令                | **必选** |
+|  INFRA   |              [Nginx](https://github.com/nginx/nginx)              | [BSD-2](https://github.com/nginx/nginx/blob/master/LICENSE)                                               | 暴露Web系统界面，提供本地软件源               | **必选** |
+|  PGSQL   |               [pgbackrest](https://pgbackrest.org/)               | [MIT License](https://github.com/pgbackrest/pgbackrest/blob/main/LICENSE)                                 | 提供 PITR 备份/恢复管理能力               |   建议   |
+|  PGSQL   |       [pgbouncer](https://www.pgbouncer.org/community.html)       | [ISC License](https://github.com/pgbouncer/pgbouncer/blob/master/COPYRIGHT)                               | 提供 PostgreSQL 连接池化能力            |   建议   |
+|  PGSQL   | [vip-manager](https://github.com/cybertec-postgresql/vip-manager) | [BSD 2-Clause License](https://github.com/cybertec-postgresql/vip-manager/blob/master/LICENSE)            | 提供自动将 L2 VIP 绑定到 PG 集群主库的能力     |   建议   |
+|  PGSQL   |        [pg_exporter](https://github.com/Vonng/pg_exporter)        | [Apache License 2.0](https://github.com/Vonng/pg_exporter/blob/master/LICENSE)                            | 提供监控 PostgreSQL 与 PgBouncer 的能力 |   建议   |
+|   NODE   |   [node_exporter](https://github.com/prometheus/node_exporter)    | [Apache License 2.0](https://github.com/prometheus/node_exporter/blob/master/LICENSE)                     | 提供主机节点监控能力                      |   建议   |
+|   NODE   |                [haproxy](https://www.haproxy.org/)                | [HAPROXY’s License](https://www.haproxy.org/download/1.3/doc/LICENSE) (GPLv2)                             | 提供负载均衡，对外暴露服务的能力                |   建议   |
+|  INFRA   |                  [Grafana](https://grafana.com/)                  | [AGPLv3](https://github.com/grafana/grafana/blob/main/LICENSE)                                            | 提供数据库可视化平台                      |   建议   |
+|  INFRA   |            [Prometheus](https://prometheus.io/) Stack             | [Apache License 2.0](https://github.com/prometheus/prometheus/blob/main/LICENSE)                          | 提供监控时序数据库存储，指标采集与监控告警           |   建议   |
+|  INFRA   |               [Loki](https://grafana.com/oss/loki/)               | [AGPLv3](https://github.com/grafana/loki/blob/main/LICENSE)                                               | 提供集中式日志收集存储查询平台                 |   建议   |
+|  INFRA   |       [DNSMASQ](https://thekelleys.org.uk/dnsmasq/doc.html)       | [GPLv2](https://thekelleys.org.uk/dnsmasq/doc.html) / [GPLv3](https://thekelleys.org.uk/dnsmasq/doc.html) | 提供DNS解析服务，提供集群名查询能力             |   建议   |
+|  MINIO   |                     [MinIO](https://min.io/)                      | [AGPLv3](https://github.com/minio/minio/blob/master/LICENSE)                                              | 提供S3兼容的对象存储服务                   |   可选   |
+|   NODE   |             [keepalived](https://www.keepalived.org/)             | [MIT License](https://github.com/umich-arc/keepalived/blob/master/LICENSE)                                | 提供绑定在节点集群上的 VIP                 |   可选   |
+|  REDIS   |                    [Redis](https://redis.io/)                     | [Redis License](https://redis.io/docs/about/license/) (BSD-3)                                             | 搭配PG使用的缓存服务，锁死版本 7.2.6          |   可选   |
+|  REDIS   |   [Redis Exporter](https://github.com/oliver006/redis_exporter)   | [MIT License](https://github.com/oliver006/redis_exporter/blob/master/LICENSE)                            | 提供 Redis 监控能力                   |   可选   |
+|  MONGO   |               [FerretDB](https://www.ferretdb.io/)                | [Apache License 2.0](https://github.com/FerretDB/FerretDB/blob/main/LICENSE)                              | 提供基于PG的MongoDB兼容能力              |   可选   |
+|  DOCKER  |         [docker-ce](https://github.com/docker/docker-ce)          | [Apache License 2.0](https://github.com/docker/docker-ce/blob/master/LICENSE)                             | 提供容器管理能力                        |   可选   |
+|  CLOUD   |   [SealOS](https://github.com/labring/sealos/blob/main/LICENSE)   | [Apache License 2.0](https://github.com/labring/sealos/blob/main/LICENSE)                                 | 提供快速部署，复制，打包K8S集群的能力            |   可选   |
+|  DUCKDB  |            [DuckDB](https://github.com/duckdb/duckdb)             | [MIT](https://github.com/duckdb/duckdb/blob/main/LICENSE)                                                 | 提供简单易用的高性能分析能力                  |   可选   |
+| External |               [Vagrant](https://www.vagrantup.com/)               | [Business Source License 1.1](https://github.com/hashicorp/vagrant/blob/main/LICENSE)                     | 拉起本地测试环境虚拟机                     |   按需   |
+| External |              [Terraform](https://www.terraform.io/)               | [Business Source License 1.1](https://github.com/hashicorp/terraform/blob/main/LICENSE)                   | 一键申请云资源用于部署                     |   按需   |
+| External |             [Virtualbox](https://www.virtualbox.org/)             | [GPLv2](https://www.virtualbox.org/wiki/Licensing_FAQ)                                                    | 虚拟机管理软件                         |   按需   |
 
-**Necessity Levels:**
+必要性等级说明：
 
-- **Required**: Core components for providing essential Pigsty functionality; no option to disable.
-- **Recommended**: Components enabled by default in Pigsty but can be disabled via configuration options.
-- **Optional**: Components downloaded but not enabled by default in Pigsty; can be enabled through configuration.
-- **As Needed**: Tools activated on demand; can be configured, downloaded, and enabled as needed.
+- **必选**：提供 Pigsty 关键性核心能力，不提供关闭停用选项
+- 建议：Pigsty 默认启用的组件，可以通过配置选项停用
+- 可选：Pigsty 默认会下载但不启用的组件，可通过配置启用
+- 按需：按需使用的工具，可按需配置下载并启用
+
 
 ------
 
-## Content
+## 协议原文
+
+- [AGPLv3 许可证英文原文](https://www.gnu.org/licenses/agpl-3.0.html)
+- [AGPLv3 许可证中文翻译](https://www.chinasona.org/gnu/agpl-3.0-cn.html)
+- [AGPLv3，Pigsty 链接](https://github.com/pgsty/pigsty/blob/main/LICENSE)
+
 
 ```
                     GNU AFFERO GENERAL PUBLIC LICENSE

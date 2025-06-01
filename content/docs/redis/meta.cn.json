@@ -1,0 +1,17 @@
+{
+  "title": "REDIS",
+  "description": "可选的缓存服务，高性能数据字典",
+  "root": true,
+  "icon": "Layers",
+  "pages": [
+    "[Pigsty Docs](/docs)",
+    "index",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "monitor",
+    "faq",
+    "..."
+  ]
+}

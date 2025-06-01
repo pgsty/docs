@@ -1,6 +1,6 @@
 {
-  "title": "PGSTY",
-  "description": "Pigsty, the PostgreSQL Distribution",
+  "title": "PIGSTY",
+  "description": "开箱即用的数据库发行版",
   "root": true,
   "icon": "Building",
   "pages": [

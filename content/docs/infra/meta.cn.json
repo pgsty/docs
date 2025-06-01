@@ -1,0 +1,17 @@
+{
+  "title": "INFRA",
+  "description": "基础设施，Web 门户与监控",
+  "root": true,
+  "icon": "Landmark",
+  "pages": [
+    "index",
+    "concept",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "monitor",
+    "faq",
+    "..."
+  ]
+}
