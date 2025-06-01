@@ -1,0 +1,31 @@
+{
+  "title": "PGSTY",
+  "description": "Pigsty, the PostgreSQL Distribution",
+  "root": true,
+  "icon": "Building",
+  "pages": [
+    "---Introduction---",
+    "index",
+    "intro",
+    "module",
+    "---Installation---",
+    "install",
+    "offline",
+    "slim",
+    "linux",
+    "---Deployment---",
+    "prepare",
+    "security",
+    "vagrant",
+    "terraform",
+    "---About---",
+    "author",
+    "history",
+    "license",
+    "community",
+    "release",
+    "event",
+    "cve",
+    "..."
+  ]
+}
