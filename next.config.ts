@@ -5,6 +5,10 @@ const withMDX = createMDX();
 
 const config: NextConfig = {
   reactStrictMode: true,
+    serverExternalPackages: [
+
+    'shiki',
+  ],
   images: {
     remotePatterns: [
       {

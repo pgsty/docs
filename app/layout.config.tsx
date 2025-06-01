@@ -18,8 +18,7 @@ export const linkItems: LinkItemType[] = [
   },
 ];
 
-export const baseOptions = (locale: string): BaseLayoutProps => {
-  console.log('locale', locale);
+export const baseOptions = (lang: string): BaseLayoutProps => {
   return {
     i18n,
     nav: {
