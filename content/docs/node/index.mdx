@@ -4,15 +4,3 @@ description: Tune nodes into the desired state and monitor it, manage node, VIP,
 ---
 
 
-import { getPageTreePeers } from 'fumadocs-core/server';
-import { source } from '@/lib/source';
-
-<Cards>
-
-    {getPageTreePeers(source.pageTree, '/docs/node').map((peer) => (
-        <Card key={peer.url} title={peer.name} href={peer.url}>
-            {peer.description}
-        </Card>
-    ))}
-
-</Cards>

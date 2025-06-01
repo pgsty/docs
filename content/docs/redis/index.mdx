@@ -3,16 +3,3 @@ title: Redis
 description: The open source object storage service
 ---
 
-
-import { getPageTreePeers } from 'fumadocs-core/server';
-import { source } from '@/lib/source';
-
-<Cards>
-
-    {getPageTreePeers(source.pageTree, '/docs/redis').map((peer) => (
-        <Card key={peer.url} title={peer.name} href={peer.url}>
-            {peer.description}
-        </Card>
-    ))}
-
-</Cards>

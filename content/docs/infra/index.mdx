@@ -4,15 +4,3 @@ description: The portal and observability stack
 ---
 
 
-import { getPageTreePeers } from 'fumadocs-core/server';
-import { source } from '@/lib/source';
-
-<Cards>
-
-    {getPageTreePeers(source.pageTree, '/docs/infra').map((peer) => (
-        <Card key={peer.url} title={peer.name} href={peer.url}>
-            {peer.description}
-        </Card>
-    ))}
-
-</Cards>

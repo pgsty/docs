@@ -11,8 +11,8 @@
 
         "---Installation---",
         "install",
-        "offline",
         "slim",
+        "offline",
         "linux",
 
         "---Deployment---",

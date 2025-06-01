@@ -6,6 +6,12 @@ import { LayoutTemplate } from 'lucide-react';
 export const linkItems: LinkItemType[] = [
   {
     icon: <AlbumIcon />,
+    text: 'Docs',
+    url: '/docs/pigsty',
+    active: 'nested-url',
+  },
+  {
+    icon: <AlbumIcon />,
     text: 'Blog',
     url: '/blog',
     active: 'nested-url',
