@@ -1,6 +1,6 @@
 {
-    "title": "PGSTY",
-    "description": "Pigsty, the PostgreSQL Distribution",
+    "title": "PIGSTY",
+    "description": "the PostgreSQL Distribution",
     "root": true,
     "icon": "Castle",
     "pages": [
@@ -14,7 +14,6 @@
         "offline",
         "slim",
         "linux",
-
 
         "---Deployment---",
         "prepare",

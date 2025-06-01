@@ -2,6 +2,7 @@
   "title": "MINIO",
   "description": "MinIO, the object storage service",
   "root": true,
+  "icon": "Box",
   "pages": [
     "index",
     "usage",

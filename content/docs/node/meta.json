@@ -1,6 +1,7 @@
 {
   "title": "NODE",
   "description": "Node, enroll linux machine hosts",
+  "icon": "Server",
   "root": true,
   "pages": [
     "index",

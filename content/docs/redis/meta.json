@@ -2,6 +2,7 @@
   "title": "REDIS",
   "description": "Redis, the data structure service",
   "root": true,
+  "icon": "Layers",
   "pages": [
     "[Pigsty Docs](/docs)",
     "index",

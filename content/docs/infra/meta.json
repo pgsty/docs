@@ -2,6 +2,7 @@
   "title": "INFRA",
   "description": "Infra, portal & monitoring service",
   "root": true,
+  "icon": "Landmark",
   "pages": [
     "index",
     "concept",

@@ -1,6 +1,7 @@
 {
   "title": "DOCKER",
   "description": "Docker, the opt container service",
+  "icon": "Container",
   "root": true,
   "pages": [
     "index",

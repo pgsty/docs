@@ -2,6 +2,7 @@
   "title": "ETCD",
   "description": "Etcd, the DCS service for PG HA",
   "root": true,
+  "icon": "Settings",
   "pages": [
     "index",
     "config",

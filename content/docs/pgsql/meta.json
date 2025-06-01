@@ -1,9 +1,10 @@
 {
   "title": "PGSQL",
-  "description": "PostgreSQL, the database kernel",
+  "description": "the Database Kernel",
   "root": true,
   "pages": [
     "index",
+
     "---Config---",
     "concept",
     "config",
@@ -11,6 +12,7 @@
     "admin",
     "playbook",
     "dashboard",
+
     "---Entity---",
     "cluster",
     "service",
@@ -19,6 +21,7 @@
     "extension",
     "hba",
     "acl",
+
     "--- ---",
     "faq",
     "..."
