@@ -1,60 +1,114 @@
 ---
 title: Quick Start
-description: Getting Started with Pigsty
+description: Getting started with Pigsty
 icon: HomeIcon
 full: true
 ---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    FileCode,
+    AtomIcon,
+    ToyBrickIcon,
+} from 'lucide-react';
 
 ## Introduction
 
 **Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> is a battery-included, local-first, open-source & free <span className="text-blue-500 font-bold">PostgreSQL Distribution</span> based on **bare Linux**.
 
-
-import {
-    Database,
-    PanelsTopLeft,
-    CpuIcon,
-    Terminal,
-} from 'lucide-react';
-
 <Cards>
-
-    <Card icon={<Database className="text-blue-800" />} title='PostgreSQL' href={"/docs/pgsql"}>
-        Handles most of the logic, including document search, content source adapters, and Markdown extensions.
+    <Card icon={<Database className="text-blue-300" />} title='PostgreSQL Enterprise' href={"/docs/pgsql"}>
+        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
     </Card>
-
-    <Card icon={<PanelsTopLeft className="text-blue-300" />} title='Fumadocs UI'>
-
-        The default theme of Fumadocs offers a beautiful look for documentation sites and interactive components.
-
+    <Card icon={<AtomIcon className="text-green-600" />} title='Infrastructure as Code' href={"/docs/infra"}>
+        Declare your entire infra with code, and setup everything PG needs from Bare OS: LB, Nginx, NTP, DNS, Local Repo, etc...
     </Card>
-
-    <Card icon={<Database />} title='Content Source'>
-
-        The source of your content, can be a CMS or local data layers like [Fumadocs MDX](/docs/mdx) (the official content source).
-
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Stunning Observability'>
+        Unparalleled monitoring best practices built upon modern Prometheus & Grafana observability stacks out-of-the-box
     </Card>
-
-    <Card icon={<Terminal />} title='Fumadocs CLI'>
-
-        A command line tool to install UI components and automate things, useful for customizing layouts.
-
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Extensions & Forks'>
+        <span className={"text-red-800 font-bold"}>420+</span> PGSQL Extensions battery-included! Alone with forks: Babelfish, Oriole, IvorySQL, OpenHalo, PolarDB, Supabase,...
     </Card>
-
 </Cards>
+
+Pigsty provides everything you'll need for self-hosting an enterprise-grade PostgreSQL Service even without expertise.
+
+Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
 
 <Callout title="Want to learn more?">
     Read our in-depth [What is Pigsty](/docs/pigsty/intro) introduction.
 </Callout>
 
 
-- [Installation](setup/install)
-- [Offline](setup/offline)
 
-<Cards>
-    <Card title="Standard Installation" href="install" />
-    <Card title="Offline Install" href="offline" />
-    <Card title="Slim Install" href="offline" />
-</Cards>
+--------
 
+## Installation
+
+Prepare a Linux node that runs any compatible Distros, then install Pigsty with:
+
+```bash title="install"
+curl -fsSL https://repo.pigsty.io/get | bash;
+cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
+```
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <File name="bootstrap" icon={<CpuIcon className="text-orange-400" />} />
+        <File name="configure"  icon={<CpuIcon className="text-orange-400" />} />
+        <File name="install.yml"  icon={<CpuIcon className="text-orange-400" />} />
+        <a href={"https://www.baidu.com"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+</Files>
+
+Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for grafana dashboards.
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+<Steps>
+    <Step>
+        ### Hello World
+    </Step>
+    <Step>
+        ### Hello World
+    </Step>
+</Steps>
+
+
+
+```mdx
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+<Steps>
+<Step>
+
+### Hello World
+
+</Step>
+
+<Step>
+
+### Hello World
+
+</Step>
+</Steps>
+```
+
+
+
+--------
+
+## What's More
+
+- Run Application: Supabase, Odoo, Dify, Gitlab, ...
+
+
+
+--------
+
+## FAQ
 

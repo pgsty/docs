@@ -8,12 +8,12 @@
         "index",
         "intro",
         "module",
-        "linux",
 
         "---Installation---",
         "install",
         "offline",
         "slim",
+        "linux",
 
 
         "---Deployment---",
@@ -23,7 +23,13 @@
         "terraform",
 
         "---About---",
-
+        "author",
+        "history",
+        "license",
+        "community",
+        "release",
+        "event",
+        "cve",
         "..."
     ]
 }

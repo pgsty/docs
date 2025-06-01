@@ -19,6 +19,12 @@ const config = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.star-history.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
