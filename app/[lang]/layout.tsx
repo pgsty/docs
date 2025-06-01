@@ -35,11 +35,7 @@ export default async function RootLayout({
             locales,
             translations: { cn }[lang],
           }}
-          search={{
-            options: {
-              type: 'static',
-            }
-          }}
+
         >
           {children}
         </RootProvider>
