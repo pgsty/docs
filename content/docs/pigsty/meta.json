@@ -2,7 +2,7 @@
     "title": "PGSTY",
     "description": "Pigsty, the PostgreSQL Distribution",
     "root": true,
-    "icon": "Building",
+    "icon": "Castle",
     "pages": [
         "---Introduction---",
         "index",

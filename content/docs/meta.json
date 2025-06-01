@@ -1,12 +1,12 @@
 {
-    "pages": [
-        "pigsty",
-        "pgsql",
-        "infra",
-        "node",
-        "etcd",
-        "redis",
-        "minio",
-        "docker"
-    ]
+  "pages": [
+    "pigsty",
+    "pgsql",
+    "infra",
+    "node",
+    "etcd",
+    "redis",
+    "minio",
+    "docker"
+  ]
 }
