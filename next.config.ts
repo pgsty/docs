@@ -5,9 +5,10 @@ const withMDX = createMDX();
 
 
 const config: NextConfig = {
-  // output: 'export',
+  output: 'export',
   reactStrictMode: true,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
