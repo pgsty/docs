@@ -2,9 +2,8 @@ import "@/app/global.css"
 import { RootProvider } from 'fumadocs-ui/provider';
 import type { Translations } from 'fumadocs-ui/i18n';
 
-
 const cn: Partial<Translations> = {
-  search: 'Translated Content',
+  search: '搜索',
 };
 
 const locales = [
