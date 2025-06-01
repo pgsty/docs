@@ -1,12 +1,20 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import type { NextConfig } from 'next';
 
 const withMDX = createMDX();
 
-/** @type {import('next').NextConfig} */
-const config = {
+
+const config: NextConfig = {
+  // output: 'export',
   reactStrictMode: true,
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'asciinema.org',
+        port: '',
+        pathname: '/**',
+      },
       {
         protocol: 'https',
         hostname: 'pigsty.io',
