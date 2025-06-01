@@ -6,6 +6,7 @@ import { source } from '@/lib/source';
 export default async function Layout({ children, params }: { children: ReactNode, params: Promise<{ lang: string }> }) {
   const lang = (await params).lang;
 
+  console.log('source.pageTree', source.pageTree[lang]);
   return (
     <DocsLayout {...baseOptions(lang)} tree={source.pageTree[lang]} >
       {children}

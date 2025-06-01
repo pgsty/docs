@@ -1,13 +1,22 @@
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import type { BaseLayoutProps, LinkItemType } from 'fumadocs-ui/layouts/shared';
 import { i18n } from '@/lib/i18n';
+import { AlbumIcon } from 'lucide-react';
+import { LayoutTemplate } from 'lucide-react';
 
-/**
- * Shared layout configurations
- *
- * you can customise layouts individually from:
- * Home Layout: app/(home)/layout.tsx
- * Docs Layout: app/docs/layout.tsx
- */
+export const linkItems: LinkItemType[] = [
+  {
+    icon: <AlbumIcon />,
+    text: 'Blog',
+    url: '/blog',
+    active: 'nested-url',
+  },
+  {
+    text: 'Showcase',
+    url: '/showcase',
+    icon: <LayoutTemplate />,
+    active: 'url',
+  },
+];
 
 export const baseOptions = (locale: string): BaseLayoutProps => {
   console.log('locale', locale);
