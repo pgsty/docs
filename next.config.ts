@@ -8,6 +8,7 @@ const config: NextConfig = {
   output: 'export',
   reactStrictMode: true,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
