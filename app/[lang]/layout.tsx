@@ -4,6 +4,15 @@ import type { Translations } from 'fumadocs-ui/i18n';
 
 const cn: Partial<Translations> = {
   search: '搜索',
+  searchNoResult: '未找到',
+  toc: '目录',
+  tocNoHeadings: '目录',
+  lastUpdate: '最后更新',
+  chooseLanguage: '语言',
+  nextPage: '下一页',
+  previousPage: '前一页',
+  chooseTheme: '主题',
+  editOnGithub: '编辑',
 };
 
 const locales = [
