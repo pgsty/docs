@@ -21,7 +21,7 @@ const locales = [
     locale: 'en',
   },
   {
-    name: 'Chinese',
+    name: '简体中文',
     locale: 'cn',
   },
 ];

@@ -51,7 +51,6 @@ export const baseOptions = (lang: string): BaseLayoutProps => {
         url: '/docs',
         secondary: false,
       },
-
     ],
   }
 }
