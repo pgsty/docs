@@ -2,7 +2,7 @@
   "title": "DOCKER",
   "description": "Optional container service",
   "icon": "Container",
-  "root": true,
+  "root": false,
   "pages": [
     "index",
     "usage",

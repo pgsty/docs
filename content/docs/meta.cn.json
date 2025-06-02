@@ -1,12 +1,16 @@
 {
-    "pages": [
-        "pigsty",
-        "pgsql",
-        "infra",
-        "node",
-        "etcd",
-        "redis",
-        "minio",
-        "docker"
-    ]
+  "root": true,
+  "pages": [
+    "intro",
+    "setup",
+    "about",
+    "---模块---",
+    "pgsql",
+    "infra",
+    "node",
+    "etcd",
+    "redis",
+    "minio",
+    "docker"
+  ]
 }

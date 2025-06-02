@@ -1,7 +1,9 @@
 {
   "title": "PGSQL",
   "description": "PostgreSQL：数据库内核",
-  "root": true,
+  "icon": "Database",
+  "root": false,
+  "defaultOpen": false,
   "pages": [
     "index",
 

@@ -1,8 +1,8 @@
 {
   "title": "ETCD",
   "description": "Meta database for PG HA DCS",
-  "root": true,
   "icon": "Settings",
+  "root": false,
   "pages": [
     "index",
     "config",

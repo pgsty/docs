@@ -1,0 +1,15 @@
+{
+    "title": "Setup",
+    "icon": "Rocket",
+    "defaultOpen": false,
+    "pages": [
+        "install",
+        "slim",
+        "offline",
+        "linux",
+        "prepare",
+        "security",
+        "vagrant",
+        "terraform"
+    ]
+}

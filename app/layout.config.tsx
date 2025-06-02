@@ -1,13 +1,13 @@
 import type { BaseLayoutProps, LinkItemType } from 'fumadocs-ui/layouts/shared';
 import { i18n } from '@/lib/i18n';
 import { AlbumIcon } from 'lucide-react';
-import { LayoutTemplate } from 'lucide-react';
+import { LayoutTemplate, Book } from 'lucide-react';
 
 export const linkItems: LinkItemType[] = [
   {
     icon: <AlbumIcon />,
     text: 'Docs',
-    url: '/docs/pigsty',
+    url: '/docs/',
     active: 'nested-url',
   },
   {
@@ -42,7 +42,16 @@ export const baseOptions = (lang: string): BaseLayoutProps => {
         </>
       ),
     },
-    // see https://fumadocs.dev/docs/ui/navigation/links
-    links: [],
+    githubUrl: 'https://github.com/pgsty/pigsty',
+    links: [
+      {
+        icon: <Book />,
+        text: 'Pigsty',
+        label: 'Pigsty',
+        url: '/docs',
+        secondary: false,
+      },
+
+    ],
   }
 }

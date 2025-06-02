@@ -1,7 +1,7 @@
 {
   "title": "MINIO",
   "description": "可选的开源 S3 兼容对象存储服务",
-  "root": true,
+  "root": false,
   "icon": "Box",
   "pages": [
     "index",

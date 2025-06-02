@@ -2,7 +2,7 @@
   "title": "DOCKER",
   "description": "可选的容器服务，运行无状态应用",
   "icon": "Container",
-  "root": true,
+  "root": false,
   "pages": [
     "index",
     "usage",

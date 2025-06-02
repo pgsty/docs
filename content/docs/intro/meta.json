@@ -1,0 +1,13 @@
+{
+    "title": "Intro",
+    "description": "Features, Values, Cases, and Comparison",
+    "icon": "BookMarked",
+    "defaultOpen": false,
+    "pages": [
+        "value",
+        "feature",
+        "compare",
+        "arch",
+        "case"
+    ]
+}

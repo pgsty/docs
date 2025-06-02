@@ -1,7 +1,7 @@
 {
   "title": "INFRA",
   "description": "Portal & Monitoring Service",
-  "root": true,
+  "root": false,
   "icon": "Landmark",
   "pages": [
     "index",

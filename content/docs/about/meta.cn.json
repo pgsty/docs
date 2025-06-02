@@ -1,12 +1,13 @@
 {
-    "title": "About",
-    "description": "About Pigsty",
-    "defaultOpen": true,
+    "title": "关于",
+    "description": "关于 Pigsty",
+    "defaultOpen": false,
     "icon": "Info",
     "pages": [
         "author",
         "history",
         "license",
+        "service",
         "community",
         "release",
         "event",

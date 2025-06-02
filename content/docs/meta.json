@@ -1,6 +1,10 @@
 {
+  "root": true,
   "pages": [
-    "pigsty",
+    "intro",
+    "setup",
+    "about",
+    "---Modules---",
     "pgsql",
     "infra",
     "node",
