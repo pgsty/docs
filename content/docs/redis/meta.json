@@ -1,10 +1,9 @@
 {
   "title": "REDIS",
-  "description": "Redis, the data structure service",
+  "description": "Optional data structure cache",
   "root": true,
   "icon": "Layers",
   "pages": [
-    "[Pigsty Docs](/docs)",
     "index",
     "config",
     "param",

@@ -1,6 +1,6 @@
 {
   "title": "MINIO",
-  "description": "MinIO, the object storage service",
+  "description": "Optional object storage service",
   "root": true,
   "icon": "Box",
   "pages": [

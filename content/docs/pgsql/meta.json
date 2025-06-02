@@ -1,19 +1,11 @@
 {
   "title": "PGSQL",
-  "description": "the Database Kernel",
+  "description": "The Main Database Kernel",
   "root": true,
   "pages": [
     "index",
 
-    "---Config---",
-    "concept",
-    "config",
-    "param",
-    "admin",
-    "playbook",
-    "dashboard",
-
-    "---Entity---",
+    "---Concept---",
     "cluster",
     "service",
     "user",
@@ -21,6 +13,16 @@
     "extension",
     "hba",
     "acl",
+
+    "---Config---",
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "monitor",
+    "dashboard",
+    "migration",
+    "backup",
 
     "--- ---",
     "faq",

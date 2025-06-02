@@ -1,7 +1,7 @@
 ---
-title: Privilege
-description: Access Control with default roles & privileges
-icon: HomeIcon
+title: Privileges
+description: Access Control with default roles and privileges
+icon: Fingerprint
 ---
 
 ## acl
@@ -9,7 +9,7 @@ icon: HomeIcon
 Pigsty has a default role system consist of four [default roles](https://pigsty.io/docs/pgsql/acl/#default-roles) and four [default users](https://pigsty.io/docs/pgsql/acl/#default-users):
 
 | Role name          | Attributes    | Member of                   | Description                          |
-| ------------------ | ------------- | --------------------------- | ------------------------------------ |
+|--------------------|---------------|-----------------------------|--------------------------------------|
 | `dbrole_readonly`  | `NOLOGIN`     |                             | role for global read-only access     |
 | `dbrole_readwrite` | `NOLOGIN`     | dbrole_readonly             | role for global read-write access    |
 | `dbrole_admin`     | `NOLOGIN`     | pg_monitor,dbrole_readwrite | role for object creation             |
@@ -37,8 +37,8 @@ pg_default_roles:                 # default roles and users in postgres cluster
 
 There are four default roles in pigsty:
 
-- Read Only (`dbrole_readonly`): Role for global read-only access
-- Read Write (`dbrole_readwrite`): Role for global read-write access, inherits `dbrole_readonly`.
+- Read-Only (`dbrole_readonly`): Role for global read-only access
+- Read-Write (`dbrole_readwrite`): Role for global read-write access, inherits `dbrole_readonly`.
 - Admin (`dbrole_admin`): Role for DDL commands, inherits `dbrole_readwrite`.
 - Offline (`dbrole_offline`): Role for restricted read-only access ([offline](https://pigsty.io/docs/pgsql/config/#offline) instance)
 

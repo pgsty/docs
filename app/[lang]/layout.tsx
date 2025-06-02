@@ -8,10 +8,10 @@ const cn: Partial<Translations> = {
   toc: '目录',
   tocNoHeadings: '目录',
   lastUpdate: '最后更新',
-  chooseLanguage: '语言',
+  chooseLanguage: '选择语言',
   nextPage: '下一页',
-  previousPage: '前一页',
-  chooseTheme: '主题',
+  previousPage: '上一页',
+  chooseTheme: '选择主题',
   editOnGithub: '编辑',
 };
 

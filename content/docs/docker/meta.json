@@ -1,6 +1,6 @@
 {
   "title": "DOCKER",
-  "description": "Docker, the opt container service",
+  "description": "Optional container service",
   "icon": "Container",
   "root": true,
   "pages": [
@@ -8,6 +8,7 @@
     "usage",
     "param",
     "playbook",
+    "monitor",
     "faq",
     "..."
   ]

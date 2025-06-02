@@ -1,6 +1,6 @@
 {
     "title": "PIGSTY",
-    "description": "the PostgreSQL Distribution",
+    "description": "FOSS Database Distribution",
     "root": true,
     "icon": "Castle",
     "pages": [

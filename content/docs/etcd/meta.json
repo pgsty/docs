@@ -1,6 +1,6 @@
 {
   "title": "ETCD",
-  "description": "Etcd, the DCS service for PG HA",
+  "description": "Meta database for PG HA DCS",
   "root": true,
   "icon": "Settings",
   "pages": [
