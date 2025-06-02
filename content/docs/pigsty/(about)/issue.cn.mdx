@@ -1,0 +1,32 @@
+---
+title: 漏洞缺陷
+description: 安全漏洞，Bug 缺陷，修复公告
+icon: Bug
+---
+
+
+--------
+
+## PIGSTY-20231201
+
+<Callout title="PIGSTY-20231201" type="warn">
+    <br/>
+    **问题名称**： <span className={"text-red-500 font-extrabold"}>ETCD 写满导致 PGSQL 高可用失效</span>
+
+    **问题等级**： <span className={"text-red-500 font-extrabold"}>关键错误，请立即安排修复</span>
+
+    **影响范围**： Pigsty v2.0.0 - v2.5.1 ，于 Pigsty v2.6.0 修复
+
+    **问题描述**：
+
+    etcd 默认设置了一个 2GB 的数据库容量上限，如果您的 etcd 数据库容量超过了这个限制，etcd 将会拒绝写入请求。这可能导致依赖 etcd 的 PostgreSQL 高可用机制无法正常工作。
+    与此同时，etcd 的 [数据模型](https://etcd.io/docs/v3.6/learning/data_model/) 使得每一次写入都会产生一个新的版本，因此如果您的 etcd 集群频繁写入，即使只有极个别的 Key， etcd 数据库的大小也可能会不断增长，并在达到容量上限时出现故障。
+
+    **解决方案**：
+
+    将 Pigsty 更新至 v2.6.0 以上的版本，或者更新 `roles/etcd` 部分的代码后，重新执行 `./etcd.yml` 强制重置 etcd 集群实现修复。
+    关键配置更新： [roles/etcd/templates/etcd.conf.j2](https://github.com/pgsty/pigsty/blob/main/roles/etcd/templates/etcd.conf.j2#L29-L36)
+
+</Callout>
+
+--------

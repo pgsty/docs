@@ -1,6 +1,6 @@
 ---
 title: Issues
-description: Security vulnerabilities, bug defects, fix announcements,
+description: Security vulnerabilities, bug defects, fix announcements
 icon: Bug
 ---
 
@@ -9,19 +9,20 @@ icon: Bug
 
 ## PIGSTY-20231201
 
-**etcd filled up (no auto-compaction) causing PG HA unavailable**
-
 <Callout title="PIGSTY-20231201" type="warn">
 
-    **Severity Level**: <span className={"text-red-500 font-extrabold"}>Critical, Please arrange fix ASAP</span>
+    <br/>
+    **Title**: <span className={"text-red-500 font-extrabold"}>ETCD full causing PGSQL HA unavailable</span>
 
-    **Affected Versions**: Pigsty v2.0.0 - v2.5.1, fixed in Pigsty v2.6.0
+    **Level**: <span className={"text-red-500 font-extrabold"}>Critical, Please arrange fix ASAP</span>
 
-    #### **Description**:
+    **Scope**: Pigsty v2.0.0 - v2.5.1, fixed in Pigsty v2.6.0
+
+    **Description**:
 
     etcd has a default 2GB database capacity limit. If your etcd database exceeds this limit, etcd will reject write requests, which may cause PostgreSQL high availability mechanisms that depend on etcd to fail. At the same time, etcd’s [**data model**](https://etcd.io/docs/v3.5/learning/data_model/) creates a new version with each write, so even if you have only a few keys, frequent writes to your etcd cluster can cause the etcd database size to continuously grow and eventually fail when it reaches the capacity limit.
 
-    #### **Solution**:
+    **Solution**:
 
     Update Pigsty to v2.6.0 or above, or update the code in the `roles/etcd` section and re-execute `./etcd.yml` to force reset the etcd cluster to implement the fix.
 

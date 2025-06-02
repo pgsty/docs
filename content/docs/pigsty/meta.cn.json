@@ -4,10 +4,11 @@
   "root": true,
   "icon": "Building",
   "pages": [
-    "---简介---",
     "index",
     "intro",
     "module",
+    "compare",
+
     "---安装---",
     "install",
     "offline",
@@ -18,7 +19,8 @@
     "security",
     "vagrant",
     "terraform",
-    "---关于---",
+
+    "--- ---",
     "author",
     "history",
     "license",

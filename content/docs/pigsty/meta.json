@@ -4,7 +4,6 @@
     "root": true,
     "icon": "Castle",
     "pages": [
-        "---Introduction---",
         "index",
         "intro",
         "module",
@@ -22,7 +21,7 @@
         "vagrant",
         "terraform",
 
-        "---About---",
+        "--- ---",
         "author",
         "history",
         "license",
