@@ -11,13 +11,7 @@ export const linkItems: LinkItemType[] = [
     active: 'nested-url',
   },
   {
-    icon: <AlbumIcon />,
-    text: 'Blog',
-    url: '/blog',
-    active: 'nested-url',
-  },
-  {
-    text: 'Showcase',
+    text: 'Case',
     url: '/showcase',
     icon: <LayoutTemplate />,
     active: 'url',
@@ -63,7 +57,7 @@ export const baseOptions = (lang: string): BaseLayoutProps => {
               </g>
             </g>
           </svg>
-          Pigsty
+          PIGSTY
         </>
       ),
     },

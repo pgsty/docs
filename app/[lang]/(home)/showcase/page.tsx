@@ -4,6 +4,18 @@ import { cn } from '@/lib/cn';
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 
+import UserAirwallex      from '@/public/img/user/airwallex.png';
+import UserBilibili       from '@/public/img/user/bilibili.png';
+import UserBitdeer        from '@/public/img/user/bitdeer.png';
+import UserHuafon         from '@/public/img/user/huafon.png';
+import UserLinkfog        from '@/public/img/user/linkfog.png';
+import UserMeitu          from '@/public/img/user/meitu.png';
+import UserMomenta        from '@/public/img/user/momenta.png';
+import UserMotphys        from '@/public/img/user/motphys.png';
+import UserOCI            from '@/public/img/user/oci.png';
+import UserPolardb        from '@/public/img/user/polardb.png';
+import UserTantan         from '@/public/img/user/tantan.png';
+import UserYSJF           from '@/public/img/user/ysjf.png';
 
 interface ShowcaseObject {
   image?: StaticImageData;
@@ -13,58 +25,94 @@ interface ShowcaseObject {
 
 const showcases: ShowcaseObject[] = [
   {
-    name: 'Dirstarter',
-    url: 'https://dirstarter.com',
+    name: 'MediaStorm',
+    image: UserYSJF,
+    url: 'https://www.ysjf.com/',
   },
   {
-    name: 'Rehooks',
-    url: 'https://rehooks.pyr33x.ir',
+    name: 'HuaFon',
+    image: UserHuafon,
+    url: 'https://www.huafeng.com/en/',
   },
   {
-    name: 'Typelytics',
-    url: 'https://typelytics.rhyssul.com',
+    name: 'BitDeer',
+    image: UserBitdeer,
+    url: 'https://www.bitdeer.com/',
   },
   {
-    name: 'Swellchain',
-    url: 'https://build.swellnetwork.io',
+    name: 'LinkFog',
+    image: UserLinkfog,
+    url: 'https://www.linkfog.com/',
   },
   {
-    name: 'ESLint React',
-    url: 'https://eslint-react.xyz',
+    name: 'Momenta',
+    image: UserMomenta,
+    url: 'https://www.momenta.cn/',
   },
   {
-    name: 'nextjs i18n docs',
-    url: 'https://nextjs.im',
+    name: 'Motphys',
+    image: UserMotphys,
+    url: 'https://www.motphys.com/',
+  },
+  {
+    name: 'Oracle Cloud',
+    image: UserOCI,
+    url: 'https://www.oracle.com/cloud/',
+  },
+  {
+    name: 'Aliyun PolarDB',
+    image: UserPolardb,
+    url: 'https://www.alibabacloud.com/help/en/polardb/product-overview/',
+  },
+  {
+    name: 'BiliBili',
+    image: UserBilibili,
+    url: 'http://www.bilibili.com/',
+  },
+  {
+    name: 'AirWallex',
+    image: UserAirwallex,
+    url: 'https://www.airwallex.com/us/',
+  },
+  {
+    name: 'TanTan App',
+    image: UserTantan,
+    url: 'https://tantanapp.com/',
+  },
+  {
+    name: 'Meitu',
+    image: UserMeitu,
+    url: 'https://meitu.com/',
   },
 ];
 
 const blogs: ShowcaseObject[] = [
   {
-    name: "RUNFUNRUN's Blog",
-    url: 'https://runfunrun.dev',
+    name: 'Supabase',
+    url: 'https://pigsty.io/docs/app/supabase',
   },
   {
-    name: 'xlog.systems',
-    url: 'https://www.xlog.systems',
+    name: 'Odoo',
+    url: 'https://pigsty.io/docs/app/odoo',
   },
   {
-    name: 'stutuer',
-    url: 'https://www.stutuer.tech',
+    name: 'Dify',
+    url: 'https://pigsty.io/docs/app/dify',
   },
 ];
 
 const vercel = [
   {
-    name: 'Turbo',
-    url: 'https://turbo.build',
+    name: 'Supabase',
+    url: 'https://pigsty.io/docs/app/supabase',
   },
   {
-    name: 'Flags SDK',
-    url: 'https://flags-sdk.dev',
+    name: 'Odoo',
+    url: 'https://pigsty.io/docs/app/odoo',
   },
   {
-    name: 'Chat SDK',
-    url: 'https://chat-sdk.dev',
+    name: 'Dify',
+    url: 'https://pigsty.io/docs/app/dify',
   },
 ];
 
@@ -73,15 +121,14 @@ export default function Showcase() {
     <main className="px-4 py-12 z-[2] w-full max-w-[1400px] mx-auto [--color-fd-border:color-mix(in_oklab,var(--color-fd-primary)_30%,transparent)]">
       <div className="relative overflow-hidden border border-dashed p-6">
         <h1 className="mb-4 text-xl font-medium">
-          The docs framework designed with care.
+          The self-hosting dbms infra designed with love & care.
         </h1>
         <p className="text-fd-muted-foreground">
-          A list of beautiful open-source projects with their docs powered by
-          Fumadocs.
+          A list of users & customers with their projects powered by Pigsty
         </p>
         <div className="mt-6">
           <a
-            href="https://github.com/fuma-nama/fumadocs/discussions/30"
+            href="https://github.com/orgs/pgsty/discussions/600"
             target="_blank"
             rel="noreferrer noopener"
             className={cn(
@@ -94,9 +141,7 @@ export default function Showcase() {
             Suggest Yours
           </a>
         </div>
-        <span className="absolute text-xs left-6 bottom-6 text-fd-muted-foreground font-mono">
-          Showcases
-        </span>
+
 
       </div>
 
@@ -115,7 +160,7 @@ export default function Showcase() {
         </svg>
         <div>
           <h2 className="text-sm font-medium mb-2">
-            Fumadocs powers the docs of Vercel open source SDKs.
+            Pigsty has the following modules available in addition to PostgreSQL database.
           </h2>
           <div className="flex items-center gap-2 -mx-1.5">
             {vercel.map((item) => (
@@ -142,7 +187,7 @@ export default function Showcase() {
         ))}
         <div className="absolute text-center bottom-0 inset-x-0 pt-4 bg-gradient-to-t from-fd-background">
           <Link
-            href="https://github.com/fuma-nama/fumadocs/discussions/30"
+            href="https://github.com/orgs/pgsty/discussions/600"
             className={cn(
               buttonVariants({
                 size: 'sm',
@@ -155,7 +200,7 @@ export default function Showcase() {
         </div>
       </div>
       <h2 className="text-xl font-medium mt-12 px-4">
-        Fumadocs can power your blog, too.
+        Pigsty can serve enterprise software, too
       </h2>
       <div className="mt-6 grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {blogs.map((showcase) => (

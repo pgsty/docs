@@ -2,7 +2,7 @@
   "title": "PGSQL",
   "description": "The Main Database Kernel",
   "icon": "Database",
-  "root": false,
+  "root": true,
   "defaultOpen": false,
   "pages": [
     "index",
