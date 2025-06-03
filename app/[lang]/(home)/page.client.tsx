@@ -15,7 +15,7 @@ import scrollIntoView from 'scroll-into-view-if-needed';
 import { cn } from '@/lib/cn';
 import { buttonVariants } from '@/components/ui/button';
 import Image from 'next/image';
-
+import { Cards, Card } from 'fumadocs-ui/components/card';
 import DistributionImg from '@/public/img/pigsty/distribution.png';
 import DashboardImg from '@/public/img/pigsty/dashboard.gif';
 import ExtensionImg from '@/public/img/pigsty/extension.png';
@@ -23,8 +23,8 @@ import ExtensionImg from '@/public/img/pigsty/extension.png';
 import { cva } from 'class-variance-authority';
 
 export function CreateAppAnimation() {
-  const installCmd = 'curl https://repo.pigsty.io/get | bash';
-  const tickTime = 10;
+  const installCmd = 'curl https://repo.pigsty.io/get | bash -s v3.5.0';
+  const tickTime = 30;
   const timeCommandEnter = installCmd.length;
   const timeCommandRun = timeCommandEnter + 3;
   const timeCommandEnd = timeCommandRun + 3;
@@ -63,21 +63,23 @@ export function CreateAppAnimation() {
       <Fragment key="command_response">
         {tick > timeCommandRun + 1 && (
           <>
-            <span className="font-bold">◇ Project name</span>
-            <span>│ my-app</span>
+            <span className="font-bold">$ cd ~/pigsty</span>
           </>
         )}
         {tick > timeCommandRun + 2 && (
           <>
-            <span>│</span>
-            <span className="font-bold">◆ Choose a content source</span>
+            <span className="font-bold">$ ./bootstrap</span>
           </>
         )}
         {tick > timeCommandRun + 3 && (
           <>
-            <span>│ ● Fumadocs MDX</span>
-            <span>│ ○ Content Collections</span>
+            <span className="font-bold">$ ./configure</span>
           </>
+        )}
+        {tick > timeCommandRun + 4 && (
+            <>
+              <span className="font-bold">$ ./install.yml</span>
+            </>
         )}
       </Fragment>,
     );
@@ -137,11 +139,14 @@ export function WhyInteractive(props: {
 }) {
   const [active, setActive] = useState(0);
   const items = [
-    'Full-text Search',
-    'Design System & Tailwind CSS',
-    'Generate from TypeScript & OpenAPI',
-    'Interactive Examples',
-    'Automation & Server',
+    'Extensible Postgres',
+    'Reliable Infrastructure',
+    'Observable Graphics',
+    'Scalable Services',
+    'Maintainable Toolbox',
+    'Composable Modules',
+    'Controllable FOSS',
+    'Affordable Solution',
   ];
 
   return (
@@ -192,89 +197,132 @@ export function WhyInteractive(props: {
       <div className="flex-1 p-4 border border-fd-primary/10 bg-fd-card/40 rounded-lg shadow-lg">
         {active === 0 ? (
           <WhyPanel>
-            <h3>We made it simple.</h3>
-            <p>
-              Fumadocs offers native support for Orama and Algolia Search, it is
-              as easy as plugging a route handler. You can also use your own
-              search modal to allow full control over the search UI.
-            </p>
-            {props.codeblockSearchRouter}
+            <h3>Blossom of Possibilities</h3>
+            <p>Nurturing all, thriving in synergy, forging infinite possibilities!</p>
+            <Cards>
+              <Card title="Analytics" href="/docs/analytics">Big Data's new challenger</Card>
+              <Card title="AI Ready" href="/docs/ai">Baseline for RAG/vector app</Card>
+              <Card title="Geospatial" href="/docs/gis">De facto GIS standard</Card>
+              <Card title="Time Series" href="/docs/timeseries">Temporal data mastery</Card>
+              <Card title="Extensibility" href="/docs/extension">A Universe of Possibilities</Card>
+              <Card title="Text Search" href="/docs/textsearch">Built-in search engine</Card>
+              <Card title="Languages" href="/docs/language">Language of your choice</Card>
+              <Card title="FDW Federation" href="/docs/fdw">Connecting data silos</Card>
+            </Cards>
           </WhyPanel>
         ) : null}
 
         {active === 1 ? (
           <WhyPanel>
-            <h3>Tailwind CSS Plugin</h3>
-            <p>
-              Share the same design system cross the docs and your app with
-              Tailwind CSS. Works great with <b>Shadcn UI</b>.
-            </p>
-            {props.codeblockTheme}
-            <Link
-              href="/docs/ui/theme"
-              className={cn(buttonVariants(), 'not-prose')}
-            >
-              See Themes
-            </Link>
+            <h3>Rock-Solid and Secure</h3>
+            <p>Towering peaks, bedrock solid, standing firm at any summit!</p>
+            <Cards>
+              <Card title="High-Availability" href="/docs/ha">HA PostgreSQL</Card>
+              <Card title="Self-Healing" href="/docs/ha">Adaptive service failover</Card>
+              <Card title="PITR Protection" href="/docs/pitr">Auto-configured point-in-time recovery</Card>
+              <Card title="Infra Closure" href="/docs/infra">No external dependencies</Card>
+              <Card title="Access Control" href="/docs/security">Built-in best-practice model</Card>
+              <Card title="Confidentiality" href="/docs/security">Guaranteed data security</Card>
+              <Card title="Data Integrity" href="/docs/security">Thorough verification</Card>
+              <Card title="Battle-Tested" href="/docs/benchmark">Availability benchmark</Card>
+            </Cards>
           </WhyPanel>
         ) : null}
 
         {active === 2 ? (
           <WhyPanel>
-            <h3>Never repeat yourself again.</h3>
-            <p>
-              Fumadocs has a smart Type Table component that renders the
-              properties of interface/type automatically, from the source of
-              truth, powered by the TypeScript Compiler API.
-            </p>
-            {props.typeTable}
-            <p>
-              We also have a built-in OpenAPI playground and docs generator.
-            </p>
-
-            <div className="mt-4 flex flex-row items-center gap-1.5 not-prose">
-              <Link
-                href="/docs/ui/components/auto-type-table"
-                className={cn(buttonVariants())}
-              >
-                Type Table
-              </Link>
-              <Link
-                href="/docs/ui/openapi"
-                className={cn(buttonVariants({ variant: 'ghost' }))}
-              >
-                OpenAPI Integration
-              </Link>
-            </div>
+            <h3>Clarity and Vision</h3>
+            <p>Sky's movement, all-seeing view, perceiving details to master the whole!</p>
+            <Cards>
+              <Card title="Monitoring Infra" href="/docs/monitor">Built-in monitoring infrastructure</Card>
+              <Card title="Data-Driven" href="/docs/monitor">Foundation for digital transformation</Card>
+              <Card title="Ultimate Experience" href="/docs/monitor">The definitive Postgres monitoring solution</Card>
+              <Card title="Universal Monitoring" href="/docs/monitor">Not limited to PG or RDS monitor</Card>
+              <Card title="Automatic Alerts" href="/docs/monitor">No more manual checks</Card>
+              <Card title="Performance Tuning" href="/docs/monitor">Slow-query bottlenecks uncovered</Card>
+              <Card title="Logging Analysis" href="/docs/monitor">Fast root-cause detection</Card>
+              <Card title="Custom Dashboards" href="/docs/monitor">Low-code visualization development</Card>
+            </Cards>
           </WhyPanel>
         ) : null}
         {active === 3 ? (
           <WhyPanel>
-            <h3>Interactive docs with React.</h3>
-            <p>
-              Fumadocs offers many useful components, from File Tree, Tabs, to
-              Zoomable Image.
-            </p>
-            {props.codeblockInteractive}
-            <Link
-              href="/docs/ui/components"
-              className={cn(buttonVariants(), 'not-prose')}
-            >
-              View Components
-            </Link>
+            <h3>Elastic Performance</h3>
+            <p>Flowing like water, soft yet resilient, converging to adapt to endless change!</p>
+            <Cards>
+              <Card title="Blazing Performance" href="/docs/performance">New hardware fully harnessed</Card>
+              <Card title="R/W Separation" href="/docs/performance">Unlimited read scaling</Card>
+              <Card title="Connection Pooling" href="/docs/performance">High concurrency made easy</Card>
+              <Card title="Load Balancing" href="/docs/performance">Console-driven traffic control</Card>
+              <Card title="Horizontal Scaling" href="/docs/performance">In-place switch to distributed</Card>
+              <Card title="Disk Expansion" href="/docs/performance">External tables with transparent compression</Card>
+              <Card title="Mass Deployment" href="/docs/performance">Large clusters made easy</Card>
+              <Card title="Cloud Elasticity" href="/docs/performance">Cloud-like elasticity</Card>
+            </Cards>
           </WhyPanel>
         ) : null}
         {active === 4 ? (
           <WhyPanel>
-            <h3>Connect your content and server.</h3>
-
-            <p>
-              React Server Component made it very easy to automate docs. Use
-              server data, server components, and even client components in MDX
-              documents.
-            </p>
-
-            {props.codeblockMdx}
+            <h3>Simple & Actionable</h3>
+            <p>Blazing like wildfire, illuminating all around—true to the core while constantly innovating, burning bright without end!</p>
+            <Cards>
+              <Card title="Infra as Code" href="/docs/infra">Define and manage everything in code</Card>
+              <Card title="Simple & Easy" href="/docs/infra">Up and running in minutes</Card>
+              <Card title="Bare Linux" href="/docs/infra">No containers or K8s required</Card>
+              <Card title="Offline Install" href="/docs/infra">Stable, hassle-free delivery</Card>
+              <Card title="Admin SOP" href="/docs/infra">Best practices included</Card>
+              <Card title="No Downtime" href="/docs/infra">Online migration and resizing</Card>
+              <Card title="Rich Parameters" href="/docs/infra">Plenty of tunable parameters</Card>
+              <Card title="Provisioning" href="/docs/infra">One-click server provisioning</Card>
+            </Cards>
+          </WhyPanel>
+        ) : null}
+        {active === 5 ? (
+          <WhyPanel>
+            <h3>Flexible Building Blocks</h3>
+            <p>Swift as the wind, simplifying complexity—riding the currents of change with freedom and ease!</p>
+            <Cards>
+              <Card title="Modular Design" href="/docs/module">Lego-like assembly</Card>
+              <Card title="App Templates" href="/docs/module">One-click enterprise deployment</Card>
+              <Card title="Core Modules" href="/docs/module">Fully-featured Postgres RDS</Card>
+              <Card title="Extra Modules" href="/docs/module">Push the capability boundary</Card>
+              <Card title="Kernel Modules" href="/docs/module">Swappable database engines</Card>
+              <Card title="OLAP Modules" href="/docs/module">Powerful analytics capabilities</Card>
+              <Card title="Pilot Modules" href="/docs/module">Exploring cutting-edge frontiers</Card>
+              <Card title="Flavor Modules" href="/docs/module">Creative Postgres flavors</Card>
+            </Cards>
+          </WhyPanel>
+        ) : null}
+        {active === 6 ? (
+          <WhyPanel>
+            <h3>Sovereign Self-Hosting</h3>
+            <p>Grounded like the earth, gathering all rivers—standing firm while gazing at the stars!</p>
+            <Cards>
+              <Card title="Software Freedom" href="/docs/foss">Local-First OSS</Card>
+              <Card title="No Vendor Lock-In" href="/docs/foss">Free Extension</Card>
+              <Card title="Data Ownership" href="/docs/foss">Truly under your control</Card>
+              <Card title="Friendly License" href="/docs/foss">Compliance Ready</Card>
+              <Card title="Expert Support" href="/docs/foss">Top experts backing you</Card>
+              <Card title="Self-hosting" href="/docs/foss">Democratized</Card>
+              <Card title="Multi-Cloud" href="/docs/foss">No vendor lock-in</Card>
+              <Card title="DIY Development" href="/docs/foss">Roll up your sleeves and build</Card>
+            </Cards>
+          </WhyPanel>
+        ) : null}
+        {active === 7 ? (
+          <WhyPanel>
+            <h3>Cost-Effective RDS</h3>
+            <p>Thunderous impact, breaking to build anew—keeping costs manageable and value ever rising!</p>
+            <Cards>
+              <Card title="No License Fee" href="/docs/afford">Do Less, Save More</Card>
+              <Card title="DBA Efficiency" href="/docs/afford">Simple Architecture</Card>
+              <Card title="Enable Cloud-Exit" href="/docs/afford">Key blockers resolved</Card>
+              <Card title="Community Support" href="/docs/afford">Discuss, share, and co-create</Card>
+              <Card title="Expert Consulting" href="/docs/afford">Expert help on demand</Card>
+              <Card title="Commerical Support" href="/docs/afford">Transparent pricing, worth every penny</Card>
+              <Card title="Open-Source" href="/docs/afford">Fully leverage PostgreSQL ecosystem</Card>
+              <Card title="Save More" href="/docs/afford">Escape the RDS money pit</Card>
+            </Cards>
           </WhyPanel>
         ) : null}
       </div>
