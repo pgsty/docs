@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@fumadocs/mdx-remote": "^1.3.2",
+    "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "fumadocs-core": "15.4.2",
     "fumadocs-mdx": "11.6.6",
     "fumadocs-ui": "15.4.2",
@@ -19,6 +21,7 @@
     "octokit": "^5.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "scroll-into-view-if-needed": "^3.1.0",
     "shiki": "^3.4.2",
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.46"
@@ -33,6 +36,7 @@
     "eslint-config-next": "15.3.2",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
+    "tw-animate-css": "^1.3.3",
     "typescript": "^5.8.3"
   }
 }

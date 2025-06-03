@@ -10,10 +10,9 @@ import {
   useState,
 } from 'react';
 import { TerminalIcon } from 'lucide-react';
-import Link from 'next/link';
+
 import scrollIntoView from 'scroll-into-view-if-needed';
 import { cn } from '@/lib/cn';
-import { buttonVariants } from '@/components/ui/button';
 import Image from 'next/image';
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import DistributionImg from '@/public/img/pigsty/distribution.png';
@@ -187,7 +186,7 @@ export function WhyInteractive(props: {
           from {
             width: 0px;
           }
-          
+
           to {
             width: 100%;
           }
