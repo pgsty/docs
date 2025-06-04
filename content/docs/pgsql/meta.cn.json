@@ -5,8 +5,6 @@
   "root": false,
   "defaultOpen": false,
   "pages": [
-    "index",
-
     "---配置---",
     "concept",
     "config",
@@ -23,8 +21,6 @@
     "extension",
     "hba",
     "acl",
-
-    "--- ---",
     "faq",
     "..."
   ]

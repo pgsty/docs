@@ -7,6 +7,81 @@ defaultOpen: false
 
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
 
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+<Steps>
+    <Step>
+
+        <span className="text-2xl">PREPARE</span>
+
+        [**prepare**](/docs/setup/prepare) a compatible node with Linux OS
+
+        Pigsty support the `Linux` kernel and `x86_64/aarch64` arch. It can run on any nodes: physical machine, bare metal, virtual machines, or VM-like containers, but a **static** IPv4 address is required. The minimum spec is `1C1G`. It is recommended to use bare metals or VMs with at least `2C4G`. There’s no upper limit, and node param will be auto-tuned.
+
+        We recommend using fresh **RockyLinux 8.10 / 9.4** or **Ubuntu 22.04** as underlying operating systems. For a complete list of supported operating systems, please refer to [**Compatibility**](https://pigsty.io/docs/reference/compatibility/).
+
+        Public key `ssh` access to localhost and NOPASSWD `sudo` privilege is required to perform the installation, Try not using the `root` user. If you wish to manage more nodes, these nodes needs to be `ssh` / `sudo` accessible via your current admin node & admin user.
+
+        #### DO NOT use the root user
+
+        While it is possible to install Pigsty as the `root` user, It would be much safer using a dedicate admin user (`dba`, `admin`, …). due to [**security**](https://pigsty.io/docs/setup/security/) consideration which has to be different from `root` and dbsu (`postgres`). Pigsty will create an optional admin user `dba` according to the config by default.
+
+        Pigsty relies on Ansible to execute playbooks. you have to install `ansible` and `jmespath` packages fist before [**install**](https://pigsty.io/docs/setup/install/#install) procedure. This can be done with the following command, or through the [**`bootstrap`**](https://pigsty.io/docs/setup/offline/#bootstrap) procedure, especially when you don’t have internet access.
+
+        - Install Ansible
+        - Debian / Ubuntu
+        - EL 8 / 9
+        - EL 7
+        - MacOS
+
+        ```bash
+        sudo apt install -y ansible python3-jmespath
+        ```
+
+
+
+    </Step>
+    <Step>
+
+        ------
+
+        ## Download
+
+        You can get & extract pigsty source via the following command:
+
+        ```bash
+        curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+        ```
+
+
+        To install a specific version, pass the version string as the first parameter:
+
+        ```bash
+        curl -fsSL https://repo.pigsty.io/get | bash -s v3.3.0; cd ~/pigsty
+        ```
+
+        You can also use `git` to download the Pigsty source. Please make sure to **check out a specific version** before using.
+
+        ```bash
+        git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
+        ```
+
+        #### Checkout a specific version
+
+        The `main` branch may in an unstable development status. Always checkout a version when using `git`, check [Release Notes](https://pigsty.io/docs/releasenote/) for available versions.
+
+
+
+    </Step>
+    <Step>
+        **Configure**
+    </Step>
+    <Step>
+        **Deploy**
+    </Step>
+</Steps>
+
+--------
 
 Prepare a fresh `x86_64/aarch64` node that runs any [compatible Linux OS Distros](/[lang]/docs/pigsty/linux), then Download Pigsty with:
 

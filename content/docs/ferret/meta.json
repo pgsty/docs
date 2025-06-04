@@ -1,0 +1,15 @@
+{
+  "title": "FERRET",
+  "description": "Optional mongo over pgsql",
+  "icon": "Leaf",
+  "root": false,
+  "pages": [
+    "index",
+    "usage",
+    "param",
+    "playbook",
+    "monitor",
+    "faq",
+    "..."
+  ]
+}

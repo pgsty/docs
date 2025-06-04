@@ -1,27 +1,52 @@
 ---
 title: Service
-description: pigsty professional subscription
+description: Expert Consultation and Subscription Plans
 icon: ConciergeBell
 ---
 
-Pigsty aims to consolidate the strengths of the PostgreSQL ecosystem and replace manual database operations with automated database controller software, helping users maximize the benefits of PostgreSQL.
+**Pigsty** aims to consolidate the strengths of the PostgreSQL ecosystem and replace manual database operations with auto-pilot software.
+It's completly open-source and **FREE**, with absolutely no warranty.
 
-We understand the importance of professional support services for enterprise customers, so we provide commercial subscription plans to help users leverage PostgreSQL and Pigsty more effectively.
+While **Professional Service** is important in enterprise environments, we offer **expert consultation** and **subscription plans** tailored to organizations seeking expertise and dedicated assistance.
 
-Consider our subscription if you need:
+<Callout title="On-Demand Expert Consultation" type="info">
 
-- Backup and support for Pigsty and PostgreSQL-related issues
-- Strict SLA guarantees for critical database environments
-- Guidance on PostgreSQL/Pigsty best practices for production
-- Expert analysis of monitoring data and performance bottlenecks
+We (I) have on-demand expert services, **400 $/hour**, can be used for:
+
+- configure pigsty according to your business needs
+- self-hosting Supabase, odoo, dify, gitlab, etc...
+- consulting about database, cloud, observability, and related topics
+- look into failures and optimize slow queries (no on-call)
+- deliver offline install package for specific OS and PG (in list)
+
+</Callout>
+
+On-Demand expert consultation services **DO NOT** guaranteen any response time or availability.
+
+If you need long-term, reliable support with SLA commitment, consider our **subscription plans**.
+
+<Callout title="Long-Term Subscription Plans" type="success">
+
+- Long-Term expert support for Pigsty and PostgreSQL
+- Best practices guidance for production services
+- Immediate response to critical failures with SLA
 - Post-mortem analysis to identify root causes of failures
-- Database architecture planning that meets security, disaster recovery, and compliance requirements
+- Performance optimization and dashboard interpretation
+- Database architecture that meets compliance requirements
 - Migration assistance from other databases to PostgreSQL
-- Development of observability systems and dashboards based on Prometheus/Grafana
-- A cloud-neutral, vendor-lock-in-free alternative to RDS
-- Professional technical support for Redis/ETCD/MinIO/Greenplum/Citus/TimescaleDB
-- Written AGPLv3 license exemptions for open-source derivative works
-- Ability to offer Pigsty as SaaS/PaaS/DBaaS or redistribute it as a commercial product
+- Self-hosting pg releated stuff like Supabase, Odoo, Gitlab,...
+- Running pigsty on legacy OS such as el7, debian 11, ubuntu 22, ...
+- Launch on-perm observability stack with Prometheus / Grafana
+- Building & Delivering customize extensions on demaonds
+- Running alternative PG kernel forks instead of vanilla PG
+- Written commitment for AGPLv3 license liability exemptions
+- Distribute Pigsty as DBaaS or OEM it as a commercial product
+
+</Callout>
+
+[**Contact (email)**](mailto:rh@vonng.com) me (rh@vonng.com) if you need more details.
+
+
 
 ------
 
@@ -30,6 +55,28 @@ Consider our subscription if you need:
 In addition to the [**open-source version**](https://pigsty.io/docs/about/service/#pigsty-oss), Pigsty offers 3 subscription plans: [**Standard**](https://pigsty.io/docs/about/service/#pigsty-standard), [**Professional**](https://pigsty.io/docs/about/service/#pigsty-professional) and [**Enterprise**](https://pigsty.io/docs/about/service/#pigsty-enterprise). You can choose the appropriate subscription plan based on your actual situation and needs.
 
 The number of nodes is defined as the total number of independent IP addresses that exist as **Hosts** in the [config inventory](https://pigsty.io/docs/setup/config/) of a Pigsty deployment, i.e., the total number of nodes managed by Pigsty.
+
+| Item / Plan     |       OSS       |    Standard    |   Professional   |        Enterprise        |
+|:----------------|:---------------:|:--------------:|:----------------:|:------------------------:|
+| License         |     AGPLv3      |   Commercial   |    Commercial    |        Commercial        |
+| Node Limit      |    unlimited    |    &le;  5     |     &le; 15      | &le; 45, up to unlimited |
+| Warranty        |   No Warranty   |    +Pigsty     |     +Kernel      |        +Extension        |
+| Pigsty Bug Fix  |  latest minor   |  latest major  |       all        |           all            |
+| PG Support      |       17        |     17,16      |  17,16,15,14,13  |       back to 9.x+       |
+| PG Extension    |                 | +Debug Symbol  |  +All Versions   |     +Customize Build     |
+| OS Support      |  EL9, D12, U22  |     +ARM64     |    +EL8, U24     |   +EL7,D11,U20 Bespoke   |
+| Arch Support    |     x86_64      | x86_64, ARM64  |  x86_64, ARM64   |      x86_64, ARM64       |
+| Offline Package | el9,d12,u22@x64 |     +ARM64     |    +OS Minor     |         Bespoke          |
+| Core Modules    |                 |                |                  |                          |
+| Exotic Kernel   |   x86, Online   |     +ARM64     | +Offline Install |       +Ext Support       |
+| Extra Modules   |                 |     +ARM64     |   +Pro Modules   |      +Pilot Modules      |
+| Advanced CLI    |                 |      yes       |       yes        |           yes            |
+| DBA Hours       |                 | one-time setup |   up to 5h/mo    |       up to 10h/mo       |
+| Expert Support  |                 |   available    |   1 man·day/yr   |       2 man·day/yr       |
+| Support Grade   |                 |    standard    |   professional   |        enterprise        |
+| Support SLA     |                 | 5x8, same day  |    5x8, < 4h     |      7x24, < 30min       |
+| Price           |      Free       | 10,000 $/year  |  30,000 $/year   |      60,000 $/year       |
+
 
 ------
 
@@ -156,26 +203,3 @@ Fair market rates for enterprise database services typically range from **$1K - 
 
 Pigsty’s pricing offers unmatched cost efficiency, especially on high-end servers.
 
-------
-
-## Expert Support
-
-Pigsty offers on-demand expert services — top-tier database experts available for consultation.
-
-**Expert Advisory: $24,000 - $60,000 / year**
-
-Unlimited, consultations with response time SLA, available solely **through Pigsty subscription**.
-
-**Expert Support: $4,000 / expert·day**
-
-On-site top-tier expert support for architecture, troubleshooting, health checks, migration, and more in time-intensive scenarios.
-
-**Hourly Consultation: $400 / 1hour**
-
-Consult on any Pigsty, PostgreSQL, database, or cloud computing queries with industry-leading insights.
-
-**Quick Question: $30 / question**
-
-Quick diagnostic opinions and responses on PostgreSQL / Pigsty / database queries, up to 5 minutes.
-
-------

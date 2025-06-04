@@ -12,6 +12,7 @@
     "etcd",
     "redis",
     "minio",
-    "docker"
+    "docker",
+    "ferret"
   ]
 }
