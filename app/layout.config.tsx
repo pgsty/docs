@@ -18,7 +18,7 @@ export const linkItems = (lang: string): LinkItemType[] => [
   },
 ];
 
-export const baseOptions = (lang: string): BaseLayoutProps => {
+export const baseOptions = (): BaseLayoutProps => {
   return {
     i18n,
     nav: {

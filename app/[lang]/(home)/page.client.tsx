@@ -129,13 +129,7 @@ function LaunchAppWindow(
   );
 }
 
-export function WhyInteractive(props: {
-  codeblockTheme: ReactNode;
-  codeblockSearchRouter: ReactNode;
-  codeblockInteractive: ReactNode;
-  typeTable: ReactNode;
-  codeblockMdx: ReactNode;
-}) {
+export function WhyInteractive() {
   const [active, setActive] = useState(0);
   const items = [
     'Extensible Postgres',
@@ -199,7 +193,7 @@ export function WhyInteractive(props: {
             <h3>Blossom of Possibilities</h3>
             <p>Nurturing all, thriving in synergy, forging infinite possibilities!</p>
             <Cards>
-              <Card title="Analytics" href="/docs/analytics">Big Data's new challenger</Card>
+              <Card title="Analytics" href="/docs/analytics">Big Data&apos;s new challenger</Card>
               <Card title="AI Ready" href="/docs/ai">Baseline for RAG/vector app</Card>
               <Card title="Geospatial" href="/docs/gis">De facto GIS standard</Card>
               <Card title="Time Series" href="/docs/timeseries">Temporal data mastery</Card>
@@ -231,7 +225,7 @@ export function WhyInteractive(props: {
         {active === 2 ? (
           <WhyPanel>
             <h3>Clarity and Vision</h3>
-            <p>Sky's movement, all-seeing view, perceiving details to master the whole!</p>
+            <p>Sky&apos;s movement, all-seeing view, perceiving details to master the whole!</p>
             <Cards>
               <Card title="Monitoring Infra" href="/docs/monitor">Built-in monitoring infrastructure</Card>
               <Card title="Data-Driven" href="/docs/monitor">Foundation for digital transformation</Card>
