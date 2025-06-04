@@ -5,6 +5,7 @@ import {
   type HTMLAttributes,
   type HTMLProps,
   type ReactElement,
+  type ReactNode,
   useEffect,
   useState,
 } from 'react';
@@ -128,7 +129,13 @@ function LaunchAppWindow(
   );
 }
 
-export function WhyInteractive() {
+export function WhyInteractive(props: {
+  codeblockTheme: ReactNode;
+  codeblockSearchRouter: ReactNode;
+  codeblockInteractive: ReactNode;
+  typeTable: ReactNode;
+  codeblockMdx: ReactNode;
+}) {
   const [active, setActive] = useState(0);
   const items = [
     'Extensible Postgres',
