@@ -1,68 +1,164 @@
 ---
 title: Cluster
-description: postgres database cluster
+description: PostgreSQL database cluster concept
 icon: Boxes
 ---
 
 
-PGSQL for production environments is organized in **clusters**, which **clusters** are **logical entities** consisting of a set of database **instances** associated by **primary-replica**. Each **database cluster** is an autonomous serving unit consisting of at least one **database instance** (primary).
+## Entitiy-Relationships
 
-------
+There are four types of core entities in Pigsty’s **PGSQL** module:
 
-## ER Diagram
+- **Cluster**: An autonomous PostgreSQL business unit, the top-level namespace for other entities.
+- **Service**: An abstraction of cluster ability, traffic routes, and expose services via different node ports.
+- **Instance**: A postgres server which consist of a group of running processes & files on a single node.
+- **Node**: An abstraction of hardware resources, which can be bare metal, virtual machine, or k8s pods.
 
-Let’s get started with ER diagram. There are four types of core entities in Pigsty’s PGSQL module:
+![Pigsty Entities](/img/docs/pgsql-er.svg)
 
-- **PGSQL Cluster**: An autonomous PostgreSQL business unit, used as the top-level namespace for other entities.
-- **PGSQL Service**: A named abstraction of cluster ability, route traffics, and expose postgres services with node ports.
-- **PGSQL Instance**: A single postgres server which is a group of running processes & database files on a single node.
-- **PGSQL Node**: An abstraction of hardware resources, which can be bare metal, virtual machine, or even k8s pods.
+A **Cluster** / **Instance** may have multiple **Databases**, and **Database** contains **Tables** and other **Objects**.
 
-![pigsty-er.jpg](https://pigsty.io/img/pigsty/er.jpg)
-
-**Naming Convention**
-
-- The cluster name should be a valid domain name, without any dot: `[a-zA-Z0-9-]+`
-- Service name should be prefixed with cluster name, and suffixed with a single word: such as `primary`, `replica`, `offline`, `delayed`, join by `-`
-- Instance name is prefixed with cluster name and suffixed with an integer, join by `-`, e.g., `${cluster}-${seq}`.
-- Node is identified by its IP address, and its hostname is usually the same as the instance name since they are 1:1 deployed.
 
 ------
 
 ## Identity Parameters
 
-Here are some common parameters used to identify PGSQL [entities](https://pigsty.io/docs/pgsql/concept/#er-diagram): instance, service, etc…
+A PG Cluster is described by config snippets in the inventory, for example:
 
 ```yaml
-# pg_cluster:           #CLUSTER  # pgsql cluster name, required identity parameter
-# pg_seq: 0             #INSTANCE # pgsql instance seq number, required identity parameter
-# pg_role: replica      #INSTANCE # pgsql role, required, could be primary,replica,offline
-# pg_instances: {}      #INSTANCE # define multiple pg instances on node in `{port:ins_vars}` format
-# pg_upstream:          #INSTANCE # repl upstream ip addr for standby cluster or cascade replica
-# pg_shard:             #CLUSTER  # pgsql shard name, optional identity for sharding clusters
-# pg_group: 0           #CLUSTER  # pgsql shard index number, optional identity for sharding clusters
-# gp_role: master       #CLUSTER  # greenplum role of this cluster, could be master or segment
-pg_offline_query: false #INSTANCE # set to true to enable offline query on this instance
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica }
+  vars:
+    pg_cluster: pg-test
+```
+
+There are **4** **REQUIRED** parameters to describe a PG Cluster:
+
+|                     Name                     |   Type   | Level | Description                   |
+|:--------------------------------------------:|:--------:|:-----:|-------------------------------|
+|             `inventory_hostname`             |   `ip`   | **I** | **PG node IPv4 address**      |
+| [`pg_cluster`](/docs/pgsql/param#pg_cluster) | `string` | **C** | **PG database cluster name**  |
+|     [`pg_seq`](/docs/pgsql/param#pg_seq)     | `number` | **I** | **PG database instance id**   |
+|    [`pg_role`](/docs/pgsql/param#pg_role)    |  `enum`  | **I** | **PG database instance role** |
+
+It will describe & create a HA cluster like this:
+
+![](https://pigsty.cc/img/pigsty/ha.png)
+
+------
+
+## Naming Convention
+
+- Cluster name should be a valid domain name matches `[a-zA-Z0-9-]+`, and &le; 40 char
+- Service names are prefixed with cluster name, and suffixed with a single word join by `-`
+- Instance names are prefixed with cluster name and suffixed with an integer, join by `-`
+- Nodes are identified by its primary IPv4 address, hostname is used as secondary identifier
+
+|    Entity    | Naming Examples                                                                               |
+|:------------:|:----------------------------------------------------------------------------------------------|
+| **Cluster**  | `pg-meta`, `pg-test`, ...                                                                     |
+| **Service**  | `pg-meta-primary`, `pg-test-replcia`, `pg-test-offline`, `pg-test-standby`, `pg-meta-default` |
+| **Instance** | `pg-meta-1`, `pg-test-1`, `pg-test-2`, `pg-test-3`,...                                        |
+|   **Node**   | `10.10.10.10`, `10.10.10.11`, `10.10.10.12`, `10.10.10.13`...                                 |
+
+
+
+- [`pg_cluster`](/docs/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
+- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the ins. Only the `primary` role will be handled specially. If not filled in, the default is the `replica` role and the special `delayed` and `offline` roles.
+- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the ins within the cluster, usually with an integer number incremented from 0 or 1, which is not changed once it is assigned.
+- `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the ins, i.e. `pg_instance`.
+- `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
+- [`pg_shard`](/docs/pgsql/param#pg_shard) and [`pg_group`](/docs/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
+
+
+
+
+------
+
+## Cluster Achitecture
+
+
+
+Here are related entities in this cluster
+
+- 1 cluster: `pg-test`
+- 2 roles: `primary` & `replica`
+- 3 instances: `pg-test-1`, `pg-test-2`, `pg-test-3`
+- 3 nodes: `10.10.10.11`, `10.10.10.12`, `10.10.10.13`
+- 4 services, auto generated by default:
+    - [`pg-test-primary`](/docs/pgsql/service/#primary-service): Read-Write Service (route to primary pgbouncer)
+    - [`pg-test-replica`](/docs/pgsql/service/#replica-service): Read-Only Service (route to replicas pgbouncer)
+    - [`pg-test-default`](/docs/pgsql/service/#default-service): Direct RW Service (route to primary postgres)
+    - [`pg-test-offline`](/docs/pgsql/service/#offline-service): Offline Read Service (route to dedicated postgres)
+
+These identity will be used in the entire system, for example, the metrics may look like:
+
+```yaml
+pg_up{cls="pg-test", ins="pg-test-1", ip="10.10.10.11", job="pgsql"}
+pg_up{cls="pg-test", ins="pg-test-2", ip="10.10.10.12", job="pgsql"}
+pg_up{cls="pg-test", ins="pg-test-3", ip="10.10.10.13", job="pgsql"}
+```
+
+
+## Sharding Clusters
+
+You can use the extra (**OPTIONAL**) `pg_shard` and `pg_group` param to identify horizontal sharded clusters:
+
+|                     Name                     |   Type   | Level | Description                            |
+|:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
+|   [`pg_shard`](/docs/pgsql/param#pg_shard)   | `string` | **C** | **PG database shard name of cluster**  |
+|   [`pg_group`](/docs/pgsql/param#pg_group)   | `number` | **C** | **PG database shard index of cluster** |
+
+For example, Horizontal sharding with citus, greenplum or sharding it manually
+
+```yaml
+pg-citus:
+  hosts:
+    10.10.10.10: { pg_group: 0, pg_cluster: pg-citus0 ,pg_seq: 1, pg_role: primary }
+    10.10.10.11: { pg_group: 0, pg_cluster: pg-citus0 ,pg_seq: 2, pg_role: replica }
+    10.10.10.12: { pg_group: 1, pg_cluster: pg-citus1 ,pg_seq: 1, pg_role: primary }
+    10.10.10.13: { pg_group: 2, pg_cluster: pg-citus2 ,pg_seq: 1, pg_role: primary }
+  vars:
+    pg_mode: citus          # pgsql cluster mode: citus
+    pg_shard: pg-citus      # citus shard name: pg-citus
+```
+
+
+
+
+
+```yaml
+pg_cluster:       #CLUSTER  # pgsql cluster name, required identity parameter
+pg_role: replica  #INSTANCE # pgsql role, required, could be primary,replica,offline
+pg_seq: 0         #INSTANCE # pgsql instance seq number, required identity parameter
+pg_instances: {}  #INSTANCE # define multiple pg instances on node in `{port:ins_vars}` format
+pg_upstream:      #INSTANCE # repl upstream ip addr for standby cluster or cascade replica
+pg_shard:         #CLUSTER  # pgsql shard name, optional identity for sharding clusters
+pg_group: 0       #CLUSTER  # pgsql shard index number, optional identity for sharding clusters
+gp_role: master   #CLUSTER  # greenplum role of this cluster, could be master or segment
 ```
 
 You have to assign these **identity parameters** explicitly, there’s no default value for them.
 
-|                             Name                             |   Type   | Level | Description                            |
-| :----------------------------------------------------------: | :------: | :---: | -------------------------------------- |
-| [`pg_cluster`](https://pigsty.io/docs/pgsql/param/#pg_cluster) | `string` | **C** | **PG database cluster name**           |
-|    [`pg_seq`](https://pigsty.io/docs/pgsql/param/#pg_seq)    | `number` | **I** | **PG database instance id**            |
-|   [`pg_role`](https://pigsty.io/docs/pgsql/param/#pg_role)   |  `enum`  | **I** | **PG database instance role**          |
-|  [`pg_shard`](https://pigsty.io/docs/pgsql/param/#pg_shard)  | `string` | **C** | **PG database shard name of cluster**  |
-|  [`pg_group`](https://pigsty.io/docs/pgsql/param/#pg_group)  | `number` | **C** | **PG database shard index of cluster** |
+|                     Name                     |   Type   | Level | Description                            |
+|:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
+| [`pg_cluster`](/docs/pgsql/param#pg_cluster) | `string` | **C** | **PG database cluster name**           |
+|     [`pg_seq`](/docs/pgsql/param#pg_seq)     | `number` | **I** | **PG database instance id**            |
+|    [`pg_role`](/docs/pgsql/param#pg_role)    |  `enum`  | **I** | **PG database instance role**          |
+|   [`pg_shard`](/docs/pgsql/param#pg_shard)   | `string` | **C** | **PG database shard name of cluster**  |
+|   [`pg_group`](/docs/pgsql/param#pg_group)   | `number` | **C** | **PG database shard index of cluster** |
 
-- [`pg_cluster`](https://pigsty.io/docs/pgsql/param/#pg_cluster): It identifies the name of the cluster, which is configured at the cluster level.
-- [`pg_role`](https://pigsty.io/docs/pgsql/param/#pg_role): Configured at the instance level, identifies the role of the ins. Only the `primary` role will be handled specially. If not filled in, the default is the `replica` role and the special `delayed` and `offline` roles.
-- [`pg_seq`](https://pigsty.io/docs/pgsql/param/#pg_seq): Used to identify the ins within the cluster, usually with an integer number incremented from 0 or 1, which is not changed once it is assigned.
+- [`pg_cluster`](/docs/pgsql/param#pg_cluster): It identifies the name of the cluster, which is configured at the cluster level.
+- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the ins. Only the `primary` role will be handled specially. If not filled in, the default is the `replica` role and the special `delayed` and `offline` roles.
+- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the ins within the cluster, usually with an integer number incremented from 0 or 1, which is not changed once it is assigned.
 - `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the ins, i.e. `pg_instance`.
 - `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
-- [`pg_shard`](https://pigsty.io/docs/pgsql/param/#pg_shard) and [`pg_group`](https://pigsty.io/docs/pgsql/param/#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
+- [`pg_shard`](/docs/pgsql/param#pg_shard) and [`pg_group`](/docs/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
 
-[`pg_cluster`](https://pigsty.io/docs/pgsql/param/#pg_cluster), [`pg_role`](https://pigsty.io/docs/pgsql/param/#pg_role), [`pg_seq`](https://pigsty.io/docs/pgsql/param/#pg_seq) are core **identity params**, which are **required** for any Postgres cluster, and must be explicitly specified. Here’s an example:
+[`pg_cluster`](/docs/pgsql/param#pg_cluster), [`pg_role`](/docs/pgsql/param#pg_role), [`pg_seq`](/docs/pgsql/param#pg_seq) are core **identity params**, which are **required** for any Postgres cluster, and must be explicitly specified. Here’s an example:
 
 ```yaml
 pg-test:
@@ -81,10 +177,10 @@ Here are entities & resources in this cluster
 - three instances: `pg-test-1`, `pg-test-2`, `pg-test-3`
 - three nodes: `10.10.10.11`, `10.10.10.12`, `10.10.10.13`
 - four services:
-- [`pg-test-primary`](https://pigsty.io/docs/pgsql/svc/#primary-service): Read-Write Service
-- [`pg-test-replica`](https://pigsty.io/docs/pgsql/svc/#replica-service): Read-Only Service
-- [`pg-test-default`](https://pigsty.io/docs/pgsql/svc/#default-service): Direct RW Service
-- [`pg-test-offline`](https://pigsty.io/docs/pgsql/svc/#offline-service): Offline Read Service
+- [`pg-test-primary`](/docs/pgsql/svc/#primary-service): Read-Write Service
+- [`pg-test-replica`](/docs/pgsql/svc/#replica-service): Read-Only Service
+- [`pg-test-default`](/docs/pgsql/svc/#default-service): Direct RW Service
+- [`pg-test-offline`](/docs/pgsql/svc/#offline-service): Offline Read Service
 
 And the corresponding metrics will be labeled with these identity parameters in the monitoring system (Prometheus/Grafana/Loki):
 

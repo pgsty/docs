@@ -25,6 +25,12 @@ const config: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'pigsty.cc',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'img.shields.io',
         port: '',
         pathname: '/**',

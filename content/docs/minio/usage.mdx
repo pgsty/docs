@@ -128,7 +128,7 @@ rclone ls sss:/
 
 ## Backup Repo
 
-The MinIO is used as a backup repository for pgBackRest by default in Pigsty. When you modify the [`pgbackrest_method`](https://pigsty.io/docs/pgsql/param/#pgbackrest_method) to `minio`, the PGSQL module will automatically switch the backup repository to MinIO.
+The MinIO is used as a backup repository for pgBackRest by default in Pigsty. When you modify the [`pgbackrest_method`](/docs/pgsql/param#pgbackrest_method) to `minio`, the PGSQL module will automatically switch the backup repository to MinIO.
 
 ```yaml
 pgbackrest_method: local          # pgbackrest repo method: local,minio,[user-defined...]

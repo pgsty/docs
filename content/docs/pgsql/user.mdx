@@ -16,8 +16,8 @@ Therefore, when creating business databases and users, you should follow the pri
 
 Pigsty defines roles and users in database clusters through two config parameters, both in the form of arrays of user objects:
 
-- [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles) : Define system-wide roles & global users
-- [`pg_users`](https://pigsty.io/docs/pgsql/param/#pg_users) : Define business users & roles at cluster level
+- [`pg_default_roles`](/docs/pgsql/param#pg_default_roles) : Define system-wide roles & global users
+- [`pg_users`](/docs/pgsql/param#pg_users) : Define business users & roles at cluster level
 
 The former defines roles and users shared across the entire environment, while the latter defines business roles and users specific to a single cluster.
 
@@ -70,7 +70,7 @@ And each user definition may look like:
 
 **ACL System**
 
-Pigsty has a battery-included [ACL](https://pigsty.io/docs/pgsql/acl/) system, which can be easily used by assigning roles to users:
+Pigsty has a battery-included [ACL](/docs/pgsql/acl) system, which can be easily used by assigning roles to users:
 
 - `dbrole_readonly` : The role for global read-only access
 - `dbrole_readwrite` : The role for global read-write access
@@ -79,8 +79,8 @@ Pigsty has a battery-included [ACL](https://pigsty.io/docs/pgsql/acl/) system, w
 
 If you wish to re-design your ACL system, check the following parameters & templates.
 
-- [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles) : System-wide roles & global users
-- [`pg_default_privileges`](https://pigsty.io/docs/pgsql/param/#pg_default_privileges) : Default privileges for newly created objects
+- [`pg_default_roles`](/docs/pgsql/param#pg_default_roles) : System-wide roles & global users
+- [`pg_default_privileges`](/docs/pgsql/param#pg_default_privileges) : Default privileges for newly created objects
 - [`roles/pgsql/templates/pg-init-role.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-role.sql): Role creation SQL template
 - [`roles/pgsql/templates/pg-init-template.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-template.sql): Privilege SQL template
 
@@ -88,7 +88,7 @@ If you wish to re-design your ACL system, check the following parameters & templ
 
 ## Create User
 
-Users and roles defined in [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles) and [`pg_users`](https://pigsty.io/docs/pgsql/param/#pg_users) will be automatically created one by one during cluster initialization.
+Users and roles defined in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles) and [`pg_users`](/docs/pgsql/param#pg_users) will be automatically created one by one during cluster initialization.
 
 If you want to [**create users**](https://pigsty.io/docs/pgsql/admin/#创建用户) on an existing cluster, you can use the `bin/pgsql-user` command line or directly use the [`pgsql-user.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-useryml) playbook.
 
@@ -152,7 +152,7 @@ REASSIGN OWNED BY "<username>" TO "<another_user>";
 
 Pigsty installs and enables Pgbouncer connection pool by default and manages users in the connection pool.
 
-Pigsty will by default add users with the `pgbouncer: true` flag in [`pg_users`](https://pigsty.io/docs/pgsql/param/#pg_users) to the pgbouncer user list.
+Pigsty will by default add users with the `pgbouncer: true` flag in [`pg_users`](/docs/pgsql/param#pg_users) to the pgbouncer user list.
 
 ### Configuration Files
 
@@ -207,4 +207,4 @@ The connection pool user list is managed through full refresh coverage. If you e
 
 ### Dynamic User Authentication
 
-Note that the [`pgbouncer_auth_query`](https://pigsty.io/docs/pgsql/param/#pgbouncer_auth_query) parameter allows you to use dynamic queries to complete connection pool user authentication, which is a compromise when you don’t want to manage users in the connection pool.
+Note that the [`pgbouncer_auth_query`](/docs/pgsql/param#pgbouncer_auth_query) parameter allows you to use dynamic queries to complete connection pool user authentication, which is a compromise when you don’t want to manage users in the connection pool.

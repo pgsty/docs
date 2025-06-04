@@ -13,7 +13,7 @@ A PostgreSQL server can serve multiple databases simultaneously. And you can cus
 
 ## Define Database
 
-Business databases are defined by [`pg_databases`](https://pigsty.io/docs/pgsql/param/#pg_databases), which is a cluster-level parameter.
+Business databases are defined by [`pg_databases`](/docs/pgsql/param#pg_databases), which is a cluster-level parameter.
 
 For example, the default `meta` database is defined in the `pg-meta` cluster:
 
@@ -64,15 +64,15 @@ Each database definition is a dict with the following fields:
 
 The only required field is `name`, which should be a valid and unique database name in PostgreSQL.
 
-Newly created databases are forked from `template1` database by default. which is customized by [`PG_PROVISION`](https://pigsty.io/docs/pgsql/param/#pg_provision) during cluster bootstrap.
+Newly created databases are forked from `template1` database by default. which is customized by [`PG_PROVISION`](/docs/pgsql/param#pg_provision) during cluster bootstrap.
 
-Check [ACL: Database Privilege](https://pigsty.io/docs/pgsql/acl/#database-privilege) for details about database-level privilege.
+Check [ACL: Database Privilege](/docs/pgsql/acl#database-privilege) for details about database-level privilege.
 
 ------
 
 ## Create Database
 
-Databases [defined](https://pigsty.io/docs/pgsql/db/#define-database) in [`pg_databases`](https://pigsty.io/docs/pgsql/param/#pg_databases) will be automatically created during cluster bootstrap.
+Databases [defined](https://pigsty.io/docs/pgsql/db/#define-database) in [`pg_databases`](/docs/pgsql/param#pg_databases) will be automatically created during cluster bootstrap.
 
 If you wish to [create database](https://pigsty.io/docs/pgsql/admin/#create-database) on an existing cluster, the `bin/pgsql-db` util can be used.
 
@@ -94,7 +94,7 @@ Remember, if your database definition has a non-trivial `owner` (dbsu `postgres`
 
 Pgbouncer is enabled by default and serves as a connection pool middleware.
 
-Pigsty will add all databases in [`pg_databases`](https://pigsty.io/docs/pgsql/param/#pg_databases) to the pgbouncer database list by default. You can disable the pgbouncer proxy for a specific database by setting `pgbouncer: false` in the database [definition](https://pigsty.io/docs/pgsql/db/#define-database).
+Pigsty will add all databases in [`pg_databases`](/docs/pgsql/param#pg_databases) to the pgbouncer database list by default. You can disable the pgbouncer proxy for a specific database by setting `pgbouncer: false` in the database [definition](https://pigsty.io/docs/pgsql/db/#define-database).
 
 The database is listed in `/etc/pgbouncer/database.txt`, with extra database-level parameters such as:
 

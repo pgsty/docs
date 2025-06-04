@@ -465,7 +465,7 @@ If `node_hugepage_count` and `node_hugepage_ratio` are both `0` (default), hugep
 
 Negative value will not work, and number higher than 90% node mem will be ceil to 90% of node mem.
 
-It should slightly larger than [`pg_shared_buffer_ratio`](https://pigsty.io/docs/pgsql/param/#pg_shared_buffer_ratio), if not zero.
+It should slightly larger than [`pg_shared_buffer_ratio`](/docs/pgsql/param#pg_shared_buffer_ratio), if not zero.
 
 ------
 
@@ -479,7 +479,7 @@ default values: `0`, which will set `vm.nr_hugepages=0` and not use HugePage at 
 
 Percent of this memory will be allocated as HugePage, and reserved for PostgreSQL.
 
-It should be equal or slightly larger than [`pg_shared_buffer_ratio`](https://pigsty.io/docs/pgsql/param/#pg_shared_buffer_ratio), if not zero.
+It should be equal or slightly larger than [`pg_shared_buffer_ratio`](/docs/pgsql/param#pg_shared_buffer_ratio), if not zero.
 
 For example, if you have default 25% mem for postgres shard buffers, you can set this value to 0.27 ~ 0.30, Wasted hugepage can be reclaimed later with `/pg/bin/pg-tune-hugepage`
 
@@ -510,7 +510,7 @@ default values: `oltp`
 - `olap `: Regular OLAP templates to optimize throughput
 - `crit`: Core financial business templates, optimizing the number of dirty pages
 
-Usually, the database tuning template [`pg_conf`](https://pigsty.io/docs/pgsql/param/#pg_conf) should be paired with the node tuning template: [`node_tune`](#node_tune)
+Usually, the database tuning template [`pg_conf`](/docs/pgsql/param#pg_conf) should be paired with the node tuning template: [`node_tune`](#node_tune)
 
 ------
 
@@ -1022,7 +1022,7 @@ Promtail will collect logs from other modules, and send them to [`LOKI`](#loki)
 - `REDIS`: Redis logs, collected when a node is defined with `redis_cluster`.
   - `redis`: `/var/log/redis/*.log`
 
-> Log directory are customizable according to [`pg_log_dir`](https://pigsty.io/docs/pgsql/param/#pg_log_dir), [`patroni_log_dir`](https://pigsty.io/docs/pgsql/param/#patroni_log_dir), [`pgbouncer_log_dir`](https://pigsty.io/docs/pgsql/param/#pgbouncer_log_dir), [`pgbackrest_log_dir`](https://pigsty.io/docs/pgsql/param/#pgbackrest_log_dir)
+> Log directory are customizable according to [`pg_log_dir`](/docs/pgsql/param#pg_log_dir), [`patroni_log_dir`](/docs/pgsql/param#patroni_log_dir), [`pgbouncer_log_dir`](/docs/pgsql/param#pgbouncer_log_dir), [`pgbackrest_log_dir`](/docs/pgsql/param#pgbackrest_log_dir)
 
 ```yaml
 promtail_enabled: true            # enable promtail logging collector?

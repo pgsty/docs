@@ -6,7 +6,7 @@ icon: Fingerprint
 
 ## acl
 
-Pigsty has a default role system consist of four [default roles](https://pigsty.io/docs/pgsql/acl/#default-roles) and four [default users](https://pigsty.io/docs/pgsql/acl/#default-users):
+Pigsty has a default role system consist of four [default roles](#default-roles) and four [default users](#default-users):
 
 | Role name          | Attributes    | Member of                   | Description                          |
 |--------------------|---------------|-----------------------------|--------------------------------------|
@@ -42,7 +42,7 @@ There are four default roles in pigsty:
 - Admin (`dbrole_admin`): Role for DDL commands, inherits `dbrole_readwrite`.
 - Offline (`dbrole_offline`): Role for restricted read-only access ([offline](https://pigsty.io/docs/pgsql/config/#offline) instance)
 
-Default roles are defined in [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles), change default roles is not recommended.
+Default roles are defined in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles), change default roles is not recommended.
 
 ```yaml
 - { name: dbrole_readonly  , login: false , comment: role for global read-only access  }                            # production read-only role
@@ -64,13 +64,13 @@ There are four default users in pigsty, too.
 
 Default users’ username/password are defined with dedicate parameters (except for dbsu password):
 
-- [`pg_dbsu`](https://pigsty.io/docs/pgsql/param/#pg_dbsu) : os dbsu name, postgres by default, better not change it
-- [`pg_replication_username`](https://pigsty.io/docs/pgsql/param/#pg_replication_username) : postgres replication username, `replicator` by default
-- [`pg_replication_password`](https://pigsty.io/docs/pgsql/param/#pg_replication_password) : postgres replication password, `DBUser.Replicator` by default
-- [`pg_admin_username`](https://pigsty.io/docs/pgsql/param/#pg_admin_username) : postgres admin username, `dbuser_dba` by default
-- [`pg_admin_password`](https://pigsty.io/docs/pgsql/param/#pg_admin_password) : postgres admin password in plain text, `DBUser.DBA` by default
-- [`pg_monitor_username`](https://pigsty.io/docs/pgsql/param/#pg_monitor_username) : postgres monitor username, `dbuser_monitor` by default
-- [`pg_monitor_password`](https://pigsty.io/docs/pgsql/param/#pg_monitor_password) : postgres monitor password, `DBUser.Monitor` by default
+- [`pg_dbsu`](/docs/pgsql/param#pg_dbsu) : os dbsu name, postgres by default, better not change it
+- [`pg_replication_username`](/docs/pgsql/param#pg_replication_username) : postgres replication username, `replicator` by default
+- [`pg_replication_password`](/docs/pgsql/param#pg_replication_password) : postgres replication password, `DBUser.Replicator` by default
+- [`pg_admin_username`](/docs/pgsql/param#pg_admin_username) : postgres admin username, `dbuser_dba` by default
+- [`pg_admin_password`](/docs/pgsql/param#pg_admin_password) : postgres admin password in plain text, `DBUser.DBA` by default
+- [`pg_monitor_username`](/docs/pgsql/param#pg_monitor_username) : postgres monitor username, `dbuser_monitor` by default
+- [`pg_monitor_password`](/docs/pgsql/param#pg_monitor_password) : postgres monitor password, `DBUser.Monitor` by default
 
 !> **Remember to change these password in production deployment !**
 
@@ -84,7 +84,7 @@ pg_admin_username: dbuser_dba                 # system admin user
 pg_admin_password: DBUser.DBA                 # system admin password
 ```
 
-To define extra options, specify them in [`pg_default_roles`](https://pigsty.io/docs/pgsql/param/#pg_default_roles):
+To define extra options, specify them in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles):
 
 ```yaml
 - { name: postgres     ,superuser: true                                          ,comment: system superuser }
@@ -97,7 +97,7 @@ To define extra options, specify them in [`pg_default_roles`](https://pigsty.io/
 
 ## Privileges
 
-Pigsty has a battery-included privilege model that works with [default roles](https://pigsty.io/docs/pgsql/acl/#default-roles).
+Pigsty has a battery-included privilege model that works with [default roles](#default-roles).
 
 - All users have access to all schemas.
 - Read-Only user can read from all tables. (SELECT, EXECUTE)
@@ -113,7 +113,7 @@ Pigsty has a battery-included privilege model that works with [default roles](ht
 
 ## Object Privilege
 
-Default object privileges are defined in [`pg_default_privileges`](https://pigsty.io/docs/pgsql/param/#pg_default_privileges).
+Default object privileges are defined in [`pg_default_privileges`](/docs/pgsql/param#pg_default_privileges).
 
 ```yaml
 - GRANT USAGE      ON SCHEMAS   TO dbrole_readonly
@@ -186,8 +186,8 @@ These SQL command will be executed on `postgres` & `template1` during cluster bo
 
 That is to say, to maintain the correct object privilege, you have to run DDL with **admin users**, which could be:
 
-1. [`{{ pg_dbsu }}`](https://pigsty.io/docs/pgsql/param/#pg_dbsu), `postgres` by default
-2. [`{{ pg_admin_username }}`](https://pigsty.io/docs/pgsql/param/#pg_admin_username), `dbuser_dba` by default
+1. [`{{ pg_dbsu }}`](/docs/pgsql/param#pg_dbsu), `postgres` by default
+2. [`{{ pg_admin_username }}`](/docs/pgsql/param#pg_admin_username), `dbuser_dba` by default
 3. Business admin user granted with `dbrole_admin`
 
 It’s wise to use `postgres` as global object owner to perform DDL changes. If you wish to create objects with business admin user, YOU MUST USE `SET ROLE dbrole_admin` before running that DDL to maintain the correct privileges.
@@ -209,7 +209,7 @@ There are 3 database level privileges: `CONNECT`, `CREATE`, `TEMP`, and a specia
   revokeconn: false  # optional, revoke public connection privilege. false by default. (leave connect with grant option to owner)
 ```
 
-- If `owner` exists, it will be used as database owner instead of default [`{{ pg_dbsu }}`](https://pigsty.io/docs/pgsql/param/#pg_dbsu)
+- If `owner` exists, it will be used as database owner instead of default [`{{ pg_dbsu }}`](/docs/pgsql/param#pg_dbsu)
 - If `revokeconn` is `false`, all users have the `CONNECT` privilege of the database, this is the default behavior.
 - If `recokeconn` is set to `true` explicitly:
 - `CONNECT` privilege of the database will be revoked from `PUBLIC`

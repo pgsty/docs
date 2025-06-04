@@ -102,7 +102,7 @@ It will increase the etcd default quota from 2 GiB to 16 GiB, and ensure that on
 
 ## Where does the PostgreSQL HA data stored in etcd?
 
-Patroni will use the [**`pg_namespace`**](https://pigsty.io/docs/pgsql/param/#pg_namespace) (default is `/pg`) as the prefix for all metadata keys in etcd, followed by the PostgreSQL cluster name.
+Patroni will use the [**`pg_namespace`**](/docs/pgsql/param#pg_namespace) (default is `/pg`) as the prefix for all metadata keys in etcd, followed by the PostgreSQL cluster name.
 
 For example, a PG cluster named `pg-meta`, its metadata keys will be stored under `/pg/pg-meta`, which may look like this:
 

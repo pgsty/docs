@@ -42,10 +42,10 @@ While the client certificate (`CN` = username) can be issued with local CA & [ce
 
 There are four parameters for HBA Rules in Pigsty:
 
-- [`pg_hba_rules`](https://pigsty.io/docs/pgsql/param/#pg_hba_rules): postgres ad-hoc hba rules
-- [`pg_default_hba_rules`](https://pigsty.io/docs/pgsql/param/#pg_default_hba_rules): postgres default hba rules
-- [`pgb_hba_rules`](https://pigsty.io/docs/pgsql/param/#pgb_hba_rules): pgbouncer ad-hoc hba rules
-- [`pgb_default_hba_rules`](https://pigsty.io/docs/pgsql/param/#pgb_default_hba_rules): pgbouncer default hba rules
+- [`pg_hba_rules`](/docs/pgsql/param#pg_hba_rules): postgres ad-hoc hba rules
+- [`pg_default_hba_rules`](/docs/pgsql/param#pg_default_hba_rules): postgres default hba rules
+- [`pgb_hba_rules`](/docs/pgsql/param#pgb_hba_rules): pgbouncer ad-hoc hba rules
+- [`pgb_default_hba_rules`](/docs/pgsql/param#pgb_default_hba_rules): pgbouncer default hba rules
 
 Which are array of hba rule objects, and each hba rule is one of the following forms:
 
@@ -62,11 +62,11 @@ Which are array of hba rule objects, and each hba rule is one of the following f
 
 In the form, the `title` will be rendered as a comment line, followed by the `rules` as hba string one by one.
 
-An HBA Rule is installed when the instance’s [`pg_role`](https://pigsty.io/docs/pgsql/param/#pg_role) is the same as the `role`.
+An HBA Rule is installed when the instance’s [`pg_role`](/docs/pgsql/param#pg_role) is the same as the `role`.
 
 HBA Rule with `role: common` will be installed on all instances.
 
-HBA Rule with `role: offline` will be installed on instances with [`pg_role`](https://pigsty.io/docs/pgsql/param/#pg_role) = `offline` or [`pg_offline_query`](https://pigsty.io/docs/pgsql/param/#pg_offline_query) = `true`.
+HBA Rule with `role: offline` will be installed on instances with [`pg_role`](/docs/pgsql/param#pg_role) = `offline` or [`pg_offline_query`](/docs/pgsql/param#pg_offline_query) = `true`.
 
 ### 2. Alias Form
 
@@ -94,7 +94,7 @@ The alias form, which replace `rules` with `addr`, `auth`, `user`, and `db` fiel
 - `auth`: how
   - `deny`: reject access
   - `trust`: trust authentication
-  - `pwd`: use `md5` or `scram-sha-256` password auth according to [`pg_pwd_enc`](https://pigsty.io/docs/pgsql/param/#pg_pwd_enc)
+  - `pwd`: use `md5` or `scram-sha-256` password auth according to [`pg_pwd_enc`](/docs/pgsql/param#pg_pwd_enc)
   - `sha`/`scram-sha-256`: enforce `scram-sha-256` password authentication
   - `md5`: `md5` password authentication
   - `ssl`: enforce host ssl in addition to `pwd` auth
@@ -106,10 +106,10 @@ The alias form, which replace `rules` with `addr`, `auth`, `user`, and `db` fiel
 
 - `user`: who
   - `all`: all users
-  - `${dbsu}`: database superuser specified by [`pg_dbsu`](https://pigsty.io/docs/pgsql/param/#pg_dbsu)
-  - `${repl}`: replication user specified by [`pg_replication_username`](https://pigsty.io/docs/pgsql/param/#pg_replication_username)
-  - `${admin}`: admin user specified by [`pg_admin_username`](https://pigsty.io/docs/pgsql/param/#pg_admin_username)
-  - `${monitor}`: monitor user specified by [`pg_monitor_username`](https://pigsty.io/docs/pgsql/param/#pg_monitor_username)
+  - `${dbsu}`: database superuser specified by [`pg_dbsu`](/docs/pgsql/param#pg_dbsu)
+  - `${repl}`: replication user specified by [`pg_replication_username`](/docs/pgsql/param#pg_replication_username)
+  - `${admin}`: admin user specified by [`pg_admin_username`](/docs/pgsql/param#pg_admin_username)
+  - `${monitor}`: monitor user specified by [`pg_monitor_username`](/docs/pgsql/param#pg_monitor_username)
   - ad hoc users & roles.
 
 - `db`: which
@@ -121,13 +121,13 @@ The alias form, which replace `rules` with `addr`, `auth`, `user`, and `db` fiel
 
 Typically, global HBA is defined in all.vars. If you want to modify the global default HBA rules, you can copy from the full.yml template to all.vars for modification.
 
-- [`pg_default_hba_rules`](https://pigsty.io/docs/pgsql/param/#pg_default_hba_rules): postgres global default HBA rules
-- [`pgb_default_hba_rules`](https://pigsty.io/docs/pgsql/param/#pgb_default_hba_rules): pgbouncer global default HBA rules
+- [`pg_default_hba_rules`](/docs/pgsql/param#pg_default_hba_rules): postgres global default HBA rules
+- [`pgb_default_hba_rules`](/docs/pgsql/param#pgb_default_hba_rules): pgbouncer global default HBA rules
 
 Cluster-specific HBA rules are defined in the cluster-level configuration of the database:
 
-- [`pg_hba_rules`](https://pigsty.io/docs/pgsql/param/#pg_hba_rules): postgres HBA rules for the cluster
-- [`pgb_hba_rules`](https://pigsty.io/docs/pgsql/param/#pgb_hba_rules): pgbouncer HBA rules for the cluster
+- [`pg_hba_rules`](/docs/pgsql/param#pg_hba_rules): postgres HBA rules for the cluster
+- [`pgb_hba_rules`](/docs/pgsql/param#pgb_hba_rules): pgbouncer HBA rules for the cluster
 
 Here are some examples of cluster HBA rule definitions.
 

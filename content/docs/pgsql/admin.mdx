@@ -8,22 +8,22 @@ icon: Wrench
 
 Here are some SOP for common pgsql admin tasks
 
-- Case 1: [Create Cluster](https://pigsty.io/docs/pgsql/admin/#create-cluster)
-- Case 2: [Create User](https://pigsty.io/docs/pgsql/admin/#create-user)
-- Case 3: [Create Database](https://pigsty.io/docs/pgsql/admin/#create-database)
-- Case 4: [Reload Service](https://pigsty.io/docs/pgsql/admin/#reload-service)
-- Case 5: [Reload HBARule](https://pigsty.io/docs/pgsql/admin/#reload-hbarule)
-- Case 6: [Config Cluster](https://pigsty.io/docs/pgsql/admin/#config-cluster)
-- Case 7: [Append Replica](https://pigsty.io/docs/pgsql/admin/#append-replica)
-- Case 8: [Remove Replica](https://pigsty.io/docs/pgsql/admin/#remove-replica)
-- Case 9: [Remove Cluster](https://pigsty.io/docs/pgsql/admin/#remove-cluster)
-- Case 10: [Switchover](https://pigsty.io/docs/pgsql/admin/#switchover)
-- Case 11: [Backup Cluster](https://pigsty.io/docs/pgsql/admin/#backup-cluster)
-- Case 12: [Restore Cluster](https://pigsty.io/docs/pgsql/admin/#restore-cluster)
-- Case 13: [Adding Packages](https://pigsty.io/docs/pgsql/admin/#adding-packages)
-- Case 14: [Install Extension](https://pigsty.io/docs/pgsql/admin/#install-extension)
-- Case 15: [Minor Upgrade](https://pigsty.io/docs/pgsql/admin/#minor-upgrade)
-- Case 16: [Major Upgrade](https://pigsty.io/docs/pgsql/admin/#major-upgrade)
+- Case 1: [Create Cluster](#create-cluster)
+- Case 2: [Create User](#create-user)
+- Case 3: [Create Database](#create-database)
+- Case 4: [Reload Service](#reload-service)
+- Case 5: [Reload HBARule](#reload-hbarule)
+- Case 6: [Config Cluster](#config-cluster)
+- Case 7: [Append Replica](#append-replica)
+- Case 8: [Remove Replica](#remove-replica)
+- Case 9: [Remove Cluster](#remove-cluster)
+- Case 10: [Switchover](#switchover)
+- Case 11: [Backup Cluster](#backup-cluster)
+- Case 12: [Restore Cluster](#restore-cluster)
+- Case 13: [Adding Packages](#adding-packages)
+- Case 14: [Install Extension](#install-extension)
+- Case 15: [Minor Upgrade](#minor-upgrade)
+- Case 16: [Major Upgrade](#major-upgrade)
 
 ------
 
@@ -123,7 +123,7 @@ To create a new database user on the existing Postgres cluster, add database def
 bin/pgsql-db <cls> <dbname>       # ./pgsql-db.yml -l <cls> -e dbname=<dbname>
 ```
 
-Note: If the database has specified an owner, the user should already exist, or you’ll have to [Create User](https://pigsty.io/docs/pgsql/admin/#create-user) first.
+Note: If the database has specified an owner, the user should already exist, or you’ll have to [Create User](#create-user) first.
 
 
 
@@ -133,7 +133,7 @@ Note: If the database has specified an owner, the user should already exist, or 
 
 Services are exposed access point served by HAProxy.
 
-This task is used when cluster membership has changed, e.g., [append](https://pigsty.io/docs/pgsql/admin/#append-replica)/[remove](https://pigsty.io/docs/pgsql/admin/#remove-replica) replicas, [switchover](https://pigsty.io/docs/pgsql/admin/#switchover)/failover / exposing new service or updating existing service’s config (e.g., LB Weight)
+This task is used when cluster membership has changed, e.g., [append](#append-replica)/[remove](#remove-replica) replicas, [switchover](#switchover)/failover / exposing new service or updating existing service’s config (e.g., LB Weight)
 
 To create new services or reload existing services on entire proxy cluster or specific instances:
 
@@ -192,7 +192,7 @@ bin/pgsql-add <cls> <ip>          # init pgsql instances on <ip> for cluster <cl
 
 It will add node `<ip>` to pigsty and init it as a replica of the cluster `<cls>`.
 
-Cluster services will be [reloaded](https://pigsty.io/docs/pgsql/admin/#reload-service) to adopt the new member
+Cluster services will be [reloaded](#reload-service) to adopt the new member
 
 
 
@@ -206,7 +206,7 @@ To remove a replica from the existing PostgreSQL cluster:
 bin/pgsql-rm <cls> <ip...>        # ./pgsql-rm.yml -l <ip>
 ```
 
-It will remove instance `<ip>` from cluster `<cls>`. Cluster services will be [reloaded](https://pigsty.io/docs/pgsql/admin/#reload-service) to kick the removed instance from load balancer.
+It will remove instance `<ip>` from cluster `<cls>`. Cluster services will be [reloaded](#reload-service) to kick the removed instance from load balancer.
 
 
 
@@ -295,13 +295,13 @@ ansible pg-test -b -m package -a "name=pg_cron_15,topn_15,pg_stat_monitor_15*"  
 
 ## Install Extension
 
-If you want to install extension on pg clusters, Add them to [`pg_extensions`](https://pigsty.io/docs/pgsql/param/#pg_extensions) and make sure them installed with:
+If you want to install extension on pg clusters, Add them to [`pg_extensions`](/docs/pgsql/param#pg_extensions) and make sure them installed with:
 
 ```bash
 ./pgsql.yml -t pg_extension     # install extensions
 ```
 
-Some extension needs to be loaded in `shared_preload_libraries`, You can add them to [`pg_libs`](https://pigsty.io/docs/pgsql/param/#pg_libs), or [Config](https://pigsty.io/docs/pgsql/admin/#config-cluster) an existing cluster.
+Some extension needs to be loaded in `shared_preload_libraries`, You can add them to [`pg_libs`](/docs/pgsql/param#pg_libs), or [Config](#config-cluster) an existing cluster.
 
 Finally, `CREATE EXTENSION <extname>;` on the cluster primary instance to install it.
 
@@ -313,7 +313,7 @@ Check [PGSQL Extensions: Install](https://pigsty.io/ext/usage/install/) for deta
 
 ## Minor Upgrade
 
-To perform a minor server version upgrade/downgrade, you have to [add packages](https://pigsty.io/docs/pgsql/admin/#adding-packages) to yum/apt repo first.
+To perform a minor server version upgrade/downgrade, you have to [add packages](#adding-packages) to yum/apt repo first.
 
 Then perform a rolling upgrade/downgrade from all replicas, then switchover the cluster to upgrade the leader.
 
@@ -334,7 +334,7 @@ The simplest way to achieve a major version upgrade is to create a new cluster w
 
 You can also perform an in-place major upgrade, which is not recommended especially when certain extensions are installed. But it is possible.
 
-Assume you want to upgrade PostgreSQL 14 to 15, you have to [add packages](https://pigsty.io/docs/pgsql/admin/#adding-packages) to yum/apt repo, and guarantee the extensions has exact same version too.
+Assume you want to upgrade PostgreSQL 14 to 15, you have to [add packages](#adding-packages) to yum/apt repo, and guarantee the extensions has exact same version too.
 
 ```bash
 ./pgsql.yml -t pg_pkg -e pg_version=15                         # install packages for pg 15

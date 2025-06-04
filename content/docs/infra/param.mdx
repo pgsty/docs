@@ -566,7 +566,7 @@ And on Debian/Ubuntu systems, it will be translated into:
 postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector
 ```
 
-Here `$v` will be replaced with the actual PostgreSQL major version number [`pg_version`](https://pigsty.io/docs/pgsql/param/#pg_version), So you can add any PG version related packages here, and Pigsty will download them for you.
+Here `$v` will be replaced with the actual PostgreSQL major version number [`pg_version`](/docs/pgsql/param#pg_version), So you can add any PG version related packages here, and Pigsty will download them for you.
 
 ------
 
@@ -1014,8 +1014,8 @@ default value: `none`
 Specify how to install Exporter:
 
 - `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](https://pigsty.io/docs/node/param/#node_default_packages) task)
-- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](https://pigsty.io/docs/pgsql/param/#pg_exporter) before deploying Exporter)
-- `binary`: Install using a copy binary (copy [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](https://pigsty.io/docs/pgsql/param/#pg_exporter) binary directly from the meta node, not recommended)
+- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) before deploying Exporter)
+- `binary`: Install using a copy binary (copy [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) binary directly from the meta node, not recommended)
 
 When installing with `yum`, if `exporter_repo_url` is specified (not empty), the installation will first install the REPO file under that URL into `/etc/yum.repos.d`. This feature allows you to install Exporter directly without initializing the node infrastructure. It is not recommended for regular users to use `binary` installation. This mode is usually used for emergency troubleshooting and temporary problem fixes.
 

@@ -64,7 +64,7 @@ localedef -i en_US -f UTF-8 en_US.UTF-8
 localectl set-locale LANG=en_US.UTF-8
 ```
 
-Note: The PostgreSQL cluster deployed by Pigsty defaults to the `C.UTF8` locale, but character set definitions use `en_US` to ensure the `pg_trgm` extension functions properly. If you do not need this feature, you can configure the value of [**`pg_lc_ctype`**](https://pigsty.io/docs/pgsql/param/#pg_lc_ctype) to `C.UTF8` to avoid this issue when en locale is missing.
+Note: The PostgreSQL cluster deployed by Pigsty defaults to the `C.UTF8` locale, but character set definitions use `en_US` to ensure the `pg_trgm` extension functions properly. If you do not need this feature, you can configure the value of [**`pg_lc_ctype`**](/docs/pgsql/param#pg_lc_ctype) to `C.UTF8` to avoid this issue when en locale is missing.
 
 ------
 

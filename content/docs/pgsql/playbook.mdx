@@ -27,8 +27,8 @@ Beware, when using the [`pgsql.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsq
 
 To prevent accidental deletions, the [PGSQL](https://pigsty.io/docs/pgsql/) module offers a safeguard option controlled by the following two parameters:
 
-- [`pg_safeguard`](https://pigsty.io/docs/pgsql/param/#pg_safeguard) is set to `false` by default: do not prevent purging by default.
-- [`pg_clean`](https://pigsty.io/docs/pgsql/param/#pg_clean) is set to `true` by default, meaning it will clean existing instances.
+- [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is set to `false` by default: do not prevent purging by default.
+- [`pg_clean`](/docs/pgsql/param#pg_clean) is set to `true` by default, meaning it will clean existing instances.
 
 **Effects on the init playbook**
 
@@ -39,7 +39,7 @@ When meeting a running instance with the same config during the execution of the
 |    `pg_safeguard=false`     |    **Purge**    |      Abort       |
 |     `pg_safeguard=true`     |      Abort      |      Abort       |
 
-- If [`pg_safeguard`](https://pigsty.io/docs/pgsql/param/#pg_safeguard) is enabled, the playbook will abort to avoid purging the running instance.
+- If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, the playbook will abort to avoid purging the running instance.
 
 - If the safeguard is disabled, it will further decide whether to remove the existing instance according to the value of
 
@@ -61,7 +61,7 @@ When meeting a running instance with the same config during the execution of the
 |    `pg_safeguard=false`     | **Purge** & rm data |    **Purge**     |
 |     `pg_safeguard=true`     |        Abort        |      Abort       |
 
-- If [`pg_safeguard`](https://pigsty.io/docs/pgsql/param/#pg_safeguard) is enabled, the playbook will abort to avoid purging the running instance.
+- If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, the playbook will abort to avoid purging the running instance.
 
 - If the safeguard is disabled, it purges the running instance and will further decide whether to remove the existing data along with the instance according to the value of
 

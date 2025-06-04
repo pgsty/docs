@@ -317,7 +317,7 @@ Database credentials, In-Database Objects that need to be taken care of by Users
 - Ad-Hoc PostgreSQL HBA Rules: [`pg_default_services`](#pg_default_services)
 - Ad-Hoc Pgbouncer HBA Rules: [`pgb_hba_rules`](#pgb_hba_rules)
 
-[Default Database Users](https://pigsty.io/docs/pgsql/acl/#default-users):
+[Default Database Users](/docs/pgsql/acl#default-users):
 
 - Administrator: [`pg_admin_username`](#pg_admin_username) / [`pg_admin_password`](#pg_admin_password)
 - Replication User: [`pg_replication_username`](#pg_replication_username) / [`pg_replication_password`](#pg_replication_password)
@@ -1359,9 +1359,9 @@ default values: `disable`, beware that this may have a huge performance impact o
 
 PG_BOOTSTRAP will bootstrap a new postgres cluster with patroni, while PG_PROVISION will create default objects in the cluster, including:
 
-- [Default Roles](https://pigsty.io/docs/pgsql/acl/#default-roles)
-- [Default Users](https://pigsty.io/docs/pgsql/acl/#default-users)
-- [Default Privileges](https://pigsty.io/docs/pgsql/acl/#privileges)
+- [Default Roles](/docs/pgsql/acl#default-roles)
+- [Default Users](/docs/pgsql/acl#default-users)
+- [Default Privileges](/docs/pgsql/acl#privileges)
 - [Default HBA Rules](https://pigsty.io/docs/pgsql/hba/#default-hba)
 - Default Schemas
 - Default Extensions
@@ -1465,7 +1465,7 @@ name: `pg_default_roles`, type: `role[]`, level: `G/C`
 
 default roles and users in postgres cluster.
 
-Pigsty has a built-in role system, check [PGSQL Access Control](https://pigsty.io/docs/pgsql/acl/#role-system) for details.
+Pigsty has a built-in role system, check [PGSQL Access Control](/docs/pgsql/acl#role-system) for details.
 
 ```yaml
 pg_default_roles:                 # default roles and users in postgres cluster
@@ -1508,7 +1508,7 @@ pg_default_privileges:            # default privileges when created by admin use
   - GRANT CREATE     ON SCHEMAS   TO dbrole_admin
 ```
 
-Pigsty has a built-in privileges base on default role system, check [PGSQL Privileges](https://pigsty.io/docs/pgsql/acl/#privileges) for details.
+Pigsty has a built-in privileges base on default role system, check [PGSQL Privileges](/docs/pgsql/acl#privileges) for details.
 
 ------
 

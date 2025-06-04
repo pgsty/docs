@@ -8,7 +8,7 @@ icon: MessageCircleQuestion
 
 > Set `pg_clean` = `true` and `pg_safeguard` = `false` to force clean postgres data during `pgsql.yml`
 
-This happens when you run `pgsql.yml` on a node with postgres running, and [`pg_clean`](https://pigsty.io/docs/pgsql/param/#pg_clean) is set to `false`.
+This happens when you run `pgsql.yml` on a node with postgres running, and [`pg_clean`](/docs/pgsql/param#pg_clean) is set to `false`.
 
 If `pg_clean` is true (and the `pg_safeguard` is `false`, too), the `pgsql.yml` playbook will remove the existing pgsql data and re-init it as a new one, which makes this playbook fully idempotent.
 
@@ -25,7 +25,7 @@ You can still purge the existing PostgreSQL data by using a special task tag `pg
 
 > Disable `pg_safeguard` to remove the Postgres instance.
 
-If [`pg_safeguard`](https://pigsty.io/docs/pgsql/param/#pg_safeguard) is enabled, you can not remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
+If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, you can not remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
 
 To disable `pg_safeguard`, you can set `pg_safeguard` to `false` in the inventory or pass `-e pg_safeguard=false` as cli arg to the playbook:
 
@@ -113,7 +113,7 @@ Consider using [Sync Standby](https://pigsty.io/docs/pgsql/config/#sync-standby)
 
 > `rm -rf /pg/dummy` will free some emergency space.
 
-The [`pg_dummy_filesize`](https://pigsty.io/docs/pgsql/param/#pg_dummy_filesize) is set to `64MB` by default. Consider increasing it to `8GB` or larger in the production environment.
+The [`pg_dummy_filesize`](/docs/pgsql/param#pg_dummy_filesize) is set to `64MB` by default. Consider increasing it to `8GB` or larger in the production environment.
 
 It will be placed on `/pg/dummy` same disk as the PGSQL main data disk. You can remove that file to free some emergency space. At least you can run some shell scripts on that node.
 
