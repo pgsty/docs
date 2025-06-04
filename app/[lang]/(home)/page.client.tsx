@@ -5,7 +5,6 @@ import {
   type HTMLAttributes,
   type HTMLProps,
   type ReactElement,
-  type ReactNode,
   useEffect,
   useState,
 } from 'react';
