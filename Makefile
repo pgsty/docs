@@ -11,5 +11,7 @@ view:
 c: clean
 clean:
 	rm -rf out
+s: serve
+	python -m
 
 .PHONY: d dev b build v view c clean

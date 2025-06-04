@@ -129,13 +129,7 @@ function LaunchAppWindow(
   );
 }
 
-export function WhyInteractive(props: {
-  codeblockTheme: ReactNode;
-  codeblockSearchRouter: ReactNode;
-  codeblockInteractive: ReactNode;
-  typeTable: ReactNode;
-  codeblockMdx: ReactNode;
-}) {
+export function WhyInteractive() {
   const [active, setActive] = useState(0);
   const items = [
     'Extensible Postgres',

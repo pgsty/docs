@@ -33,7 +33,6 @@ import {
     WhyInteractive,
 } from './page.client';
 import { NetlifyLogo, VercelLogo } from './icons';
-import { TypeTable } from 'fumadocs-ui/components/type-table';
 import { owner, repo } from '@/lib/github';
 import { Marquee } from '@/app/[lang]/(home)/marquee';
 import ArchImg from './arch.png';
@@ -117,77 +116,7 @@ function Architecture() {
 async function Why() {
     return (
         <div className="relative overflow-hidden border-x border-t p-2">
-            <WhyInteractive
-                typeTable={
-                    <TypeTable
-                        type={{
-                            name: {
-                                type: 'string',
-                                description: 'The name of player',
-                                default: 'hello',
-                            },
-                            code: {
-                                type: 'string',
-                                description: (
-                                    <CodeBlock lang="ts" code='console.log("Hello World")' />
-                                ),
-                            },
-                        }}
-                    />
-                }
-                codeblockSearchRouter={
-                    <CodeBlock
-                        lang="ts"
-                        code={`import { source } from '@/lib/source';
-import { createFromSource } from 'fumadocs-core/search/server';
- 
-export const { GET } = createFromSource(source);`}
-                    />
-                }
-                codeblockTheme={
-                    <CodeBlock
-                        lang="css"
-                        code={`@import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
-@import 'fumadocs-ui/css/preset.css';`}
-                    />
-                }
-                codeblockInteractive={
-                    <CodeBlock
-                        lang="tsx"
-                        code={`import { File, Folder, Files } from 'fumadocs-ui/components/files';
- 
-<Files>
-  <Folder name="app" defaultOpen>
-    <File name="layout.tsx" />
-    <File name="page.tsx" />
-    <File name="global.css" />
-  </Folder>
-  <File name="package.json" />
-</Files>`}
-                    />
-                }
-                codeblockMdx={
-                    <CodeBlock
-                        lang="tsx"
-                        code={`import { db } from '@/server/db';
-
-export function ProductTable() {
-  const products = db.getProducts()
-    
-  return (
-    <ul>
-      {products.map(product => <li key={product.key}>{product.name}</li>)}
-    </ul>
-  );
-}
-
-## Products
-
-<ProductTable />`}
-                    />
-                }
-            />
+            <WhyInteractive></WhyInteractive>
         </div>
     );
 }
