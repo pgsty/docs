@@ -304,52 +304,51 @@ You can create admin user with pigsty itself, with existing root/admin user:
 
 Pigsty use `ansible` to initiate control from admin node to all managed nodes.
 
+You don't need to care about details, ansible is installed during the [**Bootstrap**](/docs/setup/offline#bootstrap) stage.
 
+<Callout title="Install Ansible Manually" type="info">
 
-Pigsty requires [**Ansible**](/docs/setup/playbook#ansible) on the [**admin node**](/docs/node/concept#admin-node) for deployment orchestration.
-
-<Callout title="Ansible requirement" type="info">
-
-    Only the admin node requires Ansible. Regular nodes do not need it installed.
+    ```bash tab="EL 8/9"
+    sudo dnf install -y ansible python3.12-jmespath
+    ```
+    ```bash tab="Debian / Ubuntu"
+    sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 7"
+    sudo yum install -y ansible python-jmespath
+    ```
+    ```bash tab="macOS"
+    brew install ansible
+    pip3 install jmespath
+    ```
 
 </Callout>
 
-### Install Ansible
+Ansible is only required on admin node, you can run ansible on macOS to use your laptop as admin node. 
 
-The [**bootstrap**](/docs/setup/offline#bootstrap) procedure handles Ansible installation automatically. 
-For manual installation, use the appropriate command for your OS:
 
-```bash
-# EL 8/9 (RHEL, Rocky, Alma, etc.)
-sudo dnf install -y ansible python3.12-jmespath
+--------
 
-# EL 7 (CentOS 7)
-sudo yum install -y ansible python-jmespath
+## Pigsty
 
-# Debian/Ubuntu
-sudo apt install -y ansible python3-jmespath
+You can get pigsty src and pkg from the official [GitHub Release page](https://github.com/pgsty/pigsty/releases)
 
-# macOS
-brew install ansible
-pip3 install jmespath
-```
-
-### Get Pigsty Source
-
-Download the latest stable version:
+<Callout title="Get the latest stable version" type="info">
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash
 ```
 
-Or download a specific version from [GitHub Releases](https://github.com/pgsty/pigsty/releases/).
+</Callout>
 
-<Callout title="Offline installation" type="info">
+<Callout title="Get a specific version" type="info">
 
-    For environments without Internet access, use [offline packages](/docs/setup/offline#offline-packages) pre-packed for different OS distributions.
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0
+```
 
 </Callout>
 
 
-
-
+If your environment does not have the Internet access, consider download offline packages alone with source tarball
+ and upload them to your nodes. check [Offline Installation](/docs/setup/offline) for details.
