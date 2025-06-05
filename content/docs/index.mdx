@@ -86,8 +86,43 @@ Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for 
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 <Accordions type="single" orientation={"horizontal"}>
-    <Accordion title="My Title">My Content</Accordion>
-    <Accordion title="My b">My Content</Accordion>
-    <Accordion title="My c">My dsfsdf</Accordion>
-    <Accordion title="My d">My  <span className={"text-red-800 font-bold"}>420+</span></Accordion>
+    <Accordion title="What is Pigsty?">
+        Pigsty is a PostgreSQL distribution—an open-source, local-first alternative to managed database services like AWS RDS. It's not a database itself, but rather a comprehensive management solution and collection of battle-tested best practices. Think of it this way: if a database is a car and a DBA is the driver, then RDS is like Uber, and Pigsty is your personal autopilot system.
+    </Accordion>
+    
+    <Accordion title="What problem does Pigsty solve?">
+        Database expertise is expensive and hard to find—you either hire costly DBAs or pay premium prices for cloud RDS. Pigsty offers a third option: run enterprise-grade databases without dedicated DBAs at less than 10% of typical RDS costs, while achieving better performance and flexibility in your own infrastructure.
+    </Accordion>
+    
+    <Accordion title="Why choose Pigsty over RDS?">
+        Pigsty delivers features that most RDS providers can't match: <span className={"text-red-800 font-bold"}>420+</span> PostgreSQL extensions, support for 8+ Postgres variants, world-class monitoring, and battle-tested architecture proven at scale by companies like Apple, Alibaba, and others. It's built with genuine passion and reaches a depth of functionality that typical RDS platforms simply don't offer.
+    </Accordion>
+    
+    <Accordion title="How much can I save with Pigsty?">
+        Dramatically. What costs $100-200/vCPU/month on RDS can run on bare metal for as little as $2/vCPU/month with Pigsty—plus you save on DBA salaries. At scale, total cost of ownership can drop by 90% or more, freeing up budget for what really matters to your business.
+    </Accordion>
+    
+    <Accordion title="How does Pigsty help developers?">
+        With <span className={"text-red-800 font-bold"}>420+</span> built-in PostgreSQL extensions, Pigsty enables a "Postgres for everything" approach. Replace Redis, Kafka, MySQL, Elasticsearch, vector databases, and even some OLAP workloads with a single, unified stack. This reduces complexity, increases developer velocity, and enables true self-service DevOps.
+    </Accordion>
+    
+    <Accordion title="What about operations and reliability?">
+        Pigsty's self-healing high availability means no more 3 AM wake-up calls when hardware fails. Advanced monitoring helps with troubleshooting and performance optimization. Infrastructure-as-Code automates cluster management at scale. Your ops team can handle DBA tasks, and your DBAs can focus on high-value work instead of firefighting.
+    </Accordion>
+    
+    <Accordion title="Who's behind Pigsty?">
+        Pigsty is primarily developed by Feng Ruohang (@Vonng), a PostgreSQL veteran with over a decade of open-source contributions and production experience at Alibaba, Tantan, and Apple. He's also the top database influencer on WeChat with 60K+ followers and now runs a consultancy focused on PostgreSQL excellence.
+    </Accordion>
+    
+    <Accordion title="What scale does Pigsty support?">
+        Pigsty scales from single-developer setups to massive enterprise deployments. The largest known production deployment handles 25K vCPUs at 4.5 million QPS over six years. The smallest? A simple 1-core demo VM. It's designed for enterprise scale but optimized for simplicity.
+    </Accordion>
+    
+    <Accordion title="Is Pigsty really free?">
+        Yes, Pigsty is 100% free software under the AGPLv3 license. You can use it commercially as long as you comply with the license terms. We believe in software freedom—for most use cases, we apply an Apache 2.0-like approach. Commercial subscriptions are available for those who want professional support and additional licensing options.
+    </Accordion>
+    
+    <Accordion title="Can I build a DBaaS with Pigsty?">
+        Yes, under the AGPLv3 license—which means any derivative work must be open-sourced. We actively protect against license violations by cloud providers. If you prefer not to open-source your derivative work, Pigsty Enterprise subscriptions provide explicit licensing and AGPLv3 exemptions for this scenario.
+    </Accordion>
 </Accordions>
