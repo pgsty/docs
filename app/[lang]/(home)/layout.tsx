@@ -15,7 +15,10 @@ export default async function Layout({
     <HomeLayout
       {...baseOptions(lang)}
       links={linkItems(lang)}
-      className="dark:bg-neutral-950 dark:[--color-fd-background:var(--color-neutral-950)]"
+      className="dark:bg-neutral-950 dark:[--color-fd-background:var(--color-neutral-950)] pt-0"
+      nav={{
+        enabled: false,
+      }}
     >
       {children}
     </HomeLayout>
