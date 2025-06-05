@@ -77,7 +77,11 @@ Pigsty requires **static network** to work, you should explicitly assign a **fix
 
 The IP address will be used as the node's **unique identifier**, it should be the primary IP address bind to the primary network interface used for **internal** network communications.
 
-<Callout title="Never use Public IP as identifier" type="error"></Callout>
+<Callout title="Never use Public IP as identifier" type="error">
+
+    Using public IP addresses as node identifiers can cause security and connectivity issues.
+
+</Callout>
 
 <Callout title="L2 VIP require L2 Networking" type="warn">
 
@@ -172,109 +176,180 @@ Please use the same major and minor version of the OS on all nodes in a single d
 
 ## Admin User
 
-Pigsty setup everything with `ssh` and `sudo`
+Pigsty requires an OS **admin user** with passwordless `ssh` and `sudo` privileges on all managed nodes.
 
-You’ll need an “**admin user**” on all nodes where Pigsty is meant to be deployed — an OS user with nopass `ssh` login and nopass `sudo` permissions.
+A user can `ssh` to all nodes from admin node, and execute `sudo` commands there without password.
 
-On the nodes where Pigsty is installed, you need an “**administrative user**” who has nopass `ssh` login and nopass `sudo` permissions.
+<Callout title="Allow sudo without password" type="info">
 
-No password `sudo` is required to execute commands during the installation process, such as installing packages, configuring system settings, etc.
+    To manully allow an user to execute `sudo` commands without password:
 
-#### How to configure nopass sudo for admin user?
+    Create a sudoers file for your admin user (replace `vagrant` placeholders with your username):
 
-Assuming your admin username is `vagrant`, you can create a file in `/etc/sudoers.d/vagrant` and add the following content:
+    ```bash
+    echo '%vagrant ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/vagrant
+    ```
 
-```bash
-%vagrant ALL=(ALL) NOPASSWD: ALL
-```
+</Callout>
 
-This will allow the `vagrant` user to execute all commands without a sudo password. If your username is not `vagrant`, replace `vagrant` in the above steps with your username.
+<Callout title="Don't use postgres dbsu as admin user" type="error">
 
-#### Avoid using the root user
+    DBSU (`postgres` by default)  should NOT be used as admin user.
+    It will cause unexpected security issues.
 
-While it is possible to install Pigsty using the `root` user, we do not recommend it.
+</Callout>
 
-We recommend using a dedicated admin user, such as `dba`, different from the root user (`root`) and the database superuser (`postgres`).
+<Callout title="Avoid using root user" type="warn">
 
-There is a dedicated playbook subtask that can use an existing admin user (e.g., `root`) with ssh/sudo password input to [create](https://pigsty.io/docs/node/admin/#create-admin) a dedicated admin user.
+    While possible, using `root` as admin user is not recommended for security reasons.
 
-------
+</Callout>
 
-## SSH Permission
 
-In addition to nopass `sudo` privilege, Pigsty also requires the admin user to have nopass `ssh` login privilege (login via ssh key).
-
-For [single-host installations](https://pigsty.io/docs/concept/arch/#singleton-meta) setup, this means the admin user on the local node should be able to log in to the host itself via ssh without a password.
-
-If your Pigsty deployment involves multiple nodes, this means the admin user on the [admin node](https://pigsty.io/docs/node/#admin-node) should be able to log in to all nodes managed by Pigsty (including the local node) via ssh without a password, and execute `sudo` commands without a password as well.
-
-During the [**`configure`**](https://pigsty.io/docs/setup/install/#configuration) procedure, if your current admin user does not have any SSH key, it will attempt to address this issue by generating a new `id_rsa` key pair and adding it to the local `~/.ssh/authorized_keys` file to ensure local SSH login capability for the local admin user.
-
-By default, Pigsty creates an admin user `dba` (`uid=88`) on all managed nodes. If you are already using this user, we recommend that you change the [`node_admin_username`](https://pigsty.io/docs/node/param/#node_admin_username) to a new username with a different uid, or disable it using the [`node_admin_enabled`](https://pigsty.io/docs/node/param/#node_admin_enabled) parameter.
-
-#### How to configure nopass SSH login for admin user?
-
-Assuming your admin username is `vagrant`, execute the following command as the `vagrant` user will generate a public/private key pair for login. If a key pair already exists, there is no need to generate a new one.
-
-```bash
-ssh-keygen -t rsa -b 2048 -N '' -f ~/.ssh/id_rsa -q
-```
-
-The generated public key is by default located at: `/home/vagrant/.ssh/id_rsa.pub`, and the private key at: `/home/vagrant/.ssh/id_rsa`. If your OS username is not `vagrant`, replace `vagrant` in the above commands with your username.
-
-You should append the public key file (`id_rsa.pub`) to the `authorized_keys` file of the user you need to log into: `/home/vagrant/.ssh/authorized_keys`. If you already have password access to the remote machine, you can use `ssh-copy-id` to copy the public key:
-
-```bash
-ssh-copy-id <ip>                        # Enter password to complete public key copying
-sshpass -p <password> ssh-copy-id <ip>  # Or: you can embed the password directly in the command to avoid interactive password entry (cautious!)
-```
-
-Pigsty recommends provisioning the admin user during node provisioning and making it viable by default.
 
 ------
 
-## SSH Accessibility
+## Nopass SSH
 
-If your environment has some restrictions on SSH access, such as a bastion server or ad hoc firewall rules that prevent simple SSH access via `ssh <ip>`, consider using SSH aliases.
+You'll need nopass `ssh` access to all managed nodes, for admin user @ admin node, including localhost.
 
-For example, if there’s a node with IP `10.10.10.10` that can not be accessed directly via ssh but can be accessed via an ssh alias `meta` defined in `~/.ssh/config`, then you can configure the `ansible_host` parameter for that node in the [**inventory**](https://pigsty.io/docs/setup/config/#inventory) to specify the SSH Alias on the host level:
+You have to configure public key auth if you don't want to input password manully for every task.
 
-```yaml
-nodes:
-  hosts:  # 10.10.10.10 can not be accessed directly via ssh, but can be accessed via ssh alias 'meta'
-    10.10.10.10: { ansible_host: meta }
-```
+<Callout title="Generate SSH Key" type="info">
 
-If the ssh alias does not meet your requirement, there are a plethora of custom [**ssh connection parameters**](https://docs.ansible.com/archive/ansible/2.4/intro_inventory.html#list-of-behavioral-inventory-parameters) that can bring fine-grained control over SSH connection behavior.
+    Generate an SSH key pair if one doesn't exist:
 
-If the following cmd can be successfully executed on the admin node by the admin user, it means that the target node’s admin user is properly configured.
+    ```bash
+    ssh-keygen -t rsa -b 2048 -N '' -f ~/.ssh/id_rsa -q
+    ```
 
-```bash
-ssh <ip|alias> 'sudo ls'
-```
+    Pigsty will do that for you if you don't have a key pair, during `bootstrap` stage.
+
+</Callout>
+
+
+<Callout title="Distribute your ssh key to other nodes" type="info">
+
+    Copy the public key to all managed nodes, `ssh-copy-id` or add to `~/.ssh/authorized_keys` manually.
+
+    ```bash
+    ssh-copy-id <ip>                        # Interactive password entry
+    sshpass -p <password> ssh-copy-id <ip>  # Non-interactive (use with caution)
+    ```
+
+</Callout>
+
+
+
 
 ------
 
-## Software
+## Accessibility
 
-On the [**admin node**](https://pigsty.io/docs/node/concept/#admin-node), Pigsty requires [**`ansible`**](https://pigsty.io/docs/setup/playbook/#ansible) to initiate control. If you are using the singleton meta installation, Ansible is required on this node. It is not required for common nodes.
+Make sure your admin user can access all managed nodes with nopass `ssh` and nopass `sudo`.
 
-The [**`bootstrap`**](https://pigsty.io/docs/setup/offline/#bootstrap) procedure will make every effort to do this for you. But you can always choose to install Ansible manually. The process of manually installing Ansible varies with different OS distros / major versions (usually involving an additional weak dependency `jmespath`):
+<Callout title="Verify nopass ssh sudo is working" type="info">
 
-- Install Ansible
-- EL 8 / 9
-- EL 7
-- Debian / Ubuntu
-- MacOS
+    Run this command on admin node to all managed nodes:
+
+    ```bash
+    ssh <ip|alias> 'sudo ls'
+    ```
+    
+    if there's no password prompt or error raised, nopass ssh/sudo is working as expected.
+
+</Callout>
+
+When direct ssh access is not available (due to jumpserver, other port, credentials, etc...), consider alias:
+
+<Callout title="Using SSH aliases" type="info">
+
+    Configure SSH aliases in `~/.ssh/config` and reference the alias in the inventory.
+
+    ```yaml
+    nodes:       
+      hosts:          # if node `10.10.10.10` requires an SSH alias `meta`
+        10.10.10.10: { ansible_host: meta }  # <---- access via `ssh meta`
+    ```
+
+    Check [Ansible Inventory Guide](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) for all available parameters and details.
+
+</Callout>
+
+While it's user's responsibility to create an admin user during provisioning stage.
+You can create admin user with pigsty itself, with existing root/admin user:
+
+<Callout title="Create admin user on other nodes with existing user" type="info">
+
+    This will create a dedicate `dba` (uid) user with sudo / ssh properly configured.
+
+    ```bash
+    ./node.yml -k -K -e ansible_user=<another_admin> -t node_admin
+    ```
+
+    | Name | Description | Default |
+    |------|-------------|---------|
+    | [`node_admin_enabled`](/docs/node/param#node_admin_enabled) | enable node admin user | `true` |
+    | [`node_admin_uid`](/docs/node/param#node_admin_uid) | uid of node admin user | `88` |
+    | [`node_admin_username`](/docs/node/param#node_admin_username) | name of node admin user | `dba` |
+
+</Callout>
+
+
+
+
+--------
+
+## Ansible
+
+Pigsty use `ansible` to initiate control from admin node to all managed nodes.
+
+
+
+Pigsty requires [**Ansible**](/docs/setup/playbook#ansible) on the [**admin node**](/docs/node/concept#admin-node) for deployment orchestration.
+
+<Callout title="Ansible requirement" type="info">
+
+    Only the admin node requires Ansible. Regular nodes do not need it installed.
+
+</Callout>
+
+### Install Ansible
+
+The [**bootstrap**](/docs/setup/offline#bootstrap) procedure handles Ansible installation automatically. 
+For manual installation, use the appropriate command for your OS:
 
 ```bash
+# EL 8/9 (RHEL, Rocky, Alma, etc.)
 sudo dnf install -y ansible python3.12-jmespath
+
+# EL 7 (CentOS 7)
+sudo yum install -y ansible python-jmespath
+
+# Debian/Ubuntu
+sudo apt install -y ansible python3-jmespath
+
+# macOS
+brew install ansible
+pip3 install jmespath
 ```
 
-To install Pigsty, you also need to prepare the Pigsty source package. You can directly download a specific version from the [GitHub Release](https://github.com/pgsty/pigsty/releases/) page or use the following command to obtain the latest stable version:
+### Get Pigsty Source
+
+Download the latest stable version:
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash
 ```
 
-If your env does not have Internet access, consider using the [**offline packages**](https://pigsty.io/docs/setup/offline/#offline-packages), which are pre-packed for different OS distros, and can be downloaded from the GitHub Release page.
+Or download a specific version from [GitHub Releases](https://github.com/pgsty/pigsty/releases/).
+
+<Callout title="Offline installation" type="info">
+
+    For environments without Internet access, use [offline packages](/docs/setup/offline#offline-packages) pre-packed for different OS distributions.
+
+</Callout>
+
+
+
+

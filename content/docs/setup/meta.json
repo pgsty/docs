@@ -4,10 +4,10 @@
     "defaultOpen": false,
     "pages": [
         "install",
+        "prepare",
+        "linux",
         "slim",
         "offline",
-        "linux",
-        "prepare",
         "security",
         "vagrant",
         "terraform"
