@@ -12,6 +12,6 @@ c: clean
 clean:
 	rm -rf out
 s: serve
-	python -m
+	cd .next && python3 -m http.server 3002
 
 .PHONY: d dev b build v view c clean
