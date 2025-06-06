@@ -1,94 +1,205 @@
 ---
 title: Concept
-description: entities and architecture
+description: Node types, architecture, and core concepts
 icon: Shapes
 ---
 
+# Node Concepts
 
-Node is an abstraction of hardware resources, which can be bare metal, virtual machines, or even k8s pods.
+In Pigsty, a **node** represents an abstraction of computing resources that can be managed uniformly regardless of the underlying infrastructure—whether bare metal servers, virtual machines, or even Kubernetes pods. This abstraction enables consistent deployment, configuration, and monitoring across heterogeneous environments.
 
-There are different types of nodes in Pigsty:
+## Node Hierarchy
 
-- [Common nodes](https://pigsty.io/docs/node/concept/#common-node), nodes that managed by Pigsty
-- [Admin node](https://pigsty.io/docs/node/concept/#admin-node), the node where pigsty is installed and issue admin commands
-- [Infra node](https://pigsty.io/docs/node/concept/#infra-node), the node where the [`INFRA`](https://pigsty.io/docs/infra/) module is installed
+Pigsty organizes nodes into a hierarchical structure that supports scalable infrastructure management:
 
-The admin node is usually overlapped with the infra node, if there’s more than one infra node, the first one is often used as the default admin node, and the rest of the infra nodes can be used as backup admin nodes.
+```
+Environment
+├── Node Clusters (logical grouping)
+│   ├── Node Instance (physical/virtual resource)
+│   ├── Node Instance
+│   └── ...
+└── Node Clusters
+    ├── Node Instance
+    └── ...
+```
+
+## Node Categories
+
+Pigsty recognizes four primary node types, each serving distinct purposes within the infrastructure:
+
+- **[Common Nodes](#common-node)**: Standard managed nodes running application workloads
+- **[Admin Node](#admin-node)**: Control plane node where Pigsty orchestration commands are executed
+- **[Infra Nodes](#infra-node)**: Infrastructure service nodes running monitoring, DNS, and web services
+- **[PGSQL Nodes](#pgsql-node)**: Database nodes with PostgreSQL instances and associated services
+
+> **Note**: The admin node typically overlaps with the first infra node. In multi-infra deployments, additional infra nodes serve as backup admin nodes for high availability.
 
 ------
 
 ## Common Node
 
-You can manage nodes with Pigsty, and install modules on them. The `node.yml` playbook will adjust the node to desired state.
+Common nodes form the backbone of your Pigsty-managed infrastructure. These are standard computing resources that have been configured and optimized through the NODE module to run various workloads while providing consistent monitoring and service exposure capabilities.
 
-Some services will be added to all nodes by default:
+### Default Services
 
-|      Component      | Port | Description                      | Status     |
-|:-------------------:|:----:|----------------------------------|------------|
-|    Node Exporter    | 9100 | Node Monitoring Metrics Exporter | Enabled    |
-|    HAProxy Admin    | 9101 | HAProxy admin page               | Enabled    |
-|      Promtail       | 9080 | Log collecting agent             | Enabled    |
-|    Docker Daemon    | 9323 | Enable Container Service         | *Disabled* |
-|     Keepalived      |  -   | Manage Node Cluster L2 VIP       | *Disabled* |
-| Keepalived Exporter | 9650 | Monitoring Keepalived Status     | *Disabled* |
+Every common node includes these essential services:
 
-Docker & Keepalived are optional components, enabled when required.
+| Component | Port | Description | Status |
+|:---------:|:----:|-------------|--------|
+| **Node Exporter** | 9100 | System metrics collection for monitoring | Enabled |
+| **HAProxy Admin** | 9101 | Load balancer management interface | Enabled |
+| **Promtail** | 9080 | Log aggregation and forwarding agent | Enabled |
+| **Docker Daemon** | 9323 | Container runtime (when containerization is needed) | *Optional* |
+| **Keepalived** | - | L2 VIP management for high availability | *Optional* |
+| **Keepalived Exporter** | 9650 | VIP status monitoring | *Optional* |
+
+### Key Features
+
+- **Standardized Configuration**: Uniform OS tuning, security hardening, and system optimization
+- **Service Discovery**: HAProxy integration for automatic service registration and load balancing
+- **Comprehensive Monitoring**: Full-stack observability through Prometheus exporters and log forwarding
+- **High Availability**: Optional L2 VIP support for cluster-level failover scenarios
+- **Security**: Centralized admin user management, SSH key distribution, and firewall configuration
+
+### Use Cases
+
+- Application server nodes running web services, APIs, or microservices
+- Worker nodes for distributed computing frameworks
+- Specialized service nodes (caching, message queues, etc.)
+- Development and testing environments
 
 ------
 
-## ADMIN Node
+## Admin Node
 
-There is one and only one admin node in a pigsty deployment, which is specified by [`admin_ip`](https://pigsty.io/docs/infra/param/#admin_ip). It is set to the local primary IP during [configure](https://pigsty.io/docs/setup/install/#configure).
+The **admin node** serves as the control plane for your entire Pigsty deployment. This is where Pigsty itself is installed and from which all infrastructure orchestration commands are executed.
 
-The node will have ssh / sudo access to all other nodes, which is critical; ensure it’s fully secured.
+### Characteristics
+
+- **Unique Role**: Exactly one admin node exists per Pigsty deployment
+- **Primary IP**: Identified by the [`admin_ip`](/docs/infra/param/#admin_ip) parameter, set during initial configuration
+- **SSH Access**: Must have passwordless SSH and sudo access to all other nodes in the deployment
+- **Security Critical**: Requires comprehensive security hardening as it controls the entire infrastructure
+
+### Responsibilities
+
+- **Orchestration**: Execute Ansible playbooks to manage the entire infrastructure
+- **Configuration Management**: Maintain inventory files and deployment configurations
+- **Backup Storage**: Store configuration backups and deployment artifacts
+- **Monitoring Coordination**: Coordinate monitoring setup across all nodes
+
+### Security Considerations
+
+Since the admin node has privileged access to your entire infrastructure:
+
+- Implement strict access controls and network isolation
+- Regularly audit SSH keys and user access
+- Maintain secure backup and recovery procedures
+- Monitor all administrative activities
 
 ------
 
-## INFRA Node
+## Infra Node
 
-A pigsty deployment may have one or more infra nodes, usually 2 ~ 3, in a large production environment.
+**Infra nodes** host the core infrastructure services that support your entire Pigsty deployment. These nodes provide shared services like monitoring, DNS resolution, web interfaces, and centralized logging.
 
-The `infra` group specifies infra nodes in the inventory. And infra nodes will have [INFRA](https://pigsty.io/docs/infra/) module installed (DNS, Nginx, Prometheus, Grafana, etc…),
+### Core Services
 
-The admin node is also the default and first infra node, and infra nodes can be used as ‘backup’ admin nodes.
+Infra nodes run essential infrastructure components:
 
-|    Component     | Port |   Domain   | Description                       |
-|:----------------:|:----:|:----------:|-----------------------------------|
-|      Nginx       |  80  | `h.pigsty` | Web Service Portal (YUM/APT Repo) |
-|   AlertManager   | 9093 | `a.pigsty` | Alert Aggregation and delivery    |
-|    Prometheus    | 9090 | `p.pigsty` | Monitoring Time Series Database   |
-|     Grafana      | 3000 | `g.pigsty` | Visualization Platform            |
-|       Loki       | 3100 |     -      | Logging Collection Server         |
-|   PushGateway    | 9091 |     -      | Collect One-Time Job Metrics      |
-| BlackboxExporter | 9115 |     -      | Blackbox Probing                  |
-|     Dnsmasq      |  53  |     -      | DNS Server                        |
-|     Chronyd      | 123  |     -      | NTP Time Server                   |
-|    PostgreSQL    | 5432 |     -      | Pigsty CMDB & default database    |
-|     Ansible      |  -   |     -      | Run playbooks                     |
+| Component | Port | Domain | Description |
+|:---------:|:----:|:------:|-------------|
+| **Nginx** | 80 | `h.pigsty` | Web portal and package repository |
+| **AlertManager** | 9093 | `a.pigsty` | Alert aggregation and notification routing |
+| **Prometheus** | 9090 | `p.pigsty` | Metrics collection and time-series database |
+| **Grafana** | 3000 | `g.pigsty` | Visualization and dashboard platform |
+| **Loki** | 3100 | - | Centralized log aggregation and querying |
+| **PushGateway** | 9091 | - | Metrics collection for batch jobs |
+| **Blackbox Exporter** | 9115 | - | Network and service health probing |
+| **Dnsmasq** | 53 | - | DNS resolution and service discovery |
+| **Chronyd** | 123 | - | Network time synchronization |
+| **PostgreSQL** | 5432 | - | Configuration database (CMDB) |
+| **Ansible** | - | - | Infrastructure automation engine |
+
+### Deployment Patterns
+
+**Single Infra Node**:
+- Suitable for development, testing, or small production deployments
+- Admin node typically serves as the infra node
+- Simple setup with consolidated services
+
+**Multiple Infra Nodes**:
+- Recommended for production environments requiring high availability
+- 2-3 infra nodes provide redundancy for critical services
+- First infra node typically serves as the primary admin node
+- Additional infra nodes can serve as backup admin nodes
+
+### High Availability
+
+For production deployments, consider:
+
+- **Load Balancing**: Distribute infra services across multiple nodes
+- **Service Redundancy**: Run critical services on multiple infra nodes
+- **Backup Admin Access**: Configure secondary admin capabilities on backup infra nodes
+- **Data Replication**: Ensure configuration and monitoring data is replicated
 
 ------
 
 ## PGSQL Node
 
-The node with [PGSQL](https://pigsty.io/docs/pgsql/) module installed is called a PGSQL node. The node and pg instance is 1:1 deployed. And node instance can be borrowed from corresponding pg instances with [`node_id_from_pg`](https://pigsty.io/docs/node/param/#node_id_from_pg).
+**PGSQL nodes** are specialized database nodes that host PostgreSQL instances along with their complete ecosystem of supporting services. These nodes follow a 1:1 deployment model where each node runs exactly one PostgreSQL instance.
 
-|      Component      | Port | Description                                      | Status    |
-|:-------------------:|:----:|--------------------------------------------------|-----------|
-|     PostgreSQL      | 5432 | PostgreSQL Database                              | Enabled   |
-|      Pgbouncer      | 6432 | Pgbouncer Connection Pooling Service             | Enabled   |
-|       Patroni       | 8008 | Patroni HA Component                             | Enabled   |
-|   Haproxy Primary   | 5433 | Primary connection pool: Read/Write Service      | Enabled   |
-|   Haproxy Replica   | 5434 | Replica connection pool: Read-only Service       | Enabled   |
-|   Haproxy Default   | 5436 | Primary Direct Connect Service                   | Enabled   |
-|   Haproxy Offline   | 5438 | Offline Direct Connect: Offline Read Service     | Enabled   |
-|  Haproxy `service`  | 543x | Customized PostgreSQL Services                   | On Demand |
-|    Haproxy Admin    | 9101 | Monitoring metrics and traffic management        | Enabled   |
-|     PG Exporter     | 9630 | PG Monitoring Metrics Exporter                   | Enabled   |
-| PGBouncer Exporter  | 9631 | PGBouncer Monitoring Metrics Exporter            | Enabled   |
-|    Node Exporter    | 9100 | Node Monitoring Metrics Exporter                 | Enabled   |
-|      Promtail       | 9080 | Collect Postgres, Pgbouncer, Patroni logs        | Enabled   |
-|    Docker Daemon    | 9323 | Docker Container Service (disable by default)    | Disabled  |
-|     vip-manager     |  -   | Bind VIP to the primary                          | Disabled  |
-|     keepalived      |  -   | Node Cluster L2 VIP manager (disable by default) | Disabled  |
-| Keepalived Exporter | 9650 | Keepalived Metrics Exporter (disable by default) | Disabled  |
+### Identity Inheritance
 
+PGSQL nodes can inherit their identity from their PostgreSQL instances when [`node_id_from_pg`](/docs/node/param/#node_id_from_pg) is enabled (default behavior):
+
+- **Node Cluster**: Inherits from [`pg_cluster`](/docs/pgsql/param/#pg_cluster)
+- **Node Name**: Uses pattern `${pg_cluster}-${pg_seq}` (e.g., `pg-test-1`, `pg-test-2`)
+
+### Database Services
+
+Each PGSQL node runs a comprehensive PostgreSQL stack:
+
+| Component | Port | Description | Status |
+|:---------:|:----:|-------------|--------|
+| **PostgreSQL** | 5432 | Primary database engine | Enabled |
+| **Pgbouncer** | 6432 | Connection pooling and management | Enabled |
+| **Patroni** | 8008 | High availability and cluster management | Enabled |
+| **HAProxy Primary** | 5433 | Read/write connection routing | Enabled |
+| **HAProxy Replica** | 5434 | Read-only connection routing | Enabled |
+| **HAProxy Default** | 5436 | Direct primary connection | Enabled |
+| **HAProxy Offline** | 5438 | Offline/maintenance connection | Enabled |
+| **HAProxy Services** | 543x | Custom service definitions | On Demand |
+
+### Monitoring Stack
+
+PGSQL nodes include specialized monitoring for database workloads:
+
+| Component | Port | Description | Status |
+|:---------:|:----:|-------------|--------|
+| **PG Exporter** | 9630 | PostgreSQL metrics and performance data | Enabled |
+| **PGBouncer Exporter** | 9631 | Connection pool metrics and statistics | Enabled |
+| **Node Exporter** | 9100 | System-level metrics and OS monitoring | Enabled |
+| **HAProxy Admin** | 9101 | Load balancer statistics and management | Enabled |
+| **Promtail** | 9080 | Database log collection and forwarding | Enabled |
+
+### Optional Components
+
+Additional services can be enabled based on requirements:
+
+| Component | Port | Description | Status |
+|:---------:|:----:|-------------|--------|
+| **Docker Daemon** | 9323 | Container runtime for additional services | Optional |
+| **vip-manager** | - | Automatic VIP binding for primary instances | Optional |
+| **Keepalived** | - | L2 VIP management for cluster failover | Optional |
+| **Keepalived Exporter** | 9650 | VIP monitoring and status reporting | Optional |
+
+### Architecture Benefits
+
+The PGSQL node architecture provides:
+
+- **Service Isolation**: Each database instance has dedicated resources and configuration
+- **Load Balancing**: Built-in HAProxy configuration for intelligent connection routing
+- **High Availability**: Patroni-managed automatic failover and cluster management
+- **Comprehensive Monitoring**: Full-stack observability from OS to database query level
+- **Operational Simplicity**: Consistent tooling and procedures across all database nodes
