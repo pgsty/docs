@@ -1,5 +1,5 @@
 ---
-title: Quick Start
+title: Setup
 description: Getting started with Pigsty
 icon: Rocket
 full: true
@@ -14,55 +14,112 @@ import {
     ToyBrickIcon,
 } from 'lucide-react';
 
-## Introduction
 
-**Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> is a battery-included, local-first, open-source & free <span className="text-blue-500 font-bold">PostgreSQL Distribution</span> based on **bare Linux**.
+import { DynamicLink } from 'fumadocs-core/dynamic-link';
 
-<Cards>
-    <Card icon={<Database className="text-blue-300" />} title='PostgreSQL Enterprise' href={"/docs/pgsql"}>
-        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
-    </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='Infrastructure as Code' href={"/docs/infra"}>
-        Declare your entire infra with code, and setup everything PG needs from Bare OS: LB, Nginx, NTP, DNS, Local Repo, etc...
-    </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Stunning Observability'>
-        Unparalleled monitoring best practices built upon modern Prometheus & Grafana observability stacks out-of-the-box
-    </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Extensions & Forks'>
-        <span className={"text-red-800 font-bold"}>420+</span> PGSQL Extensions battery-included! Alone with forks: Babelfish, Oriole, IvorySQL, OpenHalo, PolarDB, Supabase,...
-    </Card>
-</Cards>
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-Pigsty provides everything you'll need for self-hosting an enterprise-grade PostgreSQL Service even without expertise.
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
-Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
 
-<Callout title="Want to learn more?">
-    Read our in-depth [What is Pigsty](/docs/pigsty/intro) introduction.
-</Callout>
+## Quick Start
 
+[Prepare](/docs/setup/prepare) a [ssh-accessible](/docs/setup/prepare#accessibility) [node](/docs/setup/prepare#node) with fresh installed [Compatible Linux OS](/docs/setup/linux),
+ run as user with nopass [`ssh`](/docs/setup/prepare#ssh) and [`sudo`](/docs/setup/prepare#admin-user) privileges:
+
+<Steps>
+<Step>
+
+[**Download**](/docs/setup/install#download) pigsty with:
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+```
+
+</Step>
+<Step>
+[Bootstrap](/docs/setup/offline#bootstrap) pigsty with required dependencies (`ansible`):
+
+```bash
+./bootstrap
+```
+</Step>
+
+<Step>
+[**Configure**](/docs/setup/install#configure) the [`pigsty.yml`](/docs/setup/config) inventory file according your need and environment.
+
+```bash
+./configure
+```
+
+</Step>
+<Step>
+
+[**Install**](/docs/setup/install#install) everything accoring to your config:
+
+```bash
+./install.yml
+```
+</Step>
+
+
+</Steps>
+
+
+Pigsty Single-Node [**Installation**](/docs/setup/install) Ready! 
+Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
+
+
+--------
+
+## What's Next?
+
+- Access Postgres Service
+- Explore Grafana Dashboards
+- Adding more nodes for real HA
+- Point-In-Time-Recovery / HA Drill
+- Get some postgres extensions installed
 
 
 --------
 
 ## Installation
 
-[Prepare](/docs/setup/prepare) a node that runs any [compatible Linux distros](/docs/setup/linux), then [Install Pigsty](/docs/setup/install) with:
 
-```bash title="install"
-curl -fsSL https://repo.pigsty.io/get | bash;
-cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
-```
+<Cards>
+    <Card icon={<Database className="text-blue-300" />} title='Standard Installation' href={"/docs/setup/install"}>
+        Download everything from the Internet and install latest packages.
+    </Card>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Offline Installation' href={"/docs/setup/offline"}>
+        Bootstrap from a local offline package which contains all the packages.
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Minimal Installation' href={"/docs/setup/slim"}>
+        Install essential packages for HA Postgres Cluster only, no monitoring.
+    </Card>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Security Consideration' href={"/docs/setup/security"}>
+        Security best-practices for your serious production deployment
+    </Card>
+</Cards>
 
-import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <File name="bootstrap" icon={<CpuIcon className="text-orange-400" />} />
-        <File name="configure"  icon={<CpuIcon className="text-orange-400" />} />
-        <File name="install.yml"  icon={<CpuIcon className="text-orange-400" />} />
-        <a href={"https://www.baidu.com"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
-    </Folder>
-</Files>
+--------
 
-Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for grafana dashboards.
+## Preparation
+
+<Cards>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux' href={"/docs/setup/linux"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+    <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/docs/setup/prepare"}>
+        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    </Card>
+
+    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/docs/setup/vagrant"}>
+        Provion local linux virtual machines with vagrant / virtualbox
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/docs/setup/terraform"}>
+        Provion cloud linux servers with terraform on cloud vendors
+    </Card>
+
+</Cards>
+

@@ -4,12 +4,14 @@
     "defaultOpen": false,
     "pages": [
         "install",
+        "config",
+        "playbook",
+        "offline",
+        "minimal",
         "prepare",
         "linux",
-        "slim",
-        "offline",
-        "security",
         "vagrant",
-        "terraform"
+        "terraform",
+        "security"
     ]
 }

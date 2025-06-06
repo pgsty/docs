@@ -1,5 +1,5 @@
 ---
-title: Install
+title: Installation
 description: how to install pigsty on your linux machine?
 icon: CloudDownload
 defaultOpen: false
@@ -9,223 +9,145 @@ import { DynamicLink } from 'fumadocs-core/dynamic-link';
 
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-<Steps>
-    <Step>
-
-        <span className="text-2xl">PREPARE</span>
-
-        [**prepare**](/docs/setup/prepare) a compatible node with Linux OS
-
-        Pigsty support the `Linux` kernel and `x86_64/aarch64` arch. It can run on any nodes: physical machine, bare metal, virtual machines, or VM-like containers, but a **static** IPv4 address is required. The minimum spec is `1C1G`. It is recommended to use bare metals or VMs with at least `2C4G`. There’s no upper limit, and node param will be auto-tuned.
-
-        We recommend using fresh **RockyLinux 8.10 / 9.4** or **Ubuntu 22.04** as underlying operating systems. For a complete list of supported operating systems, please refer to [**Compatibility**](https://pigsty.io/docs/reference/compatibility/).
-
-        Public key `ssh` access to localhost and NOPASSWD `sudo` privilege is required to perform the installation, Try not using the `root` user. If you wish to manage more nodes, these nodes needs to be `ssh` / `sudo` accessible via your current admin node & admin user.
-
-        #### DO NOT use the root user
-
-        While it is possible to install Pigsty as the `root` user, It would be much safer using a dedicate admin user (`dba`, `admin`, …). due to [**security**](https://pigsty.io/docs/setup/security/) consideration which has to be different from `root` and dbsu (`postgres`). Pigsty will create an optional admin user `dba` according to the config by default.
-
-        Pigsty relies on Ansible to execute playbooks. you have to install `ansible` and `jmespath` packages fist before [**install**](https://pigsty.io/docs/setup/install/#install) procedure. This can be done with the following command, or through the [**`bootstrap`**](https://pigsty.io/docs/setup/offline/#bootstrap) procedure, especially when you don’t have internet access.
-
-        - Install Ansible
-        - Debian / Ubuntu
-        - EL 8 / 9
-        - EL 7
-        - MacOS
-
-        ```bash
-        sudo apt install -y ansible python3-jmespath
-        ```
-
-
-
-    </Step>
-    <Step>
-
-        ------
-
-        ## Download
-
-        You can get & extract pigsty source via the following command:
-
-        ```bash
-        curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
-        ```
-
-
-        To install a specific version, pass the version string as the first parameter:
-
-        ```bash
-        curl -fsSL https://repo.pigsty.io/get | bash -s v3.3.0; cd ~/pigsty
-        ```
-
-        You can also use `git` to download the Pigsty source. Please make sure to **check out a specific version** before using.
-
-        ```bash
-        git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
-        ```
-
-        #### Checkout a specific version
-
-        The `main` branch may in an unstable development status. Always checkout a version when using `git`, check [Release Notes](https://pigsty.io/docs/releasenote/) for available versions.
-
-
-
-    </Step>
-    <Step>
-        **Configure**
-    </Step>
-    <Step>
-        **Deploy**
-    </Step>
-</Steps>
-
---------
-
-Prepare a fresh `x86_64/aarch64` node that runs any [compatible Linux OS Distros](/[lang]/docs/pigsty/linux), then Download Pigsty with:
-
-<DynamicLink href="/[lang]/docs/pigsty/linux">This is a link</DynamicLink>
-
-```bash title="download"
-curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
-```
-
-You can run the optional bootstrap and configure to install ansible and generate `pigsty.yml` config file.
-
 import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <File name="bootstrap" />
-        <File name="configure" />
-        <File name="install.yml" />
-        <File name="pigsty.yml" />
-    </Folder>
-</Files>
+import { CpuIcon, FileCode } from 'lucide-react';
 
-Next, run the `install.yml` playbook with an admin user (nopass ssh & sudo):
-
-```bash title="~/pigsty"
-./bootstrap; ./configure; ./install.yml
-```
-
-Install Pigsty with 4 steps: [**Prepare**](https://pigsty.io/docs/setup/install/#prepare), [**Download**](https://pigsty.io/docs/setup/install/#download), [**Configure**](https://pigsty.io/docs/setup/install/#configure) and [**Install**](https://pigsty.io/docs/setup/install/#install). Also check [offline](https://pigsty.io/docs/setup/offline/) if you don’t have internet access.
-
-------
 
 ## Short Version
 
+[Prepare](/docs/setup/prepare) a [ssh-accessible](/docs/setup/prepare#accessibility) [node](/docs/setup/prepare#node) with [Compatible Linux OS](/docs/setup/linux),
+ run as user with nopass [`ssh`](/docs/setup/prepare#ssh) and [`sudo`](/docs/setup/prepare#admin-user):
 
-[**Prepare**](https://pigsty.io/docs/setup/install/#prepare) a fresh **x86_64/aarch64** node that runs any [**compatible**](https://pigsty.io/docs/reference/compatibility/) **Linux** OS Distros, then [**Download**](https://pigsty.io/docs/setup/install/#download) **Pigsty** with:
+<Steps>
+<Step>
+
+[**Download**](/docs/setup/install#download) pigsty with:
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 ```
 
-You can run the optional [**bootstrap**](https://pigsty.io/docs/setup/offline/#bootstrap) and [**configure**](https://pigsty.io/docs/setup/install/#configure) to install `ansible` and generate `pigsty.yml` config file.
-
-Next, run the [**`install.yml`**](https://pigsty.io/docs/setup/install/#install) playbook with an [**admin user**](https://pigsty.io/docs/setup/prepare/#admin-user) (**nopass** `ssh` & `sudo`):
+</Step>
+<Step>
+[Bootstrap](/docs/setup/offline#bootstrap) pigsty with required dependencies (`ansible`):
 
 ```bash
-./bootstrap; ./configure; ./install.yml;
+./bootstrap
+```
+</Step>
+
+<Step>
+[**Configure**](/docs/setup/install#configure) the [`pigsty.yml`](/docs/setup/config) inventory file according your need and environment.
+
+```bash
+./configure
 ```
 
-- [**bootstrap**](https://pigsty.io/docs/setup/offline/#bootstrap): **OPTIONAL**, make sure `ansible` is installed, and use offline package `/tmp/pkg.tgz` if applicable
-- [**configure**](https://pigsty.io/docs/setup/install/#configure): **OPTIONAL**, recommend & generate `pigsty.yml` config according to your env.
-- [**install.yml**](https://pigsty.io/docs/setup/install/#install): **REQUIRED**, install Pigsty modules according to your config file.
+</Step>
+<Step>
 
-It may take several minutes to complete the installation according to your network speed and hardware spec.
+[**Install**](/docs/setup/install#install) everything accoring to your config:
 
-After that, you will get a pigsty singleton node [**ready**](https://pigsty.io/docs/setup/install/#interface), with Web service on port `80/443` and Postgres on port `5432`.
+```bash
+./install.yml
+```
+</Step>
 
-BTW: If you feel Pigsty is too complicated, you can consider the [**Slim Installation**](https://pigsty.io/docs/setup/slim/), which only installs the necessary components for HA PostgreSQL clusters.
 
-------
+</Steps>
 
 **Example: Singleton Installation on RockyLinux 9:**
 
 [![asciicast](https://asciinema.org/a/673459.svg)](https://asciinema.org/a/673459)
 
-------
-
-## Use the pig CLI
-
-Pigsty has a built-in CLI tool: [`pig`](https://pigsty.io/ext/pig/), which is a package manager for PostgreSQL & extensions, and a cli for Pigsty.
-
-```bash
-curl https://repo.pigsty.io/pig | bash
-```
-
-It will install the `pig` cli tool, you can install pigsty with `pig sty` sub command:
-
-```bash
-pig sty init     # extract the embed src to ~/pigsty
-pig sty boot     # run bootstrap to install ansible & deps
-pig sty conf     # run configure to generate pigsty.yml conf
-pig sty install  # run install.yml to complete the installation
-```
 
 ------
 
 ## Prepare
 
-> Check [Preparation](https://pigsty.io/docs/setup/prepare/) for a complete guide of resource preparation.
+Check [**Preparation**](/docs/setup/prepare) for all the details, here's a quick summary:
+| Item     | Requirement                                      |
+|----------|--------------------------------------------------|
+| Node     | `1C1G` at least, `2C2G` recommended, no upper limit |
+| Kernel   | `Linux`, MacOS can be used as admin controller     |
+| Distro   | el8, el9, debian12, ubuntu22, ubuntu24, compatible distro |
+| Arch     | `x86_64` / `aarch64`                              |
+| Network  | static IPv4 address                               |
+| Disk     | `/data`, main mount point                         |
+| User     | avoid using `root` & `postgres`                   |
+| SSH      | `nopass` accessible via public key                |
+| Sudo     | `nopass` sudo privilege                           |
+| Locale   | `C.UTF-8`                                         |
 
-Pigsty support the `Linux` kernel and `x86_64/aarch64` arch. It can run on any nodes: physical machine, bare metal, virtual machines, or VM-like containers, but a **static** IPv4 address is required. The minimum spec is `1C1G`. It is recommended to use bare metals or VMs with at least `2C4G`. There’s no upper limit, and node param will be auto-tuned.
 
-We recommend using fresh **RockyLinux 8.10 / 9.4** or **Ubuntu 22.04** as underlying operating systems. For a complete list of supported operating systems, please refer to [**Compatibility**](https://pigsty.io/docs/reference/compatibility/).
-
-Public key `ssh` access to localhost and NOPASSWD `sudo` privilege is required to perform the installation, Try not using the `root` user. If you wish to manage more nodes, these nodes needs to be `ssh` / `sudo` accessible via your current admin node & admin user.
-
-#### DO NOT use the root user
-
-While it is possible to install Pigsty as the `root` user, It would be much safer using a dedicate admin user (`dba`, `admin`, …). due to [**security**](https://pigsty.io/docs/setup/security/) consideration which has to be different from `root` and dbsu (`postgres`). Pigsty will create an optional admin user `dba` according to the config by default.
-
-Pigsty relies on Ansible to execute playbooks. you have to install `ansible` and `jmespath` packages fist before [**install**](https://pigsty.io/docs/setup/install/#install) procedure. This can be done with the following command, or through the [**`bootstrap`**](https://pigsty.io/docs/setup/offline/#bootstrap) procedure, especially when you don’t have internet access.
-
-- Install Ansible
-- Debian / Ubuntu
-- EL 8 / 9
-- EL 7
-- MacOS
-
-```bash
-sudo apt install -y ansible python3-jmespath
-```
 
 ------
 
 ## Download
 
-You can get & extract pigsty source via the following command:
+(<span className="text-sky-500 font-black">RECOMMENDED</span>) You can get & extract the latest stable version of pigsty source with:
 
-```bash
+```bash tab="Default"
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
 ```
-
+```bash tab="Mirror"
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # china mirror
+```
 
 To install a specific version, pass the version string as the first parameter:
 
-```bash
-curl -fsSL https://repo.pigsty.io/get | bash -s v3.3.0; cd ~/pigsty
+```bash tab="Default"
+curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0; cd ~/pigsty
+```
+```bash tab="Mirror"
+curl -fsSL https://repo.pigsty.cc/get | bash -s v3.5.0; cd ~/pigsty # china mirror
 ```
 
-You can also use `git` to download the Pigsty source. Please make sure to **check out a specific version** before using.
+You can also using `git` to clone the Pigsty source repo from [GitHub](https://github.com/pgsty/pigsty):
 
-```bash
-git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
+```bash title="clone the latest"
+git clone https://github.com/pgsty/pigsty.git; cd ~/pigsty
 ```
 
-#### Checkout a specific version
+<Callout title="Checkout a specific version before using" type="warn">
 
-The `main` branch may in an unstable development status. Always checkout a version when using `git`, check [Release Notes](https://pigsty.io/docs/releasenote/) for available versions.
+The default `main` branch may in an unstable development status, `git checkout <version>` before using.
+
+</Callout>
+
+
+You can also download the pigsty src (`pigsty-<version>.tar.gz`) from [GitHub Release Page](https://github.com/pgsty/pigsty/releases/latest) manully:
+
+```bash tab="Default"
+wget https://repo.pigsty.io/srcpigsty-v3.5.0.tgz
+```
+```bash tab="Mirror"
+wget https://pigsty.cc/pgsty/pigsty/releases/download/v3.5.0/pigsty-v3.5.0.tgz
+```
+```bash tab="GitHub"
+wget https://github.com/pgsty/pigsty/releases/download/v3.4.1/pigsty-v3.4.1.tgz
+```
+
+
+
+
+
 
 ------
 
 ## Configure
 
-[`configure`](https://pigsty.io/docs/setup/config/) will create a [`pigsty.yml`](https://github.com/pgsty/pigsty/blob/main/pigsty.yml) [config](https://pigsty.io/docs/setup/config/) file according to your env. This procedure is **OPTIONAL** if you know how to [configure](https://pigsty.io/docs/setup/config/) pigsty manually. There are many [**config tempalte**](https://pigsty.io/docs/conf/overview/) for your reference.
+[`configure`](docs/setup/config/) will create a [`pigsty.yml`](https://github.com/pgsty/pigsty/blob/main/pigsty.yml) [config](https://pigsty.io/docs/setup/config/) file according to your env. This procedure is **OPTIONAL** if you know how to [configure](https://pigsty.io/docs/setup/config/) pigsty manually. 
+There are many [**config tempalte**](https://pigsty.io/docs/conf/overview/) for your reference.
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <File name="configure" />
+        <File name="pigsty.yml" />
+    </Folder>
+</Files>
+
 
 ```bash
 ./configure # interactive-wizard, ask for IP address
@@ -329,3 +251,105 @@ bin/redis-add  redis-ms     # init redis cluster redis-ms
 Remember that most modules require the [`NODE`](https://pigsty.io/docs/node/) module installed first. Check [**modules**](https://pigsty.io/docs/about/module/) for detail
 
 [**`PGSQL`**](https://pigsty.io/docs/pgsql/), [**`INFRA`**](https://pigsty.io/docs/infra/), [**`NODE`**](https://pigsty.io/docs/node/), [**`ETCD`**](https://pigsty.io/docs/etcd/), [**`MINIO`**](https://pigsty.io/docs/minio/), [**`REDIS`**](https://pigsty.io/docs/redis/), [**`FERRET`**](https://pigsty.io/docs/ferret/), [**`DOCKER`**](https://pigsty.io/docs/node/), ……
+
+
+
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <DynamicLink href="/[lang]/docs/setup/install#bootstrap"><File name="bootstrap" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/setup/install#configure"><File name="configure" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/setup/install#install.yml"><File name="install.yml" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/setup/config"><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></DynamicLink>
+    </Folder>
+</Files>
+
+
+--------
+
+Prepare a fresh `x86_64/aarch64` node that runs any [compatible Linux OS Distros](/[lang]/docs/pigsty/linux), then Download Pigsty with:
+
+<DynamicLink href="/[lang]/docs/pigsty/linux">This is a link</DynamicLink>
+
+```bash title="download"
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+```
+
+You can run the optional bootstrap and configure to install ansible and generate `pigsty.yml` config file.
+
+
+
+
+
+--------------------
+
+## TEMP
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <File name="bootstrap" />
+        <File name="configure" />
+        <File name="install.yml" />
+        <File name="pigsty.yml" />
+    </Folder>
+</Files>
+
+Next, run the `install.yml` playbook with an admin user (nopass ssh & sudo):
+
+```bash title="~/pigsty"
+./bootstrap; ./configure; ./install.yml
+```
+
+Install Pigsty with 4 steps: [**Prepare**](https://pigsty.io/docs/setup/install/#prepare), [**Download**](https://pigsty.io/docs/setup/install/#download), [**Configure**](https://pigsty.io/docs/setup/install/#configure) and [**Install**](https://pigsty.io/docs/setup/install/#install). Also check [offline](https://pigsty.io/docs/setup/offline/) if you don’t have internet access.
+
+------
+
+## Short Version
+
+
+[**Prepare**](https://pigsty.io/docs/setup/install/#prepare) a fresh **x86_64/aarch64** node that runs any [**compatible**](https://pigsty.io/docs/reference/compatibility/) **Linux** OS Distros, then [**Download**](https://pigsty.io/docs/setup/install/#download) **Pigsty** with:
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+```
+
+You can run the optional [**bootstrap**](https://pigsty.io/docs/setup/offline/#bootstrap) and [**configure**](https://pigsty.io/docs/setup/install/#configure) to install `ansible` and generate `pigsty.yml` config file.
+
+Next, run the [**`install.yml`**](https://pigsty.io/docs/setup/install/#install) playbook with an [**admin user**](https://pigsty.io/docs/setup/prepare/#admin-user) (**nopass** `ssh` & `sudo`):
+
+```bash
+./bootstrap; ./configure; ./install.yml;
+```
+
+- [**bootstrap**](https://pigsty.io/docs/setup/offline/#bootstrap): **OPTIONAL**, make sure `ansible` is installed, and use offline package `/tmp/pkg.tgz` if applicable
+- [**configure**](https://pigsty.io/docs/setup/install/#configure): **OPTIONAL**, recommend & generate `pigsty.yml` config according to your env.
+- [**install.yml**](https://pigsty.io/docs/setup/install/#install): **REQUIRED**, install Pigsty modules according to your config file.
+
+It may take several minutes to complete the installation according to your network speed and hardware spec.
+
+After that, you will get a pigsty singleton node [**ready**](https://pigsty.io/docs/setup/install/#interface), with Web service on port `80/443` and Postgres on port `5432`.
+
+BTW: If you feel Pigsty is too complicated, you can consider the [**Slim Installation**](https://pigsty.io/docs/setup/slim/), which only installs the necessary components for HA PostgreSQL clusters.
+
+------
+
+
+
+------
+
+## Use the pig CLI
+
+Pigsty has a built-in CLI tool: [`pig`](https://pigsty.io/ext/pig/), which is a package manager for PostgreSQL & extensions, and a cli for Pigsty.
+
+```bash
+curl https://repo.pigsty.io/pig | bash
+```
+
+It will install the `pig` cli tool, you can install pigsty with `pig sty` sub command:
+
+```bash
+pig sty init     # extract the embed src to ~/pigsty
+pig sty boot     # run bootstrap to install ansible & deps
+pig sty conf     # run configure to generate pigsty.yml conf
+pig sty install  # run install.yml to complete the installation
+```

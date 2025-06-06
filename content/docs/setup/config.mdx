@@ -1,0 +1,296 @@
+---
+title: Configure
+description: how to configure pigsty inventory file?
+icon: CodeXml
+---
+
+Pigsty uses a single **config inventory** file to describe the entire environment.
+It is a standard [**Ansible inventory**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html) file in YAML format, usually named `pigsty.yml`.
+
+--------
+
+## Inventory
+
+The inventory file consists of two parts: **Inventory** and **Variables**.
+
+**Inventory** describes **WHAT** you have: which nodes and how to group them.
+**Variables** describes **HOW** to deploy: which features to enable and which parameters to use.
+
+```yaml
+# Inventory: Describe what you have
+all:
+  children:
+    infra:       # infra cluster for proxy, monitor, alert, etc..
+      hosts: { 10.10.10.10: { infra_seq: 1 } }
+    etcd:        # etcd cluster for HA postgres DCS
+      hosts: { 10.10.10.10: { etcd_seq: 1 } }
+    pg-meta:     # postgres cluster 'pg-meta'
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:          # global variables
+    pg_cluster: pg-meta
+    # Variables: Describe how you want to deploy
+    # ... 280+ parameters
+```
+
+--------
+
+## Cluster
+
+A **Cluster** is a group of nodes with the same purpose, defined by a **group** in the inventory.
+
+There are different types of clusters:
+
+- **INFRA Cluster**: Provide basic infrastructure services (Nginx, Prometheus, Grafana, etc.)
+- **ETCD Cluster**: Provide distributed consensus service for PostgreSQL HA
+- **PGSQL Cluster**: PostgreSQL database clusters
+- **REDIS Cluster**: Redis cache clusters  
+- **MINIO Cluster**: MinIO object storage clusters
+- **NODE Cluster**: Bare nodes that can be managed by Pigsty
+
+<Callout title="Cluster Naming Convention" type="info">
+
+    Cluster names should follow the pattern `[a-zA-Z0-9-_]+` and be unique across the entire environment.
+    
+    For PostgreSQL clusters, the cluster name will be used as the database cluster identifier.
+
+</Callout>
+
+--------
+
+## Parameter
+
+Pigsty has **280+** parameters that can be used to customize the deployment.
+
+Parameters can be set at **4 different levels** with different priorities:
+
+| Level | Scope | Priority | Description |
+|-------|-------|----------|-------------|
+| **Global** | `all.vars` | 1 (Lowest) | Apply to all hosts |
+| **Cluster** | `<cluster>.vars` | 2 | Apply to all hosts in the cluster |
+| **Host** | `<cluster>.hosts.<ip>` | 3 | Apply to specific host |
+| **Instance** | `<cluster>.hosts.<ip>.<param>` | 4 (Highest) | Apply to specific instance |
+
+<Callout title="Parameter Override Priority" type="warn">
+
+    Higher level parameters will override lower level ones.
+    
+    Instance Level > Host Level > Cluster Level > Global Level
+
+</Callout>
+
+### Examples
+
+```yaml
+all:
+  vars:
+    pg_version: 16                    # Global: default PG version
+  children:
+    pg-test:
+      vars:
+        pg_version: 15                # Cluster: override to v15 for this cluster
+      hosts:
+        10.10.10.11: 
+          pg_version: 14              # Host: override to v14 for this host
+          pg_seq: 1
+          pg_role: primary
+        10.10.10.12: 
+          pg_seq: 2
+          pg_role: replica
+          pg_version: 17              # Instance: override to v17 for this instance
+```
+
+--------
+
+## Template
+
+Pigsty provides numerous **preset config templates** for different scenarios under the `conf/` directory.
+
+During the configure process, you can specify a template using the `-c` parameter:
+
+```bash
+./configure -c <template_name>
+```
+
+If no template is specified, the single-node installation config template will be automatically selected based on your OS distribution.
+
+### Available Templates
+
+| Template | Nodes | Description |
+|----------|-------|-------------|
+| [`meta`](/docs/setup/config/meta) | 1 | Single meta node with basic services |
+| [`rich`](/docs/setup/config/rich) | 1 | Single node with full features |
+| [`demo`](/docs/setup/config/demo) | 1 | Single node for demonstration |
+| [`pitr`](/docs/setup/config/pitr) | 1 | Single node with Point-in-Time Recovery |
+| [`supa`](/docs/setup/config/supa) | 1 | Single node with Supabase compatibility |
+| [`bare`](/docs/setup/config/bare) | 1 | Minimal single node setup |
+| [`full`](/docs/setup/config/full) | 4 | Full-featured 4-node cluster |
+| [`safe`](/docs/setup/config/safe) | 4 | Production-safe 4-node cluster |
+| [`dual`](/docs/setup/config/dual) | 2 | 2-node HA setup |
+| [`trio`](/docs/setup/config/trio) | 3 | 3-node HA setup |
+
+<Callout title="Choose the right template" type="info">
+
+    - For **development/testing**: Use `demo` or `rich`
+    - For **production**: Use `full` or `safe` 
+    - For **minimal setup**: Use `meta` or `bare`
+    - For **HA setup**: Use `dual`, `trio`, or `full`
+
+</Callout>
+
+--------
+
+## Switch Config
+
+To use a different config inventory, you have several options:
+
+### Option 1: Replace Default Config
+
+Copy & paste the content into the `pigsty.yml` file in the home directory:
+
+```bash
+cp conf/full.yml pigsty.yml    # Use full.yml as the new default config
+```
+
+### Option 2: Specify Config File
+
+Explicitly specify the config inventory file when executing Ansible playbooks:
+
+```bash
+./node.yml -i conf/rich.yml    # Use another file as config inventory
+```
+
+### Option 3: Change Default Inventory
+
+Modify the `inventory` parameter in the `ansible.cfg` file to point to your own inventory file path:
+
+```ini
+# ansible.cfg
+[defaults]
+inventory = conf/my-config.yml
+```
+
+This allows you to run `ansible-playbook` commands without explicitly specifying the `-i` parameter.
+
+--------
+
+## Dynamic Config
+
+Pigsty allows you to use a **database (CMDB)** as a dynamic configuration source instead of a static configuration file.
+
+Pigsty provides three convenient scripts for this:
+
+<Callout title="CMDB Scripts" type="info">
+
+    - `bin/inventory_load`: Load the content of `pigsty.yml` into the local PostgreSQL database (`meta.pigsty`)
+    - `bin/inventory_cmdb`: Switch the configuration source to the local PostgreSQL database (`meta.pigsty`)  
+    - `bin/inventory_conf`: Switch the configuration source back to the local static configuration file `pigsty.yml`
+
+</Callout>
+
+### Usage Example
+
+```bash
+# Load current config into database
+bin/inventory_load
+
+# Switch to use database as config source
+bin/inventory_cmdb
+
+# Make changes to config in database
+psql meta -c "UPDATE pigsty.inventory SET data = jsonb_set(data, '{all,vars,pg_version}', '17');"
+
+# Run playbook with database config
+./install.yml
+
+# Switch back to file-based config
+bin/inventory_conf
+```
+
+--------
+
+## Configuration Examples
+
+### Override Examples
+
+Here are some common configuration override scenarios:
+
+<Callout title="Common Override Patterns" type="info">
+
+    - Clean existing postgres data with Playbook CLI Args: `-e pg_clean=true`
+    - Override an instance role with Instance Level Parameter `pg_role` on Host Vars
+    - Override a cluster name with Cluster Level Parameter `pg_cluster` on Group Vars
+    - Specify global NTP servers with Global Parameter `node_ntp_servers` on Global Vars
+    - If no `pg_version` is set, it will use the default value from role implementation (16 by default)
+
+</Callout>
+
+### Multi-Cluster Example
+
+```yaml
+all:
+  vars:
+    # Global settings
+    pg_version: 16
+    node_ntp_servers: ['pool.ntp.org']
+  children:
+    infra:
+      hosts: { 10.10.10.10: { infra_seq: 1 } }
+    etcd:
+      hosts: 
+        10.10.10.10: { etcd_seq: 1 }
+        10.10.10.11: { etcd_seq: 2 }
+        10.10.10.12: { etcd_seq: 3 }
+    
+    # Production PostgreSQL cluster
+    pg-prod:
+      vars:
+        pg_cluster: pg-prod
+        pg_version: 15              # Use PG 15 for production
+      hosts:
+        10.10.10.11: { pg_seq: 1, pg_role: primary }
+        10.10.10.12: { pg_seq: 2, pg_role: replica }
+        10.10.10.13: { pg_seq: 3, pg_role: replica }
+    
+    # Testing PostgreSQL cluster  
+    pg-test:
+      vars:
+        pg_cluster: pg-test
+        pg_version: 17              # Use latest PG 17 for testing
+      hosts:
+        10.10.10.21: { pg_seq: 1, pg_role: primary }
+        10.10.10.22: { pg_seq: 2, pg_role: replica }
+```
+
+--------
+
+## Reference
+
+Pigsty has **280+** parameters organized into different modules. Check [**Parameters**](/docs/reference/parameters) for complete details.
+
+| Module | Section | Description | Count |
+|--------|---------|-------------|-------|
+| [**INFRA**](/docs/infra/param/) | [META](/docs/infra/param/#meta) | Pigsty Metadata | 4 |
+| [**INFRA**](/docs/infra/param/) | [CA](/docs/infra/param/#ca) | Self-Signed CA | 3 |
+| [**INFRA**](/docs/infra/param/) | [INFRA_ID](/docs/infra/param/#infra_id) | Infra Portals & Identity | 2 |
+| [**INFRA**](/docs/infra/param/) | [REPO](/docs/infra/param/#repo) | Local Software Repo | 9 |
+| [**INFRA**](/docs/infra/param/) | [NGINX](/docs/infra/param/#nginx) | Nginx Web Server | 7 |
+| [**INFRA**](/docs/infra/param/) | [PROMETHEUS](/docs/infra/param/#prometheus) | Prometheus Stack | 18 |
+| [**INFRA**](/docs/infra/param/) | [GRAFANA](/docs/infra/param/#grafana) | Grafana Stack | 6 |
+| [**NODE**](/docs/node/param/) | [NODE_ID](/docs/node/param/#node_id) | Node Identity Parameters | 5 |
+| [**NODE**](/docs/node/param/) | [NODE_TUNE](/docs/node/param/#node_tune) | Node Tuning & Kernel features | 10 |
+| [**NODE**](/docs/node/param/) | [NODE_ADMIN](/docs/node/param/#node_admin) | Admin User & Credentials | 7 |
+| [**PGSQL**](/docs/pgsql/param/) | [PG_ID](/docs/pgsql/param/#pg_id) | PG Identity Parameters | 11 |
+| [**PGSQL**](/docs/pgsql/param/) | [PG_BUSINESS](/docs/pgsql/param/#pg_business) | PG Business Object Definition | 12 |
+| [**PGSQL**](/docs/pgsql/param/) | [PG_BOOTSTRAP](/docs/pgsql/param/#pg_bootstrap) | Init HA PG Cluster with Patroni | 39 |
+| [**REDIS**](/docs/redis/param/) | [REDIS](/docs/redis/param/#redis) | Redis the key-value NoSQL cache | 20 |
+| [**ETCD**](/docs/etcd/param/) | [ETCD](/docs/etcd/param/#etcd) | ETCD DCS Cluster | 10 |
+| [**MINIO**](/docs/minio/param/) | [MINIO](/docs/minio/param/#minio) | MINIO S3 Object Storage | 15 |
+
+<Callout title="Need Help with Configuration?" type="info">
+
+    - Check the [**FAQ**](/docs/setup/faq) for common configuration issues
+    - Browse [**Configuration Templates**](/docs/setup/config/) for ready-to-use examples  
+    - Consult [**Parameter Reference**](/docs/reference/parameters) for detailed parameter descriptions
+    - Visit our [**Community**](/docs/about/community) for support and discussions
+
+</Callout>
