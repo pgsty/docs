@@ -1,0 +1,113 @@
+---
+title: Inventory
+description: The main config file for Pigsty
+icon: CodeXml
+---
+
+**Pigsty treats Infra & Database as Code.** You can describe the infra / nodes and database clusters with the declarative config [**inventory**](#inventory).
+Which is usually an [**Ansible Inventory**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html) file in YAML format: `pigsty.yml`.
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+import { CpuIcon, FileCode } from 'lucide-react';
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <a href={"https://github.com/pgsty/pigsty/blob/main/configure"}><File name="configure"  icon={<CpuIcon className="text-orange-400" />} /></a>
+        <a href={"https://github.com/pgsty/pigsty/blob/main/pigsty.yml"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+</Files>
+
+The `configure` script will generate the `pigsty.yml` file scaffold with good defaults according to your environment and input,
+but it's **OPTIONAL**: you can always edit the `pigsty.yml` file directly as needed.
+
+
+------
+
+## Inventory
+
+Each pigsty deployment has a corresponding config **inventory**.
+It could be stored in a local config file in YAML format, or dynamically generated from [CMDB](https://docs.ansible.com/ansible/2.9/user_guide/intro_dynamic_inventory.html) or any ansible compatible format.
+Pigsty uses one monolith YAML config file by default, which is [`pigsty.yml`](https://github.com/pgsty/pigsty/blob/main/pigsty.yml), [located](https://github.com/pgsty/pigsty/blob/main/ansible.cfg#L3) in the pigsty home directory.
+
+The inventory consists of two parts: **global vars**  & multiple **groups**. You can define new clusters in `all.children`.
+And describe infra with global vars: `all.vars`. Which may look like this:
+
+```yaml
+all:                  # Top-level object: all
+  vars: {...}         # Global Parameters
+  children:           # Group Definitions
+    infra:            # Group Definition: 'infra'
+      hosts: {...}        # Group Membership: 'infra'
+      vars:  {...}        # Group Parameters: 'infra'
+    etcd:    {...}    # Group Definition: 'etcd'
+    pg-meta: {...}    # Group Definition: 'pg-meta'
+    pg-test: {...}    # Group Definition: 'pg-test'
+    redis-test: {...} # Group Definition: 'redis-test'
+    # ...
+```
+
+There are plenty of examples under [`conf/`](https://github.com/pgsty/pigsty/blob/main/conf/README.md), which can also be used as templates during `configure`.
+
+------
+
+## Cluster
+
+Each ansible group may represent a cluster, which could be a Node cluster, PostgreSQL cluster, Redis cluster, Etcd cluster, or Minio cluster, etc…
+
+Cluster definition consists of two parts: **hosts** & **vars**.
+You can define cluster members in `<cls>.hosts` and describe cluster with parameters in `<cls>.vars`.
+Here's an example of a 3-node HA PG cluster:
+
+```yaml
+all:
+  children:    # All Groups
+    pg-test:   # Group Name
+      hosts:   # Group Host (Cluster Membership)
+        10.10.10.11: { pg_seq: 1, pg_role: primary } # Host1
+        10.10.10.12: { pg_seq: 2, pg_role: replica } # Host2
+        10.10.10.13: { pg_seq: 3, pg_role: offline } # Host3
+      vars:    # Group Vars (Cluster Parameters)
+        pg_cluster: pg-test
+```
+
+The `vars` in cluster level will override the global vars, and `vars` in host level will override the cluster vars and global vars.
+
+
+
+------
+
+## Parameter
+
+Parameters are key-value pairs that define all entities in the deployment.
+The key is a string name, and the value can be one of five types: boolean, string, number, array, or object.
+
+And parameters can be set at different levels with the following precedence:
+
+| Level       | Location                   | Description                                   | Precedence  |
+|:------------|:---------------------------|:----------------------------------------------|:------------|
+| CLI Args    | Command Line               | via `-e` cli param arg                        | Highest (5) |
+| Host Vars   | `<group>.hosts.<host>`     | Parameters specific to a single host          | High (4)    |
+| Group Vars  | `<group>.vars`             | Parameters shared by hosts in a group/cluster | Medium (3)  |
+| Global Vars | `all.vars`                 | Parameters shared by all hosts                | Low (2)     |
+| Defaults    | `<roles>/defualt/main.yml` | Role implementation defaults                  | Lowest (1)  |
+
+Here are some examples about parameter precedence:
+
+- Force removing existing databases with Playbook CLI Args `-e pg_clean=true`
+- Override pg instance role with Instance Level Parameter `pg_role` on Host Vars
+- Override pg cluster name with Cluster Level Parameter `pg_cluster` on Group Vars.
+- Specify global NTP servers with Global Parameter `node_ntp_servers` on Global Vars
+- If no `pg_version` is set, pigsty will use the default value from role implementation (`17` by default)
+
+
+Every parameter has a proper default value except for mandatory **IDENTITY PARAMETERS**; they are used as identifiers and must be set explicitly.
+Such as [`pg_cluster`](https://pigsty.io/docs/pgsql/param/#pg_cluster), [`pg_role`](https://pigsty.io/docs/pgsql/param/#pg_role), and [`pg_seq`](https://pigsty.io/docs/pgsql/param/#pg_seq) in above snippet.
+
+
+Available parameters vary according to the modules:
+
+| [<span className={"text-sky-700 font-bold"}>PGSQL</span>](/docs/pgsql/config) | [<span className={"text-green-800 font-bold"}>INFRA</span>](/docs/infra/config) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/docs/node/config)   |   [<span className={"text-blue-400 font-bold"}>ETCD</span>](/docs/etcd/config)   |
+|:-----------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|
+| [<span className={"text-red-800 font-bold"}>MINIO</span>](/docs/minio/config) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/docs/redis/config)  | [<span className={"text-blue-600 font-bold"}>DOCKER</span>](/docs/docker/config) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/docs/ferret/config) |
+
+

@@ -1,0 +1,242 @@
+---
+title: SSL Certs
+description: Configure real & self-signed HTTPS certs
+icon: Lock
+---
+
+Pigsty comes with Certbot pre-installed on the Infra node, enabling you to obtain free Let's Encrypt HTTPS certificates for Nginx servers and public domains.
+
+
+--------
+
+## Prerequisites
+
+Before obtaining Let's Encrypt certificates, ensure you have:
+- A public domain name
+- DNS records pointing to your server's public IP
+- Nginx properly configured with your domains
+
+
+--------
+
+## Step 1: Determine Which Domains Need Certificates
+
+First, identify which upstream services require public certificates by configuring domains in your `infra_portal`:
+
+```yaml
+infra_portal:
+  home         : { domain: h.pigsty.cc }
+  grafana      : { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true }
+  prometheus   : { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093" }
+  minio        : { domain: m.pigsty.cc, endpoint: "${admin_ip}:9001", scheme: https, websocket: true }
+  web          : { domain: pigsty.cc, path: "/www/web.cc" }
+  repo         : { domain: repo.pigsty.cc, path: "/www/repo" }
+```
+
+
+--------
+
+## Step 2: Point Domains to Your Server
+
+Configure DNS A records to point all your domains to your server's public IP address:
+
+```bash
+# Example DNS configuration
+47.83.172.23 pigsty.cc
+47.83.172.23 h.pigsty.cc
+47.83.172.23 g.pigsty.cc
+47.83.172.23 p.pigsty.cc
+47.83.172.23 a.pigsty.cc
+47.83.172.23 m.pigsty.cc
+47.83.172.23 repo.pigsty.cc
+```
+
+Verify that your domains are properly pointing to your server:
+
+```bash
+# Test domain resolution
+nslookup pigsty.cc
+dig g.pigsty.cc
+```
+
+
+--------
+
+## Step 3: Request Certificates with Certbot
+
+Use Certbot to request Let's Encrypt certificates for your domains:
+
+### Interactive Method (First Time)
+
+```bash
+certbot --nginx -d pigsty.cc -d repo.pigsty.cc -d g.pigsty.cc -d p.pigsty.cc -d a.pigsty.cc
+```
+
+During the first run, you'll be prompted to:
+- Provide an email address for Let's Encrypt account registration
+- Agree to the Terms of Service
+- Choose whether to share your email with the Electronic Frontier Foundation
+
+### Non-Interactive Method
+
+For automated deployments, use the non-interactive mode:
+
+```bash
+certbot --nginx --agree-tos --email your@email.com -n -d your-domain.com
+```
+
+Example for multiple domains:
+
+```bash
+certbot --nginx --agree-tos --email admin@pigsty.cc -n \
+  -d pigsty.cc \
+  -d g.pigsty.cc \
+  -d p.pigsty.cc \
+  -d a.pigsty.cc \
+  -d repo.pigsty.cc
+```
+
+## Step 4: Update Nginx Configuration
+
+After successfully obtaining certificates, update your `infra_portal` configuration to use them by adding the `certbot: true` parameter:
+
+```yaml
+infra_portal:
+  grafana: { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true, certbot: true }
+  prometheus: { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090", certbot: true }
+  alertmanager: { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093", certbot: true }
+  web: { domain: pigsty.cc, path: "/www/web.cc", certbot: true }
+  repo: { domain: repo.pigsty.cc, path: "/www/repo", certbot: true }
+```
+
+Then regenerate the Nginx configuration and restart the service:
+
+```bash
+./infra.yml -t nginx_config,nginx_launch
+```
+
+
+--------
+
+## Step 5: Configure Certificate Renewal
+
+Let's Encrypt certificates expire every 90 days. Set up automatic renewal to ensure continuous HTTPS coverage:
+
+### Test Renewal (Dry Run)
+
+Before setting up automatic renewal, test the process:
+
+```bash
+certbot renew --dry-run
+```
+
+### Manual Renewal
+
+To manually renew all certificates:
+
+```bash
+certbot renew
+```
+
+To renew a specific certificate:
+
+```bash
+certbot renew --cert-name your-domain.com
+```
+
+### Automatic Renewal
+
+Set up a monthly cron job for automatic renewal:
+
+```bash
+# Add to crontab
+crontab -e
+
+# Add this line for monthly renewal at 2 AM on the 1st day
+0 2 1 * * certbot renew --quiet
+```
+
+Alternatively, use a systemd timer if available:
+
+```bash
+# Enable certbot timer
+systemctl enable certbot.timer
+systemctl start certbot.timer
+```
+
+
+
+--------
+
+## Certificate Management Commands
+
+Here are useful Certbot commands for managing your certificates:
+
+```bash
+# List all certificates
+certbot certificates
+
+# View certificate details
+certbot certificates --cert-name your-domain.com
+
+# Renew specific certificate
+certbot renew --cert-name your-domain.com
+
+# Delete certificate
+certbot delete --cert-name your-domain.com
+
+# Expand certificate to include new domains
+certbot --nginx -d existing-domain.com -d new-domain.com
+
+# Revoke certificate
+certbot revoke --cert-path /etc/letsencrypt/live/your-domain.com/cert.pem
+```
+
+
+
+
+--------
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Domain not accessible**: Ensure DNS records are properly configured and propagated
+2. **Port 80 blocked**: Let's Encrypt requires port 80 for domain validation
+3. **Rate limits**: Let's Encrypt has rate limits; avoid requesting too many certificates quickly
+4. **Firewall issues**: Ensure ports 80 and 443 are open in your firewall
+
+### Verification Commands
+
+```bash
+# Check certificate expiration
+openssl x509 -in /etc/letsencrypt/live/your-domain.com/cert.pem -text -noout | grep "Not After"
+
+# Test SSL configuration
+openssl s_client -connect your-domain.com:443 -servername your-domain.com
+
+# Check Nginx configuration
+nginx -t
+
+# Reload Nginx
+nginx -s reload
+```
+
+## Best Practices
+
+1. **Use wildcard certificates** for multiple subdomains when appropriate
+2. **Monitor certificate expiration** with automated alerts
+3. **Test renewal process** regularly with dry runs
+4. **Keep backups** of your certificate files
+5. **Use staging environment** for testing before production deployment
+6. **Set up monitoring** for certificate expiration dates
+7. **Document your domain configuration** for team reference
+
+## Security Considerations
+
+- **Protect private keys**: Ensure certificate private keys have restricted permissions
+- **Use strong SSL configuration**: Configure Nginx with modern SSL settings
+- **Enable HTTP to HTTPS redirection**: Force secure connections
+- **Implement HSTS**: Add HTTP Strict Transport Security headers
+- **Regular security audits**: Test your SSL configuration with tools like SSL Labs

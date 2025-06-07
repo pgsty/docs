@@ -43,6 +43,12 @@ const config: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.star-history.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

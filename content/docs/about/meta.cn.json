@@ -5,10 +5,11 @@
     "icon": "Info",
     "pages": [
         "author",
-        "history",
         "license",
-        "service",
         "community",
+        "service",
+
+        "history",
         "release",
         "event",
         "issue",

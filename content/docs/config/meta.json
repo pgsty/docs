@@ -1,0 +1,14 @@
+{
+  "title": "Configuration",
+  "description": "Describe the infra and database clusters",
+  "icon": "Code",
+  "defaultOpen": false,
+  "pages": [
+    "inventory",
+    "configure",
+    "tutorial",
+    "template",
+    "security",
+    "cmdb"
+  ]
+}

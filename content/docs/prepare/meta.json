@@ -1,0 +1,12 @@
+{
+    "title": "Preparation",
+    "description": "Node, OS, network, storage, user, ssh, privileges,...",
+    "icon": "SquareStack",
+    "defaultOpen": false,
+    "pages": [
+        "prepare",
+        "linux",
+        "terraform",
+        "vagrant"
+    ]
+}

@@ -1,0 +1,50 @@
+---
+title: Introduction
+description: Values, Features, Architecture and Comparision
+icon: BookMarked
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    FileCode,
+    AtomIcon,
+    ToyBrickIcon,
+} from 'lucide-react';
+import { DynamicLink } from 'fumadocs-core/dynamic-link';
+import { Button } from "@/components/ui/button"
+
+
+**Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> is a battery-included, local-first, open-source & free <span className="text-blue-500 font-bold">PostgreSQL Distribution</span> based on **bare Linux**.
+
+
+<Cards>
+    <Card icon={<Database className="text-blue-300" />} title='PostgreSQL Enterprise' href={"/docs/pgsql"}>
+        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
+    </Card>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Infrastructure as Code' href={"/docs/infra"}>
+        Declare your entire infra with code, and setup everything PG needs from Bare OS: LB, Nginx, NTP, DNS, Local Repo, etc...
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Stunning Observability'>
+        Unparalleled monitoring best practices built upon modern Prometheus & Grafana observability stacks out-of-the-box
+    </Card>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Extensions & Forks'>
+        <span className={"text-red-800 font-bold"}>420+</span> PGSQL Extensions battery-included! Alone with forks: Babelfish, Oriole, IvorySQL, OpenHalo, PolarDB, Supabase,...
+    </Card>
+</Cards>
+
+Pigsty provides everything you'll need for self-hosting an enterprise-grade PostgreSQL Service even without expertise.
+
+Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
+
+<Callout title="Want to learn more?">
+    Read our in-depth [What is Pigsty](/docs/pigsty/intro) introduction.
+
+</Callout>
+
+
+| <DynamicLink href="/[lang]/docs/pgsql"><span className={"no-underline hover:underline text-sky-700 font-bold"}>PGSQL</span></DynamicLink> | <DynamicLink href="/[lang]/docs/infra"><span className={"text-green-800 font-bold"}>INFRA</span></DynamicLink> |  <DynamicLink href="/[lang]/docs/node"><span className={"text-amber-500 font-bold"}>NODE</span></DynamicLink>   |   <DynamicLink href="/[lang]/docs/etcd"><span className={"text-blue-400 font-bold"}>ETCD</span></DynamicLink>   |
+|:-----------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------:|
+| <DynamicLink href="/[lang]/docs/minio"><span className={"no-underline hover:underline text-red-800 font-bold"}>MINIO</span></DynamicLink> |  <DynamicLink href="/[lang]/docs/redis"><span className={"text-red-400 font-bold"}>REDIS</span></DynamicLink>  | <DynamicLink href="/[lang]/docs/docker"><span className={"text-blue-600 font-bold"}>DOCKER</span></DynamicLink> | <DynamicLink href="/[lang]/docs/ferret"><span className={"text-gray-500 font-bold"}>FERRET</span></DynamicLink> |
+

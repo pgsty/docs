@@ -3,7 +3,11 @@
   "pages": [
     "[Docs](/docs)",
     "intro",
-    "setup",
+    "install",
+    "prepare",
+    "config",
+    "admin",
+    "guide",
     "about",
     "--- ---",
     "pgsql",

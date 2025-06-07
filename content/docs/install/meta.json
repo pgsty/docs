@@ -1,0 +1,12 @@
+{
+    "title": "Installation",
+    "icon": "Download",
+    "defaultOpen": false,
+    "pages": [
+        "install",
+        "interface",
+        "multinode",
+        "offline",
+        "minimal"
+    ]
+}

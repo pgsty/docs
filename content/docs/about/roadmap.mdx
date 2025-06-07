@@ -1,0 +1,68 @@
+---
+title: Roadmap
+description: Future planning and feature radar
+icon: Map
+---
+
+Pigsty follows a structured development roadmap with regular releases and continuous improvement. This page outlines our release schedule, upcoming features, and long-term plans.
+
+
+--------
+
+## Release Announcement
+
+
+<Callout title="Pigsty v3.5.0 beta2 is coming!">
+
+  The second beta version of Pigsty v3.5.0 is coming soon!
+  
+  The official GA release will be available in June 2025.
+
+</Callout>
+
+
+
+--------
+
+## Release Schedule
+
+Pigsty uses **semantic versioning** with the format `<major version>.<minor version>.<patch>`:
+
+- **Major Updates**: Released annually with significant new features and improvements
+- **Minor Updates**: Released 4-6 times per year, typically aligned with PostgreSQL releases
+- **Patch Updates**: Bug fixes and small improvements as needed
+<Callout title="Version Naming Convention">
+
+- **Stable releases**: `v3.1.0`, `v3.2.0`, etc.
+- **Alpha versions**: `v3.1.0-a1`, `v3.1.0-a2` (early development)  
+- **Beta versions**: `v3.1.0-b1`, `v3.1.0-b2` (feature complete, testing)
+- **Release candidates**: `v3.1.0-rc1` (production ready, final testing)
+
+</Callout>
+
+<Callout title="Release Recommendations">
+
+- **Always use tagged releases** rather than the GitHub main branch
+- **Use version-specific releases** for production deployments  
+- **Test new versions** in development environments before upgrading production
+
+</Callout>
+
+
+--------
+
+## Feature Radar
+
+The following features are planned or under consideration for future releases:
+
+- [x] PostgreSQL 18 support
+- [x] Tutorial: Supabase Self-Hosting
+- [x] Tutorial: Dify Self-Hosting
+- [x] Tutorial: Odoo Self-Hosting
+- [ ] Self-hosting PostHog
+- [ ] Monitoring deployments of MySQL databases
+- [ ] Replace promtail with `vector`
+- [ ] Replace loki with `victorialogs`
+- [ ] Replace prometheus with `victoriametrics`
+- [ ] Better log sink destination management
+- [ ] Deploying and monitoring high-availability Kubernetes clusters with SealOS!

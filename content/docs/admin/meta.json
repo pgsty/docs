@@ -1,0 +1,13 @@
+{
+  "title": "Administration",
+  "description": "Run playbooks, upgrades, and maintenance",
+  "icon": "Landmark",
+  "defaultOpen": false,
+  "pages": [
+    "portal",
+    "dashboard",
+    "playbook",
+    "domain",
+    "cert"
+  ]
+}

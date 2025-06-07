@@ -1,0 +1,85 @@
+---
+title: Configuration
+description: Describe your environment with config
+icon: Landmark
+full: true
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    Landmark,
+    FileCode,
+    Cog,
+    Settings,
+    AtomIcon,
+    FileJson,
+    Wrench,
+    Shield,
+    GraduationCap,
+    Box,
+    Layers,
+Container,
+Leaf,
+    ToyBrickIcon,
+} from 'lucide-react';
+import { DynamicLink } from 'fumadocs-core/dynamic-link';
+import { Button } from "@/components/ui/button"
+
+
+<Cards>
+    <Card icon={<FileJson className="text-orange-600" />} title='Inventory' href={"/docs/config/inventory"}>
+        The main config file of Pigsty, Describe your entire deployment
+    </Card>
+    <Card icon={<CpuIcon className="text-green-700" />} title='Configure' href={"/docs/config/configure"}>
+        Generate config file acoording to your input & environment
+    </Card>
+    <Card icon={<GraduationCap className={"text-yellow-600"} />} title='Tutorial' href={"/docs/config/tutorial"}>
+        Planning your deployment according to business requirements
+    </Card>
+    <Card icon={<FileCode className="text-blue-500" />} title='Template' href={"/docs/config/template"}>
+        Available configuration templates and examples
+    </Card>
+    <Card icon={<Shield className="text-red-500" />} title='Security' href={"/docs/config/security"}>
+        Security considerations and best practices for prod deployment
+    </Card>
+    <Card icon={<Database className="text-sky-600" />} title='CMDB' href={"/docs/config/cmdb"}>
+        Use PostgreSQL as CMDB instead of local YAML config file
+    </Card>
+</Cards>
+
+
+
+--------
+
+<Cards>
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
+        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
+    </Card>
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra"}>
+        Independent modules which providers infrastructure services: NTP, DNS, and the modern observability stack —— Grafana & Prometheus
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/docs/node"}>
+        Tune nodes into the desired state and monitor it, manage node, VIP, HAProxy, and exporters.
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd"}>
+        Reliable distributive consensus storage (DCS), empowering PostgreSQL HA.
+    </Card>
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio"}>
+        Distributed object storage compatible with S3, providing reliable backup storage for PostgreSQL.
+    </Card>
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/docs/redis"}>
+        High-performance in-memory cache, standalone, cluster, and sentinel mode support.
+    </Card>
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/docs/docker"}>
+        Container runtime and registry for running containerized applications.
+    </Card>
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/docs/ferret"}>
+        Run MongoDB wire-protocal compatible layer upon PostgreSQL & DocumentDB extension
+    </Card>
+</Cards>
+
+| [<span className={"text-sky-600 font-bold"}>PGSQL</span>](/docs/pgsql/config) | [<span className={"text-green-700 font-bold"}>INFRA</span>](/docs/infra/config) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/docs/node/config)   |   [<span className={"text-sky-400 font-bold"}>ETCD</span>](/docs/etcd/config)   |
+|:-----------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|
+| [<span className={"text-red-800 font-bold"}>MINIO</span>](/docs/minio/config) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/docs/redis/config)  | [<span className={"text-blue-500 font-bold"}>DOCKER</span>](/docs/docker/config) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/docs/ferret/config) |
