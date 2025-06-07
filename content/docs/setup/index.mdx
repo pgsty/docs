@@ -87,17 +87,17 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='Standard Installation' href={"/docs/setup/install"}>
-        Download everything from the Internet and install latest packages.
+    <Card icon={<Database className="text-blue-300" />} title='One-Node Installation' href={"/docs/setup/install"}>
+        Setup current linux node, and download everything from the Internet
     </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='Offline Installation' href={"/docs/setup/offline"}>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Multi-Node Installation' href={"/docs/setup/multinode"}>
+        Setup multiple nodes for real high-available production environment.
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Offline Installation' href={"/docs/setup/offline"}>
         Bootstrap from a local offline package which contains all the packages.
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Minimal Installation' href={"/docs/setup/slim"}>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Minimal Installation' href={"/docs/setup/minimal"}>
         Install essential packages for HA Postgres Cluster only, no monitoring.
-    </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Security Consideration' href={"/docs/setup/security"}>
-        Security best-practices for your serious production deployment
     </Card>
 </Cards>
 
@@ -107,19 +107,45 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 ## Preparation
 
 <Cards>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux' href={"/docs/setup/linux"}>
-        Check compatible linux distributions and availability matrix
-    </Card>
+
     <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/docs/setup/prepare"}>
         Prepare node, network, storage, user, ssh, sudo, ansible, etc...
     </Card>
 
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux OS' href={"/docs/setup/linux"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+
     <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/docs/setup/vagrant"}>
-        Provion local linux virtual machines with vagrant / virtualbox
+        Provision local linux virtual machines with vagrant / virtualbox
     </Card>
     <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/docs/setup/terraform"}>
-        Provion cloud linux servers with terraform on cloud vendors
+        Provision cloud linux servers with terraform on cloud vendors
     </Card>
 
 </Cards>
 
+--------
+
+## Reference
+
+<Cards>
+
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Explore' href={"/docs/setup/terraform"}>
+        Provion cloud linux servers with terraform on cloud vendors
+    </Card>
+
+    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/docs/setup/prepare"}>
+        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    </Card>
+
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/docs/setup/linux"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+
+    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/docs/setup/vagrant"}>
+        Security hardening and best practices for production environments
+    </Card>
+
+
+</Cards>

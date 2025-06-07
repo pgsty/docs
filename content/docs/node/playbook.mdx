@@ -130,10 +130,7 @@ The playbook follows a methodical **reverse-order teardown** approach, ensuring 
 ./node-rm.yml -l 10.10.10.100
 
 # Remove an entire node cluster
-./node-rm.yml -l node-cluster  
-
-# Remove with confirmation prompts
-./node-rm.yml -l target-nodes --check
+./node-rm.yml -l <node_cls>
 
 # Selective removal (specific services only)
 ./node-rm.yml -l target-nodes -t monitor,haproxy

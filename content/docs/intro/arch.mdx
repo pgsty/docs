@@ -1,5 +1,294 @@
 ---
 title: Architecture
-description: Key features and highlights
-icon: Feather
+description: Pigsty's modular, declarative infrastructure design for PostgreSQL
+icon: Network
 ---
+
+# Pigsty Architecture
+
+Pigsty follows a **modular, declarative architecture** that transforms infrastructure management into code. Built on proven open-source technologies, it delivers enterprise-grade PostgreSQL deployment with comprehensive observability and high availability.
+
+## Design Philosophy
+
+### Infrastructure as Code
+- **Declarative configuration** through YAML inventory files
+- **Idempotent operations** via Ansible playbooks
+- **Version-controlled infrastructure** enabling GitOps workflows
+- **Reproducible deployments** across environments
+
+### Modular Composition
+- **Lego-like modularity** for flexible component assembly
+- **Independent scaling** of individual modules
+- **Optional components** without breaking dependencies
+- **Extensible architecture** supporting custom modules
+
+## Core Modules
+
+### PGSQL Module
+**Autonomous PostgreSQL clusters with enterprise-grade reliability**
+
+- **High Availability**: Patroni-based automatic failover
+- **Load Balancing**: HAProxy for intelligent traffic routing
+- **Connection Pooling**: PgBouncer for connection management
+- **Backup & Recovery**: Automated PITR with flexible restore points
+- **SSL/TLS**: End-to-end encryption with self-signed CA
+- **Extensions**: 200+ PostgreSQL extensions available
+
+### INFRA Module
+**Monitoring and observability infrastructure**
+
+- **Prometheus**: Time-series metrics collection and storage
+- **Grafana**: Interactive dashboards and visualization
+- **AlertManager**: Intelligent alerting and notification routing
+- **Nginx**: Reverse proxy and static file serving
+- **DNS**: Local domain name resolution
+- **PKI**: Certificate authority for secure communications
+
+### NODE Module
+**System-level node configuration and optimization**
+
+- **Package Management**: Automated software installation
+- **User Management**: Database and system user provisioning
+- **Tuning**: Hardware-specific performance optimization
+- **Security**: Firewall, SELinux, and hardening configurations
+- **Monitoring**: Node exporter for system metrics
+- **Maintenance**: Log rotation and cleanup automation
+
+### ETCD Module
+**Distributed consensus for cluster coordination**
+
+- **Configuration Storage**: Centralized cluster state management
+- **Service Discovery**: Automatic service registration
+- **Leader Election**: Distributed consensus for failover
+- **Watches**: Real-time configuration change notifications
+- **High Availability**: Multi-node ETCD clusters
+
+## Extended Modules
+
+### REDIS Module
+**High-performance in-memory data structures**
+
+- **Multiple Deployment Modes**: Standalone, Master-Slave, Sentinel, Cluster
+- **Persistence**: RDB snapshots and AOF logging
+- **Monitoring**: Redis-specific metrics and dashboards
+- **Security**: AUTH and TLS encryption support
+
+### MINIO Module
+**S3-compatible object storage**
+
+- **Distributed Storage**: Multi-node object storage clusters
+- **S3 API**: Compatible with AWS S3 ecosystem
+- **Erasure Coding**: Data protection and redundancy
+- **Integration**: Backup destination for PostgreSQL
+
+## Deployment Architecture
+
+### Singleton Meta
+**Single-node deployment with full capabilities**
+
+```
+┌─────────────────────────────────────┐
+│             Meta Node               │
+├─────────────────────────────────────┤
+│ • PostgreSQL (Primary)              │
+│ • Prometheus + Grafana              │
+│ • Nginx + DNS                       │
+│ • HAProxy + PgBouncer              │
+│ • ETCD (Single-node)               │
+└─────────────────────────────────────┘
+```
+
+- **Complete functionality** in minimal footprint
+- **Development and testing** environments
+- **Small production** deployments
+- **Bootstrap node** for larger clusters
+
+### Multi-Node Clusters
+**Horizontally scalable PostgreSQL clusters**
+
+```
+┌───────────────┐  ┌───────────────┐  ┌───────────────┐
+│   Primary     │  │   Replica 1   │  │   Replica 2   │
+├───────────────┤  ├───────────────┤  ├───────────────┤
+│ • PostgreSQL  │  │ • PostgreSQL  │  │ • PostgreSQL  │
+│ • HAProxy     │  │ • HAProxy     │  │ • HAProxy     │
+│ • PgBouncer   │  │ • PgBouncer   │  │ • PgBouncer   │
+│ • Monitoring  │  │ • Monitoring  │  │ • Monitoring  │
+└───────────────┘  └───────────────┘  └───────────────┘
+        │                  │                  │
+        └──────────────────┼──────────────────┘
+                           │
+                ┌───────────────┐
+                │  ETCD Cluster │
+                │  (3+ nodes)   │
+                └───────────────┘
+```
+
+- **Automatic failover** with 30-second RTO
+- **Read/write separation** via HAProxy routing
+- **Cascading replication** for unlimited replicas
+- **Zero-downtime** maintenance operations
+
+## Network Architecture
+
+### Service Exposure
+**Multi-layer service access patterns**
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  External Access                     │
+├─────────────────────────────────────────────────────┤
+│ DNS: *.pigsty  │ NGINX: 80/443  │ Grafana: 3000    │
+└─────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────┐
+│                   HAProxy Layer                     │
+├─────────────────────────────────────────────────────┤
+│ Primary: 5433  │ Replica: 5434  │ Offline: 5436    │
+└─────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────┐
+│                 Connection Pool                     │
+├─────────────────────────────────────────────────────┤
+│ PgBouncer: 6432  │ Transaction Pool │ Session Pool  │
+└─────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────┐
+│                PostgreSQL Cluster                   │
+├─────────────────────────────────────────────────────┤
+│ Primary: 5432  │ Replica: 5432  │ Metrics: 9630   │
+└─────────────────────────────────────────────────────┘
+```
+
+### Port Allocation
+**Standardized service port mapping**
+
+| Service | Port | Purpose |
+|---------|------|---------|
+| PostgreSQL | 5432 | Database server |
+| PgBouncer | 6432 | Connection pooling |
+| HAProxy Primary | 5433 | Read-write access |
+| HAProxy Replica | 5434 | Read-only access |
+| HAProxy Offline | 5436 | ETL/backup access |
+| Prometheus | 9090 | Metrics collection |
+| Grafana | 3000 | Dashboard interface |
+| AlertManager | 9093 | Alert management |
+
+## Security Architecture
+
+### Certificate Management
+**Comprehensive PKI infrastructure**
+
+- **Self-signed CA** for internal communications
+- **Automatic certificate** generation and rotation
+- **End-to-end encryption** for all services
+- **Client certificate** authentication support
+
+### Authentication & Authorization
+**Multi-layered security controls**
+
+- **SCRAM-SHA-256** for PostgreSQL authentication
+- **HBA rules** for connection-based access control
+- **Role-based permissions** within PostgreSQL
+- **Firewall integration** with system-level controls
+
+### Network Security
+**Defense in depth approach**
+
+- **Internal TLS** for inter-service communication
+- **Firewall rules** for port-based access control
+- **SELinux integration** where available
+- **Network isolation** for sensitive components
+
+## Monitoring Architecture
+
+### Metrics Collection
+**Comprehensive observability stack**
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Grafana                           │
+│              (Visualization)                        │
+└─────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────┐
+│                  Prometheus                         │
+│              (Metrics Storage)                      │
+└─────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────┐
+│              Metrics Exporters                      │
+├─────────────────────────────────────────────────────┤
+│ Node Exporter │ PG Exporter │ HAProxy │ PgBouncer  │
+└─────────────────────────────────────────────────────┘
+```
+
+### Dashboard Hierarchy
+**Multi-level monitoring views**
+
+1. **Overview**: Cluster-wide health and performance
+2. **Instance**: Individual node metrics and status
+3. **Database**: Schema-level analysis and optimization
+4. **Query**: Statement-level performance tuning
+
+## Configuration Management
+
+### Inventory Structure
+**Hierarchical configuration organization**
+
+```yaml
+all:
+  children:
+    meta:      # Infrastructure nodes
+    etcd:      # ETCD cluster nodes  
+    pg-meta:   # PostgreSQL meta cluster
+    pg-test:   # PostgreSQL test cluster
+  vars:
+    # Global configuration variables
+```
+
+### Variable Precedence
+**Configuration override hierarchy**
+
+1. **Group variables**: Cluster-level defaults
+2. **Host variables**: Node-specific overrides  
+3. **Command-line**: Runtime parameter injection
+4. **Environment**: System-level configuration
+
+### Template System
+**Flexible configuration generation**
+
+- **Jinja2 templates** for dynamic configuration
+- **Conditional logic** based on deployment context
+- **Variable interpolation** across configuration files
+- **Validation rules** for configuration consistency
+
+## Operational Architecture
+
+### Deployment Workflow
+**Standardized provisioning process**
+
+1. **Infrastructure Setup**: Node preparation and software installation
+2. **Service Configuration**: Component-specific setup and tuning
+3. **Cluster Formation**: Inter-service connectivity and clustering
+4. **Validation**: Health checks and functional testing
+
+### Maintenance Operations
+**Automated operational procedures**
+
+- **Rolling updates** with zero-downtime deployment
+- **Backup scheduling** with retention management
+- **Log rotation** and cleanup automation
+- **Certificate renewal** and security updates
+
+### Disaster Recovery
+**Comprehensive business continuity**
+
+- **Point-in-time recovery** with flexible restore options
+- **Cross-region replication** for geographic redundancy
+- **Automated failover** with configurable policies
+- **Backup verification** and restoration testing
+
+---
+
+This modular architecture enables Pigsty to scale from development laptops to enterprise data centers while maintaining operational simplicity and providing enterprise-grade reliability.

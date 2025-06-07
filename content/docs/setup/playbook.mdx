@@ -1,74 +1,50 @@
 ---
-title: Playbooks
+title: Playbook
 description: Run playbooks with ansible
 icon: ScrollText
 ---
 
-Pigsty implements module controllers with idempotent [Ansible playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html). 
-You DON'T need to learn Ansible to use Pigsty, but it's helpful to know how the basic concepts and usage.
+Pigsty implements admin controllers with idempotent [Ansible playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html).
+Playbooks require the `ansible-playbook` executable bin in your `PATH`.
+You'll have to install `ansible` to run playbooks.
 
-Here are the default playbooks included in Pigsty:
+--------
 
-| Playbook | Function |
-|----------|----------|
-| [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) | Install Pigsty on current node in one-pass |
-| [`infra.yml`](https://github.com/pgsty/pigsty/blob/main/infra.yml) | Init pigsty infrastructure on infra nodes |
-| [`infra-rm.yml`](https://github.com/pgsty/pigsty/blob/main/infra-rm.yml) | Remove infrastructure components from infra nodes |
-| [`node.yml`](https://github.com/pgsty/pigsty/blob/main/node.yml) | Init node for pigsty, tune node into desired status |
-| [`node-rm.yml`](https://github.com/pgsty/pigsty/blob/main/node-rm.yml) | Remove node from pigsty |
-| [`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml) | Init HA PostgreSQL clusters, or adding new replicas |
-| [`pgsql-rm.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-rm.yml) | Remove PostgreSQL cluster, or remove replicas |
-| [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) | Add new business user to existing PostgreSQL cluster |
-| [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) | Add new business database to existing PostgreSQL cluster |
-| [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml) | Monitor remote postgres instance with local exporters |
-| [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) | Generate Migration manual & scripts for existing PostgreSQL |
-| [`redis.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml) | Init redis cluster/node/instance |
-| [`redis-rm.yml`](https://github.com/pgsty/pigsty/blob/main/redis-rm.yml) | Remove redis cluster/node/instance |
-| [`etcd.yml`](https://github.com/pgsty/pigsty/blob/main/etcd.yml) | Init etcd cluster (required for patroni HA DCS) |
-| [`minio.yml`](https://github.com/pgsty/pigsty/blob/main/minio.yml) | Init minio cluster (optional for pgbackrest repo) |
-| [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml) | Install docker on nodes |
-| [`mongo.yml`](https://github.com/pgsty/pigsty/blob/main/mongo.yml) | Install Mongo/FerretDB on nodes |
-| [`cert.yml`](https://github.com/pgsty/pigsty/blob/main/cert.yml) | Issue cert with pigsty self-signed CA (e.g. for pg clients) |
-| [`cache.yml`](https://github.com/pgsty/pigsty/blob/main/cache.yml) | Make offline install packages from target node |
+## Quick Start
 
-### One-Pass Install
-
-The special playbook `install.yml` is actually a composed playbook that installs everything on the current environment:
+For [one-node deployment](/docs/setup/install), just forget about playbooks, use the [**`install.yml`**](#deployment), it does everything for you:
 
 ```bash
-  playbook  / command / group         infra           nodes    etcd     minio     pgsql
-[infra.yml] ./infra.yml [-l infra]   [+infra][+node] 
-[node.yml]  ./node.yml                               [+node]  [+node]  [+node]   [+node]
-[etcd.yml]  ./etcd.yml  [-l etcd ]                            [+etcd]
-[minio.yml] ./minio.yml [-l minio]                                     [+minio]
-[pgsql.yml] ./pgsql.yml                                                          [+pgsql]
+./install.yml
 ```
 
-<Callout title="Circular Dependency Between NODE and INFRA" type="warn">
+<Callout title="Don't ever run this again after the first time" type="warn">
 
-    There's a circular dependency between [**NODE**](/docs/node/) and [**INFRA**](/docs/infra/): to register a NODE to INFRA, the INFRA should already exist, while the INFRA module relies on NODE to work.
-
-    The solution is that `INFRA` playbook will also install [**NODE**](/docs/node/) module in addition to [**INFRA**](/docs/infra/) on infra nodes. Make sure that infra nodes are initialized first. If you really want to init all nodes including infra in one-pass, `install.yml` is the way to go.
+    It will just wipe out the existing Pigsty installation and re-install everything.
 
 </Callout>
+
 
 --------
 
 ## Ansible
 
-Playbooks require `ansible-playbook` executable to run, which is included in the `ansible` rpm/deb package.
 
-Pigsty will try its best to install Ansible on the admin node during [**bootstrap**](/docs/setup/install/#bootstrap).
+Pigsty will try its best to install `ansible` and its dependencies during [**bootstrap**](/docs/setup/offline#bootstrap).
+But you can always install it manually, it is available on most OS's official repos and can be installed with one command.
 
-<Callout title="Install Ansible Manually" type="info">
+<Callout title="Install Ansible" type="info">
 
-    You can install it yourself with:
+    Playbooks also require a weak dependency: the `jmespath` python package.
 
-    ```bash tab="EL 8/9"
-    sudo dnf install -y ansible python3.12-jmespath
+    ```bash tab="Default"
+    cd ~/pigsty; ./bootstrap
     ```
     ```bash tab="Debian / Ubuntu"
     sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 8/9"
+    sudo dnf install -y ansible python3.12-jmespath
     ```
     ```bash tab="EL 7"
     sudo yum install -y ansible python-jmespath
@@ -78,168 +54,186 @@ Pigsty will try its best to install Ansible on the admin node during [**bootstra
     pip3 install jmespath
     ```
 
-    It is included in the default OS repository.
-
 </Callout>
 
-Knowledge about Ansible is good but not required. Only **four parameters** need your attention:
+Knowledge about Ansible is good but **NOT REQUIRED**. Only **4 parameters** need your attention:
 
-| Parameter | Description | Purpose |
-|-----------|-------------|---------|
-| `-l\|--limit <pattern>` | Limit execution target on specific group/host/pattern | **Where** |
-| `-t\|--tags <tags>` | Only run tasks with specific tags | **What** |
-| `-e\|--extra-vars <vars>` | Extra command line arguments | **How** |
-| `-i\|--inventory <path>` | Using another inventory file | **Config** |
+| Purpose                            | Parameter                 | Description                                           |
+|------------------------------------|---------------------------|-------------------------------------------------------|
+| [**Where**](#limit-host)           | `-l\|--limit <pattern>`   | Limit execution target on specific group/host/pattern |
+| [**What**](#limit-task)            | `-t\|--tags <tags>`       | Only run tasks with specific tags                     |
+| [**How**](#extra-vars)             | `-e\|--extra-vars <vars>` | Extra command line arguments                          |
+| [**Config**](#designate-inventory) | `-i\|--inventory <path>`  | Using a specific inventory file                       |
 
---------
 
-## Designate Inventory
 
-To use a different config inventory, you can copy & paste the content into the `pigsty.yml` file in the home directory as needed.
 
-The active inventory file can be specified with the `-i|--inventory <path>` parameter when running Ansible playbooks:
-
-```bash
-./pgsql.yml -i conf/rich.yml            # initialize a single node with all extensions downloaded according to rich config
-./pgsql.yml -i conf/full.yml            # initialize a four-node cluster according to full config
-./pgsql.yml -i conf/app/supa.yml        # initialize a single-node Supabase deployment according to supa.yml config
-```
-
-<Callout title="Change Default Inventory File" type="info">
-
-    If you wish to permanently modify the **default** config inventory filename, you can change the `inventory` parameter in the [`ansible.cfg`](https://github.com/pgsty/pigsty/blob/main/ansible.cfg#L6) file.
-
-</Callout>
 
 --------
 
 ## Limit Host
 
-The target of a playbook can be limited with `-l|--limit <selector>`.
-
-<Callout title="Missing Host Limit is Dangerous!" type="error">
-
-    Missing this value could be dangerous since most playbooks will execute on `all` hosts. **DO USE WITH CAUTION**.
-
-</Callout>
-
+The **execution target** of a playbook can be limited with `-l|--limit <selector>`.
+It is handy when trying to run playbooks on a specific host/node or group/clusters.
 Here are some examples of host limits:
 
 ```bash
-./pgsql.yml                              # run on all hosts (very dangerous!)
+./pgsql.yml                              # run on all hosts (dangerous!)
 ./pgsql.yml -l pg-test                   # run on pg-test cluster
 ./pgsql.yml -l 10.10.10.10               # run on single host 10.10.10.10
 ./pgsql.yml -l pg-*                      # run on host/group matching glob pattern `pg-*`
-./pgsql.yml -l '10.10.10.11,&pg-test'   # run on 10.10.10.11 of group pg-test
+./pgsql.yml -l '10.10.10.11,&pg-test'    # run on 10.10.10.11 of group pg-test
 ./pgsql-rm.yml -l 'pg-test,!10.10.10.11' # run on pg-test, except 10.10.10.11
 ./pgsql.yml -l pg-test                   # Execute the pgsql playbook against the hosts in the pg-test cluster
 ```
 
-### Host Limit Patterns
+Check all details in the ansible docs: [Patterns: targeting hosts and groups](https://docs.ansible.com/ansible/latest/inventory_guide/intro_patterns.html)
 
-| Pattern | Description | Example |
-|---------|-------------|---------|
-| `<group>` | Target specific group | `pg-test` |
-| `<ip>` | Target specific host | `10.10.10.10` |
-| `<pattern>*` | Glob pattern matching | `pg-*` |
-| `<host>,&<group>` | Host intersection with group | `10.10.10.11,&pg-test` |
-| `<group>,!<host>` | Group excluding specific host | `pg-test,!10.10.10.11` |
+<Callout title="Running playbook without host limit can be Dangerous!" type="warn">
+
+    Missing this value could be dangerous, since most playbooks will execute on `all` hosts. **DO USE WITH CAUTION**.
+
+</Callout>
+
+
+
+
 
 --------
 
-## Limit Tags
+## Limit Task
 
-You can execute a subset of a playbook with `-t|--tags <tags>`.
-
-You can specify multiple tags in a comma-separated list, e.g., `-t tag1,tag2`.
-
-If specified, tasks with given tags will be executed instead of the entire playbook.
-
-### PostgreSQL Playbook Tags
-
-Here are some examples of PostgreSQL task limits:
+The **execution tasks** can be controlled with `-t|--tags <tags>`.
+If specified, tasks with given tags will be executed instead of the ENTIRE playbook.
+Here are some task limit examples:
 
 ```bash
-./pgsql.yml -t pg_clean    # cleanup existing postgres if necessary
-./pgsql.yml -t pg_dbsu     # setup os user sudo for postgres dbsu
-./pgsql.yml -t pg_install  # install postgres packages & extensions
-./pgsql.yml -t pg_dir      # create postgres directories and setup fhs
-./pgsql.yml -t pg_util     # copy utils scripts, setup alias and env
-./pgsql.yml -t patroni     # bootstrap postgres with patroni
-./pgsql.yml -t pg_user     # provision postgres business users
-./pgsql.yml -t pg_db       # provision postgres business databases
-./pgsql.yml -t pg_backup   # init pgbackrest repo & basebackup
-./pgsql.yml -t pgbouncer   # deploy a pgbouncer sidecar with postgres
-./pgsql.yml -t pg_vip      # bind vip to pgsql primary with vip-manager
-./pgsql.yml -t pg_dns      # register dns name to infra dnsmasq
-./pgsql.yml -t pg_service  # expose pgsql service with haproxy
-./pgsql.yml -t pg_exporter # expose pgsql service with haproxy
-./pgsql.yml -t pg_register # register postgres to pigsty infrastructure
+./infra.yml -t repo          # create repo
+./node.yml  -t node_pkg      # install node packages
+./pgsql.yml -t pg_install    # install pg packages & extensions
+./etcd.yml  -t etcd_purge    # nuke the etcd cluster
+./minio.yml -t minio_alias   # write minio cli config
 ```
 
-### Multiple Tags Examples
+To run multiple tasks, specify multiple tags and seprate with comma: `-t tag1,tag2`:
 
 ```bash
-# run multiple tasks: reload postgres & pgbouncer hba rules
-./pgsql.yml -t pg_hba,pg_reload,pgbouncer_hba,pgbouncer_reload
-
-# run multiple tasks: refresh haproxy config & reload it
-./node.yml -t haproxy_config,haproxy_reload
+./node.yml  -t node_repo,node_pkg   # add repo, then install packages
+./pgsql.yml -t pg_hba,pg_reload     # config, then reload pg hba rules
 ```
 
-<Callout title="Common Tag Categories" type="info">
 
-    - **Installation**: `pg_install`, `node_pkg`, `infra_pkg`
-    - **Configuration**: `pg_config`, `node_tune`, `haproxy_config`
-    - **Service Management**: `pg_reload`, `haproxy_reload`, `nginx_reload`
-    - **Cleanup**: `pg_clean`, `node_clean`, `infra_clean`
-
-</Callout>
 
 --------
 
 ## Extra Vars
 
-Extra command-line arguments can be passed via `-e|--extra-vars KEY=VALUE`.
+You can override config param at runtime with cli args, it has the [**highest precedence**](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence).
 
-It has the **highest precedence** over all other definitions.
-
-### Simple Extra Vars
+Extra command-line arguments can be passed via `-e|--extra-vars KEY=VALUE`, it can be used multiple times:
 
 ```bash
-./node.yml -e ansible_user=admin -k -K   # run playbook as another user (with admin sudo password)
-./pgsql.yml -e pg_clean=true             # force purging existing postgres when init a pgsql instance
-./pgsql-rm.yml -e pg_uninstall=true      # explicitly uninstall rpm after postgres instance is removed
-./redis.yml -l 10.10.10.10 -e redis_port=6379 -t redis  # init a specific redis instance: 10.10.10.11:6379
-./redis-rm.yml -l 10.10.10.13 -e redis_port=6379        # remove a specific redis instance: 10.10.10.11:6379
+# create admin with another amdin user
+./node.yml -e ansible_user=admin -k -K -t node_admin
+
+# init a specific redis instance: 10.10.10.11:6379
+./redis.yml -l 10.10.10.10 -e redis_port=6379 -t redis
+
+# remove postgres, but keeps packages and data
+./pgsql-rm.yml -e pg_rm_pkg=false -e pg_rm_data=false
 ```
 
-### Complex Extra Vars (JSON)
-
-You can also pass complex parameters like arrays and objects via JSON:
+for complex parameters, JSON string can be used:
 
 ```bash
-# install duckdb packages on node with specified upstream repo module
-./node.yml -t node_repo,node_pkg -e '{"node_repo_modules":"infra","node_default_packages":["duckdb"]}'
+# add repo and install package
+./node.yml -t node_install -e '{"node_repo_modules":"infra","node_packages":["duckdb"]}'
 ```
 
-### Common Extra Vars
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `ansible_user` | Override SSH user | `ansible_user=admin` |
-| `pg_clean` | Force cleanup existing PostgreSQL | `pg_clean=true` |
-| `pg_uninstall` | Uninstall packages after removal | `pg_uninstall=true` |
-| `redis_port` | Specify Redis port | `redis_port=6379` |
-| `node_repo_modules` | Specify repo modules | `node_repo_modules=infra` |
 
-<Callout title="Parameter Precedence Order" type="warn">
 
-    Extra Vars (`-e`) > Host Vars > Group Vars > Global Vars > Role Defaults
 
-    Extra vars have the highest precedence and will override any other parameter definitions.
+
+--------
+
+## Designate Inventory
+
+The defaut config file is `pigsty.yml` in the pigsty home directories.
+
+You can use the `-i <path>` parameter to specify a different inventory file path.
+
+```bash
+./pgsql.yml -i conf/rich.yml            # initialize a single node with all extensions downloaded according to rich config
+./pgsql.yml -i conf/full.yml            # initialize a 4-node cluster according to full config
+./pgsql.yml -i conf/app/supa.yml        # initialize a 1-node Supabase deployment according to supa.yml config
+```
+
+<Callout title="Change Default Inventory File" type="info">
+
+    To permanently change the **default** config file, change the `inventory` parameter in the [`ansible.cfg`](https://github.com/pgsty/pigsty/blob/main/ansible.cfg#L6).
 
 </Callout>
+
+
+
+--------
+
+## Playbooks
+
+Here are built-in playbooks in Pigsty, you can also add your own.
+
+|             Module              | Playbook                                                                               | Function                                                    |
+|:-------------------------------:|----------------------------------------------------------------------------------------|-------------------------------------------------------------|
+|  [INFRA](/docs/infra/playbook)  | [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml)                 | Install Pigsty on current node in one-pass                  |
+|  [INFRA](/docs/infra/playbook)  | [`infra.yml`](https://github.com/pgsty/pigsty/blob/main/infra.yml)                     | Init pigsty infrastructure on infra nodes                   |
+|  [INFRA](/docs/infra/playbook)  | [`infra-rm.yml`](https://github.com/pgsty/pigsty/blob/main/infra-rm.yml)               | Remove infrastructure components from infra nodes           |
+|  [INFRA](/docs/infra/playbook)  | [`cache.yml`](https://github.com/pgsty/pigsty/blob/main/cache.yml)                     | Make offline install packages from target node              |
+|  [INFRA](/docs/infra/playbook)  | [`cert.yml`](https://github.com/pgsty/pigsty/blob/main/cert.yml)                       | Issue cert with pigsty self-signed CA (e.g. for pg clients) |
+|   [NODE](/docs/node/playbook)   | [`node.yml`](https://github.com/pgsty/pigsty/blob/main/node.yml)                       | Init node for pigsty, tune node into desired status         |
+|   [NODE](/docs/node/playbook)   | [`node-rm.yml`](https://github.com/pgsty/pigsty/blob/main/node-rm.yml)                 | Remove node from pigsty                                     |
+|  [PGSQL](/docs/pgsql/playbook)  | [`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml)                     | Init HA PostgreSQL clusters, or adding new replicas         |
+|  [PGSQL](/docs/pgsql/playbook)  | [`pgsql-rm.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-rm.yml)               | Remove PostgreSQL cluster, or remove replicas               |
+|  [PGSQL](/docs/pgsql/playbook)  | [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml)           | Add new business user to existing PostgreSQL cluster        |
+|  [PGSQL](/docs/pgsql/playbook)  | [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml)               | Add new business database to existing PostgreSQL cluster    |
+|  [PGSQL](/docs/pgsql/playbook)  | [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml)     | Monitor remote postgres instance with local exporters       |
+|  [PGSQL](/docs/pgsql/playbook)  | [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) | Generate Migration manual & scripts for existing PostgreSQL |
+|  [PGSQL](/docs/pgsql/playbook)  | [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/slim.yml)                       | Install Pigsty with minimal components                      |
+|  [REDIS](/docs/redis/playbook)  | [`redis.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml)                     | Init redis cluster/node/instance                            |
+|  [REDIS](/docs/redis/playbook)  | [`redis-rm.yml`](https://github.com/pgsty/pigsty/blob/main/redis-rm.yml)               | Remove redis cluster/node/instance                          |
+|   [ETCD](/docs/etcd/playbook)   | [`etcd.yml`](https://github.com/pgsty/pigsty/blob/main/etcd.yml)                       | Init etcd cluster (required for patroni HA DCS)             |
+|  [MINIO](/docs/minio/playbook)  | [`minio.yml`](https://github.com/pgsty/pigsty/blob/main/minio.yml)                     | Init minio cluster (optional for pgbackrest repo)           |
+| [DOCKER](/docs/docker/playbook) | [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml)                   | Install docker on nodes                                     |
+| [DOCKER](/docs/docker/playbook) | [`app.yml`](https://github.com/pgsty/pigsty/blob/main/app.yml)                         | Install application with docker compose                     |
+| [MONGO](/docs/ferret/playbook)  | [`mongo.yml`](https://github.com/pgsty/pigsty/blob/main/mongo.yml)                     | Install Mongo/FerretDB on nodes                             |
+
+
+--------
+
+## Deployment
+
+The special playbook `install.yml` will deploy everything with ad hoc playbooks:
+
+| Playbook    | Command       | Group      | `infra` | `[nodes]` | `etcd` | `minio` | `[pgsql]` |
+|-------------|---------------|------------|:-------:|:---------:|:------:|:-------:|:---------:|
+| `infra.yml` | `./infra.yml` | `-l infra` |    ✓    |     ✓     |        |         |           |
+| `node.yml`  | `./node.yml`  |            |         |     ✓     |   ✓    |    ✓    |     ✓     |
+| `etcd.yml`  | `./etcd.yml`  | `-l etcd`  |         |           |   ✓    |         |           |
+| `minio.yml` | `./minio.yml` | `-l minio` |         |           |        |    ✓    |           |
+| `pgsql.yml` | `./pgsql.yml` |            |         |           |        |         |     ✓     |
+
+<Callout title="Circular Dependency Between NODE and INFRA" type="warn">
+
+    There's a weak circular dependency between [**NODE**](/docs/node/) and [**INFRA**](/docs/infra/): to register a NODE
+    to INFRA, the INFRA should already exist, while the INFRA module relies on NODE to work.
+
+    One way to work around it is init `infra` nodes first, then add other nodes, if you wish to deploy them all in
+    one-pass, `install.yml` is the way to go.
+
+</Callout>
+
+
+
 
 --------
 
@@ -247,26 +241,25 @@ You can also pass complex parameters like arrays and objects via JSON:
 
 <Callout title="Idempotent but Potentially Destructive" type="error">
 
-    Most playbooks are idempotent, meaning that some deployment playbooks may **erase existing databases** and create new ones without the protection option turned on.
+    Most playbooks are idempotent, meaning that some deployment playbooks may **erase existing databases** and create
+    new ones without the protection option turned on. Especially care with `pgsql`, `minio`, and `infra` playbooks.
 
-    Please read the documentation carefully, proofread the commands several times, and operate with caution. The author is not responsible for any loss of databases due to misuse.
-
-</Callout>
-
-### Best Practices
-
-<Callout title="Safety Best Practices" type="info">
-
-    1. **Always use host limits** (`-l`) to avoid running on unintended hosts
-    2. **Test with tags** (`-t`) to run specific tasks first
-    3. **Use dry-run mode** (`--check`) to preview changes
-    4. **Backup critical data** before running destructive operations
-    5. **Read playbook documentation** before execution
-    6. **Start with non-production environments** for testing
+    Please read the documentation carefully and operate with caution.
+    The author is not responsible for any loss of databases due to misuse.
 
 </Callout>
 
-### Dry Run Mode
+<Callout title="Safety Best Practices" type="warn">
+
+    1. **Read playbook documentation carefully** before execution
+    2. **Ctrl-C to stop immediately** if you see something wrong
+    3. **Start with non-production environments** for testing
+    4. **Limit execution hosts** (`-l`) to avoid unintended hosts if applicable
+    5. **Use specific tags** (`-t`) to run subset of tasks if possible
+
+</Callout>
+
+<Callout title="Dry Run Mode" type="info">
 
 ```bash
 # Preview what would be changed without actually executing
@@ -276,74 +269,4 @@ You can also pass complex parameters like arrays and objects via JSON:
 ./pgsql.yml -l pg-test -t pg_config --check --diff
 ```
 
---------
-
-## Common Playbook Workflows
-
-### Initial Deployment
-
-```bash
-# 1. Bootstrap admin node
-./bootstrap
-
-# 2. Configure inventory
-./configure
-
-# 3. Install everything in one pass
-./install.yml
-```
-
-### Add New PostgreSQL Cluster
-
-```bash
-# 1. Add cluster definition to pigsty.yml
-# 2. Initialize nodes
-./node.yml -l pg-new
-
-# 3. Initialize PostgreSQL cluster
-./pgsql.yml -l pg-new
-```
-
-### Scale Existing Cluster
-
-```bash
-# 1. Add new replica to cluster definition
-# 2. Initialize new node
-./node.yml -l <new_replica_ip>
-
-# 3. Add replica to cluster
-./pgsql.yml -l <new_replica_ip>
-```
-
-### Maintenance Operations
-
-```bash
-# Reload PostgreSQL configuration
-./pgsql.yml -l pg-test -t pg_reload
-
-# Update HAProxy configuration
-./node.yml -l pg-test -t haproxy_config,haproxy_reload
-
-# Add new database user
-./pgsql-user.yml -l pg-test
-
-# Add new database
-./pgsql-db.yml -l pg-test
-```
-
-<Callout title="Need Help?" type="info">
-
-    - Check the [**FAQ**](/docs/setup/faq) for common playbook issues
-    - Browse [**Module Documentation**](/docs/) for specific playbook details
-    - Visit our [**Community**](/docs/about/community) for support and discussions
-    - Consult [**GitHub Issues**](https://github.com/pgsty/pigsty/issues) for troubleshooting
-
 </Callout>
-
-
-
-
-
-
-Playbooks are used in Pigsty to install [**modules**](/docs/concept/arch/#modules) on nodes.
-To run playbooks, just treat them as executables, e.g., run with `./install.yml`.

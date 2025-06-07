@@ -3,15 +3,18 @@
     "icon": "Rocket",
     "defaultOpen": false,
     "pages": [
+        "prepare",
         "install",
+        "explore",
         "config",
         "playbook",
-        "offline",
-        "minimal",
-        "prepare",
+        "security",
+
         "linux",
         "vagrant",
         "terraform",
-        "security"
+        "multinode",
+        "offline",
+        "minimal"
     ]
 }

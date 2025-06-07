@@ -1,5 +1,350 @@
 ---
 title: Values
-description: Core value propulsion
+description: Pigsty's 8 core value propositions that deliver infinite possibilities
 icon: HandCoins
 ---
+
+
+Pigsty delivers eight core value propositions that transform PostgreSQL into a powerful, enterprise-ready database platform. Each value represents a fundamental principle that guides our design philosophy and delivers tangible benefits to users.
+
+--------
+
+## 🧩 Extensible Postgres
+
+*"Nurturing all, thriving in synergy, forging infinite possibilities!"*
+
+Pigsty transforms PostgreSQL into a versatile platform that supports diverse workloads and use cases through its extensive extension ecosystem.
+
+### Analytics & OLAP
+- **Extreme performance** with pg_duckdb and columnar compression
+- **Parallel query processing** for massive datasets  
+- **GPU acceleration** for compute-intensive operations
+- **Parquet analysis** with distributed HTAP/OLAP capabilities
+- **10:1 compression ratios** for storage efficiency
+
+### AI & Machine Learning
+- **Complete in-database AI workflow** for inference, training, and storage
+- **Vector search** with pgvector and AVX512 acceleration
+- **CUDA-based ML training** directly in SQL with pgml
+- **RAG applications** with advanced vector computation
+- **Embedding and similarity search** capabilities
+
+### Geospatial Processing
+- **De facto GIS standard** with PostGIS integration
+- **Route planning** and sky indexing capabilities
+- **IP geocoding** and geographic operations
+- **Point cloud data processing** for spatial analytics
+
+### Time Series Management
+- **Enhanced temporal data processing** with specialized extensions
+- **Continuous aggregation** for real-time analytics
+- **Time travel** and version control capabilities
+- **Cron task management** for automated processes
+
+### Full Text Search
+- **Built-in search engine** with multi-language support
+- **Hybrid search** combining SQL precision and vector fuzzy retrieval
+- **Advanced text processing** with comprehensive dictionaries
+
+### Multi-Language Support
+- **20+ stored procedure languages** including Python, JavaScript, Java
+- **Comprehensive debugging toolkit** for stored procedures
+- **Foreign Data Wrappers** for 20+ external data sources
+- **Data federation** across heterogeneous systems
+
+
+--------
+
+## 🛡️ Reliable Infrastructure
+
+*"Towering peaks, bedrock solid, standing firm at any summit!"*
+
+Pigsty provides enterprise-grade reliability with proven high availability and self-healing capabilities.
+
+### High Availability
+- **Primary failover** with RTO ≈ 30 seconds (configurable)
+- **Replica switchover** with RTO ≈ 0 seconds
+- **Flexible RPO settings** for async and critical commit modes
+- **99.999%+ availability** in production environments
+
+### Self-Healing Architecture
+- **Industry best practices** with Patroni, Etcd, and HAProxy
+- **Automatic traffic routing** based on health checks
+- **Transparent topology** with multi-writer experience
+- **4 default service types**: primary, replica, offline, default
+
+### Backup & Recovery
+- **Point-in-Time Recovery (PITR)** with flexible restore options
+- **One-command backup** and restore operations
+- **Incremental backups** with WAL archiving
+- **Local and remote storage** support (S3/MinIO)
+
+### Security & Integrity
+- **Self-signed CA** with global SSL/TLS encryption
+- **SCRAM-SHA-256 authentication** for secure access
+- **Data checksums** to prevent silent corruption
+- **Centralized audit logging** with tamper-proof records
+- **Split-brain prevention** with watchdog mechanisms
+
+
+
+
+--------
+
+## 📊 Observable Graphics
+
+*"Sky's movement, all-seeing view, perceiving details to master the whole!"*
+
+Pigsty provides comprehensive observability with enterprise-grade monitoring and visualization capabilities.
+
+### Built-in Monitoring Stack
+- **Prometheus & Grafana** integration out-of-the-box
+- **Automatic target discovery** without complex configuration
+- **3000+ metrics** with 666 pre-aggregation rules
+- **Time-series database** with intelligent AIOPS context
+
+### Performance Monitoring
+- **5-level monitoring**: global/cluster/instance/database/object
+- **PostgreSQL object tracking**: tables, indexes, functions, queries
+- **Historical metrics** with easy roll-up and drill-down
+- **Performance tuning** through detailed query analysis
+
+### Advanced Analytics
+- **Multi-level dashboards** with navigation links
+- **Unified labels** for cross-correlation analysis
+- **Interactive data visualization** with low-code development
+- **Custom dashboard creation** with PostgreSQL, Grafana, Echarts
+
+### Alert System
+- **56 preset alert rules** covering all built-in modules
+- **AlertManager integration** with intelligent routing
+- **Automatic event notifications** and silencing
+- **Instant messaging connectivity** for real-time alerts
+
+### Log Analysis
+- **Unified log collection** with Loki and Promtail
+- **Massive parallel grep** for log search and filtering
+- **Metric extraction** from log patterns
+- **Interactive sample analysis** capabilities
+
+
+
+--------
+
+## ⚡ Scalable Services
+
+*"Flowing like water, soft yet resilient, converging to adapt to endless change!"*
+
+Pigsty delivers elastic performance and cloud-like scalability for growing workloads.
+
+### Performance Benchmarks
+- **2 million rows/second** query rate on single node
+- **1 million rows/second** write rate on single node
+- **32TB default table size** limit per instance
+- **25,000 vCPU** largest production deployment
+
+### Read/Write Separation
+- **Unlimited replicas** through cascading replication
+- **Automatic traffic routing** based on workload type
+- **Dedicated analytics instances** for ETL operations
+- **Read-only services** with primary backup support
+
+### Connection Management
+- **Built-in PGBouncer** connection pooling
+- **Transaction pooling** by default for efficiency
+- **20,000+ client connections** to few active server connections
+- **Automatic sync** of database/user configurations
+
+### Load Balancing
+- **Real-time traffic control** via HAProxy
+- **Seamless online migration** capabilities
+- **Stateless proxy scaling** for flexible deployment
+- **Weight adjustment** via CLI for graceful operations
+
+### Horizontal Scaling
+- **Citus extension** for multi-write capabilities
+- **In-place cluster distribution** without downtime
+- **Multi-node parallel processing** for large datasets
+- **Online partition rebalancing** for capacity adjustment
+
+### Storage Expansion
+- **Hot/cold data separation** strategies
+- **S3 integration** with Foreign Data Wrappers
+- **Columnar compression** for analytical workloads
+- **Cloud elasticity** with compute/storage separation
+
+
+
+--------
+
+## 🔧 Maintainable Toolbox
+
+*"Blazing like wildfire, illuminating all around—true to the core while constantly innovating!"*
+
+Pigsty simplifies database management through automation and infrastructure-as-code principles.
+
+### Infrastructure as Code
+- **GitOps-ready** configuration management
+- **Declarative API** for flexible database deployment
+- **YAML config format** with Ansible compatibility
+- **300+ configurable parameters** with rich documentation
+
+### Simple Deployment
+- **One-command installation** in minutes
+- **Pre-configured templates** with automatic hardware tuning
+- **Four tuning modes**: OLTP, OLAP, CRIT, TINY
+- **Single-core VMs** to high-end physical machine support
+
+### Bare Linux Compatibility
+- **No Docker/Kubernetes complexity** required
+- **Mainstream Linux distributions** support (EL 8/9, Debian 12, Ubuntu 22/24)
+- **Multi-architecture** support (x86_64, ARM64)
+- **Consistent deployment** across environments
+
+### Offline Capabilities
+- **Complete offline installation** packages
+- **No internet dependency** after bootstrap
+- **Version consistency** and stable installation
+- **All required dependencies** included
+
+### Zero-Downtime Operations
+- **Blue-green deployment** strategies
+- **Comprehensive migration playbooks** included
+- **Fine-grained traffic control** with HAProxy
+- **Minimal maintenance windows** required
+
+### Best Practices Integration
+- **DBA experience distilled** into conventions and SOPs
+- **Security hardening** practices and checklists
+- **Development conventions** and operational procedures
+- **Sandbox environments** for testing and development
+
+
+
+--------
+
+## 🎯 Composable Modules
+
+*"Swift as the wind, simplifying complexity—riding the currents of change!"*
+
+Pigsty's modular architecture enables flexible deployment and customization like Lego blocks.
+
+### Core Modules
+- **PGSQL**: PostgreSQL clusters with high availability
+- **INFRA**: Infrastructure services (Nginx, Prometheus, DNS)  
+- **NODE**: Node management and service exposure
+- **ETCD**: Distributed configuration storage
+
+### Extended Modules
+- **MINIO**: S3-compatible object storage
+- **REDIS**: High-performance dictionary server
+- **FERRET**: MongoDB wire-protocol compatibility
+- **DOCKER**: Stateless application deployment
+
+### Advanced Categories
+- **Kernel Modules**: Alternative database engines
+- **OLAP Modules**: Specialized analytics capabilities
+- **Pilot Modules**: Experimental technologies
+- **Flavor Modules**: Creative PostgreSQL variations
+
+### Enterprise Applications
+- **One-click deployment** of enterprise applications
+- **Stateless containers** with persistent HA PostgreSQL state
+- **GitLab, Odoo, Dify** integration support
+- **Custom application** deployment capabilities
+
+### Design Benefits
+- **No dependency constraints** between modules
+- **Scalable on-demand** configuration
+- **Bonus features** without additional cost
+- **Seamless integration** across components
+
+
+
+--------
+
+## 🎛️ Controllable FOSS
+
+*"Grounded like the earth, gathering all rivers—standing firm while gazing at the stars!"*
+
+Pigsty ensures complete control over your database infrastructure through open-source principles.
+
+### Software Freedom
+- **100% open-source** components with no vendor lock-in
+- **No license fees** or usage limits at any scale
+- **AGPLv3 License** preserving software freedom
+- **Commercial licenses** available for DBaaS/OEM scenarios
+
+### Local-First Architecture
+- **Fully functional offline** without external dependencies
+- **Bare metal, VM, container** deployment flexibility
+- **Self-contained installation** with all dependencies
+- **Forever running** capability without internet access
+
+### Multi-Cloud Strategy
+- **Build your own DBaaS** reducing clouds to resource providers
+- **Cross-cloud migration** via logical replication
+- **Compare offerings** and choose what's best
+- **No vendor lock-in** with flexible deployment options
+
+### Data Sovereignty
+- **Complete data ownership** with superuser privileges
+- **Direct issue resolution** with provided SOPs
+- **420+ PostgreSQL extensions** available
+- **Multiple architecture support** (x86_64/ARM64)
+
+### Extension Ecosystem
+- **Reciprocal open-source** ecosystem benefiting all
+- **Community contributions** welcomed and integrated
+- **Standard compatibility** with PostgreSQL ecosystem
+- **Innovation freedom** without proprietary constraints
+
+
+
+--------
+
+## 💰 Affordable Solution
+
+*"Thunderous impact, breaking to build anew—keeping costs manageable!"*
+
+Pigsty delivers enterprise capabilities at a fraction of traditional database costs.
+
+### Cost Comparison
+- **Oracle**: $3,878/year per vCPU
+- **AWS RDS**: $1,920-$2,640/year per vCPU  
+- **Pigsty**: Only $27/year per vCPU hardware cost
+- **50-95% savings** compared to cloud database services
+
+### Operational Efficiency
+- **90% routine maintenance** automated
+- **Junior DEV/OPS** can perform as mid-senior DBAs
+- **Reduced operational overhead** through automation
+- **Self-service capabilities** for common tasks
+
+### Infrastructure Optimization
+- **Cutting-edge hardware** utilization (Gen5 SSDs)
+- **Self-hosting options** on cloud EC2 or IDC
+- **No containers/Kubernetes** complexity required
+- **Familiar Ansible-based** deployment
+
+### Cloud Exit Strategy
+- **Own your infrastructure** instead of renting
+- **Flexibility and bargaining power** with cloud providers
+- **Database self-hosting** as key enabler
+- **Hybrid cloud strategies** supported
+
+### Support Tiers
+- **Open Source**: Free community support
+- **Standard**: $8K/year professional support
+- **Professional**: $24K/year enhanced support  
+- **Enterprise**: $60K/year comprehensive support
+
+### Value Multipliers
+- **Open-source controller** solving DBA scarcity
+- **Effective utilization** guidance included
+- **Training and consultation** available
+- **Long-term cost predictability** without license surprises
+
+---
+
+These eight values work in synergy to deliver a comprehensive database platform that scales from development to enterprise production environments. Pigsty transforms PostgreSQL from a simple database into a powerful, observable, and maintainable data infrastructure that organizations can truly own and control.

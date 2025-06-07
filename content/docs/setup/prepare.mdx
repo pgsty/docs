@@ -4,29 +4,25 @@ description: node, disk, network, os, admin user, ssh,ports, etc...
 icon: SquareStack
 ---
 
-Running production-grade service require a well-prepared environment, here are the details:
+You can leverage [**Terraform**](/docs/setup/terraform) and [**Vagrant**](/docs/setup/vagrant) tempaltes to help you prepare the environment easily.
+But in case you want/have to do it manually, this page will help you prepare the environment for pigsty.
+
 
 --------
 
 ## Node
 
-Pigsty currently runs on nodes with `Linux` kernel and `x86_64` / `aarch64` architecture.
+Pigsty currently runs on nodes with [`Linux`](#linux-os) kernel and `x86_64` / `aarch64` architecture.
 
-A "**node**" refers to a resource that is SSH accessible and offers a bare Linux OS environment.
+A "**node**" refers to a resource that is SSH [accessible](#accessibility) and offers a bare Linux OS environment.
 It could be a physical machine, a virtual machine, or a OS-like container equipped with `systemd`, `sudo` and `sshd`.
 
 It requires at least <span className="text-xl font-black"> 1 </span> node to deploy pigsty,
-You can prepare more and setup everything in one-pass, or add them later.
+You can prepare more and setup everything in [one-pass](/docs/setup/playbook#deployment), or add them later.
 The minimum node spec requirement is `1C1G`, it is recommended to use at least `2C2G`.
 Higher is better, with no upper limit. Parameters will be automatically tuned based on available resource.
 
-<Callout title="Leverate IaC tools for node provisoning">
-
-    Pigsty has built-in [**Terraform**](/docs/setup/terraform) and [**Vagrant**](/docs/setup/vagrant) support, to help you create VM nodes easily.
-
-</Callout>
-
-<Callout title="Use multiple nodes for production usage" type={"warn"}>
+<Callout title="Use multiple nodes for production usage" type={"info"}>
 
     A functioning HA setup require at least **3** nodes to work, or use **2** for a semi-HA setup
 
