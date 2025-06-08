@@ -1,0 +1,184 @@
+---
+title: Hardware
+description: nodes, specs, disks, network, ip, domain ...
+icon: Cpu
+---
+
+
+## Node
+
+Pigsty currently runs on nodes with [`Linux`](#linux-os) kernel and `x86_64` / `aarch64` architecture.
+
+A "**node**" refers to a resource that is SSH [accessible](#accessibility) and offers a bare Linux OS environment.
+It could be a physical machine, a virtual machine, or a OS-like container equipped with `systemd`, `sudo` and `sshd`.
+
+It requires at least <span className="text-xl font-black"> 1 </span> node to deploy pigsty,
+You can prepare more and setup everything in [one-pass](/docs/setup/playbook#deployment), or add them later.
+The minimum node spec requirement is `1C1G`, it is recommended to use at least `2C2G`.
+Higher is better, with no upper limit. Parameters will be automatically tuned based on available resource.
+
+<Callout title="Use multiple nodes for production deployment" type={"info"}>
+
+    A functioning HA setup require at least **3** nodes to work, or use **2** for a semi-HA setup
+
+</Callout>
+
+
+--------
+
+## Spec
+
+How many nodes do you need? It depends on your resource and your requirements.
+
+<Callout title="Single Node Setup" type="info">
+
+The simplest setup with everything running on a single node, with four essential modules installed:
+
+| ID | [NODE](/docs/node) | [PGSQL](/docs/pgsql) | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+
+This setup can be used for production if external S3/MinIO is configured for backup/PITR.
+
+</Callout>
+
+<Callout title="Two Node Setup" type="info">
+
+A two-node setup enables database replication and semi-HA capabilities:
+
+| ID | [NODE](/docs/node) | [PGSQL](/docs/pgsql)  | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
+|:--:|:------------------:|:---------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      | `pg-meta-2` (replica) |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      | `pg-meta-1` (primary) |                      |                        |
+
+While more robust than a single node setup, HA has limitations:
+- No automatic failover if `node-1` fails - manual promotion of `node-2` required
+- Automatic failover works if `node-2` fails - `node-1` gets promoted automatically
+
+This "semi-HA" setup can only auto-recover from specific node failures.
+
+</Callout>
+
+<Callout title="Three Node Setup" type="info">
+
+A true HA setup that can automatically recover from any single node failure:
+
+| ID | [NODE](/docs/node) | [PGSQL](/docs/pgsql) | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      |     `pg-meta-2`      |      `infra-2`       |        `etcd-2`        |
+| 3  |      `node-3`      |     `pg-meta-3`      |      `infra-3`       |        `etcd-3`        |
+
+</Callout>
+
+<Callout title="Four Node Setup" type="info">
+
+The standard demonstration environment used by Pigsty's [sandbox](/docs/prepare/sandbox):
+
+| ID | [NODE](/docs/node) | [PGSQL](/docs/pgsql) | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      |     `pg-test-1`      |                      |        `etcd-2`        |
+| 3  |      `node-3`      |     `pg-test-2`      |                      |        `etcd-3`        |
+| 4  |      `node-4`      |     `pg-test-3`      |                      |                        |
+
+</Callout>
+
+
+
+
+------
+
+## Disk
+
+Pigsty will use `/data` as the default data directory, if you have a dedicate main data disk, it is recommended to mount it there,
+and use `/data1`, `/data2`, `/dataN` for extra disk drivers.
+
+<Callout title="Mount disks elsewhere?" type={"warn"}>
+
+If you are mount it elsewhere, you'll have to change the following parameters accordingly:
+
+| Name | Description | Default |
+|------|-------------|---------|
+| [`node_data`](/docs/node/param#node_data_dir) | node main data directory | `/data` |
+| [`pg_fs_main`](/docs/pgsql/param#pg_fs_main) | postgres main data directory | `/data` |
+| [`pg_fs_bkup`](/docs/pgsql/param#pg_fs_bkup) | postgres backup data directory | `/data/backups` |
+| [`etcd_data`](/docs/etcd/param#etcd_data) | etcd data directory | `/data/etcd` |
+| [`prometheus_data`](/docs/infra/param#prometheus_data) | prometheus data directory | `/data/prometheus` |
+| [`loki_data`](/docs/infra/param#loki_data) | loki data directory | `/data/loki` |
+| [`minio_data`](/docs/minio/param#minio_data) | minio data directory | `/data/minio` |
+| [`redis_data`](/docs/redis/param#redis_data) | redis data directory | `/data/redis` |
+
+</Callout>
+
+
+
+--------
+
+## Network
+
+Pigsty requires **static network** to work, you should explicitly assign a **fixed** IPv4 address for each node.
+
+<Callout title="Don't have a fixed IP?" type="info">
+
+    The `127.0.0.1` could be used as a workaround in case of no fixed IP address in one-node installation.
+
+</Callout>
+
+The IP address will be used as the node's **unique identifier**, it should be the primary IP address bind to the primary network interface used for **internal** network communications.
+
+<Callout title="Never use Public IP as identifier" type="error">
+
+    Using public IP addresses as node identifiers can cause security and connectivity issues.
+
+</Callout>
+
+<Callout title="L2 VIP require L2 Networking" type="warn">
+
+    To use the optional Node VIP and PG VIP features, ensure all nodes are located within the same L2 network
+
+</Callout>
+
+Internet access is required when performing the standard (online) [**installation**](/docs/setup/install).
+But pigsty can be [offline installed](/docs/install/offline) via offline package,
+which does not require Internet access in this case.
+
+
+
+--------
+
+## VIP
+
+Pigsty supports optional L2 VIP for NODE clusters (`keepalived`) and PGSQL clusters (`vip-manager`).
+
+To use L2 VIP features, You have to explicitly assign an L2 VIP for them. 
+It's not a big deal when running on your own hardwares,
+but may become an issue when working in public cloud environment.
+
+
+
+
+--------
+
+## Domain
+
+Pigsty using local static domain names for the following service with WebUI.
+You can assign your custom domain names to these services, or use real domain names.
+Just change them in the [`infra_portal`](/docs/infra/param#infra_portal).
+
+|   Domain   | Name           |    Port    |                     Component                      | Description                 |
+|:----------:|----------------|:----------:|:--------------------------------------------------:|-----------------------------|
+| `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/docs/infra/arch/#nginx)        | Default server, local repo  |
+| `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/docs/infra/arch/#grafana)      | Monitoring & visualization  |
+| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/docs/infra/arch/#prometheus)   | Time series DB              |
+| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/docs/infra/arch/#alertmanager) | Alert aggregation & routing |
+
+
+
+Domain names are optional, to use them, it is user's responsibility to add the following records to your `/etc/hosts` file (local static resolution),
+Or add them to your DNS server / public DNS vendor.
+
+```bash
+10.10.10.10 h.pigsty g.pigsty p.pigsty a.pigsty
+```
+

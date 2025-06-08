@@ -4,9 +4,12 @@
     "icon": "SquareStack",
     "defaultOpen": false,
     "pages": [
-        "prepare",
+        "hardware",
         "linux",
-        "terraform",
-        "vagrant"
+        "software",
+        "admin",
+        "sandbox",
+        "vagrant",
+        "terraform"
     ]
 }

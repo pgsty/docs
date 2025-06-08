@@ -1,5 +1,66 @@
 ---
 title: Preparation
-description: Getting started with Pigsty
+description: Prepare resources for a serious deployment
 icon: SquareStack
+full: true
 ---
+
+
+import {
+    CpuIcon,
+    Cloud,
+    Laptop,
+    Cog,
+    Landmark,
+    PackageOpenIcon
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<CpuIcon className="text-indigo-600"/>} title='Hardware' href={"/docs/prepare/hardware"}>
+        Nodes, specs, disks, network, IP, domain ...
+    </Card>
+    <Card icon={<Cog className="text-rose-500"/>} title='Linux OS' href={"/docs/prepare/linux"}>
+        List of supported Linux OS distributions
+    </Card>
+    <Card icon={<CpuIcon className="text-indigo-600"/>} title='Software' href={"/docs/prepare/software"}>
+        Locale, Firewall, Ansible, Pigsty...
+    </Card>
+    <Card icon={<Landmark className="text-amber-500"/>} title='Admin' href={"/docs/prepare/admin"}>
+        User, Sudo, SSH, Accessibility...
+    </Card>
+
+</Cards>
+
+--------
+
+You can leverage IaC tools such as [**Terraform**](/docs/setup/terraform) and [**Vagrant**](/docs/setup/vagrant) to help you prepare the environment and do the chore.
+
+<Cards>
+    <Card icon={<PackageOpenIcon className="text-black"/>} title='Ansible' href={"/docs/admin/ansible"}>
+        Ansible 101, basic knowledge for pigsty users
+    </Card>
+    <Card icon={<PackageOpenIcon className="text-emerald-500"/>} title='Sandbox' href={"/docs/prepare/sandbox"}>
+        The four-node sandbox for learning & testing
+    </Card>
+    <Card icon={<Laptop className="text-violet-500"/>} title='Vagrant' href={"/docs/prepare/vagrant"}>
+        Provision local virtual machine with vagrant
+    </Card>
+    <Card icon={<Cloud className="text-cyan-500"/>} title='Terraform' href={"/docs/prepare/terraform"}>
+        Provision cloud servers with terraform
+    </Card>
+</Cards>
+
+--------
+
+Here's a checklist to help you prepare the environment for a serious Pigsty deployment in production environment.
+
+|                  Item                  | Requirement                                         |                         Item                          | Requirement                                                 |
+|:--------------------------------------:|:----------------------------------------------------|:-----------------------------------------------------:|:------------------------------------------------------------|
+|  [Node](/docs/prepare/hardware#node)   | `1C1G` at least, `2C2G` recommended, no upper limit |          [Spec](/docs/prepare/hardware#spec)          | `1` node at least, `2` for semi-HA, `3+` for real HA        |
+|  [Disk](/docs/prepare/hardware#disk)   | `/data`, main mount point                           |       [Network](/docs/prepare/hardware#network)       | static intranet, IPv4 address, nice to have Internet access |
+|   [VIP](/docs/prepare/hardware#vip)    | Reserve an L2 IP for VIP (**OPTIONAL**)             |        [Domain](/docs/prepare/hardware#domain)        | Use local / public domain names (**OPTIONAL**)              |
+| [Kernel](/docs/prepare/software#linux) | `Linux`, MacOS can be used as admin controller      |             [Distro](/docs/prepare/linux)             | EL (8/9), Debian (12), Ubuntu (22/24), `x86_64` / `aarch64` |
+| [Locale](/docs/prepare/software#inux)  | `C.UTF-8` or `C`                                    |      [Firewall](/docs/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                          |
+|    [User](/docs/prepare/admin#user)    | avoid using `root` & `postgres`                     |           [Sudo](/docs/prepare/admin#sudo)            | `nopass` sudo privilege                                     |
+|     [SSH](/docs/prepare/admin#ssh)     | `nopass` via public key                             | [Accessible](/docs/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` ok                                |
+

@@ -6,6 +6,7 @@
   "pages": [
     "portal",
     "dashboard",
+    "ansible",
     "playbook",
     "domain",
     "cert"

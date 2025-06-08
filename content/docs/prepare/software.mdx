@@ -1,0 +1,144 @@
+---
+title: Software
+description: Locale, Firewall, Ansible, Pigsty...
+icon: Disc
+---
+
+
+------
+
+## Linux
+
+Pigsty runs on <span className="text-xl text-amber-500 font-black">Linux</span> Operating System, it support **10** mainstream linux distros: [**Compatible OS List**](/docs/setup/linux)
+
+We recommend using **RockyLinux 9.5**, **Debian 12.10**, or **Ubuntu 24.04.5** as the default OS options.
+
+<Callout title="Run pigsty on macOS?" type={"info"}>
+
+    You can install pigsty on macOS, and initiate control from your local laptop with `ansible`. (use as admin node)
+    But the database / infra / node / etcd services are still running on Linux nodes.
+
+</Callout>
+
+We **strongly recommend** using a clean installed OS environment with `en_US` set as the primary language.
+
+<Callout title="How to enable en_US locale?" type={"info"}>
+
+    To ensure the `en_US` locale is available when using other primary language:
+
+    ```bash
+    localedef -i en_US -f UTF-8 en_US.UTF-8
+    localectl set-locale LANG=en_US.UTF-8
+    ```
+
+</Callout>
+
+
+Pigsty **DOES NOT** use containers, main components are packed for specific distro major version.
+
+<Callout title="Use the same OS version on all nodes" type={"warn"}>
+
+    Please use the same major and minor version of the OS on all nodes in a single deployment.
+
+</Callout>
+
+
+--------
+
+## Firewall
+
+Your security policy and firewall setup should allow access to the required ports.
+
+To access the WebUI services, you'll have to allow the HTTP (`80`) / HTTPS (`443`) access.
+
+To access the PostgreSQL database services, you'll have to allow the `5432` port for postgres.
+
+<Callout title="You may access postgres services via other ports" type={"warn"}>
+
+    - `5432`: PostgreSQL database
+    - `6432`: Pgbouncer Connection Pooler
+    - `5433`: PG Primary Service
+    - `5434`: PG Replica Service
+    - `5436`: PG Default Service
+    - `5438`: PG Offline Service
+
+    If you are accessing the postgres services via other ports, allow them accordingly
+
+</Callout>
+
+
+In a typical public cloud VPS setup, port `22/80/443/5432` are usually opened.
+
+<Callout title="Expose database ports with caution" type={"warn"}>
+
+    Exposing database service ports directly to the Internet is very dangerous.
+    If you need to do this, consider consulting [Security Best Practices](/docs/config/security/) and proceed with caution.
+
+</Callout>
+
+In a typical production setup, port `22/80/443` are opened to DBA/OPS from LAN / Jumpserver.
+And other ports are accessed from intranet. You have to make sure they are opened internally: [used ports](/docs/node/concept).
+
+
+
+
+
+
+
+
+
+
+--------
+
+## Ansible
+
+Pigsty use `ansible` to initiate control from admin node to all managed nodes.
+
+You don't need to care about details, ansible is installed during the [**Bootstrap**](/docs/install/offline#bootstrap) stage.
+
+<Callout title="Install Ansible Manually" type="info">
+
+    ```bash tab="EL 8/9"
+    sudo dnf install -y ansible python3.12-jmespath
+    ```
+    ```bash tab="Debian / Ubuntu"
+    sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 7"
+    sudo yum install -y ansible python-jmespath
+    ```
+    ```bash tab="macOS"
+    brew install ansible
+    pip3 install jmespath
+    ```
+
+</Callout>
+
+Ansible is only required on admin node, you can run ansible on macOS to use your laptop as admin node.
+
+
+--------
+
+## Pigsty
+
+You can get pigsty src and pkg from the official [GitHub Release page](https://github.com/pgsty/pigsty/releases)
+
+<Callout title="Get the latest stable version" type="info">
+
+    ```bash
+    curl -fsSL https://repo.pigsty.io/get | bash
+    ```
+
+</Callout>
+
+<Callout title="Get a specific version" type="info">
+
+    ```bash
+    curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0
+    ```
+
+</Callout>
+
+If your environment does not have the Internet access, consider download offline packages alone with source tarball
+and upload them to your nodes. check [Offline Installation](/docs/install/offline) for details.
+
