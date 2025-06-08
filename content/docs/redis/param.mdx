@@ -8,27 +8,27 @@ There 21 parameters in the redis module.
 
 | Parameter                                                    |   Type   | Level | Comment                                            |
 | ------------------------------------------------------------ | :------: | :---: | -------------------------------------------------- |
-| [`redis_cluster`](https://pigsty.io/docs/redis/param/#redis_cluster) |  string  |   C   | redis cluster name, required identity parameter    |
-| [`redis_instances`](https://pigsty.io/docs/redis/param/#redis_instances) |   dict   |   I   | redis instances definition on this redis node      |
-| [`redis_node`](https://pigsty.io/docs/redis/param/#redis_node) |   int    |   I   | redis node sequence number, node int id required   |
-| [`redis_fs_main`](https://pigsty.io/docs/redis/param/#redis_fs_main) |   path   |   C   | redis main data mountpoint, `/data` by default     |
-| [`redis_exporter_enabled`](https://pigsty.io/docs/redis/param/#redis_exporter_enabled) |   bool   |   C   | install redis exporter on redis nodes?             |
-| [`redis_exporter_port`](https://pigsty.io/docs/redis/param/#redis_exporter_port) |   port   |   C   | redis exporter listen port, 9121 by default        |
-| [`redis_exporter_options`](https://pigsty.io/docs/redis/param/#redis_exporter_options) |  string  |  C/I  | cli args and extra options for redis exporter      |
-| [`redis_safeguard`](https://pigsty.io/docs/redis/param/#redis_safeguard) |   bool   | G/C/A | prevent purging running redis instance?            |
-| [`redis_clean`](https://pigsty.io/docs/redis/param/#redis_clean) |   bool   | G/C/A | purging existing redis during init?                |
-| [`redis_rmdata`](https://pigsty.io/docs/redis/param/#redis_rmdata) |   bool   | G/C/A | remove redis data when purging redis server?       |
-| [`redis_mode`](https://pigsty.io/docs/redis/param/#redis_mode) |   enum   |   C   | redis mode: standalone,cluster,sentinel            |
-| [`redis_conf`](https://pigsty.io/docs/redis/param/#redis_conf) |  string  |   C   | redis config template path, except sentinel        |
-| [`redis_bind_address`](https://pigsty.io/docs/redis/param/#redis_bind_address) |    ip    |   C   | redis bind address, empty string will use host ip  |
-| [`redis_max_memory`](https://pigsty.io/docs/redis/param/#redis_max_memory) |   size   |  C/I  | max memory used by each redis instance             |
-| [`redis_mem_policy`](https://pigsty.io/docs/redis/param/#redis_mem_policy) |   enum   |   C   | redis memory eviction policy                       |
-| [`redis_password`](https://pigsty.io/docs/redis/param/#redis_password) | password |   C   | redis password, empty string will disable password |
-| [`redis_rdb_save`](https://pigsty.io/docs/redis/param/#redis_rdb_save) | string[] |   C   | redis rdb save directives, disable with empty list |
-| [`redis_aof_enabled`](https://pigsty.io/docs/redis/param/#redis_aof_enabled) |   bool   |   C   | enable redis append only file?                     |
-| [`redis_rename_commands`](https://pigsty.io/docs/redis/param/#redis_rename_commands) |   dict   |   C   | rename redis dangerous commands                    |
-| [`redis_cluster_replicas`](https://pigsty.io/docs/redis/param/#redis_cluster_replicas) |   int    |   C   | replica number for one master in redis cluster     |
-| [`redis_sentinel_monitor`](https://pigsty.io/docs/redis/param/#redis_sentinel_monitor) | master[] |   C   | sentinel master list, sentinel cluster only        |
+| [`redis_cluster`](/docs/redis/param/#redis_cluster) |  string  |   C   | redis cluster name, required identity parameter    |
+| [`redis_instances`](/docs/redis/param/#redis_instances) |   dict   |   I   | redis instances definition on this redis node      |
+| [`redis_node`](/docs/redis/param/#redis_node) |   int    |   I   | redis node sequence number, node int id required   |
+| [`redis_fs_main`](/docs/redis/param/#redis_fs_main) |   path   |   C   | redis main data mountpoint, `/data` by default     |
+| [`redis_exporter_enabled`](/docs/redis/param/#redis_exporter_enabled) |   bool   |   C   | install redis exporter on redis nodes?             |
+| [`redis_exporter_port`](/docs/redis/param/#redis_exporter_port) |   port   |   C   | redis exporter listen port, 9121 by default        |
+| [`redis_exporter_options`](/docs/redis/param/#redis_exporter_options) |  string  |  C/I  | cli args and extra options for redis exporter      |
+| [`redis_safeguard`](/docs/redis/param/#redis_safeguard) |   bool   | G/C/A | prevent purging running redis instance?            |
+| [`redis_clean`](/docs/redis/param/#redis_clean) |   bool   | G/C/A | purging existing redis during init?                |
+| [`redis_rmdata`](/docs/redis/param/#redis_rmdata) |   bool   | G/C/A | remove redis data when purging redis server?       |
+| [`redis_mode`](/docs/redis/param/#redis_mode) |   enum   |   C   | redis mode: standalone,cluster,sentinel            |
+| [`redis_conf`](/docs/redis/param/#redis_conf) |  string  |   C   | redis config template path, except sentinel        |
+| [`redis_bind_address`](/docs/redis/param/#redis_bind_address) |    ip    |   C   | redis bind address, empty string will use host ip  |
+| [`redis_max_memory`](/docs/redis/param/#redis_max_memory) |   size   |  C/I  | max memory used by each redis instance             |
+| [`redis_mem_policy`](/docs/redis/param/#redis_mem_policy) |   enum   |   C   | redis memory eviction policy                       |
+| [`redis_password`](/docs/redis/param/#redis_password) | password |   C   | redis password, empty string will disable password |
+| [`redis_rdb_save`](/docs/redis/param/#redis_rdb_save) | string[] |   C   | redis rdb save directives, disable with empty list |
+| [`redis_aof_enabled`](/docs/redis/param/#redis_aof_enabled) |   bool   |   C   | enable redis append only file?                     |
+| [`redis_rename_commands`](/docs/redis/param/#redis_rename_commands) |   dict   |   C   | rename redis dangerous commands                    |
+| [`redis_cluster_replicas`](/docs/redis/param/#redis_cluster_replicas) |   int    |   C   | replica number for one master in redis cluster     |
+| [`redis_sentinel_monitor`](/docs/redis/param/#redis_sentinel_monitor) | master[] |   C   | sentinel master list, sentinel cluster only        |
 
 ```yaml
 #redis_cluster:        <CLUSTER> # redis cluster name, required identity parameter
@@ -333,7 +333,7 @@ replica number for one master/primary in redis cluster, default values: `1`
 
 name: `redis_sentinel_monitor`, type: `master[]`, level: `C`
 
-This can only be used when [`redis_mode`](https://pigsty.io/docs/redis/param/#redis_mode) is set to `sentinel`.
+This can only be used when [`redis_mode`](/docs/redis/param/#redis_mode) is set to `sentinel`.
 
 List of redis master to be monitored by this sentinel cluster. each master is defined as a dict with `name`, `host`, `port`, `password`, `quorum` keys.
 

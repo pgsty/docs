@@ -6,7 +6,7 @@ icon: ConciergeBell
 
 ## Service Implementation
 
-In Pigsty, services are implemented using [haproxy](https://pigsty.io/docs/node/param/#haproxy) on [nodes](https://pigsty.io/docs/node/), differentiated by different ports on the host node.
+In Pigsty, services are implemented using [haproxy](/docs/node/param/#haproxy) on [nodes](/docs/node/), differentiated by different ports on the host node.
 
 Every node has Haproxy enabled to expose services. From the database perspective, nodes in the cluster may be primary or replicas, but from the service perspective, all nodes are the same. This means even if you access a replica node, as long as you use the correct service port, you can still use the primary’s read-write service. This design seals the complexity: as long as you can access any instance on the PostgreSQL cluster, you can fully access all services.
 
@@ -26,7 +26,7 @@ All services are declared through configuration files. For instance, the default
 - { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
 ```
 
-You can also define new service in [`pg_services`](/docs/pgsql/param#pg_services). And `pg_default_services` 与 `pg_services` are both array of [Service Definition](https://pigsty.io/docs/pgsql/svc/#define-service).
+You can also define new service in [`pg_services`](/docs/pgsql/param#pg_services). And `pg_default_services` 与 `pg_services` are both array of [Service Definition](/docs/pgsql/svc/#define-service).
 
 ------
 
@@ -81,7 +81,7 @@ listen pg-test-standby
 
 ## Reload Service
 
-When cluster membership has changed, such as append / remove replicas, switchover/failover, or adjust relative weight, You have to [reload service](https://pigsty.io/docs/pgsql/admin/#reload-service) to make the changes take effect.
+When cluster membership has changed, such as append / remove replicas, switchover/failover, or adjust relative weight, You have to [reload service](/docs/pgsql/admin/#reload-service) to make the changes take effect.
 
 ```bash
 bin/pgsql-svc <cls> [ip...]         # reload service for lb cluster or lb instance

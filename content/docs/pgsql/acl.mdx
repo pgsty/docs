@@ -40,7 +40,7 @@ There are four default roles in pigsty:
 - Read-Only (`dbrole_readonly`): Role for global read-only access
 - Read-Write (`dbrole_readwrite`): Role for global read-write access, inherits `dbrole_readonly`.
 - Admin (`dbrole_admin`): Role for DDL commands, inherits `dbrole_readwrite`.
-- Offline (`dbrole_offline`): Role for restricted read-only access ([offline](https://pigsty.io/docs/pgsql/config/#offline) instance)
+- Offline (`dbrole_offline`): Role for restricted read-only access ([offline](/docs/pgsql/config/#offline) instance)
 
 Default roles are defined in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles), change default roles is not recommended.
 
@@ -106,7 +106,7 @@ Pigsty has a battery-included privilege model that works with [default roles](#d
 - Offline user is Read-Only user with limited access on offline instance (`pg_role = 'offline'` or `pg_offline_query = true`)
 - Object created by admin users will have correct privilege.
 - Default privileges are installed on all databases, including template database.
-- Database connect privilege is covered by database [definition](https://pigsty.io/docs/pgsql/db/#define-database)
+- Database connect privilege is covered by database [definition](/docs/pgsql/db/#define-database)
 - `CREATE` privileges of database & public schema are revoked from `PUBLIC` by default
 
 ------
@@ -198,7 +198,7 @@ You can also `ALTER DEFAULT PRIVILEGE FOR ROLE <some_biz_admin> XXX` to grant de
 
 ## Database Privilege
 
-Database privilege is covered by [database definition](https://pigsty.io/docs/pgsql/db/#define-database).
+Database privilege is covered by [database definition](/docs/pgsql/db/#define-database).
 
 There are 3 database level privileges: `CONNECT`, `CREATE`, `TEMP`, and a special ‘privilege’: `OWNERSHIP`.
 

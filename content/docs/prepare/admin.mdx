@@ -30,7 +30,7 @@ but avoid using `root` or `postgres`:
     DBSU (`postgres` by default)  should **NOT** be used as admin user.
     It will cause unexpected security issues.
 
-    If you are using a dfferent dbsu user, avoid using it as admin user as well.
+    If you are using a different dbsu user, avoid using it as admin user as well.
 
 </Callout>
 
@@ -39,7 +39,7 @@ but avoid using `root` or `postgres`:
 
 ### Provide Password
 
-The no password is optional if you can accept the password prompt for every `ssh` and `sudo` command.
+The nopass requirement is optional if you can accept the password prompt for every `ssh` and `sudo` command.
 
 <Callout title="Run playbook with password prompt" type="info">
 
@@ -69,7 +69,7 @@ But if you don't have such an admin user, or that user is restricted, you can cr
     ```
 
     It will leverage the existing admin to create a new admin user.
-    It will create a dedicate `dba` (uid=88) user described by the following parameters,
+    It will create a dedicated `dba` (uid=88) user described by the following parameters,
     with sudo / ssh properly configured.
 
     | Name | Description | Default |
@@ -92,7 +92,7 @@ In case you want to configure an admin user with passwordless `sudo` privileges 
 
 <Callout title="Allow sudo without password" type="info">
 
-    To manually allow an user to execute `sudo` commands without password:
+    To manually allow a user to execute `sudo` commands without password:
 
     Create a sudoers file for your admin user (assume `vagrant`, replace with your name choice):
 

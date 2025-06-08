@@ -9,7 +9,7 @@ Etcd is a distributed, reliable key-value store used to store the most critical 
 
 Etcd is used as the DCS used by the HA agent Patroni, which is very important for the high availability of PostgreSQL in Pigsty.
 
-Pigsty use the hard-coded group `etcd` for etcd cluster, which can be an external etcd cluster, r a new etcd cluster created by Pigsty using the [etcd.yml](https://pigsty.io/docs/etcd/playbook/#etcdyml) playbook.
+Pigsty use the hard-coded group `etcd` for etcd cluster, which can be an external etcd cluster, r a new etcd cluster created by Pigsty using the [etcd.yml](/docs/etcd/playbook/#etcdyml) playbook.
 
 ------
 
@@ -19,16 +19,16 @@ There are 10 parameters about the `ETCD` module.
 
 | Parameter                                                    |  Type  | Level | Comment                                      |
 | ------------------------------------------------------------ | :----: | :---: | -------------------------------------------- |
-| [`etcd_seq`](https://pigsty.io/docs/etcd/param/#etcd_seq)    |  int   |   I   | etcd instance identifier, REQUIRED           |
-| [`etcd_cluster`](https://pigsty.io/docs/etcd/param/#etcd_cluster) | string |   C   | etcd cluster & group name, etcd by default   |
-| [`etcd_safeguard`](https://pigsty.io/docs/etcd/param/#etcd_safeguard) |  bool  | G/C/A | prevent purging running etcd instance?       |
-| [`etcd_clean`](https://pigsty.io/docs/etcd/param/#etcd_clean) |  bool  | G/C/A | purging existing etcd during initialization? |
-| [`etcd_data`](https://pigsty.io/docs/etcd/param/#etcd_data)  |  path  |   C   | etcd data directory, /data/etcd by default   |
-| [`etcd_port`](https://pigsty.io/docs/etcd/param/#etcd_port)  |  port  |   C   | etcd client port, 2379 by default            |
-| [`etcd_peer_port`](https://pigsty.io/docs/etcd/param/#etcd_peer_port) |  port  |   C   | etcd peer port, 2380 by default              |
-| [`etcd_init`](https://pigsty.io/docs/etcd/param/#etcd_init)  |  enum  |   C   | etcd initial cluster state, new or existing  |
-| [`etcd_election_timeout`](https://pigsty.io/docs/etcd/param/#etcd_election_timeout) |  int   |   C   | etcd election timeout, 1000ms by default     |
-| [`etcd_heartbeat_interval`](https://pigsty.io/docs/etcd/param/#etcd_heartbeat_interval) |  int   |   C   | etcd heartbeat interval, 100ms by default    |
+| [`etcd_seq`](/docs/etcd/param/#etcd_seq)    |  int   |   I   | etcd instance identifier, REQUIRED           |
+| [`etcd_cluster`](/docs/etcd/param/#etcd_cluster) | string |   C   | etcd cluster & group name, etcd by default   |
+| [`etcd_safeguard`](/docs/etcd/param/#etcd_safeguard) |  bool  | G/C/A | prevent purging running etcd instance?       |
+| [`etcd_clean`](/docs/etcd/param/#etcd_clean) |  bool  | G/C/A | purging existing etcd during initialization? |
+| [`etcd_data`](/docs/etcd/param/#etcd_data)  |  path  |   C   | etcd data directory, /data/etcd by default   |
+| [`etcd_port`](/docs/etcd/param/#etcd_port)  |  port  |   C   | etcd client port, 2379 by default            |
+| [`etcd_peer_port`](/docs/etcd/param/#etcd_peer_port) |  port  |   C   | etcd peer port, 2380 by default              |
+| [`etcd_init`](/docs/etcd/param/#etcd_init)  |  enum  |   C   | etcd initial cluster state, new or existing  |
+| [`etcd_election_timeout`](/docs/etcd/param/#etcd_election_timeout) |  int   |   C   | etcd election timeout, 1000ms by default     |
+| [`etcd_heartbeat_interval`](/docs/etcd/param/#etcd_heartbeat_interval) |  int   |   C   | etcd heartbeat interval, 100ms by default    |
 
 ------
 
@@ -92,7 +92,7 @@ name: `etcd_safeguard`, type: `bool`, level: `G/C/A`
 
 prevent purging running etcd instance? default value is `false`
 
-If enabled, running etcd instance will not be purged by [`etcd.yml`](https://pigsty.io/docs/etcd/playbook/#etcdyml) playbook.
+If enabled, running etcd instance will not be purged by [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook.
 
 ------
 
@@ -102,9 +102,9 @@ name: `etcd_clean`, type: `bool`, level: `G/C/A`
 
 purging existing etcd during initialization? default value is `true`
 
-If enabled, running etcd instance will be purged by [`etcd.yml`](https://pigsty.io/docs/etcd/playbook/#etcdyml) playbook, which makes the playbook fully idempotent.
+If enabled, running etcd instance will be purged by [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook, which makes the playbook fully idempotent.
 
-But if [`etcd_safeguard`](https://pigsty.io/docs/etcd/param/#etcd_safeguard) is enabled, it will still abort on any running etcd instance.
+But if [`etcd_safeguard`](/docs/etcd/param/#etcd_safeguard) is enabled, it will still abort on any running etcd instance.
 
 ------
 
@@ -140,7 +140,7 @@ etcd initial cluster state, `new` or `existing`
 
 default values: `new`, which will create a standalone new etcd cluster.
 
-The value `existing` is used when trying to [**add new member**](https://pigsty.io/docs/etcd/admin/#add-member) to existing etcd cluster.
+The value `existing` is used when trying to [**add new member**](/docs/etcd/admin/#add-member) to existing etcd cluster.
 
 ------
 

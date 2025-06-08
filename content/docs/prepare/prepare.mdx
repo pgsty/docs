@@ -4,7 +4,7 @@ description: node, disk, network, os, admin user, ssh,ports, etc...
 icon: SquareStack
 ---
 
-You can leverage [**Terraform**](/docs/setup/terraform) and [**Vagrant**](/docs/setup/vagrant) tempaltes to help you prepare the environment easily.
+You can leverage [**Terraform**](/docs/prepare/terraform) and [**Vagrant**](/docs/prepare/vagrant) templates to help you prepare the environment easily.
 But in case you want/have to do it manually, this page will help you prepare the environment for pigsty.
 
 
@@ -18,13 +18,13 @@ A "**node**" refers to a resource that is SSH [accessible](#accessibility) and o
 It could be a physical machine, a virtual machine, or a OS-like container equipped with `systemd`, `sudo` and `sshd`.
 
 It requires at least <span className="text-xl font-black"> 1 </span> node to deploy pigsty,
-You can prepare more and setup everything in [one-pass](/docs/setup/playbook#deployment), or add them later.
+You can prepare more and setup everything in [one-pass](/docs/admin/playbook#deployment), or add them later.
 The minimum node spec requirement is `1C1G`, it is recommended to use at least `2C2G`.
 Higher is better, with no upper limit. Parameters will be automatically tuned based on available resource.
 
 <Callout title="Use multiple nodes for production usage" type={"info"}>
 
-    A functioning HA setup require at least **3** nodes to work, or use **2** for a semi-HA setup
+    A functioning HA setup requires at least **3** nodes to work, or use **2** for a semi-HA setup
 
 </Callout>
 
@@ -34,12 +34,12 @@ Higher is better, with no upper limit. Parameters will be automatically tuned ba
 
 ## Disk
 
-Pigsty will use `/data` as the default data directory, if you have a dedicate main data disk, it is recommended to mount it there,
+Pigsty will use `/data` as the default data directory, if you have a dedicated main data disk, it is recommended to mount it there,
 and use `/data1`, `/data2`, `/dataN` for extra disk drivers.
 
 <Callout title="Mount disks elsewhere?" type={"warn"}>
 
-If you are mount it elsewhere, you'll have to change the following parameters accordingly:
+If you are mounting it elsewhere, you'll have to change the following parameters accordingly:
 
 | Name | Description | Default |
 |------|-------------|---------|
@@ -116,7 +116,7 @@ In a typical public cloud VPS setup, port `22/80/443/5432` are usually opened.
 <Callout title="Expose database ports with caution" type={"warn"}>
 
     Exposing database service ports directly to the Internet is very dangerous.
-    If you need to do this, consider consulting [Security Best Practices](/docs/setup/security/) and proceed with caution.
+    If you need to do this, consider consulting [Security Best Practices](/docs/config/security/) and proceed with caution.
 
 </Callout>
 
@@ -131,7 +131,7 @@ And other ports are accessed from intranet. You have to make sure they are opene
 
 ## Linux OS
 
-Pigsty runs on <span className="text-xl text-amber-500 font-black">Linux</span> Operating System, it support **10** mainstream linux distros: [**Compatible OS List**](/docs/setup/linux)
+Pigsty runs on <span className="text-xl text-amber-500 font-black">Linux</span> Operating System, it support **10** mainstream linux distros: [**Compatible OS List**](/docs/prepare/linux)
 
 We recommend using **RockyLinux 9.4**, **Debian 12.10**, or **Ubuntu 24.04.5** as the default OS options.
 
@@ -156,7 +156,7 @@ localectl set-locale LANG=en_US.UTF-8
 </Callout>
 
 
-Pigsty **DOES NOT** using containers, main componets are packed for specific distro major version.
+Pigsty **DOES NOT** use containers, main components are packed for specific distro major version.
 
 <Callout title="Use the same OS version on all nodes" type={"warn"}>
 
@@ -177,7 +177,7 @@ A user can `ssh` to all nodes from admin node, and execute `sudo` commands there
 
 <Callout title="Allow sudo without password" type="info">
 
-    To manully allow an user to execute `sudo` commands without password:
+    To manually allow a user to execute `sudo` commands without password:
 
     Create a sudoers file for your admin user (replace `vagrant` placeholders with your username):
 
@@ -208,7 +208,7 @@ A user can `ssh` to all nodes from admin node, and execute `sudo` commands there
 
 You'll need nopass `ssh` access to all managed nodes, for admin user @ admin node, including localhost.
 
-You have to configure public key auth if you don't want to input password manully for every task.
+You have to configure public key auth if you don't want to input password manually for every task.
 
 <Callout title="Generate SSH Key" type="info">
 
@@ -276,7 +276,7 @@ You can create admin user with pigsty itself, with existing root/admin user:
 
 <Callout title="Create admin user on other nodes with existing user" type="info">
 
-    This will create a dedicate `dba` (uid) user with sudo / ssh properly configured.
+    This will create a dedicated `dba` (uid) user with sudo / ssh properly configured.
 
     ```bash
     ./node.yml -k -K -e ansible_user=<another_admin> -t node_admin
@@ -299,7 +299,7 @@ You can create admin user with pigsty itself, with existing root/admin user:
 
 Pigsty use `ansible` to initiate control from admin node to all managed nodes.
 
-You don't need to care about details, ansible is installed during the [**Bootstrap**](/docs/setup/offline#bootstrap) stage.
+You don't need to care about details, ansible is installed during the [**Bootstrap**](/docs/install/offline#bootstrap) stage.
 
 <Callout title="Install Ansible Manually" type="info">
 
@@ -345,5 +345,5 @@ curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0
 </Callout>
 
 
-If your environment does not have the Internet access, consider download offline packages alone with source tarball
- and upload them to your nodes. check [Offline Installation](/docs/setup/offline) for details.
+If your environment does not have the Internet access, consider downloading offline packages along with source tarball
+ and upload them to your nodes. check [Offline Installation](/docs/install/offline) for details.

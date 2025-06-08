@@ -6,27 +6,27 @@ icon: Wrench
 
 Here are some administration SOP for MinIO:
 
-- [Create Cluster](https://pigsty.io/docs/minio/admin/#create-cluster)
-- [Remove Cluster](https://pigsty.io/docs/minio/admin/#remove-cluster)
-- [Expand Cluster](https://pigsty.io/docs/minio/admin/#expand-cluster)
-- [Shrink Cluster](https://pigsty.io/docs/minio/admin/#shrink-cluster)
-- [Upgrade Cluster](https://pigsty.io/docs/minio/admin/#upgrade-cluster)
-- [Node Failure Recovery](https://pigsty.io/docs/minio/admin/#node-failure-recovery)
-- [Disk failure Recovery](https://pigsty.io/docs/minio/admin/#disk-failure-recovery)
+- [Create Cluster](/docs/minio/admin/#create-cluster)
+- [Remove Cluster](/docs/minio/admin/#remove-cluster)
+- [Expand Cluster](/docs/minio/admin/#expand-cluster)
+- [Shrink Cluster](/docs/minio/admin/#shrink-cluster)
+- [Upgrade Cluster](/docs/minio/admin/#upgrade-cluster)
+- [Node Failure Recovery](/docs/minio/admin/#node-failure-recovery)
+- [Disk failure Recovery](/docs/minio/admin/#disk-failure-recovery)
 
-Check [ETCD: FAQ](https://pigsty.io/docs/minio/faq/) for more questions.
+Check [ETCD: FAQ](/docs/minio/faq/) for more questions.
 
 ------
 
 ## Create Cluster
 
-To create a MinIO cluster, define the `minio` cluster in [inventory](https://pigsty.io/docs/setup/config/#inventory) first:
+To create a MinIO cluster, define the `minio` cluster in [inventory](/docs/config/inventory) first:
 
 ```yaml
 minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 ```
 
-The [`minio_cluster`](https://pigsty.io/docs/minio/param/#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
+The [`minio_cluster`](/docs/minio/param/#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
 
 This snippet defines a single-node MinIO cluster, using the following command to create the MinIO cluster:
 
@@ -38,7 +38,7 @@ This snippet defines a single-node MinIO cluster, using the following command to
 
 ## Remove Cluster
 
-To destroy an existing MinIO cluster, use the `minio_clean` subtask of [`minio.yml`](https://pigsty.io/docs/minio/playbook/#minioyml), DO THINK before you type.
+To destroy an existing MinIO cluster, use the `minio_clean` subtask of [`minio.yml`](/docs/minio/playbook/#minioyml), DO THINK before you type.
 
 ```bash
 ./minio.yml -l minio -t minio_clean -e minio_clean=true   # Stop MinIO and Remove Data Dir
@@ -99,7 +99,7 @@ minio:
           - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
 ```
 
-Step 1, add 4 node definition in the group, allocate sequence number 5 to 8. The key step is to modify the [`minio_volumes`](https://pigsty.io/docs/minio/param/#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
+Step 1, add 4 node definition in the group, allocate sequence number 5 to 8. The key step is to modify the [`minio_volumes`](/docs/minio/param/#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
 
 ```yaml
 minio:

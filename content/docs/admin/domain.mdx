@@ -91,10 +91,10 @@ Pigsty configures these four **internal domains** by default:
 
 |   Domain   | Name           |    Port    |                          Component                           | Description                 |
 | :--------: | -------------- | :--------: | :----------------------------------------------------------: | --------------------------- |
-| `h.pigsty` | `home`         | **80/443** |    [**Nginx**](https://pigsty.io/docs/infra/arch/#nginx)     | Default server, local repo  |
-| `g.pigsty` | `grafana`      |  **3000**  |  [**Grafana**](https://pigsty.io/docs/infra/arch/#grafana)   | Monitoring & visualization  |
-| `p.pigsty` | `prometheus`   |    9090    | [**Prometheus**](https://pigsty.io/docs/infra/arch/#prometheus) | Time series DB              |
-| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](https://pigsty.io/docs/infra/arch/#alertmanager) | Alert aggregation & routing |
+| `h.pigsty` | `home`         | **80/443** |    [**Nginx**](/docs/infra/arch/#nginx)     | Default server, local repo  |
+| `g.pigsty` | `grafana`      |  **3000**  |  [**Grafana**](/docs/infra/arch/#grafana)   | Monitoring & visualization  |
+| `p.pigsty` | `prometheus`   |    9090    | [**Prometheus**](/docs/infra/arch/#prometheus) | Time series DB              |
+| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/docs/infra/arch/#alertmanager) | Alert aggregation & routing |
 
 Since these domains don’t use TLDs, you’ll need [**local static**](https://pigsty.io/docs/tasks/dns/#local-static-resolution) or [**internal dynamic**](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution) resolution.
 
@@ -121,7 +121,7 @@ After adding the record, you can access Pigsty web services via these domains.
 
 ### Custom Domains
 
-Not a fan of default domains? Modify them in [**`infra_portal`**](https://pigsty.io/docs/infra/param/#infra_portal) before installation:
+Not a fan of default domains? Modify them in [**`infra_portal`**](/docs/infra/param/#infra_portal) before installation:
 
 ```yaml
 infra_portal:
@@ -200,7 +200,7 @@ dig h.pigsty @192.168.1.1
 
 ### Using Pigsty’s DNS
 
-Pigsty [Infra module](https://pigsty.io/docs/infra/arch/#dnsmasq) includes DNS server (port 53).
+Pigsty [Infra module](/docs/infra/arch/#dnsmasq) includes DNS server (port 53).
 
 ⚠️ Warning for China deployments: Public servers typically **cannot** run DNS services (port 53)!
 
@@ -231,7 +231,7 @@ For production, we recommend using [**public domains**](https://pigsty.io/docs/t
 
 ## Trust Self-signed CA
 
-Pigsty generates a self-signed CA in the [admin node](https://pigsty.io/docs/node/#admin-node) source directory (`~/pigsty`) during init.
+Pigsty generates a self-signed CA in the [admin node](/docs/node/#admin-node) source directory (`~/pigsty`) during init.
 
 To use HTTPS, distribute Pigsty’s CA cert to client trust stores (or use real CAs - expensive!).
 

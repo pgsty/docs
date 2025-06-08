@@ -4,7 +4,7 @@ description: install pigsty without Internet access?
 icon: FolderSymlink
 ---
 
-Pigsty [**install**](/docs/setup/install) from Internet upstream by default, while some environments are isolated from the Internet.
+Pigsty [**install**](/docs/install) from Internet upstream by default, while some environments are isolated from the Internet.
 To address this issue, Pigsty supports offline installation from [**offline packages**](#offline-package).
 
 
@@ -13,7 +13,7 @@ To address this issue, Pigsty supports offline installation from [**offline pack
 ## What is offline package?
 
 Offline package packs all the required RPM/DEB packages and their dependencies;
-it is essentially a snapshot tarball of local APT / YUM repo, taken after a normal [installation](/docs/setup/install).
+it is essentially a snapshot tarball of local APT / YUM repo, taken after a normal [installation](/docs/install).
 
 You can find these packages from the [GitHub release page](https://github.com/pgsty/pigsty/releases/latest), for example:
 
@@ -25,7 +25,7 @@ c80391c6f93c9f4cad8079698e910972  pigsty-pkg-v3.4.1.d12.x86_64.tgz
 9fe2e6482b14a3e60863eeae64a78945  pigsty-pkg-v3.4.1.u22.x86_64.tgz
 ```
 
-We usually release offline packages for the following [linux distro](/docs/setup/linux), with the latest OS minor version.
+We usually release offline packages for the following [linux distro](/docs/prepare/linux), with the latest OS minor version.
 
 | EL Distribution |                        Code                         |                          Arch                           |                                            OS Code                                            |               Package               |
 |:----------------|:---------------------------------------------------:|:-------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:-----------------------------------:|
@@ -130,7 +130,7 @@ you can make your own offline package with the built-in [**`cache.yml`**](https:
     </Step>
 
     <Step>
-        Run standard [online installation procedure](/docs/setup/install)
+        Run standard [online installation procedure](/docs/install)
     </Step>
 
     <Step>

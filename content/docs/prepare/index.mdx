@@ -33,7 +33,7 @@ import {
 
 --------
 
-You can leverage IaC tools such as [**Terraform**](/docs/setup/terraform) and [**Vagrant**](/docs/setup/vagrant) to help you prepare the environment and do the chore.
+You can leverage IaC tools such as [**Terraform**](/docs/prepare/terraform) and [**Vagrant**](/docs/prepare/vagrant) to help you prepare the environment and do the chore.
 
 <Cards>
     <Card icon={<PackageOpenIcon className="text-black"/>} title='Ansible' href={"/docs/admin/ansible"}>
@@ -60,7 +60,7 @@ Here's a checklist to help you prepare the environment for a serious Pigsty depl
 |  [Disk](/docs/prepare/hardware#disk)   | `/data`, main mount point                           |       [Network](/docs/prepare/hardware#network)       | static intranet, IPv4 address, nice to have Internet access |
 |   [VIP](/docs/prepare/hardware#vip)    | Reserve an L2 IP for VIP (**OPTIONAL**)             |        [Domain](/docs/prepare/hardware#domain)        | Use local / public domain names (**OPTIONAL**)              |
 | [Kernel](/docs/prepare/software#linux) | `Linux`, MacOS can be used as admin controller      |             [Distro](/docs/prepare/linux)             | EL (8/9), Debian (12), Ubuntu (22/24), `x86_64` / `aarch64` |
-| [Locale](/docs/prepare/software#inux)  | `C.UTF-8` or `C`                                    |      [Firewall](/docs/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                          |
+| [Locale](/docs/prepare/software#linux) | `C.UTF-8` or `C`                                    |      [Firewall](/docs/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                          |
 |    [User](/docs/prepare/admin#user)    | avoid using `root` & `postgres`                     |           [Sudo](/docs/prepare/admin#sudo)            | `nopass` sudo privilege                                     |
 |     [SSH](/docs/prepare/admin#ssh)     | `nopass` via public key                             | [Accessible](/docs/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` ok                                |
 

@@ -4,7 +4,7 @@ description: customize postgres cluster with 115 parameters
 icon: Variable
 ---
 
-API Reference for [PGSQL](https://pigsty.io/docs/pgsql/) module:
+API Reference for [PGSQL](/docs/pgsql/) module:
 
 - [`PG_ID`](#pg_id) : Calculate & Check Postgres Identity
 - [`PG_BUSINESS`](#pg_business) : Postgres Business Object Definition
@@ -143,7 +143,7 @@ There are **115** parameters about the `PGSQL` module.
 
 ## `PG_ID`
 
-Here are some common parameters used to identify PGSQL [entities](https://pigsty.io/docs/pgsql/concept/#identity-parameters): instance, service, etc…
+Here are some common parameters used to identify PGSQL [entities](/docs/pgsql/concept/#identity-parameters): instance, service, etc…
 
 ------
 
@@ -220,7 +220,7 @@ name: `pg_upstream`, type: `ip`, level: `I`
 
 Upstream ip address for standby cluster or cascade replica
 
-Setting `pg_upstream` is set on `primary` instance indicate that this cluster is a [**Standby Cluster**](https://pigsty.io/docs/pgsql/config/#standby-cluster), and will receiving changes from upstream instance, thus the `primary` is actually a `standby leader`.
+Setting `pg_upstream` is set on `primary` instance indicate that this cluster is a [**Standby Cluster**](/docs/pgsql/config/#standby-cluster), and will receiving changes from upstream instance, thus the `primary` is actually a `standby leader`.
 
 Setting `pg_upstream` for a non-primary instance will explicitly set a replication upstream instance, if it is different from the primary ip addr, this instance will become a **cascade replica**. And it’s user’s responsibility to ensure that the upstream IP addr is another instance in the same cluster.
 
@@ -277,7 +277,7 @@ name: `pg_exporters`, type: `dict`, level: `C`
 
 additional pg_exporters to monitor remote postgres instances, default values: `{}`
 
-If you wish to monitoring remote postgres instances, define them in `pg_exporters` and load them with [`pgsql-monitor.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-monitoryml) playbook.
+If you wish to monitoring remote postgres instances, define them in `pg_exporters` and load them with [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) playbook.
 
 ```yaml
 pg_exporters: # list all remote instances here, alloc a unique unused local port as k
@@ -287,7 +287,7 @@ pg_exporters: # list all remote instances here, alloc a unique unused local port
     20003: { pg_cluster: pg-bar, pg_seq: 1, pg_host: 10.10.10.13 }
 ```
 
-Check [PGSQL Monitoring](https://pigsty.io/docs/pgsql/monitor/) for details.
+Check [PGSQL Monitoring](/docs/pgsql/monitor/) for details.
 
 ------
 
@@ -350,7 +350,7 @@ name: `pg_users`, type: `user[]`, level: `C`
 
 postgres business users, has to be defined at cluster level.
 
-default values: `[]`, each object in the array defines a [User/Role](https://pigsty.io/docs/pgsql/user/). Examples:
+default values: `[]`, each object in the array defines a [User/Role](/docs/pgsql/user/). Examples:
 
 ```yaml
 - name: dbuser_meta               # REQUIRED, `name` is the only mandatory field of a user definition
@@ -384,7 +384,7 @@ name: `pg_databases`, type: `database[]`, level: `C`
 
 postgres business databases, has to be defined at cluster level.
 
-default values: `[]`, each object in the array defines a [Database](https://pigsty.io/docs/pgsql/db/). Examples:
+default values: `[]`, each object in the array defines a [Database](/docs/pgsql/db/). Examples:
 
 ```yaml
 - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
@@ -427,7 +427,7 @@ postgres business services exposed via haproxy, has to be defined at cluster lev
 
 You can define ad hoc services with [`pg_services`](#pg_services) in additional to default [`pg_default_services`](#pg_default_services)
 
-default values: `[]`, each object in the array defines a [**Service**](https://pigsty.io/docs/pgsql/svc/#define-service). Examples:
+default values: `[]`, each object in the array defines a [**Service**](/docs/pgsql/svc/#define-service). Examples:
 
 ```yaml
 - name: standby                   # required, service name, the actual svc name will be prefixed with `pg_cluster`, e.g: pg-meta-standby
@@ -452,7 +452,7 @@ business hba rules for postgres
 
 default values: `[]`, each object in array is an **HBA Rule** definition:
 
-Which are array of [hba](https://pigsty.io/docs/pgsql/hba/#define-hba) object, each hba object may look like
+Which are array of [hba](/docs/pgsql/hba/#define-hba) object, each hba object may look like
 
 ```yaml
 # RAW HBA RULES
@@ -499,7 +499,7 @@ name: `pgb_hba_rules`, type: `hba[]`, level: `C`
 
 business hba rules for pgbouncer, default values: `[]`
 
-Similar to [`pg_hba_rules`](#pg_hba_rules), array of [hba](https://pigsty.io/docs/pgsql/hba/#define-hba) rule object, except this is for pgbouncer.
+Similar to [`pg_hba_rules`](#pg_hba_rules), array of [hba](/docs/pgsql/hba/#define-hba) rule object, except this is for pgbouncer.
 
 ------
 
@@ -798,7 +798,7 @@ name: `pg_safeguard`, type: `bool`, level: `G/C/A`
 
 prevent purging running postgres instance? false by default
 
-If enabled, [`pgsql.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
+If enabled, [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
 
 ------
 
@@ -808,9 +808,9 @@ name: `pg_clean`, type: `bool`, level: `G/C/A`
 
 purging existing postgres during pgsql init? true by default
 
-default value is `true`, it will purge existing postgres instance during [`pgsql.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsqlyml) init. which makes the playbook idempotent.
+default value is `true`, it will purge existing postgres instance during [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) init. which makes the playbook idempotent.
 
-if set to `false`, [`pgsql.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsqlyml) will abort if there’s already a running postgres instance. and [`pgsql-rm.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-rmyml) will NOT remove postgres data (only stop the server).
+if set to `false`, [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) will abort if there’s already a running postgres instance. and [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) will NOT remove postgres data (only stop the server).
 
 ------
 
@@ -956,7 +956,7 @@ The Patroni API server listens on this port for health checking & API requests.
 
 name: `patroni_log_dir`, type: `path`, level: `C`
 
-patroni log dir, `/pg/log/patroni` by default, which will be collected by [`promtail`](https://pigsty.io/docs/node/param/#promtail).
+patroni log dir, `/pg/log/patroni` by default, which will be collected by [`promtail`](/docs/node/param/#promtail).
 
 ------
 
@@ -988,7 +988,7 @@ default value is `off`, you should not enable watchdog on infra nodes to avoid f
 
 For those critical systems where data consistency prevails over availability, it is recommended to enable watchdog.
 
-Beware that if all your traffic is [accessed](https://pigsty.io/docs/pgsql/svc/#access-service) via haproxy, there is no risk of brain split at all.
+Beware that if all your traffic is [accessed](/docs/pgsql/svc/#access-service) via haproxy, there is no risk of brain split at all.
 
 ------
 
@@ -998,7 +998,7 @@ name: `patroni_username`, type: `username`, level: `C`
 
 patroni restapi username, `postgres` by default, used in pair with [`patroni_password`](#patroni_password)
 
-Patroni unsafe RESTAPI is protected by username/password by default, check [Config Cluster](https://pigsty.io/docs/pgsql/admin/#config-cluster) and [Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html) for details.
+Patroni unsafe RESTAPI is protected by username/password by default, check [Config Cluster](/docs/pgsql/admin/#config-cluster) and [Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html) for details.
 
 ------
 
@@ -1098,7 +1098,7 @@ config template: `{oltp,olap,crit,tiny}.yml`, `oltp.yml` by default
 - `olap.yml`: optimize for OLAP workloads and throughput (4C8G+)
 - `crit.yml`: optimize for data consistency and critical applications (4C8G+)
 
-default values: `oltp.yml`, but [configure](https://pigsty.io/docs/setup/install/#configure) procedure will set this value to `tiny.yml` if current node is a tiny node.
+default values: `oltp.yml`, but [configure](/docs/config/configure) procedure will set this value to `tiny.yml` if current node is a tiny node.
 
 You can have your own template, just put it under `templates/<mode>.yml` and set this value to the template name.
 
@@ -1190,7 +1190,7 @@ shared preloaded libraries, `pg_stat_statements,auto_explain` by default.
 
 They are two extensions that come with PostgreSQL, and it is strongly recommended to enable them.
 
-For existing clusters, you can [configure](https://pigsty.io/docs/pgsql/admin/#config-cluster) the `shared_preload_libraries` parameter of the cluster and apply it.
+For existing clusters, you can [configure](/docs/pgsql/admin/#config-cluster) the `shared_preload_libraries` parameter of the cluster and apply it.
 
 If you want to use TimescaleDB or Citus extensions, you need to add `timescaledb` or `citus` to this list. `timescaledb` and `citus` should be placed at the top of this list, for example:
 
@@ -1212,7 +1212,7 @@ replication apply delay for standby cluster leader , default values: `0`.
 
 if this value is set to a positive value, the standby cluster leader will be delayed for this time before apply WAL changes.
 
-Check [delayed standby cluster](https://pigsty.io/docs/pgsql/config/#delayed-cluster) for details.
+Check [delayed standby cluster](/docs/pgsql/config/#delayed-cluster) for details.
 
 ------
 
@@ -1362,7 +1362,7 @@ PG_BOOTSTRAP will bootstrap a new postgres cluster with patroni, while PG_PROVIS
 - [Default Roles](/docs/pgsql/acl#default-roles)
 - [Default Users](/docs/pgsql/acl#default-users)
 - [Default Privileges](/docs/pgsql/acl#privileges)
-- [Default HBA Rules](https://pigsty.io/docs/pgsql/hba/#default-hba)
+- [Default HBA Rules](/docs/pgsql/hba/#default-hba)
 - Default Schemas
 - Default Extensions
 
@@ -1565,9 +1565,9 @@ This is useful when you want to check before applying HBA changes, set it to `fa
 
 name: `pg_default_hba_rules`, type: `hba[]`, level: `G/C`
 
-postgres default host-based authentication rules, array of [hba](https://pigsty.io/docs/pgsql/hba/#define-hba) rule object.
+postgres default host-based authentication rules, array of [hba](/docs/pgsql/hba/#define-hba) rule object.
 
-default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](https://pigsty.io/docs/pgsql/hba/) for details.
+default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](/docs/pgsql/hba/) for details.
 
 ```yaml
 pg_default_hba_rules:             # postgres default host-based authentication rules
@@ -1591,9 +1591,9 @@ pg_default_hba_rules:             # postgres default host-based authentication r
 
 name: `pgb_default_hba_rules`, type: `hba[]`, level: `G/C`
 
-pgbouncer default host-based authentication rules, array or [hba](https://pigsty.io/docs/pgsql/hba/#define-hba) rule object.
+pgbouncer default host-based authentication rules, array or [hba](/docs/pgsql/hba/#define-hba) rule object.
 
-default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](https://pigsty.io/docs/pgsql/hba/) for details.
+default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](/docs/pgsql/hba/) for details.
 
 ```yaml
 pgb_default_hba_rules:            # pgbouncer default host-based authentication rules
@@ -1612,7 +1612,7 @@ pgb_default_hba_rules:            # pgbouncer default host-based authentication 
 
 This section defines variables for [pgBackRest](https://pgbackrest.org/), which is used for PGSQL PITR (Point-In-Time-Recovery).
 
-Check [PGSQL Backup & PITR](https://pigsty.io/docs/pgsql/pitr/) for details.
+Check [PGSQL Backup & PITR](/docs/pgsql/pitr/) for details.
 
 ```yaml
 pgbackrest_enabled: true          # enable pgbackrest on pgsql host?
@@ -1669,7 +1669,7 @@ remove pg backup data during init? default value is `true`
 
 name: `pgbackrest_log_dir`, type: `path`, level: `C`
 
-pgBackRest log dir, `/pg/log/pgbackrest` by default, which is referenced by [`promtail`](https://pigsty.io/docs/node/param/#promtail) the logging agent.
+pgBackRest log dir, `/pg/log/pgbackrest` by default, which is referenced by [`promtail`](/docs/node/param/#promtail) the logging agent.
 
 ------
 
@@ -1757,7 +1757,7 @@ name: `pg_weight`, type: `int`, level: `G`
 
 relative load balance weight in service, 100 by default, 0-255
 
-default values: `100`. you have to define it at instance vars, and [reload-service](https://pigsty.io/docs/pgsql/admin/#reload-service) to take effect.
+default values: `100`. you have to define it at instance vars, and [reload-service](/docs/pgsql/admin/#reload-service) to take effect.
 
 ------
 
@@ -1786,7 +1786,7 @@ pg_default_services:             # alloc port 10001 and 10002 for pg-test primar
 
 name: `pg_default_service_dest`, type: `enum`, level: `G/C`
 
-When defining a [service](https://pigsty.io/docs/pgsql/svc/#define-service), if svc.dest=‘default’, this parameter will be used as the default value.
+When defining a [service](/docs/pgsql/svc/#define-service), if svc.dest=‘default’, this parameter will be used as the default value.
 
 default values: `pgbouncer`, means 5433 primary service and 5434 replica service will route traffic to pgbouncer by default.
 
@@ -1800,7 +1800,7 @@ name: `pg_default_services`, type: `service[]`, level: `G/C`
 
 postgres default service definitions
 
-default value is four default services definition, which is explained in [PGSQL Service](https://pigsty.io/docs/pgsql/svc/#define-service)
+default value is four default services definition, which is explained in [PGSQL Service](/docs/pgsql/svc/#define-service)
 
 ```yaml
 pg_default_services:               # postgres default service definitions

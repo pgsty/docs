@@ -27,7 +27,7 @@ The sandbox consists of 4 nodes with fixed IP addresses and identities:
 
 
 There’s a primary singleton PostgreSQL cluster: `pg-meta` on the `meta` node,
-which can be used alone, and there's also a optional L2 VIP `10.10.10.2` and cluster DNS `pg-meta` bind to it.
+which can be used standalone, and there's also an optional L2 VIP `10.10.10.2` and cluster DNS `pg-meta` bind to it.
 
 ```bash
 10.10.10.10 meta pg-meta-1
@@ -35,7 +35,7 @@ which can be used alone, and there's also a optional L2 VIP `10.10.10.2` and clu
 ```
 
 There are three additional nodes in the sandbox, form a 3-instance PostgreSQL HA cluster `pg-test`.
-With an optinoal L2 VIP `10.10.10.3` and cluster DNS `pg-test` bind to the cluster leader.
+With an optional L2 VIP `10.10.10.3` and cluster DNS `pg-test` bind to the cluster leader.
 
 ```bash
 10.10.10.11 node-1 pg-test-1
@@ -58,7 +58,7 @@ There’s also a 1-node `etcd` cluster, and 1-node `minio` cluster on the `meta`
 
 ## Implementation
 
-You can create a local sandbox with [Vagrant](/docs/setup/vagrant), or a cloud sandbox with [Terraform](/docs/setup/terraform).
+You can create a local sandbox with [Vagrant](/docs/prepare/vagrant), or a cloud sandbox with [Terraform](/docs/prepare/terraform).
 
 To utilize local vagrant templates:
 

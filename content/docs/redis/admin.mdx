@@ -4,7 +4,7 @@ description: run administrative tasks
 icon: Wrench
 ---
 
-Here are some common administration tasks for Redis. Check [FAQ: Redis](https://pigsty.io/docs/redis/faq/) for more details.
+Here are some common administration tasks for Redis. Check [FAQ: Redis](/docs/redis/faq/) for more details.
 
 ------
 
@@ -63,7 +63,7 @@ bin/redis-rm 10.10.10.10 6379  # remove redis instance '10.10.10.10:6379'
 
 ## Reconfigure Redis
 
-You can partially run [`redis.yml`](https://pigsty.io/docs/redis/playbook/#redisyml) tasks to re-configure redis.
+You can partially run [`redis.yml`](/docs/redis/playbook/#redisyml) tasks to re-configure redis.
 
 ```bash
 ./redis.yml -l <cluster> -t redis_config,redis_launch
@@ -126,7 +126,7 @@ $ redis-cli -h 10.10.10.11 -p 26379 -a redis.meta
 
 If you wish to remove a redis master from sentinel, use `SENTINEL REMOVE <name>`.
 
-You can configure multiple redis master on sentinel cluster with [`redis_sentinel_monitor`](https://pigsty.io/docs/redis/param/#redis_sentinel_monitor).
+You can configure multiple redis master on sentinel cluster with [`redis_sentinel_monitor`](/docs/redis/param/#redis_sentinel_monitor).
 
 ```yaml
 redis_sentinel_monitor: # primary list for redis sentinel, use cls as name, primary ip:port

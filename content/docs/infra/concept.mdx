@@ -4,33 +4,33 @@ description: architecture and entities
 icon: Shapes
 ---
 
-A standard Pigsty deployment comes with an [**`INFRA`**](https://pigsty.io/docs/infra/) module that provides essential services for managed nodes and database clusters:
+A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module that provides essential services for managed nodes and database clusters:
 
-- [Nginx](https://pigsty.io/docs/infra/arch/#nginx): Acts as a web server for local package repositories and a reverse proxy for other web UI services
+- [Nginx](/docs/infra/arch/#nginx): Acts as a web server for local package repositories and a reverse proxy for other web UI services
 
 - Grafana
 
 : Visualization platform for metrics, dashboards, and data analytics
 
-- [Loki](https://pigsty.io/docs/infra/arch/#loki): Centralized log aggregation and querying via Grafana
+- [Loki](/docs/infra/arch/#loki): Centralized log aggregation and querying via Grafana
 
 - Prometheus
 
 : Time-series monitoring database for metrics collection, storage, and alert evaluation
 
-- [AlertManager](https://pigsty.io/docs/infra/arch/#alertmanager): Alert aggregation, notification dispatch, and silencing
-- [PushGateway](https://pigsty.io/docs/infra/arch/#pushgateway): Collects metrics from one-off and batch jobs
-- [BlackboxExporter](https://pigsty.io/docs/infra/arch/#blackbox-exporter): Probes node IP and VIP reachability
+- [AlertManager](/docs/infra/arch/#alertmanager): Alert aggregation, notification dispatch, and silencing
+- [PushGateway](/docs/infra/arch/#pushgateway): Collects metrics from one-off and batch jobs
+- [BlackboxExporter](/docs/infra/arch/#blackbox-exporter): Probes node IP and VIP reachability
 
-- [DNSMASQ](https://pigsty.io/docs/infra/arch/#dnsmasq): DNS resolution for Pigsty’s internal domains
+- [DNSMASQ](/docs/infra/arch/#dnsmasq): DNS resolution for Pigsty’s internal domains
 
-- [Chronyd](https://pigsty.io/docs/infra/arch/#chronyd): NTP time synchronization to keep all nodes in sync
+- [Chronyd](/docs/infra/arch/#chronyd): NTP time synchronization to keep all nodes in sync
 
-The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](https://pigsty.io/docs/setup/slim/) mode.
+The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](https://pigsty.io/docs/install/slim/) mode.
 
 However, since INFRA provides essential supporting services for production-grade HA PostgreSQL clusters, it’s strongly recommended for most deployments.
 
-If you already have your own infrastructure (Nginx, local repos, monitoring, DNS, NTP), you can disable INFRA and [**configure**](https://pigsty.io/docs/infra/config/) Pigsty to use your existing stack instead.
+If you already have your own infrastructure (Nginx, local repos, monitoring, DNS, NTP), you can disable INFRA and [**configure**](/docs/infra/config/) Pigsty to use your existing stack instead.
 
 ------
 
@@ -40,36 +40,36 @@ INFRA module includes these components with default ports and domains:
 
 |                          Component                           |   Port   | Default Domain | Description                |
 | :----------------------------------------------------------: | :------: | :------------: | -------------------------- |
-|      [Nginx](https://pigsty.io/docs/infra/arch/#nginx)       | `80/443` |   `h.pigsty`   | Web Portal & Package Repos |
-|    [Grafana](https://pigsty.io/docs/infra/arch/#grafana)     |  `3000`  |   `g.pigsty`   | Visualization Platform     |
-| [Prometheus](https://pigsty.io/docs/infra/arch/#prometheus)  |  `9090`  |   `p.pigsty`   | TSDB for Metrics           |
-| [AlertManager](https://pigsty.io/docs/infra/arch/#alertmanager) |  `9093`  |   `a.pigsty`   | Alert Management           |
-|      [Loki](https://pigsty.io/docs/infra/arch/#grafana)      |  `3100`  |       -        | Log Aggregation            |
-| [PushGateway](https://pigsty.io/docs/infra/arch/#pushgateway) |  `9091`  |       -        | One-off Metrics Collector  |
-| [BlackboxExporter](https://pigsty.io/docs/infra/arch/#blackbox-exporter) |  `9115`  |       -        | Blackbox Monitoring        |
-|    [DNSMasq](https://pigsty.io/docs/infra/arch/#dnsmasq)     |   `53`   |       -        | DNS Server                 |
-|    [Chronyd](https://pigsty.io/docs/infra/arch/#chronyd)     |  `123`   |       -        | NTP Server                 |
+|      [Nginx](/docs/infra/arch/#nginx)       | `80/443` |   `h.pigsty`   | Web Portal & Package Repos |
+|    [Grafana](/docs/infra/arch/#grafana)     |  `3000`  |   `g.pigsty`   | Visualization Platform     |
+| [Prometheus](/docs/infra/arch/#prometheus)  |  `9090`  |   `p.pigsty`   | TSDB for Metrics           |
+| [AlertManager](/docs/infra/arch/#alertmanager) |  `9093`  |   `a.pigsty`   | Alert Management           |
+|      [Loki](/docs/infra/arch/#grafana)      |  `3100`  |       -        | Log Aggregation            |
+| [PushGateway](/docs/infra/arch/#pushgateway) |  `9091`  |       -        | One-off Metrics Collector  |
+| [BlackboxExporter](/docs/infra/arch/#blackbox-exporter) |  `9115`  |       -        | Blackbox Monitoring        |
+|    [DNSMasq](/docs/infra/arch/#dnsmasq)     |   `53`   |       -        | DNS Server                 |
+|    [Chronyd](/docs/infra/arch/#chronyd)     |  `123`   |       -        | NTP Server                 |
 
 Here’s how components look in a full single-node Pigsty installation:
 
-[![pigsty-arch.jpg](https://pigsty.io/img/pigsty/arch.jpg)](https://pigsty.io/docs/infra/)
+[![pigsty-arch.jpg](https://pigsty.io/img/pigsty/arch.jpg)](/docs/infra/)
 
 By design, INFRA module failures **typically** won’t impact existing PostgreSQL clusters’ operations.
 
-The [PGSQL](https://pigsty.io/docs/pgsql/) module relies on several [INFRA](https://pigsty.io/docs/node/#infra节点) services:
+The [PGSQL](/docs/pgsql/) module relies on several [INFRA](/docs/node/#infra节点) services:
 
 - DNS resolution via DNSMASQ for cluster/host domains
 - Pigsty itself uses direct IP connections to avoid DNS dependency
 - Software installation via Nginx’s local yum/apt repos
-- Users can specify [`repo_upstream`](https://pigsty.io/docs/infra/param/#repo_upstream) & [`node_repo_modules`](https://pigsty.io/docs/node/param/#node_repo_modules) to use internet/other repos
+- Users can specify [`repo_upstream`](/docs/infra/param/#repo_upstream) & [`node_repo_modules`](/docs/node/param/#node_repo_modules) to use internet/other repos
 - Metrics collection by Prometheus
-- Disabled when [`prometheus_enabled`](https://pigsty.io/docs/infra/param/#prometheus_enabled) is `false`
-- Log shipping to Loki via Promtail (only to [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal) endpoint)
-- Disabled when [`loki_enabled`](https://pigsty.io/docs/infra/param/#loki_enabled) is `false`
+- Disabled when [`prometheus_enabled`](/docs/infra/param/#prometheus_enabled) is `false`
+- Log shipping to Loki via Promtail (only to [`infra_portal`](/docs/infra/param/#infra_portal) endpoint)
+- Disabled when [`loki_enabled`](/docs/infra/param/#loki_enabled) is `false`
 - Time sync from INFRA/ADMIN’s NTP/Chronyd
 - INFRA nodes use public NTP servers
 - Other nodes sync from INFRA/ADMIN
-- Custom NTP servers configurable via [`node_ntp_servers`](https://pigsty.io/docs/node/param/#node_ntp_servers)
+- Custom NTP servers configurable via [`node_ntp_servers`](/docs/node/param/#node_ntp_servers)
 - Patroni uses INFRA’s etcd as DCS (if no dedicated cluster)
 - pgBackRest uses INFRA’s MinIO as optional backup repo (if no dedicated cluster)
 - Admins manage database nodes from INFRA/ADMIN via Ansible or other tools:
@@ -85,7 +85,7 @@ Nginx is the gateway for all WebUI services in Pigsty, serving HTTP/HTTPS on por
 
 It exposes web UIs like Grafana, Prometheus, AlertManager, and HAProxy console, while also serving static resources like local yum/apt repos.
 
-Nginx configuration follows [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal) definitions, for example:
+Nginx configuration follows [`infra_portal`](/docs/infra/param/#infra_portal) definitions, for example:
 
 ```yaml
 infra_portal:
@@ -118,7 +118,7 @@ During installation, Pigsty creates a local package repo on the INFRA node to sp
 
 Located at `/www/pigsty` and served by Nginx, it’s accessible via `http://h.pigsty/pigsty`.
 
-Pigsty’s [offline package](https://pigsty.io/docs/setup/offline/) is a tarball of a pre-built repo directory. If `/www/pigsty` exists with a `/www/pigsty/repo_complete` marker, Pigsty skips downloading from upstream - perfect for air-gapped environments!
+Pigsty’s [offline package](https://pigsty.io/docs/install/offline/) is a tarball of a pre-built repo directory. If `/www/pigsty` exists with a `/www/pigsty/repo_complete` marker, Pigsty skips downloading from upstream - perfect for air-gapped environments!
 
 Repo definition lives in `/www/pigsty.repo`, fetchable via `http://${admin_ip}/pigsty.repo`:
 
@@ -136,7 +136,7 @@ enabled=1
 gpgcheck=0
 ```
 
-Local repo configs are in: [Config: INFRA - REPO](https://pigsty.io/docs/infra/param/#repo)
+Local repo configs are in: [Config: INFRA - REPO](/docs/infra/param/#repo)
 
 ------
 
@@ -152,7 +152,7 @@ Key features:
 
 AlertManager handles alerts on port 9093 (`IP:9093` or `http://a.pigsty`). While it receives Prometheus alerts, you’ll need extra config (e.g., SMTP) for notifications.
 
-Configs for Prometheus, AlertManager, PushGateway, and BlackboxExporter are in: [Config: INFRA - PROMETHEUS](https://pigsty.io/docs/infra/#prometheus)
+Configs for Prometheus, AlertManager, PushGateway, and BlackboxExporter are in: [Config: INFRA - PROMETHEUS](/docs/infra/#prometheus)
 
 ------
 
@@ -166,7 +166,7 @@ Fun fact: We’ve supercharged Grafana with extra viz plugins like ECharts - it�
 
 Loki handles logs on port 3100, with Promtail shipping logs from nodes to the mothership.
 
-Configs live in: [Config: INFRA - GRAFANA](https://pigsty.io/docs/infra/param/#grafana) and [Config: INFRA - Loki](https://pigsty.io/docs/infra/param/#loki)
+Configs live in: [Config: INFRA - GRAFANA](/docs/infra/param/#grafana) and [Config: INFRA - Loki](/docs/infra/param/#loki)
 
 ------
 
@@ -182,7 +182,7 @@ DNSMASQ handles DNS resolution, with other modules registering their domains to 
 
 DNS records live in `/etc/hosts.d/` on all INFRA nodes.
 
-Configs: [Config: INFRA - DNS](https://pigsty.io/docs/infra/param/#dns)
+Configs: [Config: INFRA - DNS](/docs/infra/param/#dns)
 
 ------
 
@@ -190,4 +190,4 @@ Configs: [Config: INFRA - DNS](https://pigsty.io/docs/infra/param/#dns)
 
 Time waits for no one, but Chronyd helps keep all nodes in sync! (Optional)
 
-NTP configs: [Config: NODES - NTP](https://pigsty.io/docs/node/param/#node_time)
+NTP configs: [Config: NODES - NTP](/docs/node/param/#node_time)

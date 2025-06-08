@@ -49,7 +49,7 @@ automating PostgreSQL and monitoring system deployment through Infra as Code.
 
 We then redesigned the production PostgreSQL architecture, introducing Patroni and pgBackRest
 for [high availability](https://pigsty.io/docs/concept/ha/) and [point-in-time recovery](https://pigsty.io/docs/concept/pitr/).
-We developed a zero-downtime [migration](https://pigsty.io/docs/pgsql/migration/) strategy based on logical replication,
+We developed a zero-downtime [migration](/docs/pgsql/migration/) strategy based on logical replication,
 performing rolling updates across 200 database clusters to the latest major version using blue-green deployments.
 These capabilities were integrated into Pigsty.
 

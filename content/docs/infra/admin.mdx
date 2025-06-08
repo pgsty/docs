@@ -11,7 +11,7 @@ Here are some admin tasks related to the INFRA module (because who doesn’t lov
 
 ## Install INFRA
 
-Use the [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml) playbook to install the INFRA module on Infra nodes:
+Use the [`infra.yml`](/docs/infra/playbook/#infrayml) playbook to install the INFRA module on Infra nodes:
 
 ```bash
 ./infra.yml     # Install INFRA module on infra group
@@ -21,7 +21,7 @@ Use the [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml) playbook 
 
 ## Remove INFRA
 
-Use the [`infra-rm.yml`](https://pigsty.io/docs/infra/playbook/#infra-rmyml) playbook to uninstall the INFRA module from Infra nodes:
+Use the [`infra-rm.yml`](/docs/infra/playbook/#infra-rmyml) playbook to uninstall the INFRA module from Infra nodes:
 
 ```bash
 ./infra-rm.yml  # Uninstall INFRA module from infra group
@@ -31,7 +31,7 @@ Use the [`infra-rm.yml`](https://pigsty.io/docs/infra/playbook/#infra-rmyml) pla
 
 ## Expand INFRA
 
-To scale out an existing INFRA deployment, first modify the `infra` group by adding new node IPs and assigning unique [`infra_seq`](https://pigsty.io/docs/infra/param/#infra_seq) numbers:
+To scale out an existing INFRA deployment, first modify the `infra` group by adding new node IPs and assigning unique [`infra_seq`](/docs/infra/param/#infra_seq) numbers:
 
 ```yaml
 all:
@@ -42,7 +42,7 @@ all:
         10.10.10.11: { infra_seq: 2 } # New node #2 (fresh meat!)
 ```
 
-Then use the [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml) playbook to install INFRA on the new node:
+Then use the [`infra.yml`](/docs/infra/playbook/#infrayml) playbook to install INFRA on the new node:
 
 ```bash
 ./infra.yml -l 10.10.10.11    # Install INFRA on the new node

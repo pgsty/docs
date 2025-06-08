@@ -31,29 +31,29 @@ Next, run the `install.yml` playbook with an admin user (nopass ssh & sudo):
 ./bootstrap; ./configure; ./install.yml
 ```
 
-Install Pigsty with 4 steps: [**Prepare**](https://pigsty.io/docs/setup/install/#prepare), [**Download**](https://pigsty.io/docs/setup/install/#download), [**Configure**](https://pigsty.io/docs/setup/install/#configure) and [**Install**](https://pigsty.io/docs/setup/install/#install). Also check [offline](https://pigsty.io/docs/setup/offline/) if you don’t have internet access.
+Install Pigsty with 4 steps: [**Prepare**](https://pigsty.io/docs/install/#prepare), [**Download**](https://pigsty.io/docs/install/#download), [**Configure**](/docs/config/configure) and [**Install**](https://pigsty.io/docs/install/#install). Also check [offline](https://pigsty.io/docs/install/offline/) if you don’t have internet access.
 
-[**准备**](https://pigsty.cc/docs/setup/install/#准备) 一个安装了 [**兼容**](https://pigsty.cc/docs/reference/compatibility/) 操作系统的 Linux `x86_64` / `aarch64` 节点，使用带有免密 `sudo` 权限的用户，执行以下命令：
+[**准备**](https://pigsty.cc/docs/install/#准备) 一个安装了 [**兼容**](https://pigsty.cc/docs/reference/compatibility/) 操作系统的 Linux `x86_64` / `aarch64` 节点，使用带有免密 `sudo` 权限的用户，执行以下命令：
 
 ```bash
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty;
 ```
 
-该命令会 [**下载**](https://pigsty.cc/docs/setup/install/#下载) 并解压 Pigsty 源码至家目录，依次完成 [**配置**](https://pigsty.cc/docs/setup/install/#配置) 与[**安装**](https://pigsty.cc/docs/setup/install/#安装) 即可完成安装。
+该命令会 [**下载**](https://pigsty.cc/docs/install/#下载) 并解压 Pigsty 源码至家目录，依次完成 [**配置**](https://pigsty.cc/docs/install/#配置) 与[**安装**](https://pigsty.cc/docs/install/#安装) 即可完成安装。
 
 ```bash
 ./bootstrap; ./configure; ./install.yml; # 准备依赖，生成配置，安装 Pigsty 三步走！
 ```
 
-- [**bootstrap**](https://pigsty.cc/docs/setup/offline/#bootstrap)：【可选】用于确保 Ansible 正常安装，如果 `/tmp/pkg.tgz` [**离线包**](https://pigsty.cc/docs/setup/offline/#离线软件包)存在则使用它
-- [**configure**](https://pigsty.cc/docs/setup/install/#配置)：【可选】检测环境并自动生成相应的推荐配置文件，如果知道如何 [**配置**](https://pigsty.cc/docs/setup/config/) Pigsty可以直接跳过
-- [**install.yml**](https://pigsty.cc/docs/setup/install/#安装)：根据生成的配置文件开始在当前节点上执行安装，
+- [**bootstrap**](https://pigsty.cc/docs/install/offline/#bootstrap)：【可选】用于确保 Ansible 正常安装，如果 `/tmp/pkg.tgz` [**离线包**](https://pigsty.cc/docs/install/offline/#离线软件包)存在则使用它
+- [**configure**](https://pigsty.cc/docs/install/#配置)：【可选】检测环境并自动生成相应的推荐配置文件，如果知道如何 [**配置**](/docs/config/tutorial) Pigsty可以直接跳过
+- [**install.yml**](https://pigsty.cc/docs/install/#安装)：根据生成的配置文件开始在当前节点上执行安装，
 
-整个安装过程根据服务器规格/网络条件需 5 到 30 分钟不等，[**离线安装**](https://pigsty.cc/docs/setup/offline/#离线软件包)可以显著加速。
+整个安装过程根据服务器规格/网络条件需 5 到 30 分钟不等，[**离线安装**](https://pigsty.cc/docs/install/offline/#离线软件包)可以显著加速。
 
-安装完成后，您可以通过域名，或`80/443`端口通过 Nginx 访问 WEB [**界面**](https://pigsty.cc/docs/setup/install/#用户界面)， 通过 `5432` 端口 [**访问**](https://pigsty.cc/docs/concept/svc/#接入服务) 默认的 PostgreSQL 数据库 [**服务**](https://pigsty.cc/docs/concept/svc/)。 您可以继续使用 Pigsty 纳管 [**更多**](https://pigsty.cc/docs/setup/install/#更多) 节点，并部署各种 [**模块**](https://pigsty.cc/docs/about/module/)。
+安装完成后，您可以通过域名，或`80/443`端口通过 Nginx 访问 WEB [**界面**](https://pigsty.cc/docs/install/#用户界面)， 通过 `5432` 端口 [**访问**](https://pigsty.cc/docs/concept/svc/#接入服务) 默认的 PostgreSQL 数据库 [**服务**](https://pigsty.cc/docs/concept/svc/)。 您可以继续使用 Pigsty 纳管 [**更多**](https://pigsty.cc/docs/install/#更多) 节点，并部署各种 [**模块**](https://pigsty.cc/docs/about/module/)。
 
-如果您觉得 Pigsty 的组件过于复杂，还可以考虑使用 [**最小化安装**](https://pigsty.cc/docs/setup/slim/) ，仅安装高可用 PostgreSQL 集群所必需的组件。
+如果您觉得 Pigsty 的组件过于复杂，还可以考虑使用 [**最小化安装**](https://pigsty.cc/docs/install/slim/) ，仅安装高可用 PostgreSQL 集群所必需的组件。
 
 **视频样例：在线单机安装（EL9）**
 
@@ -83,7 +83,7 @@ pig sty install  # 执行 install.yml 剧本完成部署
 
 ## 准备
 
-> 关于准备工作的完整详细说明，请参考 [**入门：准备工作**](https://pigsty.cc/docs/setup/prepare/) 一节。
+> 关于准备工作的完整详细说明，请参考 [**入门：准备工作**](https://pigsty.cc/docs/prepare/) 一节。
 
 Pigsty 支持 `Linux` 内核与 `x86_64/aarch64` 架构，运行于物理机、虚拟机环境中，要求使用**静态IP地址**。 最低配置要求为 `1C1G`，推荐至少使用 `2C4G` 以上的机型，上不封顶，参数会自动优化适配。
 
@@ -93,9 +93,9 @@ Pigsty 支持 `Linux` 内核与 `x86_64/aarch64` 架构，运行于物理机、�
 
 #### 避免使用 root 用户安装
 
-尽管使用 `root` 用户安装 Pigsty 是可行的，但 [安全最佳实践](https://pigsty.cc/docs/setup/security/) 是使用一个不同于根用户（`root`）与数据库超级用户 (`postgres`) 的专用管理员用户（如：`dba`）， Pigsty 安装过程中会默认创建由配置文件指定的可选管理员用户 `dba`。
+尽管使用 `root` 用户安装 Pigsty 是可行的，但 [安全最佳实践](/docs/config/security) 是使用一个不同于根用户（`root`）与数据库超级用户 (`postgres`) 的专用管理员用户（如：`dba`）， Pigsty 安装过程中会默认创建由配置文件指定的可选管理员用户 `dba`。
 
-Pigsty 依赖 Ansible 执行剧本，在执行安装前，您需要先安装 `ansible` 与 `jmespath` 软件包。 您可以通过 [**`bootstrap`**](https://pigsty.cc/docs/setup/offline/#bootstrap) 脚本完成这一任务，特别是当您没有互联网访问，需要进行[**离线安装**](https://pigsty.cc/docs/setup/offline/)时。
+Pigsty 依赖 Ansible 执行剧本，在执行安装前，您需要先安装 `ansible` 与 `jmespath` 软件包。 您可以通过 [**`bootstrap`**](https://pigsty.cc/docs/install/offline/#bootstrap) 脚本完成这一任务，特别是当您没有互联网访问，需要进行[**离线安装**](https://pigsty.cc/docs/install/offline/)时。
 
 ```bash
 ./bootstrap   # 使用各种可选方式安装 Ansible 与 Jmespath 依赖，如果离线包存在则使用离线包
@@ -139,7 +139,7 @@ git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
 
 ## 配置
 
-配置 / [**`configure`**](https://github.com/pgsty/pigsty/blob/main/configure) 会根据您当前的环境，自动生成推荐的（单机安装） [`pigsty.yml`](https://github.com/pgsty/pigsty/blob/main/pigsty.yml) [**配置文件**](https://pigsty.cc/docs/setup/config/)。
+配置 / [**`configure`**](https://github.com/pgsty/pigsty/blob/main/configure) 会根据您当前的环境，自动生成推荐的（单机安装） [`pigsty.yml`](https://github.com/pgsty/pigsty/blob/main/pigsty.yml) [**配置文件**](/docs/config/inventory)。
 
 提示: 如果您已经了解了如何配置 Pigsty，`configure` 这个步骤是可选的，可以跳过。 Pigsty 提供了许多开箱即用的预置 [**配置模板**](https://pigsty.cc/docs/conf/overview/) 供您参考。
 
@@ -167,7 +167,7 @@ git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
 
 #### 修改默认密码！
 
-我们强烈建议您在安装前，事先修改配置文件中使用的默认密码与凭据，详情参考 [**安全考量**](https://pigsty.cc/docs/setup/security/#密码)。
+我们强烈建议您在安装前，事先修改配置文件中使用的默认密码与凭据，详情参考 [**安全考量**](/docs/config/security#密码)。
 
 ------
 
@@ -180,7 +180,7 @@ git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
 ```
 
 
-这是一个 **Ansible** [**剧本**](https://pigsty.cc/docs/setup/playbook/)，您可以使用以下参数控制其执行的目标、任务、并传递额外的命令参数：
+这是一个 **Ansible** [**剧本**](/docs/admin/playbook/)，您可以使用以下参数控制其执行的目标、任务、并传递额外的命令参数：
 
 - `-l`: 限制执行的目标对象
 - `-t`: 限制要执行的任务
@@ -200,7 +200,7 @@ git clone https://github.com/pgsty/pigsty; cd pigsty; git checkout v3.3.0
 
 当安装完成后，当前节点会安装有四个 [**核心模块**](https://pigsty.cc/docs/about/module/#核心模块)：[**`PGSQL`**](https://pigsty.cc/docs/pgsql/)，[**`INFRA`**](https://pigsty.cc/docs/infra/)，[**`NODE`**](https://pigsty.cc/docs/node/)，[**`ETCD`**](https://pigsty.cc/docs/etcd/)。
 
-本机上的 [**PGSQL**](https://pigsty.cc/docs/pgsql/) 模块提供了一个开箱即用的单机 PostgreSQL 数据库实例，默认可以使用以下连接串 [**访问**](https://pigsty.cc/docs/pgsql/svc/#单机用户)：
+本机上的 [**PGSQL**](/docs/pgsql/) 模块提供了一个开箱即用的单机 PostgreSQL 数据库实例，默认可以使用以下连接串 [**访问**](https://pigsty.cc/docs/pgsql/svc/#单机用户)：
 
 - 默认用户连接串
 - dbuser_dba

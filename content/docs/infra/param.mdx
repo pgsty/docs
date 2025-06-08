@@ -129,16 +129,16 @@ default value:`10.10.10.10`
 
 Node with this ip address will be treated as admin node, usually point to the first node that install Pigsty.
 
-The default value `10.10.10.10` is a placeholder which will be replaced during [configure](https://pigsty.io/docs/setup/install/#configure)
+The default value `10.10.10.10` is a placeholder which will be replaced during [configure](/docs/config/configure)
 
 This parameter is referenced by many other parameters, such as:
 
 - [`infra_portal`](#infra_portal)
 - [`repo_endpoint`](#repo_endpoint)
 - [`dns_records`](#dns_records)
-- [`node_default_etc_hosts`](https://pigsty.io/docs/node/param/#node_default_etc_hosts)
-- [`node_etc_hosts`](https://pigsty.io/docs/node/param/#node_etc_hosts)
-- [`node_repo_modules`](https://pigsty.io/docs/node/param/#node_repo_modules)
+- [`node_default_etc_hosts`](/docs/node/param/#node_default_etc_hosts)
+- [`node_etc_hosts`](/docs/node/param/#node_etc_hosts)
+- [`node_repo_modules`](/docs/node/param/#node_repo_modules)
 
 The exact string `${admin_ip}` will be replaced with the actual `admin_ip` for above parameters.
 
@@ -291,7 +291,7 @@ Each record consists of a Key and a Value dictionary, where name is the key, rep
     - In Pigsty self-signed Nginx HTTPS certificate, the domain name will be added to the SAN field of the Nginx SSL certificate
     - Pigsty web page cross-references will use the default domain name here
 - endpoint: Usually used as an alternative to path, specifies the upstream server address. Setting endpoint indicates this is a reverse proxy server
-    - In the configuration, `${admin_ip}` can be used as a placeholder, and will be dynamically replaced with [admin_ip](https://pigsty.io/docs/infra/param/#admin_ip) during deployment
+    - In the configuration, `${admin_ip}` can be used as a placeholder, and will be dynamically replaced with [admin_ip](/docs/infra/param/#admin_ip) during deployment
     - The default reverse proxy server uses [endpoint.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/endpoint.conf) as the configuration template
     - The reverse proxy server can also configure the websocket and schema parameters
 - path: Usually used as an alternative to endpoint, specifies the local file server path. Setting path means this is a local web server
@@ -330,7 +330,7 @@ In the initialization process, Pigsty will download all packages and their depen
 
 When creating a local repo, Pigsty will skip the software download phase if the directory already exists and if there is a marker file named `repo_complete` in the dir.
 
-If the download speed of some packages is too slow, you can set the download proxy to complete the first download by using the [`proxy_env`](#proxy_env) config entry or directly download the pre-packaged [offline package](https://pigsty.io/docs/setup/offline/), which is essentially a local software source built on the same operating system.
+If the download speed of some packages is too slow, you can set the download proxy to complete the first download by using the [`proxy_env`](#proxy_env) config entry or directly download the pre-packaged [offline package](https://pigsty.io/docs/install/offline/), which is essentially a local software source built on the same operating system.
 
 ```yaml
 repo_enabled: true                # create a yum repo on this infra node?
@@ -794,7 +794,7 @@ Pigsty will launch a default DNSMASQ server on infra nodes to serve DNS inquiry.
 
 All records will be added to infra node’s `/etc/hosts.d/*`.
 
-You have to add `nameserver {{ admin_ip }}` to your `/etc/resolv` to use this dns server, and [`node_dns_servers`](https://pigsty.io/docs/node/param/#node_dns_servers) will do the trick.
+You have to add `nameserver {{ admin_ip }}` to your `/etc/resolv` to use this dns server, and [`node_dns_servers`](/docs/node/param/#node_dns_servers) will do the trick.
 
 ```yaml
 dns_enabled: true                 # setup dnsmasq on this infra node?
@@ -812,7 +812,7 @@ type: `bool`, level: `G/I`
 
 setup dnsmasq on this infra node? default value: `true`
 
-If you don’t want to use the default DNS server, you can set this value to `false` to disable it. And use [`node_default_etc_hosts`](https://pigsty.io/docs/node/param/#node_default_etc_hosts) and [`node_etc_hosts`](https://pigsty.io/docs/node/param/#node_etc_hosts) instead.
+If you don’t want to use the default DNS server, you can set this value to `false` to disable it. And use [`node_default_etc_hosts`](/docs/node/param/#node_default_etc_hosts) and [`node_etc_hosts`](/docs/node/param/#node_etc_hosts) instead.
 
 ------
 
@@ -1013,9 +1013,9 @@ default value: `none`
 
 Specify how to install Exporter:
 
-- `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](https://pigsty.io/docs/node/param/#node_default_packages) task)
-- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) before deploying Exporter)
-- `binary`: Install using a copy binary (copy [`node_exporter`](https://pigsty.io/docs/node/param/#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) binary directly from the meta node, not recommended)
+- `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](/docs/node/param/#node_default_packages) task)
+- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](/docs/node/param/#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) before deploying Exporter)
+- `binary`: Install using a copy binary (copy [`node_exporter`](/docs/node/param/#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) binary directly from the meta node, not recommended)
 
 When installing with `yum`, if `exporter_repo_url` is specified (not empty), the installation will first install the REPO file under that URL into `/etc/yum.repos.d`. This feature allows you to install Exporter directly without initializing the node infrastructure. It is not recommended for regular users to use `binary` installation. This mode is usually used for emergency troubleshooting and temporary problem fixes.
 

@@ -11,14 +11,14 @@ There are **8** parameters for the Docker module:
 
 | Name                                                         | Type       | Level | Comment                                                   |
 | ------------------------------------------------------------ | ---------- | ----- | --------------------------------------------------------- |
-| [`docker_enabled`](https://pigsty.io/docs/docker/param/#docker_enabled) | `bool`     | G/C/I | enable docker on this node?                               |
-| [`docker_data`](https://pigsty.io/docs/docker/param/#docker_data) | `path`     | G/C/I | Docker data directory, `/var/lib/docker` by default       |
-| [`docker_storage_driver`](https://pigsty.io/docs/docker/param/#docker_storage_driver) | `enum`     | G/C/I | Docker storage driver, `overlay2` by default              |
-| [`docker_cgroups_driver`](https://pigsty.io/docs/docker/param/#docker_cgroups_driver) | `enum`     | G/C/I | docker cgroup fs driver: cgroupfs,systemd                 |
-| [`docker_registry_mirrors`](https://pigsty.io/docs/docker/param/#docker_registry_mirrors) | `string[]` | G/C/I | docker registry mirror list                               |
-| [`docker_exporter_port`](https://pigsty.io/docs/docker/param/#docker_exporter_port) | `port`     | G     | Docker metrics exporter port, `9323` by default           |
-| [`docker_image`](https://pigsty.io/docs/docker/param/#docker_image) | `path[]`   | G/C/I | docker image to be pulled, [] by default                  |
-| [`docker_image_cache`](https://pigsty.io/docs/docker/param/#docker_image_cache) | `path`     | G/C/I | docker image cache tarball glob, `/tmp/docker` by default |
+| [`docker_enabled`](/docs/docker/param/#docker_enabled) | `bool`     | G/C/I | enable docker on this node?                               |
+| [`docker_data`](/docs/docker/param/#docker_data) | `path`     | G/C/I | Docker data directory, `/var/lib/docker` by default       |
+| [`docker_storage_driver`](/docs/docker/param/#docker_storage_driver) | `enum`     | G/C/I | Docker storage driver, `overlay2` by default              |
+| [`docker_cgroups_driver`](/docs/docker/param/#docker_cgroups_driver) | `enum`     | G/C/I | docker cgroup fs driver: cgroupfs,systemd                 |
+| [`docker_registry_mirrors`](/docs/docker/param/#docker_registry_mirrors) | `string[]` | G/C/I | docker registry mirror list                               |
+| [`docker_exporter_port`](/docs/docker/param/#docker_exporter_port) | `port`     | G     | Docker metrics exporter port, `9323` by default           |
+| [`docker_image`](/docs/docker/param/#docker_image) | `path[]`   | G/C/I | docker image to be pulled, [] by default                  |
+| [`docker_image_cache`](/docs/docker/param/#docker_image_cache) | `path`     | G/C/I | docker image cache tarball glob, `/tmp/docker` by default |
 
 ------
 

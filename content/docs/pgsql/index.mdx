@@ -13,75 +13,75 @@ icon: Database
 
 > Overview of PostgreSQL in Pigsty
 
-- [Architecture](https://pigsty.io/docs/pgsql/arch/)
-- [Configuration](https://pigsty.io/docs/pgsql/config/)
-- [Extensions](https://pigsty.io/docs/pgsql/extension/)
-- [Databases](https://pigsty.io/docs/pgsql/db/)
-- [Users](https://pigsty.io/docs/pgsql/user/)
-- [Services](https://pigsty.io/docs/pgsql/svc/)
-- [HBA Rules](https://pigsty.io/docs/pgsql/hba/)
+- [Architecture](/docs/pgsql/arch/)
+- [Configuration](/docs/pgsql/config/)
+- [Extensions](/docs/pgsql/extension/)
+- [Databases](/docs/pgsql/db/)
+- [Users](/docs/pgsql/user/)
+- [Services](/docs/pgsql/svc/)
+- [HBA Rules](/docs/pgsql/hba/)
 - [Access Control](/docs/pgsql/acl)
-- [Administration](https://pigsty.io/docs/pgsql/admin/)
-- [Backup & PITR](https://pigsty.io/docs/pgsql/pitr/)
-- [Monitor](https://pigsty.io/docs/pgsql/monitor/)
-- [Migration](https://pigsty.io/docs/pgsql/migration/)
+- [Administration](/docs/pgsql/admin/)
+- [Backup & PITR](/docs/pgsql/pitr/)
+- [Monitor](/docs/pgsql/monitor/)
+- [Migration](/docs/pgsql/migration/)
 
 ------
 
 ## Configuration
 
-> [Describe](https://pigsty.io/docs/pgsql/config/) the cluster you want
+> [Describe](/docs/pgsql/config/) the cluster you want
 
-- [Identity](https://pigsty.io/docs/pgsql/config/#identity): Parameters used for describing a PostgreSQL cluster
-- [Primary](https://pigsty.io/docs/pgsql/config/#primary): Define a single instance cluster
-- [Replica](https://pigsty.io/docs/pgsql/config/#replica): Define a basic HA cluster with one primary & one replica
-- [Offline](https://pigsty.io/docs/pgsql/config/#offline): Define a dedicated instance for OLAP/ETL/Interactive queries.
-- [Sync Standby](https://pigsty.io/docs/pgsql/config/#sync-standby): Enable synchronous commit to ensure no data loss
-- [Quorum Commit](https://pigsty.io/docs/pgsql/config/#quorum-commit): Use quorum sync commit for an even higher consistency level
-- [Standby Cluster](https://pigsty.io/docs/pgsql/config/#standby-cluster): Clone an existing cluster and follow it
-- [Delayed Cluster](https://pigsty.io/docs/pgsql/config/#delayed-cluster): Clone an existing cluster for emergency data recovery
-- [Citus Cluster](https://pigsty.io/docs/pgsql/config/#citus-cluster): Define a Citus distributed database cluster
-- [Major Version](https://pigsty.io/docs/pgsql/config/#major-version): Define a PostgreSQL cluster with specific major version
+- [Identity](/docs/pgsql/config/#identity): Parameters used for describing a PostgreSQL cluster
+- [Primary](/docs/pgsql/config/#primary): Define a single instance cluster
+- [Replica](/docs/pgsql/config/#replica): Define a basic HA cluster with one primary & one replica
+- [Offline](/docs/pgsql/config/#offline): Define a dedicated instance for OLAP/ETL/Interactive queries.
+- [Sync Standby](/docs/pgsql/config/#sync-standby): Enable synchronous commit to ensure no data loss
+- [Quorum Commit](/docs/pgsql/config/#quorum-commit): Use quorum sync commit for an even higher consistency level
+- [Standby Cluster](/docs/pgsql/config/#standby-cluster): Clone an existing cluster and follow it
+- [Delayed Cluster](/docs/pgsql/config/#delayed-cluster): Clone an existing cluster for emergency data recovery
+- [Citus Cluster](/docs/pgsql/config/#citus-cluster): Define a Citus distributed database cluster
+- [Major Version](/docs/pgsql/config/#major-version): Define a PostgreSQL cluster with specific major version
 
 ------
 
 ## Administration
 
-> [Admin](https://pigsty.io/docs/pgsql/admin/) your existing clusters
+> [Admin](/docs/pgsql/admin/) your existing clusters
 
-- [`Admin Cheatsheet`](https://pigsty.io/docs/pgsql/admin/#cheatsheet)
-- [`Create Cluster`](https://pigsty.io/docs/pgsql/admin/#create-cluster)
-- [`Create User`](https://pigsty.io/docs/pgsql/admin/#create-user)
-- [`Create Database`](https://pigsty.io/docs/pgsql/admin/#create-database)
-- [`Reload Service`](https://pigsty.io/docs/pgsql/admin/#reload-service)
-- [`Reload HBARule`](https://pigsty.io/docs/pgsql/admin/#reload-hbarule)
-- [`Config Cluster`](https://pigsty.io/docs/pgsql/admin/#config-cluster)
-- [`Append Replica`](https://pigsty.io/docs/pgsql/admin/#append-replica)
-- [`Remove Replica`](https://pigsty.io/docs/pgsql/admin/#remove-replica)
-- [`Remove Cluster`](https://pigsty.io/docs/pgsql/admin/#remove-cluster)
-- [`Switchover Cluster`](https://pigsty.io/docs/pgsql/admin/#switchover)
-- [`Backup Cluster`](https://pigsty.io/docs/pgsql/admin/#backup-cluster)
-- [`Restore Cluster`](https://pigsty.io/docs/pgsql/admin/#restore-cluster)
+- [`Admin Cheatsheet`](/docs/pgsql/admin/#cheatsheet)
+- [`Create Cluster`](/docs/pgsql/admin/#create-cluster)
+- [`Create User`](/docs/pgsql/admin/#create-user)
+- [`Create Database`](/docs/pgsql/admin/#create-database)
+- [`Reload Service`](/docs/pgsql/admin/#reload-service)
+- [`Reload HBARule`](/docs/pgsql/admin/#reload-hbarule)
+- [`Config Cluster`](/docs/pgsql/admin/#config-cluster)
+- [`Append Replica`](/docs/pgsql/admin/#append-replica)
+- [`Remove Replica`](/docs/pgsql/admin/#remove-replica)
+- [`Remove Cluster`](/docs/pgsql/admin/#remove-cluster)
+- [`Switchover Cluster`](/docs/pgsql/admin/#switchover)
+- [`Backup Cluster`](/docs/pgsql/admin/#backup-cluster)
+- [`Restore Cluster`](/docs/pgsql/admin/#restore-cluster)
 
 ------
 
 ## Playbook
 
-> Materialize the cluster with idempotent [playbooks](https://pigsty.io/docs/pgsql/playbook/)
+> Materialize the cluster with idempotent [playbooks](/docs/pgsql/playbook/)
 
-- [`pgsql.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
-- [`pgsql-rm.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
-- [`pgsql-user.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
-- [`pgsql-db.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-dbyml) : Add new business database to existing PostgreSQL cluster
-- [`pgsql-monitor.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
-- [`pgsql-migration.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
+- [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
+- [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
+- [`pgsql-user.yml`](/docs/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
+- [`pgsql-db.yml`](/docs/pgsql/playbook/#pgsql-dbyml) : Add new business database to existing PostgreSQL cluster
+- [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
+- [`pgsql-migration.yml`](/docs/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
 
 
 ------
 
 ## Dashboard
 
-There are 26 default grafana dashboards about PostgreSQL and categorized into 4 levels. Check [Dashboards](https://pigsty.io/docs/pgsql/dashboard/) for details.
+There are 26 default grafana dashboards about PostgreSQL and categorized into 4 levels. Check [Dashboards](/docs/pgsql/dashboard/) for details.
 
 |                         Overview                          |                             Cluster                             |                          Instance                           |                         Database                          |
 |:---------------------------------------------------------:|:---------------------------------------------------------------:|:-----------------------------------------------------------:|:---------------------------------------------------------:|

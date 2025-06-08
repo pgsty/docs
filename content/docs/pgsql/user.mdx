@@ -75,7 +75,7 @@ Pigsty has a battery-included [ACL](/docs/pgsql/acl) system, which can be easily
 - `dbrole_readonly` : The role for global read-only access
 - `dbrole_readwrite` : The role for global read-write access
 - `dbrole_admin` : The role for object creation
-- `dbrole_offline` : The role for restricted read-only access ([offline](https://pigsty.io/docs/pgsql/config/#offline) instance)
+- `dbrole_offline` : The role for restricted read-only access ([offline](/docs/pgsql/config/#offline) instance)
 
 If you wish to re-design your ACL system, check the following parameters & templates.
 
@@ -90,7 +90,7 @@ If you wish to re-design your ACL system, check the following parameters & templ
 
 Users and roles defined in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles) and [`pg_users`](/docs/pgsql/param#pg_users) will be automatically created one by one during cluster initialization.
 
-If you want to [**create users**](https://pigsty.io/docs/pgsql/admin/#创建用户) on an existing cluster, you can use the `bin/pgsql-user` command line or directly use the [`pgsql-user.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-useryml) playbook.
+If you want to [**create users**](/docs/pgsql/admin/#创建用户) on an existing cluster, you can use the `bin/pgsql-user` command line or directly use the [`pgsql-user.yml`](/docs/pgsql/playbook/#pgsql-useryml) playbook.
 
 Add new user/role definitions to `all.children.<cls>.pg_users`, and create the database using one of the following methods:
 
@@ -105,13 +105,13 @@ Unlike databases, the user creation playbook is always idempotent. When the targ
 
 We do not recommend manually creating new business users, especially when the users you want to create use the default pgbouncer connection pool: unless you are willing to manually maintain the user list in Pgbouncer and keep it in sync with PostgreSQL.
 
-When creating new databases using the **`bin/pgsql-user`** tool or [**`pgsql-user.yml`**](https://pigsty.io/docs/pgsql/playbook/#pgsql-useryml) playbook, the database will also be added to the [Pgbouncer Users](https://pigsty.io/docs/pgsql/user/#pgbouncer用户) list.
+When creating new databases using the **`bin/pgsql-user`** tool or [**`pgsql-user.yml`**](/docs/pgsql/playbook/#pgsql-useryml) playbook, the database will also be added to the [Pgbouncer Users](/docs/pgsql/user/#pgbouncer用户) list.
 
 ------
 
 ## Modify User
 
-The method to modify PostgreSQL user attributes is the same as [**creating users**](https://pigsty.io/docs/pgsql/user/#创建用户).
+The method to modify PostgreSQL user attributes is the same as [**creating users**](/docs/pgsql/user/#创建用户).
 
 First, adjust your user definition by modifying the attributes you want to change, then execute the following command to apply:
 
@@ -178,9 +178,9 @@ dbuser_dba                  = pool_mode=session max_user_connections=16
 dbuser_monitor              = pool_mode=session max_user_connections=8
 ```
 
-The connection pool user configuration files `userlist.txt` and `useropts.txt` will be automatically refreshed when you [create users](https://pigsty.io/docs/pgsql/user/#创建用户) and take effect through online configuration reload, normally without affecting existing connections.
+The connection pool user configuration files `userlist.txt` and `useropts.txt` will be automatically refreshed when you [create users](/docs/pgsql/user/#创建用户) and take effect through online configuration reload, normally without affecting existing connections.
 
-When you [create databases](https://pigsty.io/docs/pgsql/db/#创建数据库), the Pgbouncer database list definition file will be refreshed and take effect through online configuration reload, without affecting existing connections.
+When you [create databases](/docs/pgsql/db/#创建数据库), the Pgbouncer database list definition file will be refreshed and take effect through online configuration reload, without affecting existing connections.
 
 ### Manage Users
 

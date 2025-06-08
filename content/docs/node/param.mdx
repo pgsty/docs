@@ -104,7 +104,7 @@ Node module are tuning target nodes into desired state and take it into the Pigs
 
 ## `NODE_ID`
 
-Each node has **identity parameters** that are configured through the parameters in `<cluster>.hosts` and `<cluster>.vars`. Check [NODE Identity](https://pigsty.io/docs/node/#configuration) for details.
+Each node has **identity parameters** that are configured through the parameters in `<cluster>.hosts` and `<cluster>.vars`. Check [NODE Identity](/docs/node/#configuration) for details.
 
 ------
 
@@ -156,7 +156,7 @@ exchange nodename among play hosts?
 
 default value is `false`
 
-When this parameter is enabled, node names are exchanged between the same group of nodes executing the [`node.yml`](https://pigsty.io/docs/node/playbook/#nodeyml) playbook, written to `/etc/hosts`.
+When this parameter is enabled, node names are exchanged between the same group of nodes executing the [`node.yml`](/docs/node/playbook/#nodeyml) playbook, written to `/etc/hosts`.
 
 ------
 
@@ -829,7 +829,7 @@ keepalived exporter listen port, 9650 by default.
 
 HAProxy is installed on every node by default, exposing services in a NodePort manner.
 
-It is used by [`PGSQL`](https://pigsty.io/docs/pgsql/) [Service](https://pigsty.io/docs/concept/svc/).
+It is used by [`PGSQL`](/docs/pgsql/) [Service](https://pigsty.io/docs/concept/svc/).
 
 ```yaml
 haproxy_enabled: true             # enable haproxy on this node?

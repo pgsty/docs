@@ -251,7 +251,7 @@ pg-backup incr                    # make a incremental backup
 pb info                           # check backup information
 ```
 
-Check [Backup](https://pigsty.io/docs/pgsql/pitr/) & PITR for details.
+Check [Backup](/docs/pgsql/pitr/) & PITR for details.
 
 
 
@@ -273,7 +273,7 @@ pg-pitr --backup=latest                 # restore to latest backup set
 pg-pitr --backup=20221108-105325        # restore to a specific backup set, which can be checked with pgbackrest info
 ```
 
-And follow the instructions wizard, Check Backup & [PITR](https://pigsty.io/docs/pgsql/pitr/) for details.
+And follow the instructions wizard, Check Backup & [PITR](/docs/pgsql/pitr/) for details.
 
 
 
@@ -281,7 +281,7 @@ And follow the instructions wizard, Check Backup & [PITR](https://pigsty.io/docs
 
 ## Adding Packages
 
-To add newer version of RPM packages, you have to add them to [`repo_packages`](https://pigsty.io/docs/infra/param/#repo_packages) and [`repo_url_packages`](https://pigsty.io/docs/infra/param/#repo_url_packages)
+To add newer version of RPM packages, you have to add them to [`repo_packages`](/docs/infra/param/#repo_packages) and [`repo_url_packages`](/docs/infra/param/#repo_url_packages)
 
 Then rebuild repo on infra nodes with `./infra.yml -t repo_build` subtask, Then you can install these packages with `ansible` module `package`:
 
@@ -330,7 +330,7 @@ pg restart --force <cls>                                # restart cluster
 
 ## Major Upgrade
 
-The simplest way to achieve a major version upgrade is to create a new cluster with the new version, then [migration](https://pigsty.io/docs/pgsql/migration/) with logical replication & green/blue deployment.
+The simplest way to achieve a major version upgrade is to create a new cluster with the new version, then [migration](/docs/pgsql/migration/) with logical replication & green/blue deployment.
 
 You can also perform an in-place major upgrade, which is not recommended especially when certain extensions are installed. But it is possible.
 

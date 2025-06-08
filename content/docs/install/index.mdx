@@ -14,23 +14,17 @@ import {
     ToyBrickIcon,
 } from 'lucide-react';
 
-
-import { DynamicLink } from 'fumadocs-core/dynamic-link';
-
 import { Step, Steps } from 'fumadocs-ui/components/steps';
-
-import { File, Folder, Files } from 'fumadocs-ui/components/files';
-
 
 ## Quick Start
 
-[Prepare](/docs/setup/prepare) a [ssh-accessible](/docs/setup/prepare#accessibility) [node](/docs/setup/prepare#node) with fresh installed [Compatible Linux OS](/docs/setup/linux),
- run as user with nopass [`ssh`](/docs/setup/prepare#ssh) and [`sudo`](/docs/setup/prepare#admin-user) privileges:
+[Prepare](/docs/prepare) one [ssh-accessible](/docs/prepare#accessibility) [node](/docs/prepare#node) with fresh installed [Compatible Linux OS](/docs/prepare/linux),
+ run as user with nopass [`ssh`](/docs/prepare#ssh) and [`sudo`](/docs/prepare#admin-user) privileges:
 
 <Steps>
 <Step>
 
-[**Download**](/docs/setup/install#download) pigsty with:
+[**Download**](/docs/install#download) pigsty with:
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
@@ -38,7 +32,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 
 </Step>
 <Step>
-[Bootstrap](/docs/setup/offline#bootstrap) pigsty with required dependencies (`ansible`):
+[Bootstrap](/docs/install/offline#bootstrap) pigsty with required dependencies (`ansible`):
 
 ```bash
 ./bootstrap
@@ -46,7 +40,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Step>
 
 <Step>
-[**Configure**](/docs/setup/install#configure) the [`pigsty.yml`](/docs/setup/config) inventory file according your need and environment.
+[**Configure**](/docs/install#configure) the [`pigsty.yml`](/docs/config/inventory) inventory file according your need and environment.
 
 ```bash
 ./configure
@@ -55,7 +49,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Step>
 <Step>
 
-[**Install**](/docs/setup/install#install) everything accoring to your config:
+[**Install**](/docs/install#install) everything accoring to your config:
 
 ```bash
 ./install.yml
@@ -66,7 +60,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Steps>
 
 
-Pigsty Single-Node [**Installation**](/docs/setup/install) Ready! 
+Pigsty Single-Node [**Installation**](/docs/install) Ready!
 Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
 
 
@@ -87,16 +81,16 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='One-Node Installation' href={"/docs/setup/install"}>
+    <Card icon={<Database className="text-blue-300" />} title='One-Node Installation' href={"/docs/install"}>
         Setup current linux node, and download everything from the Internet
     </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='Multi-Node Installation' href={"/docs/setup/multinode"}>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Multi-Node Installation' href={"/docs/install/multinode"}>
         Setup multiple nodes for real high-available production environment.
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Offline Installation' href={"/docs/setup/offline"}>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Offline Installation' href={"/docs/install/offline"}>
         Bootstrap from a local offline package which contains all the packages.
     </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Minimal Installation' href={"/docs/setup/minimal"}>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Minimal Installation' href={"/docs/install/minimal"}>
         Install essential packages for HA Postgres Cluster only, no monitoring.
     </Card>
 </Cards>
@@ -108,18 +102,18 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 
 <Cards>
 
-    <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/docs/setup/prepare"}>
+    <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/docs/prepare"}>
         Prepare node, network, storage, user, ssh, sudo, ansible, etc...
     </Card>
 
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux OS' href={"/docs/setup/linux"}>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux OS' href={"/docs/prepare/linux"}>
         Check compatible linux distributions and availability matrix
     </Card>
 
-    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/docs/setup/vagrant"}>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/docs/prepare/vagrant"}>
         Provision local linux virtual machines with vagrant / virtualbox
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/docs/setup/terraform"}>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/docs/prepare/terraform"}>
         Provision cloud linux servers with terraform on cloud vendors
     </Card>
 
@@ -131,19 +125,19 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 
 <Cards>
 
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Explore' href={"/docs/setup/terraform"}>
-        Provion cloud linux servers with terraform on cloud vendors
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Explore' href={"/docs/prepare/terraform"}>
+        Provision cloud linux servers with terraform on cloud vendors
     </Card>
 
-    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/docs/setup/prepare"}>
+    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/docs/prepare"}>
         Prepare node, network, storage, user, ssh, sudo, ansible, etc...
     </Card>
 
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/docs/setup/linux"}>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/docs/prepare/linux"}>
         Check compatible linux distributions and availability matrix
     </Card>
 
-    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/docs/setup/vagrant"}>
+    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/docs/prepare/vagrant"}>
         Security hardening and best practices for production environments
     </Card>
 

@@ -4,20 +4,12 @@ description: explore dashboard and access database service
 icon: Search
 ---
 
-import { DynamicLink } from 'fumadocs-core/dynamic-link';
+Once installed, you’ll have four [core modules](https://pigsty.io/docs/about/module/#core-modules) [**`PGSQL`**](/docs/pgsql/), [**`INFRA`**](/docs/infra/), [**`NODE`**](/docs/node/), and [**`ETCD`**](/docs/etcd/) the current node.
 
-import { Step, Steps } from 'fumadocs-ui/components/steps';
+The [**PGSQL**](/docs/pgsql/) provides a PostgreSQL singleton which can be [accessed](https://pigsty.io/docs/concept/svc/#personal-user) via:
 
-import { File, Folder, Files } from 'fumadocs-ui/components/files';
+**Default Users**
 
-import { CpuIcon, FileCode } from 'lucide-react';
-
-
-Once installed, you’ll have four [core modules](https://pigsty.io/docs/about/module/#core-modules) [**`PGSQL`**](https://pigsty.io/docs/pgsql/), [**`INFRA`**](https://pigsty.io/docs/infra/), [**`NODE`**](https://pigsty.io/docs/node/), and [**`ETCD`**](https://pigsty.io/docs/etcd/) the current node.
-
-The [**PGSQL**](https://pigsty.io/docs/pgsql/) provides a PostgreSQL singleton which can be [accessed](https://pigsty.io/docs/concept/svc/#personal-user) via:
-
-- Default Users
 - dbuser_dba
 - dbuser_meta
 - dbuser_view
@@ -26,9 +18,9 @@ The [**PGSQL**](https://pigsty.io/docs/pgsql/) provides a PostgreSQL singleton w
 psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10/meta     # DBA / superuser (via IP)
 ```
 
-The [**INFRA**](https://pigsty.io/docs/infra/) module gives you an entire modern observability stack, exposed by Nginx on (`80` / `443`):
+The [**INFRA**](/docs/infra/) module gives you an entire modern observability stack, exposed by Nginx on (`80` / `443`):
 
-There are several services are exposed by Nginx (configured by [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal)):
+There are several services are exposed by Nginx (configured by [`infra_portal`](/docs/infra/param/#infra_portal)):
 
 |  Component   |    Port    |   Domain   | Comment                  | Public Demo                                 |
 |:------------:|:----------:|:----------:|--------------------------|---------------------------------------------|
@@ -42,121 +34,3 @@ There are several services are exposed by Nginx (configured by [`infra_portal`](
 ![pigsty-home.jpg](https://pigsty.io/img/pigsty/home.jpg)
 
 You can access these web UI directly via IP + port. While the common best practice would be access them through Nginx and distinguish via domain names. You’ll need configure DNS records, or use the local static records (`/etc/hosts`) for that.
-
-------
-
-## More
-
-You can deploy & monitor more clusters with pigsty: add more nodes to `pigsty.yml` and run corresponding playbooks:
-
-```bash
-bin/node-add   pg-test      # init 3 nodes of cluster pg-test
-bin/pgsql-add  pg-test      # init HA PGSQL Cluster pg-test
-bin/redis-add  redis-ms     # init redis cluster redis-ms
-```
-
-Remember that most modules require the [`NODE`](https://pigsty.io/docs/node/) module installed first. Check [**modules**](https://pigsty.io/docs/about/module/) for detail
-
-[**`PGSQL`**](https://pigsty.io/docs/pgsql/), [**`INFRA`**](https://pigsty.io/docs/infra/), [**`NODE`**](https://pigsty.io/docs/node/), [**`ETCD`**](https://pigsty.io/docs/etcd/), [**`MINIO`**](https://pigsty.io/docs/minio/), [**`REDIS`**](https://pigsty.io/docs/redis/), [**`FERRET`**](https://pigsty.io/docs/ferret/), [**`DOCKER`**](https://pigsty.io/docs/node/), ……
-
-
-
-
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <DynamicLink href="/[lang]/docs/setup/install#bootstrap"><File name="bootstrap" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/setup/install#configure"><File name="configure" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/setup/install#install.yml"><File name="install.yml" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/setup/config"><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></DynamicLink>
-    </Folder>
-</Files>
-
-
---------
-
-Prepare a fresh `x86_64/aarch64` node that runs any [compatible Linux OS Distros](/[lang]/docs/pigsty/linux), then Download Pigsty with:
-
-<DynamicLink href="/[lang]/docs/pigsty/linux">This is a link</DynamicLink>
-
-```bash title="download"
-curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
-```
-
-You can run the optional bootstrap and configure to install ansible and generate `pigsty.yml` config file.
-
-
-
-
-
---------------------
-
-## TEMP
-
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <File name="bootstrap" />
-        <File name="configure" />
-        <File name="install.yml" />
-        <File name="pigsty.yml" />
-    </Folder>
-</Files>
-
-Next, run the `install.yml` playbook with an admin user (nopass ssh & sudo):
-
-```bash title="~/pigsty"
-./bootstrap; ./configure; ./install.yml
-```
-
-Install Pigsty with 4 steps: [**Prepare**](https://pigsty.io/docs/setup/install/#prepare), [**Download**](https://pigsty.io/docs/setup/install/#download), [**Configure**](https://pigsty.io/docs/setup/install/#configure) and [**Install**](https://pigsty.io/docs/setup/install/#install). Also check [offline](https://pigsty.io/docs/setup/offline/) if you don’t have internet access.
-
-------
-
-## Short Version
-
-
-[**Prepare**](https://pigsty.io/docs/setup/install/#prepare) a fresh **x86_64/aarch64** node that runs any [**compatible**](https://pigsty.io/docs/reference/compatibility/) **Linux** OS Distros, then [**Download**](https://pigsty.io/docs/setup/install/#download) **Pigsty** with:
-
-```bash
-curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
-```
-
-You can run the optional [**bootstrap**](https://pigsty.io/docs/setup/offline/#bootstrap) and [**configure**](https://pigsty.io/docs/setup/install/#configure) to install `ansible` and generate `pigsty.yml` config file.
-
-Next, run the [**`install.yml`**](https://pigsty.io/docs/setup/install/#install) playbook with an [**admin user**](https://pigsty.io/docs/setup/prepare/#admin-user) (**nopass** `ssh` & `sudo`):
-
-```bash
-./bootstrap; ./configure; ./install.yml;
-```
-
-- [**bootstrap**](https://pigsty.io/docs/setup/offline/#bootstrap): **OPTIONAL**, make sure `ansible` is installed, and use offline package `/tmp/pkg.tgz` if applicable
-- [**configure**](https://pigsty.io/docs/setup/install/#configure): **OPTIONAL**, recommend & generate `pigsty.yml` config according to your env.
-- [**install.yml**](https://pigsty.io/docs/setup/install/#install): **REQUIRED**, install Pigsty modules according to your config file.
-
-It may take several minutes to complete the installation according to your network speed and hardware spec.
-
-After that, you will get a pigsty singleton node [**ready**](https://pigsty.io/docs/setup/install/#interface), with Web service on port `80/443` and Postgres on port `5432`.
-
-BTW: If you feel Pigsty is too complicated, you can consider the [**Slim Installation**](https://pigsty.io/docs/setup/slim/), which only installs the necessary components for HA PostgreSQL clusters.
-
-------
-
-
-
-------
-
-## Use the pig CLI
-
-Pigsty has a built-in CLI tool: [`pig`](https://pigsty.io/ext/pig/), which is a package manager for PostgreSQL & extensions, and a cli for Pigsty.
-
-```bash
-curl https://repo.pigsty.io/pig | bash
-```
-
-It will install the `pig` cli tool, you can install pigsty with `pig sty` sub command:
-
-```bash
-pig sty init     # extract the embed src to ~/pigsty
-pig sty boot     # run bootstrap to install ansible & deps
-pig sty conf     # run configure to generate pigsty.yml conf
-pig sty install  # run install.yml to complete the installation
-```

@@ -103,9 +103,9 @@ pg restart <cls>                          # restart postgres to use hugepage
 
 ## How to guarantee zero data loss during failover?
 
-> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](https://pigsty.io/docs/pgsql/admin/#config-cluster) with synchronous mode.
+> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](/docs/pgsql/admin/#config-cluster) with synchronous mode.
 
-Consider using [Sync Standby](https://pigsty.io/docs/pgsql/config/#sync-standby) and [Quorum Comit](https://pigsty.io/docs/pgsql/config/#quorum-commit) to guarantee 0 data loss during failover.
+Consider using [Sync Standby](/docs/pgsql/config/#sync-standby) and [Quorum Comit](/docs/pgsql/config/#quorum-commit) to guarantee 0 data loss during failover.
 
 ------
 
@@ -179,7 +179,7 @@ The default scrape interval for prometheus is 10s in pigsty, make sure the expor
 
 ## How to monitor an existing PostgreSQL instance?
 
-Check [PGSQL Monitor](https://pigsty.io/docs/pgsql/monitor/) for details.
+Check [PGSQL Monitor](/docs/pgsql/monitor/) for details.
 
 ------
 

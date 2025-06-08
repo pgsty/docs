@@ -14,13 +14,13 @@ A "**node**" refers to a resource that is SSH [accessible](#accessibility) and o
 It could be a physical machine, a virtual machine, or a OS-like container equipped with `systemd`, `sudo` and `sshd`.
 
 It requires at least <span className="text-xl font-black"> 1 </span> node to deploy pigsty,
-You can prepare more and setup everything in [one-pass](/docs/setup/playbook#deployment), or add them later.
+You can prepare more and setup everything in [one-pass](/docs/admin/playbook#deployment), or add them later.
 The minimum node spec requirement is `1C1G`, it is recommended to use at least `2C2G`.
 Higher is better, with no upper limit. Parameters will be automatically tuned based on available resource.
 
 <Callout title="Use multiple nodes for production deployment" type={"info"}>
 
-    A functioning HA setup require at least **3** nodes to work, or use **2** for a semi-HA setup
+    A functioning HA setup requires at least **3** nodes to work, or use **2** for a semi-HA setup
 
 </Callout>
 
@@ -92,12 +92,12 @@ The standard demonstration environment used by Pigsty's [sandbox](/docs/prepare/
 
 ## Disk
 
-Pigsty will use `/data` as the default data directory, if you have a dedicate main data disk, it is recommended to mount it there,
+Pigsty will use `/data` as the default data directory, if you have a dedicated main data disk, it is recommended to mount it there,
 and use `/data1`, `/data2`, `/dataN` for extra disk drivers.
 
 <Callout title="Mount disks elsewhere?" type={"warn"}>
 
-If you are mount it elsewhere, you'll have to change the following parameters accordingly:
+If you are mounting it elsewhere, you'll have to change the following parameters accordingly:
 
 | Name | Description | Default |
 |------|-------------|---------|
@@ -140,7 +140,7 @@ The IP address will be used as the node's **unique identifier**, it should be th
 
 </Callout>
 
-Internet access is required when performing the standard (online) [**installation**](/docs/setup/install).
+Internet access is required when performing the standard (online) [**installation**](/docs/install).
 But pigsty can be [offline installed](/docs/install/offline) via offline package,
 which does not require Internet access in this case.
 

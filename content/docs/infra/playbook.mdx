@@ -6,27 +6,27 @@ icon: ScrollText
 
 There are three playbooks related to the INFRA module:
 
-- [`infra.yml`](https://pigsty.io/docs/infra/playbook/#infrayml): Initialize Pigsty infrastructure on infra nodes
-- [`infra-rm.yml`](https://pigsty.io/docs/infra/playbook/#infra-rmyml): Remove infrastructure components from infra nodes
-- [`install.yml`](https://pigsty.io/docs/infra/playbook/#installyml): Perform a complete one-time installation of Pigsty on the current node
+- [`infra.yml`](/docs/infra/playbook/#infrayml): Initialize Pigsty infrastructure on infra nodes
+- [`infra-rm.yml`](/docs/infra/playbook/#infra-rmyml): Remove infrastructure components from infra nodes
+- [`install.yml`](/docs/infra/playbook/#installyml): Perform a complete one-time installation of Pigsty on the current node
 
 ------
 
 ## `infra.yml`
 
-The INFRA module playbook [`infra.yml`](https://github.com/pgsty/pigsty/blob/main/infra.yml) initializes the infrastructure module on [**Infra nodes**](https://pigsty.io/docs/node/concept/#infra-nodes) defined in the `infra` group of your config file.
+The INFRA module playbook [`infra.yml`](https://github.com/pgsty/pigsty/blob/main/infra.yml) initializes the infrastructure module on [**Infra nodes**](/docs/node/concept/#infra-nodes) defined in the `infra` group of your config file.
 
 **This playbook performs the following tasks:**
 
 - Configures directories and environment variables on Infra nodes
 - Downloads and creates a local software repository to accelerate subsequent installations (skipped if offline packages are used or if a local repository already exists)
-- Incorporates the current Infra node as a [regular node](https://pigsty.io/docs/node/concept/#regular-nodes) managed by Pigsty
+- Incorporates the current Infra node as a [regular node](/docs/node/concept/#regular-nodes) managed by Pigsty
 - Deploys **infrastructure** components, including Prometheus, Grafana, Loki, Alertmanager, PushGateway, Blackbox Exporter, etc.
 
-**This playbook executes on the [`infra`](https://pigsty.io/docs/node/concept/#infra-nodes) group by default:**
+**This playbook executes on the [`infra`](/docs/node/concept/#infra-nodes) group by default:**
 
-- Pigsty installs the [**`INFRA`**](https://pigsty.io/docs/infra/) module on the group named `infra` in the config file
-- During [configure](https://pigsty.io/docs/setup/install/#configure), Pigsty marks the current installation node as an Infra node and replaces the placeholder IP address `10.10.10.10` in the config template with the [**current node’s primary IP address**](https://pigsty.io/docs/setup/prepare/#network-preparation)
+- Pigsty installs the [**`INFRA`**](/docs/infra/) module on the group named `infra` in the config file
+- During [configure](/docs/config/configure), Pigsty marks the current installation node as an Infra node and replaces the placeholder IP address `10.10.10.10` in the config template with the [**current node’s primary IP address**](https://pigsty.io/docs/prepare/#network-preparation)
 - This node can initiate management tasks and hosts infrastructure components while functioning like any regular managed node
 
 **Playbook notes:**
@@ -41,9 +41,9 @@ overwrite
 
 infrastructure components on Infra nodes
 
-- Unless [`prometheus_clean`](https://pigsty.io/docs/infra/param/#prometheus_clean) is set to `false`, Prometheus time series metrics will be lost
-- Unless [`loki_clean`](https://pigsty.io/docs/infra/param/#loki_clean) is set to `false`, Loki log data will be lost
-- Unless [`grafana_clean`](https://pigsty.io/docs/infra/param/#grafana_clean) is set to `false`, Grafana dashboards and configuration changes will be lost
+- Unless [`prometheus_clean`](/docs/infra/param/#prometheus_clean) is set to `false`, Prometheus time series metrics will be lost
+- Unless [`loki_clean`](/docs/infra/param/#loki_clean) is set to `false`, Loki log data will be lost
+- Unless [`grafana_clean`](/docs/infra/param/#grafana_clean) is set to `false`, Grafana dashboards and configuration changes will be lost
 
 - When the local software repository
 
@@ -124,7 +124,7 @@ Here’s the list of available tasks in the `infra.yml` playbook:
 
 ## `infra-rm.yml`
 
-The INFRA module playbook [`infra-rm.yml`](https://github.com/pgsty/pigsty/blob/main/infra-rm.yml) removes Pigsty infrastructure from [Infra nodes](https://pigsty.io/docs/node/#infra-nodes) defined in the `infra` group of your config file.
+The INFRA module playbook [`infra-rm.yml`](https://github.com/pgsty/pigsty/blob/main/infra-rm.yml) removes Pigsty infrastructure from [Infra nodes](/docs/node/#infra-nodes) defined in the `infra` group of your config file.
 
 Common subtasks include:
 
@@ -141,4 +141,4 @@ Common subtasks include:
 
 The INFRA module playbook [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) performs a complete one-time installation of Pigsty on **all nodes**.
 
-This playbook is described in more detail in [Playbook: One-time Installation](https://pigsty.io/docs/setup/playbook/#one-time-installation).
+This playbook is described in more detail in [Playbook: One-time Installation](/docs/admin/playbook#deployment).
