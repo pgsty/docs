@@ -50,10 +50,10 @@ The special playbook `install.yml` will deploy everything with ad hoc playbooks:
 
 <Callout title="Circular Dependency Between NODE and INFRA" type="warn">
 
-    There's a weak circular dependency between [**NODE**](/docs/node/) and [**INFRA**](/docs/infra/): to register a NODE
+    There is a weak circular dependency between [**NODE**](/docs/node/) and [**INFRA**](/docs/infra/): to register a NODE
     to INFRA, the INFRA should already exist, while the INFRA module relies on NODE to work.
 
-    One way to work around it is init `infra` nodes first, then add other nodes, if you wish to deploy them all in
+    One way to work around it is to init `infra` nodes first, then add other nodes, if you wish to deploy them all in
     one-pass, `install.yml` is the way to go.
 
 </Callout>

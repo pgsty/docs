@@ -12,7 +12,7 @@ icon: Warehouse
 If you want to add some packages to the local repo, add them to:
 
 - [`repo_packages`](/docs/infra/param#repo_packages) for default packages
-- [repo_extra_packages`](/docs/infra/param/#repo_extra_packages) for extra packages
+- [`repo_extra_packages`](/docs/infra/param/#repo_extra_packages) for extra packages
 
 Then run the `make repo` shortcut to update the local repo and node repo cache:
 
@@ -85,10 +85,10 @@ pgsql-basic:    "postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvec
 # ......
 ```
 
-| Distro | x86_64 | aarch64 |
-|--------|---------|----------|
-| Debian 11 | [`d11.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d11.x86_64.yml) | - |
-| Debian 12 | [`d12.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml) | [`d12.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) |
+| Distro       | x86_64                                                                                          | aarch64                                                                                           |
+|--------------|-------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| Debian 11    | [`d11.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d11.x86_64.yml) | -                                                                                                 |
+| Debian 12    | [`d12.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml) | [`d12.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) |
 | Ubuntu 22.04 | [`u22.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u22.x86_64.yml) | [`u22.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u22.aarch64.yml) |
 | Ubuntu 24.04 | [`u24.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml) | [`u24.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) |
 
@@ -98,7 +98,7 @@ pgsql-basic:    "postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvec
 
 ## Reference
 
-Use these playbook tasks to manage local package repositories (YUM/APT) on Infra nodes (because who doesn’t love a good package party?):
+Use these playbook tasks to manage local package repositories (YUM/APT) on Infra nodes:
 
 ```bash
 ./infra.yml -t repo              # Create local repo from internet or offline packages
@@ -119,7 +119,7 @@ Use these playbook tasks to manage local package repositories (YUM/APT) on Infra
 ./infra.yml -t repo_nginx        # Start nginx as file server if not running
 ```
 
-Commonly used commands (the greatest hits):
+Commonly used commands:
 
 ```bash
 ./infra.yml     -t repo_upstream     # Add upstream repos defined in repo_upstream
