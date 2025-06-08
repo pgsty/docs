@@ -4,7 +4,6 @@
   "root": false,
   "icon": "Landmark",
   "pages": [
-    "index",
     "concept",
     "config",
     "param",

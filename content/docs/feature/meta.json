@@ -1,0 +1,19 @@
+{
+    "title": "Features",
+    "description": "Key Features",
+    "icon": "Feather",
+    "defaultOpen": false,
+    "pages": [
+        "rds",
+        "distro",
+        "ext",
+        "kernel",
+        "vis",
+        "raw",
+        "ha",
+        "pitr",
+        "iac",
+        "app",
+        "supabase"
+    ]
+}

@@ -6,7 +6,40 @@ icon: Box
 
 
 [Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html): S3-Compatible Open-Source Multi-Cloud Object Storage
+It’s designed to be scalable, secure, and easy to use. It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups.
 
-MinIO is an S3-compatible object storage server. It’s designed to be scalable, secure, and easy to use. It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups.
+Pigsty uses MinIO as an optional PostgreSQL backup storage repo, in addition to the default local posix FS repo. If the MinIO repo is used, 
+the `MINIO` module should be installed before any [`PGSQL`](/docs/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it after [`NODE`](/docs/node/).
 
-Pigsty uses MinIO as an optional PostgreSQL backup storage repo, in addition to the default local posix FS repo. If the MinIO repo is used, the `MINIO` module should be installed before any [`PGSQL`](/docs/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it in addition to [`NODE`](/docs/node/) module.
+--------
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/minio/config"}>
+        Configure minio module, and use multiple minio nodes.
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/docs/minio/param"}>
+        Customize minio components with 15 parameters
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/docs/minio/admin"}>
+        Create, remove, expand, shrink, upgrade minio cluster 
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/docs/minio/playbook"}>
+        Ansible playbooks that can be used in this module
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/minio/monitor"}>
+        Dashboards, metrics, record & alerting rules.
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/minio/faq"}>
+        Frequently Asked Questions about minio module
+    </Card>
+</Cards>

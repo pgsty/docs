@@ -4,7 +4,39 @@ description: Transform bare metal, VMs, or containers into standardized infrastr
 icon: Server
 ---
 
-# Node Management
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/node/config"}>
+        Configure node identities
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/docs/node/param"}>
+        Customize node components with 64 parameters
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/docs/node/admin"}>
+        Setup VIP, manage monitoring node targets
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/docs/node/playbook"}>
+        Ansible playbooks that can be used in node module
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/node/monitor"}>
+        Dashboards, metrics, record & alerting rules.
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/node/faq"}>
+        Frequently Asked Questions about node module
+    </Card>
+</Cards>
+
+--------
 
 The **NODE** module is Pigsty's foundational infrastructure layer, responsible for transforming raw computing resources—whether bare metal servers, virtual machines, or containerized environments—into standardized, monitored, and service-ready nodes within your infrastructure cluster.
 

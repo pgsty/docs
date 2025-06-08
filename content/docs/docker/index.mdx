@@ -3,3 +3,35 @@ title: Docker
 description: Docker, the opt container service
 icon: Container
 ---
+
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/docker/config"}>
+        Configure docker registry, proxy, images, etc...
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/docs/docker/param"}>
+        Customize docker components with 8 parameters
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/docs/docker/admin"}>
+        Manage docker images, containers, etc...
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/docs/docker/playbook"}>
+        Ansible playbooks that can be used in docker module
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/docker/monitor"}>
+        Dashboards, metrics, record & alerting rules.
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/docker/faq"}>
+        Frequently Asked Questions about docker module
+    </Card>
+</Cards>

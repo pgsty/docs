@@ -1,0 +1,104 @@
+---
+title: Reliable Infra DBMS
+description: Rock-Solid and Secure
+icon: Castle
+---
+
+import { Banner } from 'fumadocs-ui/components/banner';
+
+<Banner variant="rainbow">"Towering peaks, bedrock solid, standing firm at any summit!"</Banner>
+
+--------
+
+## High-Availability: Reliable PostgreSQL RDS
+
+> Delivers PG HA solutions following industry best practices.\
+> Adjustable Recovery Time Objective (RTO) and Recovery Point Objective (RPO).
+
+- Primary failover metrics: RTO ≈ 30 seconds (adjustable)
+- Async commit mode: RPO < 1MB, crit mode: RPO = 0
+- Replica failure / switchover: RTO ≈ 0 seconds
+
+--------
+
+## Self-Healing: Adaptive Service Failover
+
+> Self-healing architecture with transparent topology and multi-writer experience.\
+> Automatic traffic routing based on health checks and flexible access methods.
+
+- Industry HA best practices: Patroni, Etcd, HAProxy, VIP Manager
+- 4 default services with read-write splitting
+- Automatic traffic routing based on health checks
+- Flexible access methods: IP, Connection Pools, L2 VIP, L4 LB
+
+--------
+
+## PITR Protection: Pre-configured Backup & Archives
+
+> Pre-configures physical backups and enables WAL archiving by default.\
+> Protection against software defects and human errors with incremental recovery.
+
+- Industry backup best practices: pgBackRest + MinIO/Local Disk/S3
+- Protection against software defects and human errors
+- One-command backup and restore
+- In-place concurrent incremental PITR
+
+--------
+
+## Infra Closure: No External Dependencies
+
+> Complete PostgreSQL RDS infrastructure requiring no external dependencies.\
+> All critical services included for self-contained operation.
+
+- Observability infrastructure: Prometheus / Grafana
+- Load balancing: Nginx / HAProxy
+- Configuration storage: Etcd / MinIO
+- Critical services: DNSMasq / Chronyd
+
+--------
+
+## Access Control: Built-in Best-Practice Model
+
+> Default ACL with read/write/admin/analytics/monitoring/DBA separation.\
+> Secure configuration out of the box with role-based access control.
+
+- Default roles: readonly / readwrite / admin / offline
+- Default users: DBSU / DBA / replication / monitoring
+- Default HBA rule sets
+- Managed pgbouncer db/user credentials
+
+--------
+
+## Confidentiality: Guaranteed Data Security
+
+> Self-signed CA, SSL encryption, password for backups and endpoints\
+> As long as your passwords & key are secure, your data remains safe.
+
+- Local CA-issued certificates with SSL/TLS enabled globally by default
+- SCRAM-SHA-256 verification, AES-encrypted backup data
+- Precise allow/deny list default policies to prevent unauthorized access
+- All externally exposed web services are uniformly managed through Nginx
+
+--------
+
+## Data Integrity: Thorough Verification
+
+> Data checksums for silent corruption. Replicas and delayed standby instances.\
+> Audit extensions and centralized logging, with transparency and efficiency.
+
+- CRIT configuration template: optimized for data integrity
+- Data checksums enabled to prevent silent data corruption
+- WatchDog: STONITH to prevent cluster split-brain
+- Audit Log: centrally collected, tamper-proof
+
+--------
+
+## Battle-Tested: Availability Results
+
+> Running robustly in many large organizations, maintain 99.999%+ availability.
+> Ultimate business continuity: rolling upgrades, switchovers, and online migrations
+
+- No single points of failure: Redundant HA designs for all critical components
+- Zero-downtime migration based on logical replication blue-green deployment
+- Emergency plans: standard SOPs for various failure scenarios
+- Benchmark case: 25,000 vCPU x six years x 99.999% availability

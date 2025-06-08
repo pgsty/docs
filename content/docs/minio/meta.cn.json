@@ -4,7 +4,6 @@
   "root": false,
   "icon": "Box",
   "pages": [
-    "index",
     "usage",
     "config",
     "param",

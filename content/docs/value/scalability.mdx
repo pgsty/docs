@@ -1,0 +1,97 @@
+---
+title: Scalable Service
+description: Elastic Performance
+icon: ChartColumnIncreasing
+---
+
+import { Banner } from 'fumadocs-ui/components/banner';
+
+<Banner variant="rainbow">"Ever-flowing like water, soft yet resilient, converging streams to adapt to endless change!"</Banner>
+
+--------
+
+## Great Performance: Hardware Fully Harnessed
+
+> Highlights amazing scalability and top-tier hardware performance.\
+> Maximizing the potential of modern hardware with optimized configurations.
+
+- Single-node query rate reaches 2 million rows/second
+- Single-node write rate can reach 1 million rows/second
+- Default table size limit: 32TB (2^32 x 8KiB Page)
+
+--------
+
+## R/W Separation: Unlimited Read Scaling
+
+> Offers unlimited replicas through cascading replication with auto traffic routing.\
+> Scale read workloads horizontally without impacting write performance.
+
+- Read-only Service: Route to read-only replicas with primary as backup
+- Offline Service: Route to special analytics instance with replicas as backup
+- Production Case: One primary with 34+ replicas through cascading bridges
+
+--------
+
+## Connection Pooling: High Concurrency
+
+> Built-in PGBouncer connection pool, ready out of the box and syncing with postgres.\
+> Handle thousands of concurrent connections efficiently with resource optimization.
+
+- Xact pooling converts 20000+ client connections to several active server connections
+- Enabled by default, automatically syncing db/user with postgres
+- Deploy multiple pgbouncer instances to circumvent bottlenecks
+
+--------
+
+## Load Balancing: Traffic Control
+
+> Monitor and schedule request traffic in real-time with HAProxy console.\
+> Intelligent traffic distribution with health checks and failover capabilities.
+
+- Stateless HAProxy can be scaled at will or deployed on dedicated servers
+- Weights can be adjusted via CLI, draining or warming up instances gracefully
+- Password-protected HAProxy GUI exposed uniformly through Nginx
+
+--------
+
+## Horizontal Scaling: Distributive Extension
+
+> Citus extension with multi-write and multi-tenant capabilities.\
+> Scale beyond single-node limitations with distributed PostgreSQL.
+
+- Accelerate real-time OLAP analytics using multi-node parallel processing
+- Shard by row key or schema, supporting multi-tenant scenarios
+- Online partition rebalancing, adjusting throughput capacity
+
+--------
+
+## Storage Expansion: Transparent Compression
+
+> Achieve 10:1 or even higher compression ratios with colunmar and other exts\
+> R/W data in S3 with FDW, hot/cold separation and unlimited capacity expansion
+
+- Use timescaledb, pg_mooncake, pg_duckdb for columnar compression
+- Use duckdb_fdw, pg_parquet, pg_analytics to read/write object storage tables
+- Expand or contract storage with S/H RAID, ZFS, and PG tablespaces
+
+--------
+
+## Mass Deployment: Large clusters made easy
+
+> Designed for extreme scale - flexible for 25K vCPU clusters or 1c1m node\
+> No limit on nodes per deployment - soft constrained only by monitoring capacity
+
+- Batch Ops at scale through Ansible, saying goodbye to console ClickOps
+- Largest production deployment record: 25,000 vCPU, 3,000+ instances
+- Scale monitoring system with optional Distributed VictoriaMetrics
+
+--------
+
+## Elasticity: Cloud-like Elasticity
+
+> Supports cloud EC2 deployment, fully leveraging the elastic advantages of cloud\
+> Flexible multi-cloud strategies - enjoy RDS elasticity with EC2/EBS prices
+
+- Pigsty only needs cloud servers, works the same across any cloud provider
+- Seamless switching between public, private, hybrid, and multi-cloud
+- Scale compute and storage as needed

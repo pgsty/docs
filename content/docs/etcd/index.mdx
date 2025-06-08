@@ -1,7 +1,7 @@
 ---
 title: Etcd
 description: The distributive consensus storage
-icon: Settings
+icon: HandCoins
 ---
 
 ETCD is a distributed, reliable key-value store for the most critical data of a distributed system
@@ -13,3 +13,36 @@ Pigsty use [**etcd**](https://etcd.io/) as [**DCS**](https://patroni.readthedocs
 You have to install [`ETCD`](/docs/etcd/) module before any [`PGSQL`](/docs/pgsql/) modules, since patroni & vip-manager will rely on etcd to work. Unless you are using an external etcd cluster.
 
 You don’t need [`NODE`](/docs/node/) module to install [`ETCD`](/docs/etcd/), but it requires a valid `CA` on your local `files/pki/ca`. Check [ETCD Administration SOP](/docs/etcd/#administration) for more details.
+
+
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/etcd/config"}>
+        Define etcd cluster at different size
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/docs/etcd/param"}>
+        Customize etcd components with 10 parameters
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/docs/etcd/admin"}>
+        Adding / Removing etcd members, refresh endpoints...
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/docs/etcd/playbook"}>
+        Ansible playbooks that can be used in etcd module
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/etcd/monitor"}>
+        Dashboards, metrics, record & alerting rules.
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/etcd/faq"}>
+        Frequently Asked Questions about etcd module
+    </Card>
+</Cards>

@@ -1,0 +1,883 @@
+---
+title: Observability Infrastructure
+description: Modern observability stack with 3000+ metrics, 30+ dashboards, and enterprise-grade monitoring
+icon: Telescope
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Pigsty delivers **unparalleled observability** with a modern monitoring stack built on industry best practices.
+Automatically monitor every component with **3000+ metrics**, **30+ dashboards**.
+
+![](/img/pigsty/dashboard.gif)
+
+<Callout type="info">
+**Complete Insight**: Monitor everything from high-level cluster health to individual table statistics. Get complete insight into the past, present, and future of your infrastructure.
+</Callout>
+
+## Architecture Overview
+
+Pigsty's observability infrastructure leverages battle-tested open-source components in a cohesive, production-ready stack:
+
+<Cards>
+<Card title="Grafana Visualization Engine" icon="📊">
+Dashboards with advanced interactive visualizations
+</Card>
+<Card title="Prometheus Metrics Database" icon="📈">
+Time-series storage with powerful query language
+</Card>
+<Card title="Loki Logging Platform" icon="📝">
+Centralized logging with label-based indexing
+</Card>
+<Card title="AlertManager" icon="🚨">
+Alert aggregate, management and escalation
+</Card>
+</Cards>
+
+### Service Architecture
+
+```mermaid
+graph TB
+    subgraph "Observability Stack"
+        Grafana[Grafana :3000]
+        Prometheus[Prometheus :9090]
+        Loki[Loki :3100]
+        AlertManager[AlertManager :9093]
+        Pushgateway[Pushgateway :9091]
+        Blackbox[Blackbox :9115]
+    end
+    
+    subgraph "Data Sources"
+        PG[(PostgreSQL)]
+        Node[Node Metrics]
+        Redis[(Redis)]
+        MinIO[(MinIO)]
+    end
+    
+    subgraph "Exporters"
+        PGExp[pg_exporter]
+        NodeExp[node_exporter]
+        RedisExp[redis_exporter]
+        MinIOExp[minio_exporter]
+    end
+    
+    PG --> PGExp
+    Node --> NodeExp
+    Redis --> RedisExp
+    MinIO --> MinIOExp
+    
+    PGExp --> Prometheus
+    NodeExp --> Prometheus
+    RedisExp --> Prometheus
+    MinIOExp --> Prometheus
+    
+    Prometheus --> Grafana
+    Prometheus --> AlertManager
+    Loki --> Grafana
+```
+
+--------
+
+## Monitoring Dashboards
+
+### Multi-Level Dashboard Hierarchy
+
+Pigsty provides **26+ PostgreSQL dashboards** organized in a logical drill-down hierarchy:
+
+<Tabs items={['Overview Level', 'Cluster Level', 'Instance Level', 'Database Level']}>
+<Tab value="Overview Level">
+```yaml
+# Global overview dashboards
+dashboards:
+  - Home: Global cluster overview and key metrics
+  - INFRA: Infrastructure services status
+  - NODES: Node-level resource utilization
+  - Alert: Active alerts and notification status
+```
+**Purpose**: High-level operational visibility across entire environment
+**Audience**: Operations teams, management dashboards
+</Tab>
+<Tab value="Cluster Level">
+```yaml
+# Cluster-focused dashboards  
+dashboards:
+  - PGSQL Cluster: Cluster health and replication status
+  - PGSQL Service: Service endpoints and load balancing
+  - PGSQL Activity: Connection pools and query activity
+  - PGSQL Replication: Streaming replication metrics
+```
+**Purpose**: Cluster-wide PostgreSQL performance and health
+**Audience**: Database administrators, SRE teams
+</Tab>
+<Tab value="Instance Level">
+```yaml
+# Instance-specific dashboards
+dashboards:
+  - PGSQL Instance: Detailed PostgreSQL server metrics
+  - PGSQL Persist: WAL, checkpoints, and persistence
+  - PGSQL Proxy: Pgbouncer connection pooling metrics
+  - PGSQL Session: Active sessions and lock analysis
+```
+**Purpose**: Deep-dive into individual PostgreSQL instances
+**Audience**: Database developers, performance engineers
+</Tab>
+<Tab value="Database Level">
+```yaml
+# Database and object-level dashboards
+dashboards:
+  - PGSQL Database: Database-specific performance metrics
+  - PGSQL Table: Table statistics and access patterns
+  - PGSQL Query: Query performance and optimization
+  - PGSQL Slow: Slow query analysis and tuning
+```
+**Purpose**: Application-level database performance analysis
+**Audience**: Application developers, database analysts
+</Tab>
+</Tabs>
+
+### Dashboard Features
+
+<Cards>
+<Card title="Drill-Down Navigation" icon="🔍">
+**Seamless exploration** from overview to granular details with contextual linking
+</Card>
+<Card title="Time Range Controls" icon="⏰">
+**Flexible time windows** from real-time to historical analysis over months
+</Card>
+<Card title="Multi-Dimensional Filtering" icon="🎯">
+**Dynamic filtering** by cluster, instance, database, or custom labels
+</Card>
+<Card title="Alert Integration" icon="🚨">
+**Visual alert correlation** with metrics and direct links to alert details
+</Card>
+</Cards>
+
+--------
+
+## Grafana Deployment
+
+### Enhanced Grafana Stack
+
+Pigsty extends Grafana with powerful plugins and data sources for advanced analytics:
+
+<Tabs items={['Core Plugins', 'Visualization Plugins', 'Data Sources', 'Custom Extensions']}>
+<Tab value="Core Plugins">
+```yaml
+# Essential Grafana plugins
+grafana_plugins:
+  - grafana-piechart-panel        # Pie chart visualizations
+  - grafana-polystat-panel        # Multi-value status panels
+  - grafana-worldmap-panel        # Geographic visualizations
+  - grafana-clock-panel           # Time display widgets
+```
+**Purpose**: Essential visualization capabilities for monitoring dashboards
+</Tab>
+<Tab value="Visualization Plugins">
+```yaml
+# Advanced visualization plugins
+grafana_plugins:
+  - echarts-panel                 # Apache ECharts integration
+  - volkovlabs-echarts-panel      # Enhanced ECharts support
+  - volkovlabs-form-panel         # Interactive forms
+  - volkovlabs-variable-panel     # Dynamic variables
+```
+**Purpose**: Rich, interactive visualizations for complex data analysis
+</Tab>
+<Tab value="Data Sources">
+```yaml
+# Extended data source support
+grafana_datasources:
+  - infinity-datasource           # REST API and file data sources
+  - redis-datasource              # Redis data source
+  - clickhouse-datasource         # ClickHouse integration
+  - postgres-datasource           # Enhanced PostgreSQL support
+```
+**Purpose**: Connect to diverse data sources beyond traditional metrics
+</Tab>
+<Tab value="Custom Extensions">
+```yaml
+# Pigsty-specific customizations
+custom_features:
+  - pigsty-theme                  # Custom branding and colors
+  - dashboard-provisioning       # Automated dashboard deployment
+  - alert-templates               # Pre-configured alert rules
+  - data-link-automation          # Context-aware navigation
+```
+**Purpose**: Tailored user experience optimized for PostgreSQL environments
+</Tab>
+</Tabs>
+
+### Configuration & Customization
+
+```yaml
+# Advanced Grafana configuration
+grafana_config:
+  # Authentication
+  auth.anonymous.enabled: true
+  auth.anonymous.org_role: Viewer
+  auth.disable_login_form: false
+  
+  # Security
+  security.allow_embedding: true
+  security.cookie_secure: true
+  security.cookie_samesite: strict
+  
+  # Performance  
+  database.max_open_conn: 300
+  database.max_idle_conn: 300
+  database.conn_max_lifetime: 14400
+  
+  # Alerting
+  alerting.enabled: true
+  alerting.execute_alerts: true
+  unified_alerting.enabled: true
+  
+  # Custom panels
+  panels.enable_alpha: true
+  feature_toggles.enable: ngalert,live,publicDashboards
+```
+
+--------
+
+## Prometheus Stack
+
+### Complete Monitoring Ecosystem
+
+Pigsty deploys the full Prometheus ecosystem for comprehensive observability:
+
+<Steps>
+
+<Step>
+### Prometheus Server
+**Core metrics database** with advanced querying and storage capabilities
+```yaml
+# Prometheus configuration highlights
+prometheus_config:
+  global:
+    scrape_interval: 15s          # Default scrape frequency
+    evaluation_interval: 15s      # Rule evaluation frequency
+    external_labels:
+      cluster: '{{ pg_cluster }}'
+      
+  rule_files:
+    - "/etc/prometheus/rules/*.yml"
+    
+  scrape_configs:
+    - job_name: 'node'            # Node-level metrics
+    - job_name: 'postgres'        # PostgreSQL metrics  
+    - job_name: 'redis'           # Redis metrics
+    - job_name: 'pushgateway'     # Batch job metrics
+```
+</Step>
+
+<Step>
+### AlertManager
+**Intelligent alert routing** with suppression, grouping, and escalation
+```yaml
+# AlertManager routing configuration
+alertmanager_routes:
+  - match:
+      severity: critical
+    receiver: pagerduty-critical
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+    
+  - match:
+      severity: warning  
+    receiver: slack-warnings
+    group_wait: 1m
+    group_interval: 10m
+    repeat_interval: 24h
+```
+</Step>
+
+<Step>
+### Pushgateway
+**Batch job metrics collection** for ephemeral workloads and cron jobs
+```bash
+# Example: Backup job metrics
+echo "backup_duration_seconds $(date +%s)" | curl --data-binary @- \
+  http://pushgateway:9091/metrics/job/pg-backup/instance/pg-test
+```
+</Step>
+
+<Step>
+### Blackbox Exporter
+**Network connectivity monitoring** with HTTP, TCP, and ICMP probes
+```yaml
+# Blackbox probe configuration
+blackbox_probes:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_status_codes: [200]
+      
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+```
+</Step>
+
+</Steps>
+
+### Pre-configured Alert Rules
+
+```yaml
+# Sample PostgreSQL alert rules
+alert_rules:
+  - alert: PostgreSQLDown
+    expr: pg_up == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "PostgreSQL instance {{ $labels.instance }} is down"
+      
+  - alert: PostgreSQLHighConnections
+    expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High connection usage on {{ $labels.instance }}"
+      
+  - alert: PostgreSQLReplicationLag  
+    expr: pg_replication_lag_seconds > 300
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Replication lag > 5 minutes on {{ $labels.instance }}"
+```
+
+--------
+
+## pg_exporter: Advanced PostgreSQL Monitoring
+
+### Custom Metrics Engine
+
+Pigsty's [pg_exporter](https://github.com/pgsty/pg_exporter) is a highly customizable PostgreSQL metrics collector supporting **all PostgreSQL versions** with fine-grained metric control:
+
+<Tabs items={['Core Features', 'Version Compatibility', 'Custom Queries', 'RDS Support']}>
+<Tab value="Core Features">
+```yaml
+# pg_exporter key capabilities
+features:
+  - auto_discovery: true          # Automatic database discovery
+  - custom_queries: true          # User-defined metric queries  
+  - version_aware: true           # PostgreSQL version detection
+  - rds_compatible: true          # Cloud database support
+  - label_customization: true     # Flexible metric labeling
+  - connection_pooling: true      # Efficient connection reuse
+```
+**Advantages**: Flexible, lightweight, and highly configurable
+</Tab>
+<Tab value="Version Compatibility">
+```yaml
+# PostgreSQL version support matrix
+supported_versions:
+  - postgresql_9_6: legacy_metrics_set
+  - postgresql_10: enhanced_metrics_set  
+  - postgresql_11: advanced_metrics_set
+  - postgresql_12: modern_metrics_set
+  - postgresql_13: extended_metrics_set
+  - postgresql_14: latest_metrics_set
+  - postgresql_15: cutting_edge_metrics_set
+  - postgresql_16: next_gen_metrics_set
+```
+**Benefit**: Single exporter for heterogeneous PostgreSQL environments
+</Tab>
+<Tab value="Custom Queries">
+```yaml
+# Custom metric definition example
+custom_queries:
+  pg_custom_business_metrics:
+    query: |
+      SELECT 
+        schemaname,
+        tablename,
+        n_tup_ins as inserts_total,
+        n_tup_upd as updates_total,
+        n_tup_del as deletes_total
+      FROM pg_stat_user_tables
+    metrics:
+      - inserts_total:
+          usage: COUNTER
+          description: "Total number of inserts"
+      - updates_total:
+          usage: COUNTER  
+          description: "Total number of updates"
+```
+</Tab>
+<Tab value="RDS Support">
+```yaml
+# RDS monitoring configuration
+rds_monitoring:
+  connection_string: "postgres://monitor:password@rds.region.rds.amazonaws.com:5432/postgres"
+  metrics_subset: rds_safe        # RDS-compatible metrics only
+  auto_discovery: false           # Manual database specification
+  query_timeout: 30s              # Conservative timeout
+  
+  # RDS-specific metrics
+  included_databases: [production, staging]
+  excluded_schemas: [information_schema, pg_catalog]
+```
+</Tab>
+</Tabs>
+
+### Metrics Configuration
+
+```yaml
+# Comprehensive pg_exporter configuration
+pg_exporter_config:
+  # Connection settings
+  data_source_name: "postgres://dbuser_monitor:password@localhost:5432/postgres"
+  
+  # Metric collection
+  auto_discover_databases: true
+  exclude_databases: [template0, template1]
+  include_databases: [postgres, business_db]
+  
+  # Query customization
+  query_path: "/etc/pg_exporter/queries"
+  metric_prefix: "pg"
+  
+  # Performance tuning
+  parallel_scrape: true
+  scrape_timeout: 30s
+  max_connections: 3
+  
+  # Security
+  ssl_mode: require
+  ssl_cert: "/etc/ssl/pg-client.crt"
+  ssl_key: "/etc/ssl/pg-client.key"
+```
+
+--------
+
+## Host & Infrastructure Monitoring
+
+### Node-Level Observability
+
+Comprehensive host monitoring with **node_exporter** and system-level metrics:
+
+<Cards>
+<Card title="System Resources" icon="💻">
+**CPU, Memory, Disk, Network** - Complete hardware utilization tracking
+</Card>
+<Card title="Process Monitoring" icon="⚙️">
+**Process trees, file descriptors** - Detailed process-level insights
+</Card>
+<Card title="Network Stack" icon="🌐">
+**TCP connections, socket stats** - Network performance analysis
+</Card>
+<Card title="Storage Analysis" icon="💾">
+**I/O patterns, filesystem metrics** - Storage performance optimization
+</Card>
+</Cards>
+
+### Multi-Service Monitoring
+
+```yaml
+# Complete service monitoring matrix
+monitored_services:
+  infrastructure:
+    - haproxy_exporter:9101       # Load balancer metrics
+    - nginx_exporter:9113         # Web server performance  
+    - etcd_exporter:2379          # Cluster coordination
+    
+  databases:
+    - postgres_exporter:9630      # PostgreSQL primary metrics
+    - pgbouncer_exporter:9631     # Connection pool metrics
+    - redis_exporter:9121         # Redis cache performance
+    - minio_exporter:9000         # Object storage metrics
+    
+  system:
+    - node_exporter:9100          # Host system metrics
+    - process_exporter:9256       # Process-level monitoring
+    - blackbox_exporter:9115      # Connectivity probes
+```
+
+--------
+
+## External Database Monitoring
+
+### Cloud RDS Integration
+
+Monitor **Amazon RDS**, **Google Cloud SQL**, and **Azure Database** with minimal configuration:
+
+<Tabs items={['AWS RDS', 'Google Cloud SQL', 'Azure Database', 'Generic']}>
+<Tab value="AWS RDS">
+```yaml
+# AWS RDS monitoring setup
+aws_rds_monitoring:
+  connection_method: iam_auth     # IAM database authentication
+  endpoint: mydb.region.rds.amazonaws.com
+  port: 5432
+  
+  # Required RDS setup
+  setup_commands: |
+    CREATE USER dbuser_monitor WITH PASSWORD 'secure_password';
+    GRANT CONNECT ON DATABASE postgres TO dbuser_monitor;
+    GRANT pg_monitor TO dbuser_monitor;
+    
+  # Monitoring configuration
+  metrics_collection:
+    - basic_stats: true
+    - query_performance: true  
+    - connection_stats: true
+    - replication_stats: false  # Not available in RDS
+```
+</Tab>
+<Tab value="Google Cloud SQL">
+```yaml
+# Google Cloud SQL monitoring
+gcp_cloudsql_monitoring:
+  connection_method: ssl_cert     # SSL certificate authentication
+  endpoint: project:region:instance
+  
+  # Cloud SQL specific configuration
+  cloud_sql_proxy: true
+  proxy_port: 5432
+  
+  monitoring_scope:
+    - performance_insights: true
+    - query_insights: true
+    - connection_monitoring: true
+```
+</Tab>
+<Tab value="Azure Database">
+```yaml
+# Azure Database for PostgreSQL
+azure_postgres_monitoring:
+  connection_method: active_directory
+  endpoint: myserver.postgres.database.azure.com
+  
+  # Azure-specific features
+  azure_monitor_integration: true
+  diagnostic_settings: enabled
+  
+  metrics_subset: azure_compatible
+```
+</Tab>
+<Tab value="Generic">
+```yaml
+# Generic external PostgreSQL
+external_postgres:
+  connection_string: "postgres://monitor:pass@external-host:5432/postgres"
+  
+  # Minimal required permissions
+  required_grants: |
+    GRANT CONNECT ON DATABASE postgres TO dbuser_monitor;
+    GRANT pg_monitor TO dbuser_monitor;
+    
+  # Safe metric collection
+  metrics_mode: read_only
+  custom_queries: disabled
+  admin_functions: false
+```
+</Tab>
+</Tabs>
+
+--------
+
+## Data Analytics & Visualization Platform
+
+### Beyond Traditional Monitoring
+
+Pigsty's observability stack doubles as a powerful **data analytics platform**:
+
+<Cards>
+<Card title="Business Intelligence" icon="📈">
+**Custom dashboards** for business metrics and KPI visualization
+</Card>
+<Card title="Application Analytics" icon="🔍">
+**User behavior tracking** and application performance insights  
+</Card>
+<Card title="Operational Intelligence" icon="⚡">
+**Trend analysis and capacity planning** with predictive capabilities
+</Card>
+<Card title="Data Exploration" icon="🔬">
+**Ad-hoc querying** and interactive data exploration tools
+</Card>
+</Cards>
+
+### Advanced Analytics Features
+
+```yaml
+# Advanced Grafana analytics capabilities
+analytics_features:
+  data_sources:
+    - prometheus: time_series_analysis
+    - postgres: business_data_queries
+    - infinity: rest_api_integration
+    - csv: file_based_data_import
+    
+  visualization_types:
+    - echarts: interactive_charts
+    - worldmap: geographic_analysis  
+    - heatmap: correlation_analysis
+    - table: detailed_data_views
+    
+  interactive_features:
+    - variable_templating: dynamic_filtering
+    - drill_down_links: contextual_navigation
+    - annotation_support: event_correlation
+    - alert_integration: automated_notifications
+```
+
+### Custom Business Dashboards
+
+```sql
+-- Example: Business metrics integration
+SELECT 
+  date_trunc('hour', created_at) as hour,
+  COUNT(*) as orders_per_hour,
+  SUM(total_amount) as revenue_per_hour,
+  AVG(total_amount) as avg_order_value
+FROM orders 
+WHERE created_at >= NOW() - INTERVAL '24 hours'
+GROUP BY date_trunc('hour', created_at)
+ORDER BY hour;
+```
+
+--------
+
+## Low-Code Application Development
+
+### Grafana as Development Platform
+
+Transform Grafana into a **low-code application platform** for operational tools:
+
+<Tabs items={['Interactive Forms', 'Dynamic Dashboards', 'Workflow Integration', 'API Integration']}>
+<Tab value="Interactive Forms">
+```json
+// Example: Database maintenance form
+{
+  "type": "volkovlabs-form-panel",
+  "title": "Database Maintenance",
+  "targets": [
+    {
+      "datasource": "PostgreSQL",
+      "query": "SELECT pg_size_pretty(pg_database_size($database))",
+      "variables": {
+        "database": "${form.database}"
+      }
+    }
+  ],
+  "form": {
+    "elements": [
+      {
+        "type": "select",
+        "name": "database", 
+        "options": ["production", "staging", "development"]
+      },
+      {
+        "type": "button",
+        "name": "vacuum",
+        "action": "VACUUM ANALYZE ${database}"
+      }
+    ]
+  }
+}
+```
+</Tab>
+<Tab value="Dynamic Dashboards">
+```yaml
+# Dynamic dashboard generation
+dynamic_dashboards:
+  template_based: true
+  variable_driven: true
+  
+  features:
+    - auto_refresh: 30s
+    - conditional_panels: true
+    - user_personalization: true
+    - responsive_layout: true
+    
+  data_sources:
+    - prometheus: infrastructure_metrics
+    - postgres: application_data
+    - api: external_integrations
+```
+</Tab>
+<Tab value="Workflow Integration">
+```yaml
+# Workflow automation integration
+workflow_features:
+  alerting_actions:
+    - webhook_triggers: true
+    - automated_remediation: true
+    - escalation_policies: true
+    
+  operational_tasks:
+    - scheduled_maintenance: true
+    - capacity_planning: true
+    - performance_tuning: true
+```
+</Tab>
+<Tab value="API Integration">
+```javascript
+// Example: REST API integration
+const infinityQuery = {
+  datasource: "infinity",
+  type: "json",
+  url: "https://api.internal.com/metrics",
+  parser: "json",
+  columns: [
+    { selector: "data.response_time", type: "number" },
+    { selector: "data.error_rate", type: "number" },
+    { selector: "timestamp", type: "time" }
+  ]
+};
+```
+</Tab>
+</Tabs>
+
+--------
+
+## Reusable Infrastructure
+
+### Modular Deployment
+
+Pigsty's observability infrastructure is designed for **reusability** and **composability**:
+
+<Cards>
+<Card title="Standalone Deployment" icon="🎯">
+**Independent monitoring** - Deploy observability stack without PostgreSQL
+</Card>
+<Card title="Multi-Tenant Support" icon="🏢">
+**Isolated environments** - Multiple teams sharing single monitoring infrastructure
+</Card>
+<Card title="Hybrid Integration" icon="🔗">
+**Existing systems** - Integrate with current monitoring solutions
+</Card>
+<Card title="Cloud Agnostic" icon="☁️">
+**Any environment** - On-premises, cloud, or hybrid deployments
+</Card>
+</Cards>
+
+### Configuration Templates
+
+```yaml
+# Reusable monitoring templates
+monitoring_templates:
+  minimal:
+    components: [prometheus, grafana]
+    resource_usage: low
+    use_case: development
+    
+  standard:
+    components: [prometheus, grafana, alertmanager, loki]
+    resource_usage: medium  
+    use_case: production
+    
+  enterprise:
+    components: [prometheus, grafana, alertmanager, loki, pushgateway, blackbox]
+    resource_usage: high
+    use_case: large_scale_production
+    ha_enabled: true
+    retention: 90d
+    
+  cloud_native:
+    components: [prometheus_operator, grafana_operator]
+    deployment: kubernetes
+    scaling: horizontal
+    storage: persistent_volumes
+```
+
+### Integration Patterns
+
+```yaml
+# Common integration scenarios
+integration_patterns:
+  existing_prometheus:
+    federation: true
+    data_source: remote_prometheus
+    dashboard_import: true
+    
+  existing_grafana:
+    datasource_provisioning: true
+    dashboard_provisioning: true
+    alert_rules_import: true
+    
+  cloud_monitoring:
+    cloudwatch_integration: true
+    stackdriver_integration: true
+    azure_monitor_integration: true
+    
+  hybrid_deployment:
+    on_premise_prometheus: true
+    cloud_grafana: true
+    secure_tunneling: true
+```
+
+--------
+
+## Best Practices
+
+### Performance Optimization
+
+<Callout type="warn">
+**Resource Planning**: Monitoring infrastructure can consume significant resources. Plan accordingly for metrics retention and query performance.
+</Callout>
+
+- **Metric Cardinality**: Limit high-cardinality labels to prevent storage explosion
+- **Retention Policies**: Balance historical data needs with storage costs
+- **Query Optimization**: Use recording rules for frequently accessed metrics
+- **Dashboard Performance**: Optimize panel queries and time ranges
+
+### Security Considerations
+
+```yaml
+# Security best practices
+security_config:
+  authentication:
+    - ldap_integration: true
+    - oauth_providers: [github, google, okta]
+    - api_key_rotation: automated
+    
+  authorization:
+    - role_based_access: true
+    - team_based_folders: true
+    - dashboard_permissions: granular
+    
+  network_security:
+    - tls_encryption: enforced
+    - firewall_rules: restrictive
+    - reverse_proxy: nginx
+```
+
+### Operational Guidelines
+
+- **Regular Backups**: Backup Grafana configurations and Prometheus data
+- **Monitoring the Monitors**: Set up meta-monitoring for observability stack
+- **Capacity Planning**: Monitor storage growth and plan upgrades
+- **Documentation**: Maintain runbooks for common operational tasks
+
+--------
+
+## Limitations & Considerations
+
+### Scalability Boundaries
+
+- **Metrics Volume**: High-cardinality metrics can impact performance
+- **Dashboard Complexity**: Overly complex dashboards may have slow load times
+- **Long-term Storage**: Consider external storage for long-term metrics retention
+- **Network Bandwidth**: Factor in metrics collection network overhead
+
+### Planning Considerations
+
+- **Resource Requirements**: Monitoring stack requires dedicated resources
+- **Backup Strategy**: Plan for configuration and data backup/restore
+- **High Availability**: Consider HA deployment for critical environments
+- **Integration Complexity**: Plan integration with existing monitoring systems
+
+---
+
+Pigsty's observability infrastructure transforms monitoring from a reactive afterthought into a proactive operational advantage. With comprehensive metrics, intuitive dashboards, and flexible architecture, you gain deep insights into every aspect of your database infrastructure.

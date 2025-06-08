@@ -1,0 +1,72 @@
+---
+title: Key Features
+description: Key features and highlights
+icon: Feather
+---
+
+import {
+    Database,
+    CpuIcon,
+    Landmark,
+    FileCode,
+    Settings,
+    FileJson,
+    Shield,
+    GraduationCap,
+    Box,
+    Layers,
+    Container,
+    Leaf,
+} from 'lucide-react';
+
+
+
+<Cards>
+
+    <Card icon={<FileJson className="text-orange-600"/>} title='Database Distribution' href={"/docs/feature/distro"}>
+        Entire data infra on raw Linux: PG, Redis, MinIO, Etcd, Prometheus, ...
+    </Card>
+
+    <Card icon={<FileJson className="text-orange-600"/>} title='Self-Hosting RDS Toolbox' href={"/docs/feature/rds"}>
+        Get everything you need to build RDS-like service
+    </Card>
+
+</Cards>
+
+--------
+
+<Cards>
+
+    <Card icon={<CpuIcon className="text-green-700"/>} title='Postgres Extensions' href={"/docs/feature/ext"}>
+        Get the superpower of 420+ PG extensions out of the box
+    </Card>
+
+    <Card icon={<Database className="text-sky-600"/>} title='High-Availability' href={"/docs/feature/ha"}>
+        Self-healing architecture and hassle-free access
+    </Card>
+    <Card icon={<GraduationCap className={"text-yellow-600"}/>} title='Kernel Replacement' href={"/docs/feature/kernel"}>
+        Using exotic PG forks, simulating MySQL, Mongo, Oracle, MSSQL...
+    </Card>
+
+    <Card icon={<Database className="text-sky-600"/>} title='Disaster Recovery' href={"/docs/feature/pitr"}>
+        Auto configured backups and PITR made simple
+    </Card>
+
+    <Card icon={<Shield className="text-red-500"/>} title='Infrastructure as Code' href={"/docs/feature/iac"}>
+        Describe and materialize everything with Code / Data
+    </Card>
+
+    <Card icon={<FileCode className="text-blue-500"/>} title='Built-in Monitoring' href={"/docs/feature/vis"}>
+        Pre-configured Dashboards with Grafana & Prometheus stack
+    </Card>
+
+    <Card icon={<Database className="text-sky-600"/>} title='Self-Hosting Supabase' href={"/docs/feature/supabase"}>
+        Turn Postgers into a full-featured backend as a service
+    </Card>
+    <Card icon={<Database className="text-sky-600"/>} title='Software Templates' href={"/docs/feature/app"}>
+        Harden software with HA PG: Gitlab, Odoo, Dify, and more
+    </Card>
+</Cards>
+
+
+

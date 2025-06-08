@@ -3,6 +3,8 @@
   "pages": [
     "[Docs](/docs)",
     "intro",
+    "value",
+    "feature",
     "install",
     "prepare",
     "config",

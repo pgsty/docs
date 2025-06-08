@@ -4,7 +4,6 @@
   "icon": "Leaf",
   "root": false,
   "pages": [
-    "index",
     "usage",
     "param",
     "playbook",

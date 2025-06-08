@@ -5,3 +5,33 @@ icon: Landmark
 ---
 
 
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/infra/config"}>
+        Configure infra module, and use multiple infra nodes.
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/docs/infra/param"}>
+        Customize infra components with 57+ parameters
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/docs/infra/admin"}>
+        Manage local repo, nginx portal, domain, certs, and more
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/docs/infra/playbook"}>
+        Ansible playbooks that can be used in this module
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/infra/monitor"}>
+        Dashboards, metrics, record & alerting rules.
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/infra/faq"}>
+        Frequently Asked Questions about infra module
+    </Card>
+</Cards>

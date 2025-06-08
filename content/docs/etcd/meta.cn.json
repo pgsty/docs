@@ -4,7 +4,6 @@
   "root": false,
   "icon": "Settings",
   "pages": [
-    "index",
     "config",
     "param",
     "admin",

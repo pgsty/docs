@@ -82,17 +82,11 @@ And other ports are accessed from intranet. You have to make sure they are opene
 
 
 
-
-
-
-
-
-
 --------
 
 ## Ansible
 
-Pigsty use `ansible` to initiate control from admin node to all managed nodes.
+Pigsty use [**Ansible**](/docs/admin/ansible) to initiate control from admin node to all managed nodes.
 
 You don't need to care about details, ansible is installed during the [**Bootstrap**](/docs/install/offline#bootstrap) stage.
 
@@ -117,28 +111,81 @@ You don't need to care about details, ansible is installed during the [**Bootstr
 Ansible is only required on admin node, you can run ansible on macOS to use your laptop as admin node.
 
 
---------
+
+
+------
 
 ## Pigsty
 
-You can get pigsty src and pkg from the official [GitHub Release page](https://github.com/pgsty/pigsty/releases)
+(<span className="text-sky-500 font-black">RECOMMENDED</span>) You can get & extract the latest stable version of pigsty source with:
 
-<Callout title="Get the latest stable version" type="info">
+```bash tab="Default"
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+```
+```bash tab="Mirror"
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # china mirror
+```
 
-    ```bash
-    curl -fsSL https://repo.pigsty.io/get | bash
-    ```
+To install a specific version, pass the version string as the first parameter:
+
+```bash tab="Default"
+curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0; cd ~/pigsty
+```
+```bash tab="Mirror"
+curl -fsSL https://repo.pigsty.cc/get | bash -s v3.5.0; cd ~/pigsty # china mirror
+```
+
+You can also using `git` to clone the Pigsty source repo from [GitHub](https://github.com/pgsty/pigsty):
+
+```bash title="clone the latest"
+git clone https://github.com/pgsty/pigsty.git; cd ~/pigsty
+```
+
+<Callout title="Checkout a specific version before using" type="warn">
+
+    The default `main` branch may in an unstable development status, `git checkout <version>` before using.
 
 </Callout>
 
-<Callout title="Get a specific version" type="info">
 
-    ```bash
-    curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0
-    ```
+You can also download the pigsty src (`pigsty-<version>.tar.gz`) from [GitHub Release Page](https://github.com/pgsty/pigsty/releases/latest) manully:
 
-</Callout>
+```bash tab="Default"
+wget https://repo.pigsty.io/srcpigsty-v3.5.0.tgz
+```
+```bash tab="Mirror"
+wget https://pigsty.cc/pgsty/pigsty/releases/download/v3.5.0/pigsty-v3.5.0.tgz
+```
+```bash tab="GitHub"
+wget https://github.com/pgsty/pigsty/releases/download/v3.5.0/pigsty-v3.5.0.tgz
+```
 
-If your environment does not have the Internet access, consider downloading offline packages along with source tarball
+```bash
+[vagrant@node-1 ~]$ curl https://repo.pigsty.cc/get | bash -s v3.5.0
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100  5541  100  5541    0     0  11890      0 --:--:-- --:--:-- --:--:-- 11916
+[v3.5.0] ===========================================
+$ curl -fsSL https://repo.pigsty.cc/get | bash
+[Site] https://pigsty.cc
+[Demo] https://demo.pigsty.cc
+[Repo] https://github.com/pgsty/pigsty
+[Docs] https://pigsty.io/docs/install
+[Download] ===========================================
+[ OK ] version = v3.5.0 (from arg)
+curl -fSL https://repo.pigsty.cc/src/pigsty-v3.5.0.tgz -o /tmp/pigsty-v3.5.0.tgz
+######################################################################## 100.0%
+[ OK ] md5sums = df30f2599a6416eea11acfd0f05ee14b  /tmp/pigsty-v3.5.0.tgz
+[Install] ===========================================
+[ OK ] install = /home/vagrant/pigsty, from /tmp/pigsty-v3.5.0.tgz
+[TodoList] ===========================================
+cd /home/vagrant/pigsty
+./bootstrap      # [OPTIONAL] install ansible & use offline package
+./configure      # [OPTIONAL] preflight-check and config generation
+./install.yml    # install pigsty modules according to your config.
+[Complete] ===========================================
+```
+
+If your environment does not have Internet access, consider downloading offline packages along with source tarball
 and upload them to your nodes. check [Offline Installation](/docs/install/offline) for details.
 
