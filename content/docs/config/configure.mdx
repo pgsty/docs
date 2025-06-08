@@ -9,7 +9,7 @@ import { CpuIcon, FileCode } from 'lucide-react';
 
 
 The [`configure`](https://github.com/pgsty/pigsty/blob/main/configure) script will generate the `pigsty.yml` config file [inventory](/docs/config/inventory) with good defaults according to your environment and input.
-It's **OPTIONAL**, you can edit the `pigsty.yml` directly as [**tutorial**](/docs/config/tutorial) show.
+It's **OPTIONAL**, you can edit the `pigsty.yml` directly as the [**tutorial**](/docs/config/tutorial) shows.
 
 <Files>
     <Folder name="pigsty" defaultOpen>
@@ -112,7 +112,7 @@ proceed with ./install.yml
 </Callout>
 
 <Callout title="Region">
-    If `-r|--region` is specified, it will use the specified region directly, `china` mirror will be used if google is banned.
+    If `-r|--region` is specified, it will use the specified region directly. The `china` mirror will be used where Google services are not accessible.
 </Callout>
 
 <Callout title="Proxy Environment">
@@ -141,7 +141,7 @@ proceed with ./install.yml
     Pigsty will use `C.UTF-8` as the default locale, If:
 
     - PostgreSQL major version &ge; 17, with built-in local provider (default)
-    - **OR**, Your system support `C.utf8` / `C.utf-8` locale (`local -a`)
+    - **OR**, Your system supports `C.utf8` / `C.utf-8` locale (`locale -a`)
 
     Otherwise, local `C` will be used by default.
 </Callout>

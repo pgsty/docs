@@ -35,7 +35,7 @@ You'll have a complete observability stack with node monitoring. But database se
 
 ## PGSQL & ETCD
 
-To provide PostgreSQL service, you have to define addional groups and install [**PGSQL**](/docs/pgsql) & [**ETCD**](/docs/etcd) modules.
+To provide PostgreSQL service, you have to define additional groups and install [**PGSQL**](/docs/pgsql) & [**ETCD**](/docs/etcd) modules.
 
 ```yaml title="~/pigsty/pigsty.yml"
 all:
@@ -93,7 +93,7 @@ We define some additional details at the `pg-meta` cluster level:
 Instead of recreating everything with `./install.yml`, we make changes incrementally:
 
 ```bash title="~/pigsty"
-bin/pgsql-user pg-meta dbuesr_meta      # create user dbuser_meta on pg-meta
+bin/pgsql-user pg-meta dbuser_meta      # create user dbuser_meta on pg-meta
 bin/pgsql-db   pg-meta meta             # create database meta on pg-meta
 ./node.yml -l pg-meta -t node_crontab   # add backup task to crontab on pg-meta
 ```

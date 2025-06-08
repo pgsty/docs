@@ -7,7 +7,7 @@ icon: Shield
 
 Pigsty already provides a secure-by-default database [authentication](/docs/pgsql/hba/) and [access control](/docs/pgsql/acl) model.
 
-It is strong enough for most common scenarios, as long as your follow the security best-practices below.
+It is strong enough for most common scenarios, as long as you follow the security best-practices below.
 
 
 
@@ -20,8 +20,8 @@ It is strong enough for most common scenarios, as long as your follow the securi
 <Callout title="Secure your pigsty config file" type="warn">
 
 - `pigsty.yml` hold very sensitive information like passwords
-- Limit access to admin/infra nodes to admin/dba
-- Limit access to repo, if you are manage pigsty config with GitOps
+- Limit access to admin/infra nodes to admin/DBA users only
+- Limit access to repo, if you are managing pigsty config with GitOps
 
 </Callout>
 
@@ -58,7 +58,7 @@ Always change these default passwords in serious deployment
 
 If you are using MinIO as backup storage, also change these credentials:
 
-- Change the password for [`minio_users`.`[pgbacrest\]`.`secret_key`](/docs/minio/param/#minio_users)
+- Change the password for [`minio_users`.`[pgbackrest]`.`secret_key`](/docs/minio/param/#minio_users)
 - Change pgbackrest references: [`pgbackrest_repo`.`minio`.`s3_key_secret`](/docs/pgsql/param#pgbackrest_repo)
 
 </Callout>

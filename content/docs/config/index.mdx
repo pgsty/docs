@@ -23,7 +23,7 @@ import {
 Which is usually an [**Ansible Inventory**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html) in YAML format: `pigsty.yml`.
 But [CMDB](/docs/config/cmdb) can also be used as dynamic inventory.
 
-The [`configure`](/docs/config/configure) procedure will generate and config according to your environment and input.
+The [`configure`](/docs/config/configure) procedure will generate a config according to your environment and input.
 But it's **OPTIONAL**: you can always edit the `pigsty.yml` file directly as [**tutorial**](/docs/config/tutorial) shows.
 And there are plenty of [**templates**](/docs/config/template) for your reference.
 
@@ -55,7 +55,7 @@ And there are plenty of [**templates**](/docs/config/template) for your referenc
 
 <Cards>
     <Card icon={<Database className="text-sky-600"/>} title='PGSQL' href={"/docs/pgsql/config"}>
-        PostgreSQL Cluster with HA, PITR, IaC, ACL, Monitoring, Pooling,…
+        PostgreSQL Cluster with HA, PITR, IaC, ACL, Monitoring, Pooling
     </Card>
     <Card icon={<Landmark className="text-green-700"/>} title='INFRA' href={"/docs/infra/config"}>
         Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability
@@ -67,7 +67,7 @@ And there are plenty of [**templates**](/docs/config/template) for your referenc
         Reliable distributive consensus storage (DCS), empowering PGSQL HA
     </Card>
     <Card icon={<Box className="text-red-800"/>} title='MINIO' href={"/docs/minio/config"}>
-        S3 compatible object storage compatible, optional backup storage
+        S3 compatible object storage, optional backup storage
     </Card>
     <Card icon={<Layers className="text-red-400"/>} title='REDIS' href={"/docs/redis/config"}>
         High-performance in-memory cache, optional data structure server

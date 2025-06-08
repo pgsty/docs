@@ -8,7 +8,7 @@ icon: Database
 Pigsty allows you to use a **database (CMDB)** as a dynamic configuration source instead of a static configuration file.
 You can use the built-in PostgreSQL as [config inventory](/docs/config/inventory) for config management.
 
-With Postgres CMDB, configuration is organized in a structured relational tables, which can be easily queried and manipulated using SQL.
+With Postgres CMDB, configuration is organized in structured relational tables, which can be easily queried and manipulated using SQL.
 This allows for easier integration with other systems and tools.
 
 
@@ -72,7 +72,7 @@ all:
 
 CMDB is empty by default, load config file into the CMDB with the [`bin/inventory_load`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_load) script.
 
-Rrun `bin/inventory_load` without arguments will load the default `pigsty.yml` into the default CMDB.
+Run `bin/inventory_load` without arguments will load the default `pigsty.yml` into the default CMDB.
 
 ```bash
 usage: inventory_load [-h] [-p PATH] [-d CMDB_URL]
@@ -80,7 +80,7 @@ usage: inventory_load [-h] [-p PATH] [-d CMDB_URL]
 load config arguments
 
 optional arguments:
-  -h, --help            show this help message and exit„
+  -h, --help            show this help message and exit
   -p PATH, --path PATH  config path, ${PIGSTY_HOME}/pigsty.yml by default
   -d DATA, --data DATA  postgres cmdb pgurl, ${METADB_URL} by default
 ```
