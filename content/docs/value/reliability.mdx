@@ -10,7 +10,47 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## High-Availability: Reliable PostgreSQL RDS
+import {
+    Heart,
+    RefreshCw,
+    Shield,
+    Building,
+    Lock,
+    Eye,
+    CheckSquare,
+    Trophy
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<Heart className="text-red-600"/>} title='High-Availability' href={"#high-availability"}>
+        Reliable PostgreSQL RDS
+    </Card>
+    <Card icon={<RefreshCw className="text-blue-600"/>} title='Self-Healing' href={"#self-healing"}>
+        Adaptive Service Failover
+    </Card>
+    <Card icon={<Shield className="text-green-600"/>} title='PITR Protection' href={"#pitr-protection"}>
+        Pre-configured Backup & Archives
+    </Card>
+    <Card icon={<Building className="text-purple-600"/>} title='Infra Closure' href={"#infra-closure"}>
+        No External Dependencies
+    </Card>
+    <Card icon={<Lock className="text-orange-600"/>} title='Access Control' href={"#access-control"}>
+        Built-in Best-Practice Model
+    </Card>
+    <Card icon={<Eye className="text-cyan-600"/>} title='Confidentiality' href={"#confidentiality"}>
+        Guaranteed Data Security
+    </Card>
+    <Card icon={<CheckSquare className="text-violet-600"/>} title='Data Integrity' href={"#data-integrity"}>
+        Thorough Verification
+    </Card>
+    <Card icon={<Trophy className="text-amber-600"/>} title='Battle-Tested' href={"#battle-tested"}>
+        Availability Results
+    </Card>
+</Cards>
+
+--------
+
+## High-Availability: Reliable PostgreSQL RDS [#high-availability]
 
 > Delivers PG HA solutions following industry best practices.\
 > Adjustable Recovery Time Objective (RTO) and Recovery Point Objective (RPO).
@@ -21,7 +61,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Self-Healing: Adaptive Service Failover
+## Self-Healing: Adaptive Service Failover [#self-healing]
 
 > Self-healing architecture with transparent topology and multi-writer experience.\
 > Automatic traffic routing based on health checks and flexible access methods.
@@ -33,7 +73,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## PITR Protection: Pre-configured Backup & Archives
+## PITR Protection: Pre-configured Backup & Archives [#pitr-protection]
 
 > Pre-configures physical backups and enables WAL archiving by default.\
 > Protection against software defects and human errors with incremental recovery.
@@ -45,7 +85,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Infra Closure: No External Dependencies
+## Infra Closure: No External Dependencies [#infra-closure]
 
 > Complete PostgreSQL RDS infrastructure requiring no external dependencies.\
 > All critical services included for self-contained operation.
@@ -57,7 +97,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Access Control: Built-in Best-Practice Model
+## Access Control: Built-in Best-Practice Model [#access-control]
 
 > Default ACL with read/write/admin/analytics/monitoring/DBA separation.\
 > Secure configuration out of the box with role-based access control.
@@ -69,7 +109,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Confidentiality: Guaranteed Data Security
+## Confidentiality: Guaranteed Data Security [#confidentiality]
 
 > Self-signed CA, SSL encryption, password for backups and endpoints\
 > As long as your passwords & key are secure, your data remains safe.
@@ -81,7 +121,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Data Integrity: Thorough Verification
+## Data Integrity: Thorough Verification [#data-integrity]
 
 > Data checksums for silent corruption. Replicas and delayed standby instances.\
 > Audit extensions and centralized logging, with transparency and efficiency.
@@ -93,7 +133,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Battle-Tested: Availability Results
+## Battle-Tested: Availability Results [#battle-tested]
 
 > Running robustly in many large organizations, maintain 99.999%+ availability.
 > Ultimate business continuity: rolling upgrades, switchovers, and online migrations

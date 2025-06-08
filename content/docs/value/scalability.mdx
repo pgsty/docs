@@ -10,7 +10,47 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Great Performance: Hardware Fully Harnessed
+import {
+    Gauge,
+    BookOpen,
+    Network,
+    Scale,
+    GitBranch,
+    Archive,
+    Globe2,
+    Expand
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<Gauge className="text-red-600"/>} title='Great Performance' href={"#great-performance"}>
+        Hardware Fully Harnessed
+    </Card>
+    <Card icon={<BookOpen className="text-blue-600"/>} title='R/W Separation' href={"#rw-separation"}>
+        Unlimited Read Scaling
+    </Card>
+    <Card icon={<Network className="text-green-600"/>} title='Connection Pooling' href={"#connection-pooling"}>
+        High Concurrency
+    </Card>
+    <Card icon={<Scale className="text-purple-600"/>} title='Load Balancing' href={"#load-balancing"}>
+        Traffic Control
+    </Card>
+    <Card icon={<GitBranch className="text-orange-600"/>} title='Horizontal Scaling' href={"#horizontal-scaling"}>
+        Distributive Extension
+    </Card>
+    <Card icon={<Archive className="text-cyan-600"/>} title='Storage Expansion' href={"#storage-expansion"}>
+        Transparent Compression
+    </Card>
+    <Card icon={<Globe2 className="text-violet-600"/>} title='Mass Deployment' href={"#mass-deployment"}>
+        Large clusters made easy
+    </Card>
+    <Card icon={<Expand className="text-amber-600"/>} title='Elasticity' href={"#elasticity"}>
+        Cloud-like Elasticity
+    </Card>
+</Cards>
+
+--------
+
+## Great Performance: Hardware Fully Harnessed [#great-performance]
 
 > Highlights amazing scalability and top-tier hardware performance.\
 > Maximizing the potential of modern hardware with optimized configurations.
@@ -21,7 +61,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## R/W Separation: Unlimited Read Scaling
+## R/W Separation: Unlimited Read Scaling [#rw-separation]
 
 > Offers unlimited replicas through cascading replication with auto traffic routing.\
 > Scale read workloads horizontally without impacting write performance.
@@ -32,7 +72,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Connection Pooling: High Concurrency
+## Connection Pooling: High Concurrency [#connection-pooling]
 
 > Built-in PGBouncer connection pool, ready out of the box and syncing with postgres.\
 > Handle thousands of concurrent connections efficiently with resource optimization.
@@ -43,7 +83,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Load Balancing: Traffic Control
+## Load Balancing: Traffic Control [#load-balancing]
 
 > Monitor and schedule request traffic in real-time with HAProxy console.\
 > Intelligent traffic distribution with health checks and failover capabilities.
@@ -54,7 +94,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Horizontal Scaling: Distributive Extension
+## Horizontal Scaling: Distributive Extension [#horizontal-scaling]
 
 > Citus extension with multi-write and multi-tenant capabilities.\
 > Scale beyond single-node limitations with distributed PostgreSQL.
@@ -65,7 +105,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Storage Expansion: Transparent Compression
+## Storage Expansion: Transparent Compression [#storage-expansion]
 
 > Achieve 10:1 or even higher compression ratios with colunmar and other exts\
 > R/W data in S3 with FDW, hot/cold separation and unlimited capacity expansion
@@ -76,7 +116,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Mass Deployment: Large clusters made easy
+## Mass Deployment: Large clusters made easy [#mass-deployment]
 
 > Designed for extreme scale - flexible for 25K vCPU clusters or 1c1m node\
 > No limit on nodes per deployment - soft constrained only by monitoring capacity
@@ -87,7 +127,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Elasticity: Cloud-like Elasticity
+## Elasticity: Cloud-like Elasticity [#elasticity]
 
 > Supports cloud EC2 deployment, fully leveraging the elastic advantages of cloud\
 > Flexible multi-cloud strategies - enjoy RDS elasticity with EC2/EBS prices

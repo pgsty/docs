@@ -10,7 +10,47 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Modular Design: Lego-like Assembly
+import {
+    Blocks,
+    Download,
+    Settings,
+    PlusCircle,
+    Cpu,
+    BarChart3,
+    Rocket,
+    Package
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<Blocks className="text-blue-600"/>} title='Modular Design' href={"#modular-design"}>
+        Lego-like Assembly
+    </Card>
+    <Card icon={<Download className="text-green-600"/>} title='App Templates' href={"#app-templates"}>
+        One-Click Enterprise Deployment
+    </Card>
+    <Card icon={<Settings className="text-purple-600"/>} title='Core Modules' href={"#core-modules"}>
+        Fully-Featured Postgres RDS
+    </Card>
+    <Card icon={<PlusCircle className="text-orange-600"/>} title='Extra Modules' href={"#extra-modules"}>
+        Extending RDS Capabilities
+    </Card>
+    <Card icon={<Cpu className="text-cyan-600"/>} title='Kernel Modules' href={"#kernel-modules"}>
+        Swappable Database Engines
+    </Card>
+    <Card icon={<BarChart3 className="text-red-600"/>} title='OLAP Modules' href={"#olap-modules"}>
+        Powerful Analytics Capabilities
+    </Card>
+    <Card icon={<Rocket className="text-violet-600"/>} title='Pilot Modules' href={"#pilot-modules"}>
+        Exploring Cutting-Edge Frontiers
+    </Card>
+    <Card icon={<Package className="text-amber-600"/>} title='Flavor Modules' href={"#flavor-modules"}>
+        Creative Postgres Flavors
+    </Card>
+</Cards>
+
+--------
+
+## Modular Design: Lego-like Assembly [#modular-design]
 
 > Modular design, freely combine components like Lego blocks\
 > Declarative configuration for customizing infrastructure and database environments
@@ -22,7 +62,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## App Templates: One-Click Enterprise Deployment
+## App Templates: One-Click Enterprise Deployment [#app-templates]
 
 > Optional Docker module with Compose templates\
 > Stateless containers that can be destroyed, with state persisted in external HA PGSQL
@@ -33,7 +73,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Core Modules: Fully-Featured Postgres RDS
+## Core Modules: Fully-Featured Postgres RDS [#core-modules]
 
 > 4 core modules working together to build a complete PostgreSQL RDS\
 > Scalable, flexible combinations with no additional dependencies
@@ -45,7 +85,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Extra Modules: Extending RDS Capabilities
+## Extra Modules: Extending RDS Capabilities [#extra-modules]
 
 > Components that work exceptionally well with PostgreSQL\
 > Completely optional, install as needed
@@ -56,7 +96,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Kernel Modules: Swappable Database Engines
+## Kernel Modules: Swappable Database Engines [#kernel-modules]
 
 > Optional replacements for vanilla PostgreSQL kernel\
 > Offering different database compatibility
@@ -68,7 +108,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## OLAP Modules: Powerful Analytics Capabilities
+## OLAP Modules: Powerful Analytics Capabilities [#olap-modules]
 
 > DuckDB integration showcase\
 > Installation and monitoring support for Greenplum derivatives
@@ -80,7 +120,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Pilot Modules: Exploring Cutting-Edge Frontiers
+## Pilot Modules: Exploring Cutting-Edge Frontiers [#pilot-modules]
 
 > Unrelated to PostgreSQL\
 > Experimental capability explorations
@@ -92,7 +132,7 @@ import { Banner } from 'fumadocs-ui/components/banner';
 
 --------
 
-## Flavor Modules: Creative Postgres Flavors
+## Flavor Modules: Creative Postgres Flavors [#flavor-modules]
 
 > Diverse wrappers and features on native PostgreSQL\
 > Exploring Backend-as-a-Service, serverless, and in-database web development

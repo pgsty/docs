@@ -4,8 +4,103 @@ description: Pigsty's 8 core value propositions that deliver infinite possibilit
 icon: HandCoins
 ---
 
+import { Banner } from 'fumadocs-ui/components/banner';
 
-Pigsty delivers eight core value propositions that transform PostgreSQL into a powerful, enterprise-ready database platform. Each value represents a fundamental principle that guides our design philosophy and delivers tangible benefits to users.
+<Banner variant="rainbow">Pigsty delivers eight core value propositions that transform PostgreSQL into a powerful, enterprise-ready database platform.</Banner>
+
+--------
+
+import {
+    Puzzle,
+    Castle,
+    Telescope,
+    ChartColumnIncreasing,
+    PencilRuler,
+    Boxes,
+    Sprout,
+    BadgeDollarSign,
+    BarChart3,
+    BrainCircuit,
+    MapPin,
+    Clock,
+    Search,
+    Languages,
+    Network,
+    Wrench,
+    Heart,
+    RefreshCw,
+    Shield,
+    Building,
+    Lock,
+    Eye,
+    CheckSquare,
+    Trophy,
+    Activity,
+    Star,
+    Globe,
+    Bell,
+    Zap,
+    Layout,
+    Gauge,
+    BookOpen,
+    Scale,
+    GitBranch,
+    Archive,
+    Globe2,
+    Expand,
+    Code,
+    Monitor,
+    CloudDownload,
+    Shuffle,
+    Settings,
+    Cloud,
+    Blocks,
+    Download,
+    PlusCircle,
+    Cpu,
+    Rocket,
+    Package,
+    Unlock,
+    Home,
+    Database,
+    FileText,
+    Award,
+    Users,
+    Code2,
+    CircleDollarSign,
+    PackageOpen,
+    CloudCog,
+    MessagesSquare,
+    HeartHandshake,
+    CreditCard
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<Puzzle className="text-blue-600"/>} title='Extensible Postgres' href={"/docs/value/extensibility"}>
+        Blossom of Possibilities
+    </Card>
+    <Card icon={<Castle className="text-red-600"/>} title='Reliable Infra' href={"/docs/value/reliability"}>
+        Rock-Solid and Secure
+    </Card>
+    <Card icon={<Telescope className="text-purple-600"/>} title='Observable Graphics' href={"/docs/value/observability"}>
+        Clarity and Vision
+    </Card>
+    <Card icon={<ChartColumnIncreasing className="text-green-600"/>} title='Scalable Service' href={"/docs/value/scalability"}>
+        Elastic Performance
+    </Card>
+    <Card icon={<PencilRuler className="text-orange-600"/>} title='Maintainable Toolbox' href={"/docs/value/maintainability"}>
+        Simple and Actionable
+    </Card>
+    <Card icon={<Boxes className="text-cyan-600"/>} title='Composable Modules' href={"/docs/value/composability"}>
+        Flexible Lego-Blocks
+    </Card>
+    <Card icon={<Sprout className="text-violet-600"/>} title='Controllable FOSS' href={"/docs/value/controllability"}>
+        Sovereign Self-Hosting
+    </Card>
+    <Card icon={<BadgeDollarSign className="text-amber-600"/>} title='Affordable Solution' href={"/docs/value/affordability"}>
+        Cost-Effective RDS
+    </Card>
+</Cards>
 
 --------
 
@@ -13,253 +108,197 @@ Pigsty delivers eight core value propositions that transform PostgreSQL into a p
 
 *"Nurturing all, thriving in synergy, forging infinite possibilities!"*
 
-Pigsty transforms PostgreSQL into a versatile platform that supports diverse workloads and use cases through its extensive extension ecosystem.
-
-### Analytics & OLAP
-- **Extreme performance** with pg_duckdb and columnar compression
-- **Parallel query processing** for massive datasets  
-- **GPU acceleration** for compute-intensive operations
-- **Parquet analysis** with distributed HTAP/OLAP capabilities
-- **10:1 compression ratios** for storage efficiency
-
-### AI & Machine Learning
-- **Complete in-database AI workflow** for inference, training, and storage
-- **Vector search** with pgvector and AVX512 acceleration
-- **CUDA-based ML training** directly in SQL with pgml
-- **RAG applications** with advanced vector computation
-- **Embedding and similarity search** capabilities
-
-### Geospatial Processing
-- **De facto GIS standard** with PostGIS integration
-- **Route planning** and sky indexing capabilities
-- **IP geocoding** and geographic operations
-- **Point cloud data processing** for spatial analytics
-
-### Time Series Management
-- **Enhanced temporal data processing** with specialized extensions
-- **Continuous aggregation** for real-time analytics
-- **Time travel** and version control capabilities
-- **Cron task management** for automated processes
-
-### Full Text Search
-- **Built-in search engine** with multi-language support
-- **Hybrid search** combining SQL precision and vector fuzzy retrieval
-- **Advanced text processing** with comprehensive dictionaries
-
-### Multi-Language Support
-- **20+ stored procedure languages** including Python, JavaScript, Java
-- **Comprehensive debugging toolkit** for stored procedures
-- **Foreign Data Wrappers** for 20+ external data sources
-- **Data federation** across heterogeneous systems
-
+<Cards>
+    <Card icon={<BarChart3 className="text-blue-600"/>} title='Analytics' href={"/docs/value/extensibility#analytics"}>
+        Big Data's New Challenger
+    </Card>
+    <Card icon={<BrainCircuit className="text-purple-600"/>} title='AI Ready' href={"/docs/value/extensibility#ai-ready"}>
+        Baseline for RAG/Vector App
+    </Card>
+    <Card icon={<MapPin className="text-green-600"/>} title='Geospatial' href={"/docs/value/extensibility#geospatial"}>
+        De Facto GIS Standard
+    </Card>
+    <Card icon={<Clock className="text-orange-600"/>} title='Time Series' href={"/docs/value/extensibility#time-series"}>
+        Temporal Data Mastery
+    </Card>
+    <Card icon={<Search className="text-cyan-600"/>} title='Text Search' href={"/docs/value/extensibility#text-search"}>
+        Built-in Search Engine
+    </Card>
+    <Card icon={<Languages className="text-red-600"/>} title='Languages' href={"/docs/value/extensibility#languages"}>
+        Language of Your Choice
+    </Card>
+    <Card icon={<Network className="text-violet-600"/>} title='FDW Federation' href={"/docs/value/extensibility#fdw-federation"}>
+        Connecting Data Silos
+    </Card>
+    <Card icon={<Wrench className="text-amber-600"/>} title='Featured' href={"/docs/value/extensibility#featured"}>
+        Database as a Platform
+    </Card>
+</Cards>
 
 --------
 
-## 🛡️ Reliable Infrastructure
+## 🛡️ Reliable Infra
 
 *"Towering peaks, bedrock solid, standing firm at any summit!"*
 
-Pigsty provides enterprise-grade reliability with proven high availability and self-healing capabilities.
-
-### High Availability
-- **Primary failover** with RTO ≈ 30 seconds (configurable)
-- **Replica switchover** with RTO ≈ 0 seconds
-- **Flexible RPO settings** for async and critical commit modes
-- **99.999%+ availability** in production environments
-
-### Self-Healing Architecture
-- **Industry best practices** with Patroni, Etcd, and HAProxy
-- **Automatic traffic routing** based on health checks
-- **Transparent topology** with multi-writer experience
-- **4 default service types**: primary, replica, offline, default
-
-### Backup & Recovery
-- **Point-in-Time Recovery (PITR)** with flexible restore options
-- **One-command backup** and restore operations
-- **Incremental backups** with WAL archiving
-- **Local and remote storage** support (S3/MinIO)
-
-### Security & Integrity
-- **Self-signed CA** with global SSL/TLS encryption
-- **SCRAM-SHA-256 authentication** for secure access
-- **Data checksums** to prevent silent corruption
-- **Centralized audit logging** with tamper-proof records
-- **Split-brain prevention** with watchdog mechanisms
-
-
-
+<Cards>
+    <Card icon={<Heart className="text-red-600"/>} title='High-Availability' href={"/docs/value/reliability#high-availability"}>
+        Reliable PostgreSQL RDS
+    </Card>
+    <Card icon={<RefreshCw className="text-blue-600"/>} title='Self-Healing' href={"/docs/value/reliability#self-healing"}>
+        Adaptive Service Failover
+    </Card>
+    <Card icon={<Shield className="text-green-600"/>} title='PITR Protection' href={"/docs/value/reliability#pitr-protection"}>
+        Pre-configured Backup & Archives
+    </Card>
+    <Card icon={<Building className="text-purple-600"/>} title='Infra Closure' href={"/docs/value/reliability#infra-closure"}>
+        No External Dependencies
+    </Card>
+    <Card icon={<Lock className="text-orange-600"/>} title='Access Control' href={"/docs/value/reliability#access-control"}>
+        Built-in Best-Practice Model
+    </Card>
+    <Card icon={<Eye className="text-cyan-600"/>} title='Confidentiality' href={"/docs/value/reliability#confidentiality"}>
+        Guaranteed Data Security
+    </Card>
+    <Card icon={<CheckSquare className="text-violet-600"/>} title='Data Integrity' href={"/docs/value/reliability#data-integrity"}>
+        Thorough Verification
+    </Card>
+    <Card icon={<Trophy className="text-amber-600"/>} title='Battle-Tested' href={"/docs/value/reliability#battle-tested"}>
+        Availability Results
+    </Card>
+</Cards>
 
 --------
 
 ## 📊 Observable Graphics
 
-*"Sky's movement, all-seeing view, perceiving details to master the whole!"*
+*"Heaven's movement, all-seeing view, perceiving details to master the whole!"*
 
-Pigsty provides comprehensive observability with enterprise-grade monitoring and visualization capabilities.
-
-### Built-in Monitoring Stack
-- **Prometheus & Grafana** integration out-of-the-box
-- **Automatic target discovery** without complex configuration
-- **3000+ metrics** with 666 pre-aggregation rules
-- **Time-series database** with intelligent AIOPS context
-
-### Performance Monitoring
-- **5-level monitoring**: global/cluster/instance/database/object
-- **PostgreSQL object tracking**: tables, indexes, functions, queries
-- **Historical metrics** with easy roll-up and drill-down
-- **Performance tuning** through detailed query analysis
-
-### Advanced Analytics
-- **Multi-level dashboards** with navigation links
-- **Unified labels** for cross-correlation analysis
-- **Interactive data visualization** with low-code development
-- **Custom dashboard creation** with PostgreSQL, Grafana, Echarts
-
-### Alert System
-- **56 preset alert rules** covering all built-in modules
-- **AlertManager integration** with intelligent routing
-- **Automatic event notifications** and silencing
-- **Instant messaging connectivity** for real-time alerts
-
-### Log Analysis
-- **Unified log collection** with Loki and Promtail
-- **Massive parallel grep** for log search and filtering
-- **Metric extraction** from log patterns
-- **Interactive sample analysis** capabilities
-
-
+<Cards>
+    <Card icon={<Activity className="text-blue-600"/>} title='Monitoring Infra' href={"/docs/value/observability#monitoring-infra"}>
+        Built-in Observability Stack
+    </Card>
+    <Card icon={<BarChart3 className="text-green-600"/>} title='Data-Driven' href={"/docs/value/observability#data-driven"}>
+        Measure what you Manage
+    </Card>
+    <Card icon={<Star className="text-purple-600"/>} title='SOTA Experience' href={"/docs/value/observability#sota-experience"}>
+        The Definitive PG monitoring
+    </Card>
+    <Card icon={<Globe className="text-orange-600"/>} title='Universal Monitoring' href={"/docs/value/observability#universal-monitoring"}>
+        RDS or Compat Kernels
+    </Card>
+    <Card icon={<Bell className="text-cyan-600"/>} title='Automatic Alerts' href={"/docs/value/observability#automatic-alerts"}>
+        No more manual checks
+    </Card>
+    <Card icon={<Zap className="text-red-600"/>} title='Performance Tuning' href={"/docs/value/observability#performance-tuning"}>
+        Slow-query Optimize
+    </Card>
+    <Card icon={<Search className="text-violet-600"/>} title='Log Analysis' href={"/docs/value/observability#log-analysis"}>
+        Fast root-cause detection
+    </Card>
+    <Card icon={<Layout className="text-amber-600"/>} title='Custom Dashboards' href={"/docs/value/observability#custom-dashboards"}>
+        Low-code Data App
+    </Card>
+</Cards>
 
 --------
 
-## ⚡ Scalable Services
+## ⚡ Scalable Service
 
-*"Flowing like water, soft yet resilient, converging to adapt to endless change!"*
+*"Ever-flowing like water, soft yet resilient, converging streams to adapt to endless change!"*
 
-Pigsty delivers elastic performance and cloud-like scalability for growing workloads.
-
-### Performance Benchmarks
-- **2 million rows/second** query rate on single node
-- **1 million rows/second** write rate on single node
-- **32TB default table size** limit per instance
-- **25,000 vCPU** largest production deployment
-
-### Read/Write Separation
-- **Unlimited replicas** through cascading replication
-- **Automatic traffic routing** based on workload type
-- **Dedicated analytics instances** for ETL operations
-- **Read-only services** with primary backup support
-
-### Connection Management
-- **Built-in PGBouncer** connection pooling
-- **Transaction pooling** by default for efficiency
-- **20,000+ client connections** to few active server connections
-- **Automatic sync** of database/user configurations
-
-### Load Balancing
-- **Real-time traffic control** via HAProxy
-- **Seamless online migration** capabilities
-- **Stateless proxy scaling** for flexible deployment
-- **Weight adjustment** via CLI for graceful operations
-
-### Horizontal Scaling
-- **Citus extension** for multi-write capabilities
-- **In-place cluster distribution** without downtime
-- **Multi-node parallel processing** for large datasets
-- **Online partition rebalancing** for capacity adjustment
-
-### Storage Expansion
-- **Hot/cold data separation** strategies
-- **S3 integration** with Foreign Data Wrappers
-- **Columnar compression** for analytical workloads
-- **Cloud elasticity** with compute/storage separation
-
-
+<Cards>
+    <Card icon={<Gauge className="text-red-600"/>} title='Great Performance' href={"/docs/value/scalability#great-performance"}>
+        Hardware Fully Harnessed
+    </Card>
+    <Card icon={<BookOpen className="text-blue-600"/>} title='R/W Separation' href={"/docs/value/scalability#rw-separation"}>
+        Unlimited Read Scaling
+    </Card>
+    <Card icon={<Network className="text-green-600"/>} title='Connection Pooling' href={"/docs/value/scalability#connection-pooling"}>
+        High Concurrency
+    </Card>
+    <Card icon={<Scale className="text-purple-600"/>} title='Load Balancing' href={"/docs/value/scalability#load-balancing"}>
+        Traffic Control
+    </Card>
+    <Card icon={<GitBranch className="text-orange-600"/>} title='Horizontal Scaling' href={"/docs/value/scalability#horizontal-scaling"}>
+        Distributive Extension
+    </Card>
+    <Card icon={<Archive className="text-cyan-600"/>} title='Storage Expansion' href={"/docs/value/scalability#storage-expansion"}>
+        Transparent Compression
+    </Card>
+    <Card icon={<Globe2 className="text-violet-600"/>} title='Mass Deployment' href={"/docs/value/scalability#mass-deployment"}>
+        Large clusters made easy
+    </Card>
+    <Card icon={<Expand className="text-amber-600"/>} title='Elasticity' href={"/docs/value/scalability#elasticity"}>
+        Cloud-like Elasticity
+    </Card>
+</Cards>
 
 --------
 
 ## 🔧 Maintainable Toolbox
 
-*"Blazing like wildfire, illuminating all around—true to the core while constantly innovating!"*
+*"Blazing like wildfire, illuminating all around, burning bright without end!"*
 
-Pigsty simplifies database management through automation and infrastructure-as-code principles.
-
-### Infrastructure as Code
-- **GitOps-ready** configuration management
-- **Declarative API** for flexible database deployment
-- **YAML config format** with Ansible compatibility
-- **300+ configurable parameters** with rich documentation
-
-### Simple Deployment
-- **One-command installation** in minutes
-- **Pre-configured templates** with automatic hardware tuning
-- **Four tuning modes**: OLTP, OLAP, CRIT, TINY
-- **Single-core VMs** to high-end physical machine support
-
-### Bare Linux Compatibility
-- **No Docker/Kubernetes complexity** required
-- **Mainstream Linux distributions** support (EL 8/9, Debian 12, Ubuntu 22/24)
-- **Multi-architecture** support (x86_64, ARM64)
-- **Consistent deployment** across environments
-
-### Offline Capabilities
-- **Complete offline installation** packages
-- **No internet dependency** after bootstrap
-- **Version consistency** and stable installation
-- **All required dependencies** included
-
-### Zero-Downtime Operations
-- **Blue-green deployment** strategies
-- **Comprehensive migration playbooks** included
-- **Fine-grained traffic control** with HAProxy
-- **Minimal maintenance windows** required
-
-### Best Practices Integration
-- **DBA experience distilled** into conventions and SOPs
-- **Security hardening** practices and checklists
-- **Development conventions** and operational procedures
-- **Sandbox environments** for testing and development
-
-
+<Cards>
+    <Card icon={<Code className="text-blue-600"/>} title='Infra as Code' href={"/docs/value/maintainability#infra-as-code"}>
+        Define everything in Code
+    </Card>
+    <Card icon={<Zap className="text-green-600"/>} title='Simple & Easy' href={"/docs/value/maintainability#simple-easy"}>
+        Up and Running in Minutes
+    </Card>
+    <Card icon={<Monitor className="text-purple-600"/>} title='Bare Linux' href={"/docs/value/maintainability#bare-linux"}>
+        No Containers or Kubernetes
+    </Card>
+    <Card icon={<CloudDownload className="text-orange-600"/>} title='Offline Install' href={"/docs/value/maintainability#offline-install"}>
+        Stable, Hassle-free Delivery
+    </Card>
+    <Card icon={<BookOpen className="text-cyan-600"/>} title='Admin SOP' href={"/docs/value/maintainability#admin-sop"}>
+        Best Practices Included
+    </Card>
+    <Card icon={<Shuffle className="text-red-600"/>} title='No Downtime' href={"/docs/value/maintainability#no-downtime"}>
+        Online Migration & Resizing
+    </Card>
+    <Card icon={<Settings className="text-violet-600"/>} title='Rich Parameters' href={"/docs/value/maintainability#rich-parameters"}>
+        Plenty of Tunable Knobs
+    </Card>
+    <Card icon={<Cloud className="text-amber-600"/>} title='Provisioning' href={"/docs/value/maintainability#provisioning"}>
+        One-command IaaS Provisioning
+    </Card>
+</Cards>
 
 --------
 
 ## 🎯 Composable Modules
 
-*"Swift as the wind, simplifying complexity—riding the currents of change!"*
+*"Swift as the wind, simplifying complexity, riding the currents of change with freedom and ease!"*
 
-Pigsty's modular architecture enables flexible deployment and customization like Lego blocks.
-
-### Core Modules
-- **PGSQL**: PostgreSQL clusters with high availability
-- **INFRA**: Infrastructure services (Nginx, Prometheus, DNS)  
-- **NODE**: Node management and service exposure
-- **ETCD**: Distributed configuration storage
-
-### Extended Modules
-- **MINIO**: S3-compatible object storage
-- **REDIS**: High-performance dictionary server
-- **FERRET**: MongoDB wire-protocol compatibility
-- **DOCKER**: Stateless application deployment
-
-### Advanced Categories
-- **Kernel Modules**: Alternative database engines
-- **OLAP Modules**: Specialized analytics capabilities
-- **Pilot Modules**: Experimental technologies
-- **Flavor Modules**: Creative PostgreSQL variations
-
-### Enterprise Applications
-- **One-click deployment** of enterprise applications
-- **Stateless containers** with persistent HA PostgreSQL state
-- **GitLab, Odoo, Dify** integration support
-- **Custom application** deployment capabilities
-
-### Design Benefits
-- **No dependency constraints** between modules
-- **Scalable on-demand** configuration
-- **Bonus features** without additional cost
-- **Seamless integration** across components
-
-
+<Cards>
+    <Card icon={<Blocks className="text-blue-600"/>} title='Modular Design' href={"/docs/value/composability#modular-design"}>
+        Lego-like Assembly
+    </Card>
+    <Card icon={<Download className="text-green-600"/>} title='App Templates' href={"/docs/value/composability#app-templates"}>
+        One-Click Enterprise Deployment
+    </Card>
+    <Card icon={<Settings className="text-purple-600"/>} title='Core Modules' href={"/docs/value/composability#core-modules"}>
+        Fully-Featured Postgres RDS
+    </Card>
+    <Card icon={<PlusCircle className="text-orange-600"/>} title='Extra Modules' href={"/docs/value/composability#extra-modules"}>
+        Extending RDS Capabilities
+    </Card>
+    <Card icon={<Cpu className="text-cyan-600"/>} title='Kernel Modules' href={"/docs/value/composability#kernel-modules"}>
+        Swappable Database Engines
+    </Card>
+    <Card icon={<BarChart3 className="text-red-600"/>} title='OLAP Modules' href={"/docs/value/composability#olap-modules"}>
+        Powerful Analytics Capabilities
+    </Card>
+    <Card icon={<Rocket className="text-violet-600"/>} title='Pilot Modules' href={"/docs/value/composability#pilot-modules"}>
+        Exploring Cutting-Edge Frontiers
+    </Card>
+    <Card icon={<Package className="text-amber-600"/>} title='Flavor Modules' href={"/docs/value/composability#flavor-modules"}>
+        Creative Postgres Flavors
+    </Card>
+</Cards>
 
 --------
 
@@ -267,84 +306,66 @@ Pigsty's modular architecture enables flexible deployment and customization like
 
 *"Grounded like the earth, gathering all rivers—standing firm while gazing at the stars!"*
 
-Pigsty ensures complete control over your database infrastructure through open-source principles.
-
-### Software Freedom
-- **100% open-source** components with no vendor lock-in
-- **No license fees** or usage limits at any scale
-- **AGPLv3 License** preserving software freedom
-- **Commercial licenses** available for DBaaS/OEM scenarios
-
-### Local-First Architecture
-- **Fully functional offline** without external dependencies
-- **Bare metal, VM, container** deployment flexibility
-- **Self-contained installation** with all dependencies
-- **Forever running** capability without internet access
-
-### Multi-Cloud Strategy
-- **Build your own DBaaS** reducing clouds to resource providers
-- **Cross-cloud migration** via logical replication
-- **Compare offerings** and choose what's best
-- **No vendor lock-in** with flexible deployment options
-
-### Data Sovereignty
-- **Complete data ownership** with superuser privileges
-- **Direct issue resolution** with provided SOPs
-- **420+ PostgreSQL extensions** available
-- **Multiple architecture support** (x86_64/ARM64)
-
-### Extension Ecosystem
-- **Reciprocal open-source** ecosystem benefiting all
-- **Community contributions** welcomed and integrated
-- **Standard compatibility** with PostgreSQL ecosystem
-- **Innovation freedom** without proprietary constraints
-
-
+<Cards>
+    <Card icon={<Unlock className="text-green-600"/>} title='Software Freedom' href={"/docs/value/controllability#software-freedom"}>
+        Self-hosting democratized
+    </Card>
+    <Card icon={<Home className="text-blue-600"/>} title='Local-First' href={"/docs/value/controllability#local-first"}>
+        Run on-premises indefinitely
+    </Card>
+    <Card icon={<Cloud className="text-purple-600"/>} title='Multi-Cloud' href={"/docs/value/controllability#multi-cloud"}>
+        No vendor lock-in
+    </Card>
+    <Card icon={<Puzzle className="text-orange-600"/>} title='Free Extensions' href={"/docs/value/controllability#free-extensions"}>
+        420+ PostgreSQL extensions
+    </Card>
+    <Card icon={<Database className="text-cyan-600"/>} title='Data Ownership' href={"/docs/value/controllability#data-ownership"}>
+        Pay fair cost for resources
+    </Card>
+    <Card icon={<FileText className="text-red-600"/>} title='Friendly License' href={"/docs/value/controllability#friendly-license"}>
+        AGPLv3 preserving freedom
+    </Card>
+    <Card icon={<Award className="text-violet-600"/>} title='Compliance Ready' href={"/docs/value/controllability#compliance-ready"}>
+        Meeting domestic requirements
+    </Card>
+    <Card icon={<Users className="text-amber-600"/>} title='Expert Support' href={"/docs/value/controllability#expert-support"}>
+        Top-tier PostgreSQL specialists
+    </Card>
+</Cards>
 
 --------
 
 ## 💰 Affordable Solution
 
-*"Thunderous impact, breaking to build anew—keeping costs manageable!"*
+*"Thunderous impact, breaking to build anew, keeping costs manageable and value ever rising!"*
 
-Pigsty delivers enterprise capabilities at a fraction of traditional database costs.
+<Cards>
+    <Card icon={<Code2 className="text-green-600"/>} title='Open-Source' href={"/docs/value/affordability#open-source"}>
+        Fully leverage PostgreSQL's eco
+    </Card>
+    <Card icon={<CircleDollarSign className="text-amber-500"/>} title='Save More' href={"/docs/value/affordability#save-more"}>
+        Escape the RDS money pit
+    </Card>
+    <Card icon={<Users className="text-blue-500"/>} title='DBA Efficiency' href={"/docs/value/affordability#dba-efficiency"}>
+        Everyone can be a DBA
+    </Card>
+    <Card icon={<PackageOpen className="text-violet-500"/>} title='Simplified Arch' href={"/docs/value/affordability#simplified-arch"}>
+        No Containers or K8s
+    </Card>
+    <Card icon={<CloudCog className="text-orange-600"/>} title='Enable Cloud-Exit' href={"/docs/value/affordability#cloud-exit"}>
+        Key blockers resolved
+    </Card>
+    <Card icon={<MessagesSquare className="text-red-600"/>} title='Community Support' href={"/docs/value/affordability#community-support"}>
+        Discuss & Share
+    </Card>
+    <Card icon={<HeartHandshake className="text-purple-600"/>} title='Expert Consultation' href={"/docs/value/affordability#expert-consult"}>
+        Pay as needed
+    </Card>
+    <Card icon={<CreditCard className="text-pink-600"/>} title='Subscription' href={"/docs/value/affordability#subscription"}>
+        Clear pricing, value for money
+    </Card>
+</Cards>
 
-### Cost Comparison
-- **Oracle**: $3,878/year per vCPU
-- **AWS RDS**: $1,920-$2,640/year per vCPU  
-- **Pigsty**: Only $27/year per vCPU hardware cost
-- **50-95% savings** compared to cloud database services
-
-### Operational Efficiency
-- **90% routine maintenance** automated
-- **Junior DEV/OPS** can perform as mid-senior DBAs
-- **Reduced operational overhead** through automation
-- **Self-service capabilities** for common tasks
-
-### Infrastructure Optimization
-- **Cutting-edge hardware** utilization (Gen5 SSDs)
-- **Self-hosting options** on cloud EC2 or IDC
-- **No containers/Kubernetes** complexity required
-- **Familiar Ansible-based** deployment
-
-### Cloud Exit Strategy
-- **Own your infrastructure** instead of renting
-- **Flexibility and bargaining power** with cloud providers
-- **Database self-hosting** as key enabler
-- **Hybrid cloud strategies** supported
-
-### Support Tiers
-- **Open Source**: Free community support
-- **Standard**: $8K/year professional support
-- **Professional**: $24K/year enhanced support  
-- **Enterprise**: $60K/year comprehensive support
-
-### Value Multipliers
-- **Open-source controller** solving DBA scarcity
-- **Effective utilization** guidance included
-- **Training and consultation** available
-- **Long-term cost predictability** without license surprises
-
----
+--------
 
 These eight values work in synergy to deliver a comprehensive database platform that scales from development to enterprise production environments. Pigsty transforms PostgreSQL from a simple database into a powerful, observable, and maintainable data infrastructure that organizations can truly own and control.
