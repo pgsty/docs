@@ -4,15 +4,16 @@ description: Configure infra portal and nginx settings
 icon: DoorOpen
 ---
 
-# Nginx: Expose Web Service with the Infra Portal
 
-Pigsty installs Nginx on the INFRA Node as a web service proxy, using ports 80/443 by default. The global parameter `infra_portal` configures Nginx proxy rules and upstream services.
+Pigsty installs Nginx on the INFRA Node as a web service proxy, using ports 80/443 by default.
+The global parameter [`infra_portal`](/docs/infra/param#infra_portal) configures Nginx proxy rules and upstream services.
 
-## Configuration Overview
+
+## Overview
 
 The Nginx server configuration is specified through the `infra_portal` parameter. Users declare all domains to be proxied through Nginx, along with corresponding upstream server endpoints or local directory paths.
 
-### Basic Configuration Example
+### Basic Example
 
 ```yaml
 infra_portal:  # domain names and upstream servers
@@ -24,7 +25,7 @@ infra_portal:  # domain names and upstream servers
   loki         : { endpoint: "${admin_ip}:3100" }
 ```
 
-### Complex Configuration Example
+### Complex Example
 
 ```yaml
 infra_portal:
@@ -46,6 +47,10 @@ infra_portal:
   pg3          : { domain: pg3.pigsty.cc, endpoint: "10.10.10.13:5432", scheme: tcp }
 ```
 
+
+
+--------
+
 ## Playbook Configuration
 
 Nginx can be reconfigured using Ansible playbooks:
@@ -57,7 +62,11 @@ Nginx can be reconfigured using Ansible playbooks:
 ./infra.yml -t nginx_cert      # Regenerate SSL certificates
 ```
 
-## Server Configuration Parameters
+
+
+-------
+
+## Server
 
 Each server record in `infra_portal` supports the following configuration options:
 
@@ -106,7 +115,11 @@ public_api: { domain: api.pigsty.cc, endpoint: "${admin_ip}:8080", certbot: true
 pg_primary: { domain: pg.pigsty.cc, endpoint: "10.10.10.11:5432", scheme: tcp }
 ```
 
-## Accessing Services via Domain Names
+
+
+-------
+
+## Using Domain Names
 
 ### DNS Resolution Methods
 
@@ -147,6 +160,11 @@ For self-signed certificates, you can:
 - **Use browser security bypass** options (type `thisisunsafe` in Chrome)
 - **Configure proper CA-signed certificates** for production
 
+
+
+
+--------
+
 ## Service Access Examples
 
 With the default configuration, services are accessible via:
@@ -155,6 +173,10 @@ With the default configuration, services are accessible via:
 - **Grafana Dashboard**: `http://g.pigsty` or `https://g.pigsty`
 - **Prometheus Metrics**: `http://p.pigsty` or `https://p.pigsty`
 - **Alertmanager**: `http://a.pigsty` or `https://a.pigsty`
+
+
+
+--------
 
 ## Best Practices
 

@@ -5,11 +5,12 @@ icon: Database
 ---
 
 
-
-You can use PostgreSQL as [config inventory](/docs/config/inventory) for Pigsty, replacing the static YAML configuration file.
+Pigsty allows you to use a **database (CMDB)** as a dynamic configuration source instead of a static configuration file.
+You can use the built-in PostgreSQL as [config inventory](/docs/config/inventory) for config management.
 
 With Postgres CMDB, configuration is organized in a structured relational tables, which can be easily queried and manipulated using SQL.
 This allows for easier integration with other systems and tools.
+
 
 
 ------
@@ -34,13 +35,14 @@ The content of `inventory.sh` is very simple, it will query the PostgreSQL CMDB 
 psql ${METADB_URL} -AXtwc 'SELECT text FROM pigsty.inventory;'
 ```
 
-CMDB schema is loaded by default, there are 3 util scripts to help you to switch to the CMDB:
+<Callout title="Util Scripts for CMDB" type="info">
 
 - [`bin/inventory_load`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_load): Loads YAML config file into the CMDB
 - [`bin/inventory_cmdb`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_cmdb): Use CMDB as config inventory (`meta`.`pigsty`)
 - [`bin/inventory_conf`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_cmdb): Use YAML file as config inventory (`pigsty.yml`)
 
 
+</Callout>
 
 
 ------

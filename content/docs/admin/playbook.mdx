@@ -5,14 +5,14 @@ icon: ScrollText
 ---
 
 Pigsty implements admin controllers with idempotent [Ansible playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html).
-Playbooks require the `ansible-playbook` executable bin in your `PATH`.
-You'll have to install `ansible` to run playbooks.
+Playbooks require the `ansible-playbook` executable bin in your `PATH`. You'll have to install `ansible` to run playbooks.
+
 
 --------
 
 ## Quick Start
 
-For [one-node deployment](/docs/setup/install), just forget about playbooks, use the [**`install.yml`**](#deployment), it does everything for you:
+For [one-node deployment](/docs/install), just forget about playbooks, use the [**`install.yml`**](#deployment), it does everything for you:
 
 ```bash
 ./install.yml
@@ -30,7 +30,7 @@ For [one-node deployment](/docs/setup/install), just forget about playbooks, use
 ## Ansible
 
 
-Pigsty will try its best to install `ansible` and its dependencies during [**bootstrap**](/docs/setup/offline#bootstrap).
+Pigsty will try its best to install `ansible` and its dependencies during [**bootstrap**](/docs/install/offline#bootstrap).
 But you can always install it manually, it is available on most OS's official repos and can be installed with one command.
 
 <Callout title="Install Ansible" type="info">

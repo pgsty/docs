@@ -6,7 +6,7 @@ icon: GraduationCap
 
 Instead of using [`configure`](/docs/config/configure) to generate config, you can write a pigsty config file from scratch manually.
 
-Here is a tutorial to help you to build a complex config file from scratch.
+Here is a tutorial to help you to build a complex config file [inventory](/docs/config/inventory) from scratch.
 
 
 --------
@@ -61,9 +61,9 @@ The [PGSQL](/docs/pgsql) module depends on [**ETCD**](/docs/etcd) for HA consens
 
 --------
 
-## PGSQL Basic
+## Database & Users
 
-Now we want to customize our postgres database cluster, with users, database, and extensions:
+Now we want to customize our postgres database cluster, with users, database, and backups:
 
 ```yaml title="~/pigsty/pigsty.yml"
 all:
@@ -75,7 +75,49 @@ all:
       vars:
         pg_cluster: pg-meta
         pg_users:
-          - name: dbuser_meta 
+          - { name: dbuser_meta ,password: DBUser.Meta ,pgbouncer: true ,roles: [dbrole_admin] ,comment: admin user}
+        pg_databases:
+          - { name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [vector]}
+        node_crontab:
+          - '00 01 * * * postgres /pg/bin/pg-backup full'
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+We define some additional details at the `pg-meta` cluster level:
+
+- `pg_users`: define a new user `dbuser_meta` with password `DBUser.Meta`
+- `pg_databases`: define a new database `meta` with pigsty [CMDB](/docs/config/cmdb) schema and `vector` extension
+- `node_crontab`: define crontab that takes a full backup at 1 am every day
+
+Instead of recreating everything with `./install.yml`, we make changes incrementally:
+
+```bash title="~/pigsty"
+bin/pgsql-user pg-meta dbuesr_meta      # create user dbuser_meta on pg-meta
+bin/pgsql-db   pg-meta meta             # create database meta on pg-meta
+./node.yml -l pg-meta -t node_crontab   # add backup task to crontab on pg-meta
+```
+
+
+--------
+
+## PG VER & Extensions
+
+You can install different major versions of PostgreSQL, and [**420+**](https://ext.pigsty.io/#/list) corresponding extensions.
+
+Let's install PostgreSQL 16 (instead of default 17) with `timescaledb`, `postgis`, and `pgvector` extensions.
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - name: dbuser_meta
             password: DBUser.Meta
             pgbouncer: true
             roles: [dbrole_admin]
@@ -85,22 +127,41 @@ all:
             baseline: cmdb.sql
             comment: pigsty meta database
             schemas: [pigsty]
-            extensions: [{name: vector},{name: postgis},{name: timescaledb}]
-        pg_libs: 'timescaledb, pg_stat_statements, auto_explain'
+            extensions: [ vector, postgis, timescaledb ]           # <--- CREATE EXTENSIONS
+        pg_libs: 'timescaledb, pg_stat_statements, auto_explain'   # <--- LOAD EXTENSIONS
         node_crontab:
           - '00 01 * * * postgres /pg/bin/pg-backup full'
   vars:
     admin_ip: 10.10.10.10
-    repo_extra_packages: [ timescaledb, postgis ]
+    region: default # use local mirror for faster download speed   # <--- default|china|europe
+    repo_extra_packages: [ timescaledb, postgis, pgvector, pgsql ] # <--- DOWNLOAD EXTENSIONS
+    pg_extensions:       [ timescaledb, postgis, pgvector ]        # <--- INSTALL EXTENSIONS
+    pg_version: 16   # PG 17 is the default latest major version   # <--- USE PG 16 VERSION
 ```
 
-We define some additional details at the `pg-meta` cluster level:
-
-- `pg_users`: define a new user `dbuser_meta` with password `DBUser.Meta`
-- `pg_databases`: define a new database `meta` with pigsty [CMDB](/docs/config/cmdb) schema and some extensions
-- `pg_libs`: preload `timescaledb`, `pg_stat_statements`, `auto_explain` extensions.
-- `node_crontab`: define crontab that takes a full backup at 1 am everyday
 - `repo_extra_packages`: download `timescaledb` and `postgis` extensions.
+- `pg_libs`: preload `timescaledb`, `pg_stat_statements`, `auto_explain` extensions.
+
+Let's redownload missing packages (PG 16 kernel & extensions), remove the old cluster, and recreate it:
+
+```bash
+make repo                   # redownload packages
+./pgsql-rm.yml -l pg-meta   # remove the old pg-meta cluster (because it is PG17)
+./pgsql.yml    -l pg-meta   # recreate the pg-meta cluster with PG16 & extensions
+````
+
+
+
+--------
+
+## More NODE
+
+We can add **3** more nodes to this deployment.
+
+
+
+```yaml
+```
 
 
 
@@ -121,7 +182,44 @@ all:
     admin_ip: 10.10.10.10
 ```
 
+Pigsty's working assumption is there's only ONE postgres instance on each node.
+There's no support to run multiple postgres instances on a single node.
 
+
+
+--------
+
+## Redis Up
+
+Pigsty has optional Redis support, which is used as a cache in front of PostgreSQL.
+
+Redis HA setup requires cluster mode, or sential infra, check Redis Config for details.
+
+
+--------
+
+## MinIO Up
+
+Pigsty has optional MinIO support, which is used as a backup storage for PostgreSQL.
+
+
+
+Serious production MinIO deployment usually requires at least 4 nodes with 4 disks each (4N/16D)
+
+
+--------
+
+## Docker Up
+
+
+--------
+
+## Run PgAdmin
+
+
+--------
+
+## Run
 
 
 

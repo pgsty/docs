@@ -2,7 +2,6 @@
 title: Configuration
 description: Describe your environment with config
 icon: Landmark
-full: true
 ---
 
 import {
@@ -26,6 +25,14 @@ Leaf,
 } from 'lucide-react';
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
 import { Button } from "@/components/ui/button"
+
+**Pigsty treats Infra & Database as Code.** You can describe everything with declarative config [**Inventory**](/docs/config/inventory).
+Which is usually an [**Ansible Inventory**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html) in YAML format: `pigsty.yml`.
+But [CMDB](/docs/config/cmdb) can also be used as dynamic inventory.
+
+The [`configure`](/docs/config/configure) procedure will generate and config according to your environment and input.
+But it's **OPTIONAL**: you can always edit the `pigsty.yml` file directly as [**tutorial**](/docs/config/tutorial) shows.
+And there are plenty of [**templates**](/docs/config/template) for your reference.
 
 
 <Cards>
@@ -53,33 +60,35 @@ import { Button } from "@/components/ui/button"
 
 --------
 
+Here are configuration details and parameter list for each module in Pigsty:
+
 <Cards>
-    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
-        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql/config"}>
+        PostgreSQL Cluster with HA, PITR, IaC, ACL, Monitoring, Pooling,…
     </Card>
-    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra"}>
-        Independent modules which providers infrastructure services: NTP, DNS, and the modern observability stack —— Grafana & Prometheus
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra/config"}>
+        Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability
     </Card>
-    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/docs/node"}>
-        Tune nodes into the desired state and monitor it, manage node, VIP, HAProxy, and exporters.
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/docs/node/config"}>
+        Enroll nodes into the desired state and monitor it, and VIP, HAProxy
     </Card>
-    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd"}>
-        Reliable distributive consensus storage (DCS), empowering PostgreSQL HA.
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd/config"}>
+        Reliable distributive consensus storage (DCS), empowering PGSQL HA
     </Card>
-    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio"}>
-        Distributed object storage compatible with S3, providing reliable backup storage for PostgreSQL.
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio/config"}>
+        S3 compatible object storage compatible, optional backup storage
     </Card>
-    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/docs/redis"}>
-        High-performance in-memory cache, standalone, cluster, and sentinel mode support.
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/docs/redis/config"}>
+        High-performance in-memory cache, optinal data structure server
     </Card>
-    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/docs/docker"}>
-        Container runtime and registry for running containerized applications.
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/docs/docker/config"}>
+        Container runtime, optional for running stateless app and tools
     </Card>
-    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/docs/ferret"}>
-        Run MongoDB wire-protocal compatible layer upon PostgreSQL & DocumentDB extension
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/docs/ferret/config"}>
+        MongoDB wire-protocal compatible on PostgreSQL, optional middleware
     </Card>
 </Cards>
 
-| [<span className={"text-sky-600 font-bold"}>PGSQL</span>](/docs/pgsql/config) | [<span className={"text-green-700 font-bold"}>INFRA</span>](/docs/infra/config) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/docs/node/config)   |   [<span className={"text-sky-400 font-bold"}>ETCD</span>](/docs/etcd/config)   |
+| [<span className={"text-sky-600 font-bold"}>PGSQL</span>](/docs/pgsql/param) | [<span className={"text-green-700 font-bold"}>INFRA</span>](/docs/infra/param) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/docs/node/param)   |   [<span className={"text-sky-400 font-bold"}>ETCD</span>](/docs/etcd/param)   |
 |:-----------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|
-| [<span className={"text-red-800 font-bold"}>MINIO</span>](/docs/minio/config) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/docs/redis/config)  | [<span className={"text-blue-500 font-bold"}>DOCKER</span>](/docs/docker/config) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/docs/ferret/config) |
+| [<span className={"text-red-800 font-bold"}>MINIO</span>](/docs/minio/param) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/docs/redis/param)  | [<span className={"text-blue-500 font-bold"}>DOCKER</span>](/docs/docker/param) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/docs/ferret/param) |

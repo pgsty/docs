@@ -133,7 +133,31 @@ wget https://pigsty.cc/pgsty/pigsty/releases/download/v3.5.0/pigsty-v3.5.0.tgz
 wget https://github.com/pgsty/pigsty/releases/download/v3.4.1/pigsty-v3.4.1.tgz
 ```
 
-
+```
+[vagrant@node-1 ~]$ curl https://repo.pigsty.cc/get | bash -s v3.5.0
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  5541  100  5541    0     0  11890      0 --:--:-- --:--:-- --:--:-- 11916
+[v3.5.0] ===========================================
+$ curl -fsSL https://repo.pigsty.cc/get | bash
+[Site] https://pigsty.cc
+[Demo] https://demo.pigsty.cc
+[Repo] https://github.com/pgsty/pigsty
+[Docs] https://pigsty.io/docs/setup/install
+[Download] ===========================================
+[ OK ] version = v3.5.0 (from arg)
+curl -fSL https://repo.pigsty.cc/src/pigsty-v3.5.0.tgz -o /tmp/pigsty-v3.5.0.tgz
+######################################################################## 100.0%
+[ OK ] md5sums = df30f2599a6416eea11acfd0f05ee14b  /tmp/pigsty-v3.5.0.tgz
+[Install] ===========================================
+[ OK ] install = /home/vagrant/pigsty, from /tmp/pigsty-v3.5.0.tgz
+[TodoList] ===========================================
+cd /home/vagrant/pigsty
+./bootstrap      # [OPTIONAL] install ansible & use offline package
+./configure      # [OPTIONAL] preflight-check and config generation
+./install.yml    # install pigsty modules according to your config.
+[Complete] ===========================================
+```
 
 
 

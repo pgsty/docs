@@ -12,6 +12,17 @@ import {
     FileCode,
     AtomIcon,
     ToyBrickIcon,
+    Landmark,
+    Cog,
+    Settings,
+    FileJson,
+    Wrench,
+    Shield,
+    GraduationCap,
+    Container,
+    Leaf,
+    Box,
+    Layers,
 } from 'lucide-react';
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
 import { Button } from "@/components/ui/button"
@@ -47,10 +58,6 @@ Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
 </Callout>
 
 
-| <DynamicLink href="/[lang]/docs/pgsql"><span className={"no-underline hover:underline text-sky-700 font-bold"}>PGSQL</span></DynamicLink> | <DynamicLink href="/[lang]/docs/infra"><span className={"text-green-800 font-bold"}>INFRA</span></DynamicLink> |  <DynamicLink href="/[lang]/docs/node"><span className={"text-amber-500 font-bold"}>NODE</span></DynamicLink> | <DynamicLink href="/[lang]/docs/etcd"><span className={"text-blue-400 font-bold"}>ETCD</span></DynamicLink> |
-|:---:|:--------------------------------------------------------------------------------------------------------------:|:----:|:----:|
-| <DynamicLink href="/[lang]/docs/minio"><span className={"no-underline hover:underline text-red-800 font-bold"}>MINIO</span></DynamicLink> |   <DynamicLink href="/[lang]/docs/redis"><span className={"text-red-400 font-bold"}>REDIS</span></DynamicLink>    |  <DynamicLink href="/[lang]/docs/docker"><span className={"text-blue-600 font-bold"}>DOCKER</span></DynamicLink> | <DynamicLink href="/[lang]/docs/ferret"><span className={"text-gray-500 font-bold"}>FERRET</span></DynamicLink> |
-
 
 
 --------
@@ -68,16 +75,47 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 <Files>
     <Folder name="pigsty" defaultOpen>
-        <DynamicLink href="/[lang]/docs/setup/install#bootstrap"><File name="bootstrap" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/setup/install#configure"><File name="configure" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/setup/install#install.yml"><File name="install.yml" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/setup/setup"><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/install/offline#bootstrap"><File name="bootstrap" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/config/configure"><File name="configure" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/install"><File name="install.yml" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
+        <DynamicLink href="/[lang]/docs/config/inventory"><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></DynamicLink>
     </Folder>
 </Files>
 
 Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for grafana dashboards.
 
+--------
 
+## Modules
+
+Pigsty consists of multiple **modules**. The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are **REQUIRED** for HA postgres service.
+
+<Cards>
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
+        PostgreSQL Cluster with HA, PITR, IaC, ACL, Monitoring, Pooling,…
+    </Card>
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra"}>
+        Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/docs/node"}>
+        Enroll nodes into the desired state and monitor it, and VIP, HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd"}>
+        Reliable distributive consensus storage (DCS), empowering PGSQL HA
+    </Card>
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio"}>
+        S3 compatible object storage compatible, optional backup storage
+    </Card>
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/docs/redis"}>
+        High-performance in-memory cache, optinal data structure server
+    </Card>
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/docs/docker"}>
+        Container runtime, optional for running stateless app and tools
+    </Card>
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/docs/ferret"}>
+        MongoDB wire-protocal compatible on PostgreSQL, optional middleware
+    </Card>
+</Cards>
 
 --------
 
