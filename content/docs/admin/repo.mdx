@@ -1,0 +1,128 @@
+---
+title: Local Repo
+description: Configure local APT / YUM software repo
+icon: Warehouse
+---
+
+
+--------
+
+## Quick Start
+
+If you want to add some packages to the local repo, add them to:
+
+- [`repo_packages`](/docs/infra/param#repo_packages) for default packages
+- [repo_extra_packages`](/docs/infra/param/#repo_extra_packages) for extra packages
+
+Then run the `make repo` shortcut to update the local repo and node repo cache:
+
+```bash title="make repo"
+./infra.yml -t repo_build
+./node.yml -t node_repo
+```
+
+
+
+--------
+
+## Using Alias
+
+You can use alias to specify a bundle of packages, check `roles/node_id/vars/<os>.<arch>.yml` for available aliases:
+
+### EL
+
+```yaml
+node-bootstrap: "ansible python3 python3-pip python3-virtualenv python3-requests python3-jmespath python3-cryptography dnf-utils modulemd-tools createrepo_c sshpass"
+infra-package:  "nginx dnsmasq etcd haproxy vip-manager node_exporter keepalived_exporter pg_exporter pgbackrest_exporter redis_exporter redis minio mcli pig"
+infra-addons:   "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox_exporter nginx_exporter pev2 certbot python3-certbot-nginx"
+extra-modules:  "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:  "lz4 unzip bzip2 zlib yum pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl grubby sysstat iotop htop rsync tcpdump perf flamegraph chkconfig"
+node-package2:  "netcat socat ftp lrzsz net-tools ipvsadm bind-utils telnet audit ca-certificates readline vim-minimal keepalived chrony openssl openssh-server openssh-clients"
+pgsql-utility:  "patroni patroni-etcd pgbouncer pgbackrest pgbadger pg_activity pg_timetable pgFormatter pg_filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb pgloader"
+
+postgresql:     "postgresql$v*"
+pgsql:          "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit"
+pgsql-mini:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib"
+pgsql-core:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit"
+pgsql-full:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit postgresql$v-test postgresql$v-devel"
+pgsql-main:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit pg_repack_$v* wal2json_$v* pgvector_$v*"
+pgsql-client:   "postgresql$v"
+pgsql-server:   "postgresql$v-server postgresql$v-libs postgresql$v-contrib"
+pgsql-devel:    "postgresql$v-devel"
+pgsql-basic:    "pg_repack_$v* wal2json_$v* pgvector_$v*"
+# ......
+```
+
+| Distro | x86_64 | aarch64 |
+|--------|---------|----------|
+| EL 7 | [`el7.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el7.x86_64.yml) | - |
+| EL 8 | [`el8.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el8.x86_64.yml) | [`el8.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el8.aarch64.yml) |
+| EL 9 | [`el9.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml) | [`el9.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) |
+
+
+
+### Debian
+
+```yaml
+node-bootstrap: "ansible python3 python3-pip python3-venv python3-jmespath dpkg-dev sshpass tnftp linux-perf"
+infra-package:  "nginx dnsmasq etcd haproxy vip-manager node-exporter keepalived-exporter pg-exporter pgbackrest-exporter redis-exporter redis minio mcli pig"
+infra-addons:   "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox-exporter nginx-exporter pev2 certbot python3-certbot-nginx"
+extra-modules:  "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:  "lz4 unzip bzip2 zlib1g pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl sysstat iotop htop rsync tcpdump acl chrony"
+node-package2:  "netcat-openbsd socat lrzsz net-tools ipvsadm dnsutils telnet ca-certificates libreadline-dev vim-tiny keepalived openssl openssh-server openssh-client"
+pgsql-utility:  "patroni pgbouncer pgbackrest pgbadger pg-activity pg-timetable pgformatter postgresql-filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb pgloader"
+
+postgresql:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-server-dev-$v"
+pgsql:          "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v"
+pgsql-mini:     "postgresql-$v postgresql-client-$v"
+pgsql-core:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v"
+pgsql-full:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-server-dev-$v"
+pgsql-main:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector"
+pgsql-client:   "postgresql-client-$v"
+pgsql-server:   "postgresql-$v"
+pgsql-devel:    "postgresql-server-dev-$v"
+pgsql-basic:    "postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector"
+# ......
+```
+
+| Distro | x86_64 | aarch64 |
+|--------|---------|----------|
+| Debian 11 | [`d11.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d11.x86_64.yml) | - |
+| Debian 12 | [`d12.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml) | [`d12.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) |
+| Ubuntu 22.04 | [`u22.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u22.x86_64.yml) | [`u22.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u22.aarch64.yml) |
+| Ubuntu 24.04 | [`u24.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml) | [`u24.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) |
+
+
+
+--------
+
+## Reference
+
+Use these playbook tasks to manage local package repositories (YUM/APT) on Infra nodes (because who doesn’t love a good package party?):
+
+```bash
+./infra.yml -t repo              # Create local repo from internet or offline packages
+
+./infra.yml -t repo_dir          # Create local repo directory
+./infra.yml -t repo_check        # Check if local repo exists
+./infra.yml -t repo_prepare      # Use existing local repo if available
+./infra.yml -t repo_build        # Build local repo from upstream if not exists
+./infra.yml     -t repo_upstream     # Add upstream repo/list files
+./infra.yml     -t repo_remove       # Remove existing repo files if repo_remove=true
+./infra.yml     -t repo_add          # Add upstream repo files to /etc/yum.repos.d (or apt)
+./infra.yml     -t repo_url_pkg      # Download packages defined in repo_url_packages
+./infra.yml     -t repo_cache        # Create metadata cache with yum makecache / apt update
+./infra.yml     -t repo_boot_pkg     # Install bootstrap packages (createrepo_c, yum-utils, etc)
+./infra.yml     -t repo_pkg          # Download packages & deps from upstream
+./infra.yml     -t repo_create       # Create local repo with createrepo_c / dpkg-dev
+./infra.yml     -t repo_use          # Add new repo to /etc/yum.repos.d | apt sources
+./infra.yml -t repo_nginx        # Start nginx as file server if not running
+```
+
+Commonly used commands (the greatest hits):
+
+```bash
+./infra.yml     -t repo_upstream     # Add upstream repos defined in repo_upstream
+./infra.yml     -t repo_pkg          # Download packages and their dependencies
+./infra.yml     -t repo_create       # Create/update local yum/apt repo
+```

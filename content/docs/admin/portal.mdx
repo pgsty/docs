@@ -1,5 +1,5 @@
 ---
-title: Portal
+title: Nginx Portal
 description: Configure infra portal and nginx settings
 icon: DoorOpen
 ---
@@ -9,7 +9,9 @@ Pigsty installs Nginx on the INFRA Node as a web service proxy, using ports 80/4
 The global parameter [`infra_portal`](/docs/infra/param#infra_portal) configures Nginx proxy rules and upstream services.
 
 
-## Overview
+
+--------
+
 
 The Nginx server configuration is specified through the `infra_portal` parameter. Users declare all domains to be proxied through Nginx, along with corresponding upstream server endpoints or local directory paths.
 

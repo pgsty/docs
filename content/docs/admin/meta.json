@@ -1,13 +1,15 @@
 {
   "title": "Administration",
-  "description": "Run playbooks, upgrades, and maintenance",
+  "description": "Run playbooks, manage access, setup modules",
   "icon": "Landmark",
   "defaultOpen": false,
   "pages": [
-    "portal",
-    "dashboard",
     "ansible",
     "playbook",
+    "dashboard",
+    "monitor",
+    "portal",
+    "repo",
     "domain",
     "cert"
   ]
