@@ -3,7 +3,7 @@
     "icon": "Download",
     "defaultOpen": false,
     "pages": [
-        "install",
+        "singleton",
         "interface",
         "multinode",
         "offline",

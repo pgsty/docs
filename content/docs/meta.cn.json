@@ -3,8 +3,9 @@
   "pages": [
     "[文档](/cn/docs)",
 
+    "about",
     "value",
-    "feature",
+    "feat",
     "intro",
 
     "--- ---",
@@ -12,10 +13,6 @@
     "prepare",
     "config",
     "admin",
-    "--- ---",
-
-    "guide",
-    "about",
 
     "--- ---",
     "pgsql",

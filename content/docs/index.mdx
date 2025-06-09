@@ -5,6 +5,16 @@ icon: PiggyBank
 full: true
 ---
 
+
+<span className="text-sky-700 font-black">P</span>ostgres <span className="text-blue-400 font-black">I</span>n <span className="text-orange-500 font-black">G</span>reat <span className="text-gray-500 font-black">S</span><span className="text-red-700 font-black">T</span><span className="text-green-600 font-black">Y</span>le ——
+<span className="text-sky-700 font-black">P</span>ostgres
+<span className="text-blue-400 font-black">I</span>nfra
+<span className="text-orange-500 font-black">G</span>raphic
+<span className="text-gray-500 font-black">S</span>ervice
+<span className="text-red-700 font-black">T</span>oolbox, 
+<span className="text-green-600 font-black">Y</span>ours
+
+
 import {
     Database,
     CpuIcon,
@@ -23,6 +33,10 @@ import {
     Leaf,
     Box,
     Layers,
+    Server,
+    Rocket,
+    SquareStack,
+    Code
 } from 'lucide-react';
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
 import { Button } from "@/components/ui/button"
@@ -30,33 +44,33 @@ import { Button } from "@/components/ui/button"
 
 ## Introduction
 
-**Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> is a battery-included, local-first, open-source & free <span className="text-blue-500 font-bold">PostgreSQL Distribution</span> based on **bare Linux**.
-
+<span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
+is a Battery-Included, FOSS <a href="/docs/feat/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
+as a Local-First <a href="/docs/feat/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='PostgreSQL Enterprise' href={"/docs/pgsql"}>
-        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
+
+    <Card icon={<Rocket className="text-blue-300" />} title='Values' href={"/docs/value"}>
+        Why using pigsty?
+        The 8 core value proposition of Pigstys
     </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='Infrastructure as Code' href={"/docs/infra"}>
-        Declare your entire infra with code, and setup everything PG needs from Bare OS: LB, Nginx, NTP, DNS, Local Repo, etc...
+
+    <Card icon={<SquareStack className={"text-red-500"} />} title='Features' href={"/docs/feature"}>
+        Key features, Highlights and Technical details
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Stunning Observability'>
-        Unparalleled monitoring best practices built upon modern Prometheus & Grafana observability stacks out-of-the-box
+
+    <Card icon={<Code className="text-green-600" />} title='References' href={"/docs/intro"}>
+        Architecture, Use Cases, Comparisons, and other references
     </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Extensions & Forks'>
-        <span className={"text-red-800 font-bold"}>420+</span> PGSQL Extensions battery-included! Alone with forks: Babelfish, Oriole, IvorySQL, OpenHalo, PolarDB, Supabase,...
+    <Card icon={<Landmark className={"text-orange-400"} />} title='About' href={"/docs/about"}>
+        License, Release, Community, News, Author, Service, etc...
     </Card>
+
 </Cards>
 
-Pigsty provides everything you'll need for self-hosting an enterprise-grade PostgreSQL Service even without expertise.
+Pigsty assembles all the superpowers from the PostgreSQL and Database world, provides everything you'll need to build your own Data Infra.
 
-Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
-
-<Callout title="Want to learn more?">
-    Read our in-depth [What is Pigsty](/docs/pigsty/intro) introduction.
-
-</Callout>
-
+> **Just use Postgres for Everything! and Self-Hosting it like a Pro!**
 
 
 
@@ -64,31 +78,42 @@ Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
 
 ## Installation
 
-[Prepare](/docs/prepare) a [Linux](/docs/linux) node that runs any compatible Distros, then [install](/docs/install) Pigsty with:
+[**Single node installation**](/docs/install): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
+run as [user](/docs/prepare/admin#user) with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) privileges:
 
 ```bash title="install"
 curl -fsSL https://repo.pigsty.io/get | bash;
 cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
 ```
 
-import { File, Folder, Files } from 'fumadocs-ui/components/files';
+[**Download**](/docs/prepare/software#pigsty), [Bootstrap](/docs/install/offline#bootstrap), [**Configure**](/docs/config/configure) and [**Install**](/docs/install). Pigsty Installed! You can [**add more**](/docs/install/multinode) nodes and database clusters later.
 
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <DynamicLink href="/[lang]/docs/install/offline#bootstrap"><File name="bootstrap" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/config/configure"><File name="configure" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/install"><File name="install.yml" icon={<CpuIcon className="text-orange-500" />} /></DynamicLink>
-        <DynamicLink href="/[lang]/docs/config/inventory"><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></DynamicLink>
-    </Folder>
-</Files>
+Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/docs/pgsql) [Service](/docs/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
 
-Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for grafana dashboards.
+<Cards>
+
+    <Card icon={<Rocket className="text-blue-300" />} title='Installation' href={"/docs/install"}>
+        Install Pigsty on Linux Servers
+    </Card>
+
+    <Card icon={<SquareStack className={"text-red-500"} />} title='Preparation' href={"/docs/prepare"}>
+        Prepare Environment for Serious Deployment
+    </Card>
+
+    <Card icon={<Code className="text-green-600" />} title='Configuration' href={"/docs/config"}>
+        Customize database clusters with Config Inventory
+    </Card>
+    <Card icon={<Landmark className={"text-orange-400"} />} title='Administration' href={"/docs/admin"}>
+        Manage your environment with Ansible Playbook
+    </Card>
+
+</Cards>
 
 --------
 
 ## Modules
 
-Pigsty consists of multiple **modules**. The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are **REQUIRED** for HA postgres service.
+Pigsty consists of multiple **modules**. The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">REQUIRED</span> for self-hosting Postgres RDS service.
 
 <Cards>
     <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
@@ -103,6 +128,11 @@ Pigsty consists of multiple **modules**. The `PINE` stack: `PGSQL` / `INFRA` / `
     <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd"}>
         Reliable distributive consensus storage (DCS), empowering PGSQL HA
     </Card>
+</Cards>
+
+Pigsty also have some  <span className="text-emerald-500 font-black">OPTIONAL</span> "Bonus" modules, which works well with PostgreSQL, and brings extra value to your data infrastructure.
+
+<Cards>
     <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio"}>
         S3 compatible object storage compatible, optional backup storage
     </Card>

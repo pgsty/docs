@@ -1,13 +1,13 @@
 {
-  "title": "介绍",
-  "description": "Pigsty 特性，价值，案例，对比",
+  "title": "参考资料",
+  "description": "生态定位，系统架构，用户案例，技术对比",
   "icon": "BookMarked",
   "defaultOpen": false,
   "pages": [
-    "value",
-    "feature",
-    "compare",
+    "distro",
+    "rds",
     "arch",
-    "case"
+    "case",
+    "compare"
   ]
 }

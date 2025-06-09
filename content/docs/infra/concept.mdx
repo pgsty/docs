@@ -26,7 +26,7 @@ A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module th
 
 - [Chronyd](/docs/infra/arch/#chronyd): NTP time synchronization to keep all nodes in sync
 
-The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](https://pigsty.io/docs/install/slim/) mode.
+The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/docs/install/minimal/) mode.
 
 However, since INFRA provides essential supporting services for production-grade HA PostgreSQL clusters, it’s strongly recommended for most deployments.
 
@@ -118,7 +118,7 @@ During installation, Pigsty creates a local package repo on the INFRA node to sp
 
 Located at `/www/pigsty` and served by Nginx, it’s accessible via `http://h.pigsty/pigsty`.
 
-Pigsty’s [offline package](https://pigsty.io/docs/install/offline/) is a tarball of a pre-built repo directory. If `/www/pigsty` exists with a `/www/pigsty/repo_complete` marker, Pigsty skips downloading from upstream - perfect for air-gapped environments!
+Pigsty’s [offline package](/docs/install/offline/) is a tarball of a pre-built repo directory. If `/www/pigsty` exists with a `/www/pigsty/repo_complete` marker, Pigsty skips downloading from upstream - perfect for air-gapped environments!
 
 Repo definition lives in `/www/pigsty.repo`, fetchable via `http://${admin_ip}/pigsty.repo`:
 

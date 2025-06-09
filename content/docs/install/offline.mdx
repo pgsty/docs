@@ -13,7 +13,7 @@ To address this issue, Pigsty supports offline installation from [**offline pack
 ## What is offline package?
 
 Offline package packs all the required RPM/DEB packages and their dependencies;
-it is essentially a snapshot tarball of local APT / YUM repo, taken after a normal [installation](/docs/install).
+it is essentially a snapshot tarball of local APT / YUM repo, taken after a normal [installation](/docs/install/singleton).
 
 You can find these packages from the [GitHub release page](https://github.com/pgsty/pigsty/releases/latest), for example:
 
@@ -70,7 +70,7 @@ If you are using the exact same OS minor version above, using offline packages i
 
 ------
 
-## Bootstrap from offline package
+## Bootstrap
 
 import {Step, Steps} from 'fumadocs-ui/components/steps';
 
@@ -151,7 +151,7 @@ We offer [paid service](/docs/about/service) to make offline packages for precis
 
 ## Hybride Approach
 
-There's a hybride approach to use the offline package and do online install upon it.
+There's a hybrid approach to using the offline package and do online install upon it.
 This could be useful if your OS repo is a local Intranet repo.
 
 Let's say you are using RockyLinux 9.3, but the official offline package is made for RockyLinux 9.5.

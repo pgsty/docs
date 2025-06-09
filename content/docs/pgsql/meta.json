@@ -2,12 +2,9 @@
   "title": "PGSQL",
   "description": "The Main Database Kernel",
   "icon": "Database",
-  "root": true,
+  "root": false,
   "defaultOpen": false,
   "pages": [
-    "[Pigsty Docs](/docs)",
-    "index",
-    "--- ---",
     "cluster",
     "service",
     "user",

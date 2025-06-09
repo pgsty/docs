@@ -1,5 +1,5 @@
 ---
-title: Setup
+title: Installation
 description: Getting started with Pigsty
 icon: Rocket
 full: true
@@ -10,6 +10,7 @@ import {
     CpuIcon,
     SearchIcon,
     FileCode,
+    Code,
     AtomIcon,
     ToyBrickIcon,
 } from 'lucide-react';
@@ -18,13 +19,13 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 ## Quick Start
 
-[Prepare](/docs/prepare) one [ssh-accessible](/docs/prepare#accessibility) [node](/docs/prepare#node) with fresh installed [Compatible Linux OS](/docs/prepare/linux),
- run as user with nopass [`ssh`](/docs/prepare#ssh) and [`sudo`](/docs/prepare#admin-user) privileges:
+[**Single node installation**](/docs/install): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
+ run as [user](/docs/prepare/admin#user) with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) privileges:
 
 <Steps>
 <Step>
 
-[**Download**](/docs/install#download) pigsty with:
+[**Download**](/docs/prepare/software#pigsty) pigsty with:
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
@@ -32,7 +33,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 
 </Step>
 <Step>
-[Bootstrap](/docs/install/offline#bootstrap) pigsty with required dependencies (`ansible`):
+[Bootstrap](/docs/install/offline#bootstrap) pigsty: (install [ansible](/docs/admin/ansible) dependency)
 
 ```bash
 ./bootstrap
@@ -40,7 +41,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Step>
 
 <Step>
-[**Configure**](/docs/install#configure) the [`pigsty.yml`](/docs/config/inventory) inventory file according your need and environment.
+    [**Configure**](/docs/config/configure) the [inventory](/docs/config/inventory) file according your need. (<span className={"text-red-500 font-black"}>CHANGE PASSWORDS</span> in `pigsty.yml`)
 
 ```bash
 ./configure
@@ -49,7 +50,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Step>
 <Step>
 
-[**Install**](/docs/install#install) everything accoring to your config:
+[**Install**](/docs/install/singleton) everything according to your config:
 
 ```bash
 ./install.yml
@@ -60,8 +61,8 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Steps>
 
 
-Pigsty Single-Node [**Installation**](/docs/install) Ready!
-Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
+Pigsty Installed!  Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/docs/pgsql) [Service](/docs/pgsql/service), port `3000` for grafana dashboards (`admin` / `pigsty`).
+
 
 
 --------
@@ -81,7 +82,7 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='One-Node Installation' href={"/docs/install"}>
+    <Card icon={<Database className="text-blue-300" />} title='One-Node Installation' href={"/docs/install/singleton"}>
         Setup current linux node, and download everything from the Internet
     </Card>
     <Card icon={<AtomIcon className="text-green-600" />} title='Multi-Node Installation' href={"/docs/install/multinode"}>
@@ -125,19 +126,19 @@ Check port `5432` for [postgres](/docs/pgsql) [service](/docs/pgsql/service), po
 
 <Cards>
 
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Explore' href={"/docs/prepare/terraform"}>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Interface' href={"/docs/install/interface"}>
         Provision cloud linux servers with terraform on cloud vendors
     </Card>
 
-    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/docs/prepare"}>
+    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/docs/config/configure"}>
         Prepare node, network, storage, user, ssh, sudo, ansible, etc...
     </Card>
 
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/docs/prepare/linux"}>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/docs/admin/playbook"}>
         Check compatible linux distributions and availability matrix
     </Card>
 
-    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/docs/prepare/vagrant"}>
+    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/docs/config/security"}>
         Security hardening and best practices for production environments
     </Card>
 

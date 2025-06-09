@@ -4,6 +4,8 @@
     "icon": "BookMarked",
     "defaultOpen": false,
     "pages": [
+        "distro",
+        "rds",
         "arch",
         "case",
         "compare"

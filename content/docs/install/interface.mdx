@@ -1,6 +1,6 @@
 ---
 title: Interface
-description: explore dashboard and access database service
+description: Explore dashboard and access database service
 icon: Search
 ---
 
@@ -34,3 +34,95 @@ There are several services are exposed by Nginx (configured by [`infra_portal`](
 ![pigsty-home.jpg](https://pigsty.io/img/pigsty/home.jpg)
 
 You can access these web UI directly via IP + port. While the common best practice would be access them through Nginx and distinguish via domain names. You’ll need configure DNS records, or use the local static records (`/etc/hosts`) for that.
+
+
+
+---------
+
+## Overview
+
+Once installed, you’ll have the four core modules: 
+[**`PGSQL`**](/docs/pgsql/), [**`INFRA`**](/docs/infra/), [**`NODE`**](/docs/node/), and [**`ETCD`**](/docs/etcd/) on current node.
+
+| ID | [NODE](/docs/node) | [PGSQL](/docs/pgsql) | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+
+
+
+-------
+
+## PostgreSQL
+
+To access the PostgreQL with its default `psql` cli:
+
+```bash tab="psql"
+psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10/meta    # replace with your IP and password
+```
+```bash tab="alias"
+p   # alias: os admin user @ current node
+```
+
+<Callout title="Default Superuser" type="info">
+
+- Username: [`dbuser_dba`](/docs/pgsql/param#pg_admin_username)
+- Password: [`DBUser.DBA`](/docs/pgsql/param#pg_admin_password) (If you have changed it, use your own)
+
+</Callout>
+
+The default superuser is [`dbuser_dba`](/docs/pgsql/param#pg_admin_username), with [`DBUser.DBA`](/docs/pgsql/param#pg_admin_password) as default password, default dbname is `meta`
+
+
+you could just use the `p` alias with [admin user](/docs/prepare/admin#user) in shell.
+
+To access your database with graphical interface, you can use your favorite GUI tools, such as:
+
+- PgAdmin
+- Intellij Database Console / DataGrip
+- Supabase Studio
+- Navicat
+- DBeaver
+- PGWEB
+- ...
+
+
+
+
+
+
+
+
+
+The [**PGSQL**](/docs/pgsql/) provides a PostgreSQL singleton which can be
+[accessed](https://pigsty.io/docs/concept/svc/#personal-user) via:
+
+- Default Users
+- dbuser_dba
+- dbuser_meta
+- dbuser_view
+
+```bash
+psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10/meta # DBA / superuser (via IP)
+```
+
+The [**INFRA**](/docs/infra/) module gives you an entire modern observability stack, exposed by Nginx on (`80` /
+`443`):
+
+There are several services are exposed by Nginx (configured by [`infra_portal`](/docs/infra/param/#infra_portal)):
+
+|  Component   |    Port    |   Domain   | Comment                  | Public Demo                                 |
+|:------------:|:----------:|:----------:|--------------------------|---------------------------------------------|
+|  **Nginx**   | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.cc`](https://h.pigsty.cc)  |
+| **Grafana**  |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.io`](https://demo.pigsty.io) |
+|  Prometheus  |    `9090`    | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.cc`](https://p.pigsty.io)        |
+| AlertManager |    `9093`    | `a.pigsty` | Alter Management            | [`a.pigsty.cc`](https://a.pigsty.io)        |
+
+> Grafana Dashboards (g.pigsty, port 3000) credentials, user: `admin` / pass: `pigsty`
+
+![pigsty-home.jpg](https://pigsty.io/img/pigsty/home.jpg)
+
+You can access these web UI directly via IP + port. While the common best practice would be access them through
+Nginx and distinguish via domain names. You’ll need configure DNS records, or use the local static records
+(`/etc/hosts`) for that.
+
+

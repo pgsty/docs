@@ -4,3 +4,26 @@ description: how to install pigsty on multiple nodes
 icon: CloudDownload
 defaultOpen: false
 ---
+
+
+------
+
+## More
+
+You can deploy & monitor more clusters with pigsty: add more nodes to `pigsty.yml` and run corresponding playbooks:
+
+```bash
+bin/node-add pg-test # init 3 nodes of cluster pg-test
+bin/pgsql-add pg-test # init HA PGSQL Cluster pg-test
+bin/redis-add redis-ms # init redis cluster redis-ms
+```
+
+Remember that most modules require the [`NODE`](/docs/node/) module installed first. Check
+[**modules**](https://pigsty.io/docs/about/module/) for detail
+
+[**`PGSQL`**](/docs/pgsql/), [**`INFRA`**](/docs/infra/), [**`NODE`**](/docs/node/), [**`ETCD`**](/docs/etcd/),
+[**`MINIO`**](/docs/minio/), [**`REDIS`**](/docs/redis/), [**`FERRET`**](/docs/ferret/),
+[**`DOCKER`**](/docs/node/), ……
+
+
+
