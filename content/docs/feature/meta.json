@@ -4,11 +4,9 @@
     "icon": "Feather",
     "defaultOpen": false,
     "pages": [
-        "rds",
-        "distro",
         "ext",
         "kernel",
-        "vis",
+        "infra",
         "raw",
         "ha",
         "pitr",

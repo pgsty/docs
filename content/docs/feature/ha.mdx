@@ -8,317 +8,455 @@ import { Callout } from 'fumadocs-ui/components/callout';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Database, Settings, AlertTriangle, GitBranch, Cpu, Network, Target, Activity, Clock, AlertCircle, TrendingUp } from 'lucide-react';
 
-Pigsty delivers **enterprise-grade high availability** with automated failover, self-healing capabilities, and minimal service disruption. Built on battle-tested open-source components, it provides **99.999%+ uptime** with RTO under 30 seconds.
+Pigsty uses [Patroni](https://patroni.readthedocs.io/en/latest/) to achieve high availability for PostgreSQL, ensuring automatic failover.
 
-![](https://pigsty.io/img/pigsty/ha.png)
+![pigsty-ha](https://pigsty.io/img/pigsty/ha.png)
 
 <Callout type="info">
-**Proven at Scale**: Deployed in production with 25K+ CPU cores and 333+ PostgreSQL instances, maintaining 99.999 %+ availability over 6 years.
-    With average RTO ~ 30s on primary failure.
+**Primary Failure RTO ≈ 30s, RPO &lt; 1MB, Replica Failure RTO≈0** (reset current conn)
 </Callout>
-
-
 
 --------
 
-## Architecture Overview
+## Overview
+
+Pigsty's PostgreSQL cluster has battery-included high-availability powered by [Patroni](https://patroni.readthedocs.io/en/latest/), [Etcd](https://etcd.io/), and [HAProxy](http://www.haproxy.org/).
+
+When you have two or more instances in the PostgreSQL cluster, you have the ability to self-heal from hardware failures without any further configuration — as long as any instance within the cluster survives, the cluster can serve its services. Clients simply need to connect to any node in the cluster to obtain full services without worrying about replication topology changes.
+
+By default, the recovery time objective (RTO) for primary failure is approximately 30s ~ 60s, and the data recovery point objective (RPO) is < 1MB; for standby failure, RPO = 0, RTO ≈ 0 (instantaneous). In consistency-first mode, zero data loss during failover is guaranteed: RPO = 0. These metrics can be [**configured as needed**](#trade-offs) based on your actual hardware conditions and reliability requirements.
+
+Pigsty incorporates an HAProxy load balancer for automatic traffic switching, offering multiple access methods for clients such as DNS/VIP/LVS. Failovers and switchover are almost imperceptible to the business side except for sporadic interruptions, meaning applications do not need connection string modifications or restarts.
+
+### Key Metrics
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
+  <div className="text-center p-4 border rounded-lg">
+    <div className="text-2xl font-bold text-emerald-600">RTO ~ 30s</div>
+    <div className="text-sm text-gray-600">Primary Failure</div>
+  </div>
+  <div className="text-center p-4 border rounded-lg">
+    <div className="text-2xl font-bold text-emerald-600">RPO &lt; 1MB</div>
+    <div className="text-sm text-gray-600">Async Mode RPO</div>
+  </div>
+  <div className="text-center p-4 border rounded-lg">
+    <div className="text-2xl font-bold text-emerald-600">RTO ~ 0s</div>
+    <div className="text-sm text-gray-600">Replica Failure</div>
+  </div>
+  <div className="text-center p-4 border rounded-lg">
+    <div className="text-2xl font-bold text-emerald-600">RPO = 0</div>
+    <div className="text-sm text-gray-600">Sync Mode</div>
+  </div>
+</div>
+
+--------
+
+## What High Availability Solves
+
+High availability addresses critical operational challenges:
+
+<Cards>
+<Card title="Data Safety" icon={<Database className="text-blue-600"/>}>
+**Elevates availability**: RPO ≈ 0, RTO < 30s for enhanced data protection
+</Card>
+<Card title="Rolling Maintenance" icon={<Settings className="text-gray-600"/>}>
+**Seamless maintenance**: Minimize maintenance windows for operational convenience
+</Card>
+<Card title="Hardware Failures" icon={<AlertTriangle className="text-red-600"/>}>
+**Self-healing**: Automatic recovery from hardware failures without human intervention
+</Card>
+<Card title="Load Distribution" icon={<GitBranch className="text-green-600"/>}>
+**Read scaling**: Distribute read-only queries across standby instances
+</Card>
+</Cards>
+
+### Specific Benefits
+
+- **Enhanced data safety**: Improves the availability aspect of data safety CIA to a new height
+- **Rolling maintenance capabilities**: Enables seamless maintenance with minimal downtime
+- **Hardware failure recovery**: Self-healing from hardware failures without human intervention
+- **Load sharing**: Read-only requests can be distributed across standby instances
+
+--------
+
+## Costs of High Availability
+
+Implementing HA introduces certain trade-offs and requirements:
+
+<Callout type="warn">
+**Infrastructure Requirements**: HA requires at least **3 nodes** and additional infrastructure dependencies.
+</Callout>
+
+### Resource Requirements
+
+- **Minimum cluster size**: At least 3 nodes for proper consensus
+- **Additional infrastructure**: Requires consensus store (Etcd) and load balancer
+- **Resource overhead**: Additional CPU, memory, and network resources
+- **Operational complexity**: Increased monitoring and management requirements
+
+### Limitations
+
+<Callout type="note">
+High availability **cannot prevent**:
+- Human errors and operational mistakes
+- Software defects causing data corruption
+- Logical data deletion or corruption
+</Callout>
+
+For these scenarios, additional recovery strategies are needed:
+- [**Delayed clusters**](#delayed-replica) for protection against logical corruption
+- **Point-in-time recovery** for fine-grained data restoration
+- **Regular backups** for disaster recovery scenarios
+
+--------
+
+## Architecture
 
 Pigsty's HA architecture leverages a multi-component design that eliminates single points of failure:
 
 <Cards>
-<Card title="Patroni" icon="🔧">
-Cluster management and automated failover orchestration
+<Card title="Patroni" icon={<Cpu className="text-orange-600"/>}>
+**Cluster Management**: Orchestrates PostgreSQL processes and handles automatic failover
 </Card>
-<Card title="Etcd" icon="🗃️">
-Distributed consensus and configuration store
+<Card title="Etcd" icon={<Database className="text-purple-600"/>}>
+**Consensus Store**: Provides distributed configuration and leader election
 </Card>
-<Card title="HAProxy" icon="🔀">
-Intelligent traffic routing and load balancing
+<Card title="HAProxy" icon={<Network className="text-blue-600"/>}>
+**Load Balancer**: Routes traffic and provides service discovery
 </Card>
-<Card title="VIP Manager" icon="🎯">
-Virtual IP management for seamless client connectivity
+<Card title="VIP Manager" icon={<Target className="text-red-600"/>}>
+**Virtual IP**: Optional Layer 2 VIP binding for seamless connectivity
 </Card>
 </Cards>
 
+### Component Roles
 
+<Tabs items={['Patroni', 'Etcd', 'HAProxy', 'VIP Manager']}>
+<Tab value="Patroni">
+**Cluster Orchestrator**
 
---------
-
-
-## Key Characteristics
-
-### Recovery Objectives
-
-| Metric                  | Default Value | Configurable Range |
-|-------------------------|---------------|--------------------|
-| **RTO** (Recovery Time) | 30-60 seconds | 15s - 5 minutes    |
-| **RPO** (Data Loss)     | < 1MB         | 0 (sync) - 16MB    |
-| **Detection Time**      | 5-10 seconds  | 3s - 30s           |
-| **Failover Time**       | 20-50 seconds | 10s - 2 minutes    |
-
-### Availability Modes
-
-<Tabs items={['Async Replication', 'Sync Replication', 'Quorum Sync']}>
-<Tab value="Async Replication">
-```yaml
-# Default: Availability-first mode
-pg_rto: 30          # 30s recovery time
-pg_rpo: 1048576     # 1MB max data loss
-synchronous_mode: false
-```
-**Best for**: General production workloads balancing performance and availability
-</Tab>
-<Tab value="Sync Replication">
-```yaml
-# Zero data loss mode
-pg_rto: 30          # 30s recovery time  
-pg_rpo: 0           # Zero data loss
-synchronous_mode: true
-synchronous_mode_strict: true
-```
-**Best for**: Financial systems, critical transactional workloads
-</Tab>
-<Tab value="Quorum Sync">
-```yaml
-# Advanced sync with quorum
-pg_rto: 30
-pg_rpo: 0
-synchronous_mode: true
-synchronous_standby_names: 'ANY 2 (replica1,replica2,replica3)'
-```
-**Best for**: Mission-critical systems requiring multiple sync replicas
-</Tab>
-</Tabs>
-
-
-
-
---------
-
-## Components
-
-### Patroni: The Brain
-
-Patroni serves as the cluster orchestrator, providing:
-
-- **Health Monitoring**: Continuous health checks every 10 seconds
-- **Leader Election**: Automatic primary selection via etcd consensus
-- **Failover Logic**: Smart failover with lag and timeline considerations
-- **Configuration Management**: Dynamic PostgreSQL configuration updates
+- Manages PostgreSQL server processes
+- Handles automatic failover and switchover
+- Monitors cluster health and topology
+- Configures streaming replication
+- Provides REST API for cluster management
 
 ```yaml
-# Key Patroni configuration
-patroni_cluster_name: pg-test
-patroni_log_level: INFO
-patroni_ttl: 30
-patroni_loop_wait: 10
-patroni_retry_timeout: 30
-patroni_maximum_lag_on_failover: 1048576  # 1MB
-```
-
-### Etcd: The Coordination Layer
-
-Etcd provides the distributed foundation:
-
-- **Consensus Protocol**: Raft algorithm for consistent state
-- **Service Discovery**: Dynamic cluster member registration
-- **Configuration Store**: Centralized cluster configuration
-- **Leader Election**: Atomic leader selection with TTL leases
-
-### HAProxy: The Traffic Director
-
-HAProxy intelligently routes connections based on cluster state:
-
-**Service Ports**:
-- **5433**: Primary service (read-write)
-- **5434**: Replica service (read-only) 
-- **5435**: Default service (primary preferred)
-- **5436**: Offline service (any available node)
-
-```ini
-# Auto-generated HAProxy configuration
-backend primary
-    option httpchk
-    http-check expect status 200
-    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
-    server pg-test-1 10.10.10.11:5432 check port 8008
-    server pg-test-2 10.10.10.12:5432 check port 8008 backup
-```
-
-
-
---------
-
-## Failure Scenarios & Response
-
-<Steps>
-
-<Step>
-### Primary Node Failure
-**Detection**: Patroni health checks fail + etcd lease expires (10-30s)
-**Response**: Automatic promotion of healthiest replica
-**Client Impact**: 30-60s connection interruption
-</Step>
-
-<Step>
-### Network Partition
-**Detection**: Split-brain prevention via etcd consensus
-**Response**: Minority partition stops accepting writes
-**Client Impact**: Read-only service continues in isolated nodes
-</Step>
-
-<Step>
-### Replica Failure  
-**Detection**: Immediate health check failure
-**Response**: Remove from load balancing, continue operations
-**Client Impact**: Zero impact on read-write operations
-</Step>
-
-<Step>
-### Storage Failure
-**Detection**: PostgreSQL process termination
-**Response**: Attempt local recovery or failover to replica  
-**Client Impact**: Depends on failure scope and data consistency
-</Step>
-
-</Steps>
-
-
-
-
---------
-
-## Configuration Tuning
-
-### Performance vs Availability Trade-offs
-
-<Tabs items={['High Performance', 'Balanced', 'Maximum Availability']}>
-<Tab value="High Performance">
-```yaml
-# Optimized for throughput
-pg_rto: 120                    # Longer RTO acceptable
-pg_rpo: 16777216              # 16MB max loss
-patroni_ttl: 60               # Less sensitive failover
-synchronous_mode: false       # Async replication
-max_replication_slots: 8      # More slots for scaling
+# Patroni configuration example
+patron:
+  name: pg-test-1
+  scope: pg-test
+  bootstrap:
+    dcs:
+      ttl: 30
+      loop_wait: 10
+      retry_timeout: 30
 ```
 </Tab>
-<Tab value="Balanced">
+
+<Tab value="Etcd">
+**Distributed Configuration Store**
+
+- Stores cluster configuration and state
+- Provides leader election mechanism
+- Ensures consistent view across all nodes
+- Handles network partitions gracefully
+- Maintains cluster membership information
+
 ```yaml
-# Production default
-pg_rto: 30                    # 30s recovery
-pg_rpo: 1048576              # 1MB max loss  
-patroni_ttl: 30              # Standard sensitivity
-synchronous_mode: false      # Async with quick failover
+# Etcd cluster configuration
+etcd_cluster: etcd
+etcd_safeguard: false
+etcd_clean: true
 ```
 </Tab>
-<Tab value="Maximum Availability">
-```yaml
-# Zero-downtime focused
-pg_rto: 15                   # Fast failover
-pg_rpo: 0                    # Zero data loss
-patroni_ttl: 15              # Highly sensitive
-synchronous_mode: true       # Sync replication
-synchronous_mode_strict: true # Strict consistency
-```
-</Tab>
-</Tabs>
 
-### Network Sensitivity Tuning
+<Tab value="HAProxy">
+**Traffic Router and Load Balancer**
 
-```yaml
-# For unstable networks
-patroni_ttl: 60              # Higher TTL
-patroni_loop_wait: 15        # Longer wait intervals
-patroni_retry_timeout: 45    # More retry tolerance
-
-# For stable networks  
-patroni_ttl: 15              # Lower TTL
-patroni_loop_wait: 5         # Faster loops
-patroni_retry_timeout: 15    # Quick decisions
-```
-
-## Monitoring & Observability
-
-### Key Metrics to Monitor
-
-| Metric | Threshold | Alert Level |
-|--------|-----------|-------------|
-| Replication Lag | > 10MB | Warning |
-| Replication Lag | > 100MB | Critical |
-| Failover Events | > 2/day | Warning |
-| Patroni State | != running | Critical |
-| Etcd Health | != healthy | Critical |
-
-### Health Check Endpoints
+- Routes read/write traffic to appropriate nodes
+- Provides health checking for database instances
+- Offers multiple service endpoints
+- Handles connection pooling and load distribution
+- Supports SSL termination and connection limits
 
 ```bash
-# Patroni health checks
-curl http://10.10.10.11:8008/health       # Overall health
-curl http://10.10.10.11:8008/primary      # Primary status  
-curl http://10.10.10.11:8008/replica      # Replica status
-curl http://10.10.10.11:8008/read-write   # Read-write capability
-
-# HAProxy stats
-curl http://10.10.10.11:9101/stats        # Load balancer status
+# HAProxy service endpoints
+primary:5433    # Read-write traffic to primary
+replica:5434    # Read-only traffic to replicas  
+default:5436    # Failover-aware connection
+offline:5438    # Dedicated offline queries
 ```
+</Tab>
+
+<Tab value="VIP Manager">
+**Virtual IP Management**
+
+- Manages Layer 2 Virtual IP addresses
+- Provides seamless client connectivity
+- Handles VIP migration during failover
+- Supports multiple VIP interfaces
+- Optional component for simplified client access
+
+```yaml
+# VIP configuration
+vip_enabled: true
+vip_address: 10.10.10.99/24
+vip_interface: eth0
+```
+</Tab>
+</Tabs>
+
+--------
+
+## Implementation
+
+Pigsty's HA implementation follows proven patterns for PostgreSQL clustering:
+
+### Replication Architecture
+
+<Steps>
+<Step>
+### Streaming Replication
+PostgreSQL uses built-in streaming replication for data synchronization between primary and standby nodes.
+</Step>
+
+<Step>
+### Consensus-Based Leadership
+Patroni uses Etcd for distributed consensus to elect cluster leader and manage topology changes.
+</Step>
+
+<Step>
+### Automatic Failover
+When primary fails, Patroni automatically promotes the most up-to-date standby to become the new primary.
+</Step>
+
+<Step>
+### Traffic Rerouting
+HAProxy detects topology changes and automatically routes traffic to the new primary instance.
+</Step>
+</Steps>
+
+### Failure Scenarios
+
+<Tabs items={['Primary Failure', 'Standby Failure', 'Network Partition']}>
+<Tab value="Primary Failure">
+**Primary Node Failure Process**
+
+1. **Detection**: Patroni detects primary node failure (15-30 seconds)
+2. **Leader Election**: Etcd coordinates new leader selection
+3. **Promotion**: Most up-to-date standby is promoted to primary
+4. **Reconfiguration**: Remaining standbys reconfigure to new primary
+5. **Traffic Switch**: HAProxy redirects traffic to new primary
+
+<Callout type="info">
+**Write Service Interruption**: 15-30 seconds during failover process
+</Callout>
+</Tab>
+
+<Tab value="Standby Failure">
+**Standby Node Failure Process**
+
+1. **Detection**: Immediate detection of standby failure
+2. **Traffic Rerouting**: HAProxy removes failed node from pool
+3. **Service Continuity**: Read queries continue on remaining standbys
+4. **Automatic Recovery**: Node rejoins cluster when restored
+
+<Callout type="success">
+**Minimal Impact**: Read-only queries experience brief interruption only
+</Callout>
+</Tab>
+
+<Tab value="Network Partition">
+**Network Partition Handling**
+
+1. **Split-Brain Prevention**: Etcd consensus prevents multiple primaries
+2. **Quorum Requirements**: Majority of nodes required for operations
+3. **Graceful Degradation**: Read-only mode in minority partitions
+4. **Automatic Recovery**: Normal operations resume when partition heals
+
+<Callout type="warn">
+**Quorum Dependency**: Requires majority of consensus nodes to remain operational
+</Callout>
+</Tab>
+</Tabs>
+
+--------
+
+## Trade-Offs
+
+Pigsty provides configurable parameters to balance between recovery speed and data consistency:
+
+### Recovery Time Objective (RTO)
+
+The `pg_rto` parameter controls failover timing and sensitivity:
+
+```yaml
+# RTO Configuration
+pg_rto: 30  # Default: 30 seconds
+```
+
+**Lower RTO values:**
+- ✅ Faster failover response
+- ✅ Reduced service interruption
+- ❌ Higher risk of false positives
+- ❌ May cause unnecessary failovers
+
+**Higher RTO values:**
+- ✅ More stable, fewer false alarms
+- ✅ Better tolerance for network hiccups
+- ❌ Longer service interruption
+- ❌ Delayed response to real failures
+
+### Recovery Point Objective (RPO)
+
+The `pg_rpo` parameter limits potential data loss during failover:
+
+```yaml
+# RPO Configuration
+pg_rpo: 1048576  # Default: 1MB
+```
+
+**Lower RPO values:**
+- ✅ Better data consistency
+- ✅ Minimal data loss risk
+- ❌ May delay failover
+- ❌ Could impact availability
+
+**Higher RPO values:**
+- ✅ Faster failover process
+- ✅ Better availability
+- ❌ Potential for more data loss
+- ❌ Consistency trade-offs
+
+### Configuration Examples
+
+<Tabs items={['Consistency First', 'Availability First', 'Balanced']}>
+<Tab value="Consistency First">
+```yaml
+# Zero data loss configuration
+synchronous_mode: true
+synchronous_mode_strict: true
+pg_rpo: 0
+pg_rto: 60
+synchronous_standby_names: 'ANY 1 (*)'
+```
+**Use Case**: Financial systems, critical transactional data
+</Tab>
+
+<Tab value="Availability First">
+```yaml
+# Fast failover configuration
+synchronous_mode: false
+pg_rpo: 16777216  # 16MB
+pg_rto: 15
+max_replication_slots: 16
+```
+**Use Case**: High-traffic applications, read-heavy workloads
+</Tab>
+
+<Tab value="Balanced">
+```yaml
+# Default balanced configuration
+synchronous_mode: false
+pg_rpo: 1048576   # 1MB
+pg_rto: 30
+max_replication_slots: 8
+```
+**Use Case**: Most production environments
+</Tab>
+</Tabs>
+
+### Network Quality Impact
+
+Network conditions significantly affect HA behavior:
+
+- **High-quality networks**: Can use lower RTO values safely
+- **Unstable networks**: Require higher RTO to prevent false positives
+- **WAN deployments**: Need careful tuning of timeout parameters
+- **Local networks**: Can optimize for faster failover
+
+--------
+
+## Monitoring and Observability
+
+Pigsty provides comprehensive monitoring for HA cluster health:
+
+### Key Metrics
+
+<Cards>
+<Card title="Cluster State" icon={<Activity className="text-green-600"/>}>
+Monitor cluster topology, leader status, and member health
+</Card>
+<Card title="Replication Lag" icon={<Clock className="text-amber-600"/>}>
+Track replication lag and sync status across all replicas
+</Card>
+<Card title="Failover Events" icon={<AlertCircle className="text-red-600"/>}>
+Log and analyze failover events and their impact
+</Card>
+<Card title="Performance" icon={<TrendingUp className="text-blue-600"/>}>
+Monitor query performance and connection health
+</Card>
+</Cards>
+
+### Dashboard Integration
+
+Pigsty includes pre-built Grafana dashboards for HA monitoring:
+
+- **Cluster Overview**: Real-time cluster topology and health
+- **Replication Monitoring**: Lag metrics and sync status
+- **Failover Analysis**: Historical failover events and timing
+- **Performance Metrics**: Query performance during normal and failover scenarios
+
+--------
 
 ## Best Practices
 
-### Deployment Guidelines
+### Deployment Recommendations
+
+<Callout type="tip">
+**Anti-Affinity**: Deploy cluster nodes across different physical hosts, racks, or availability zones.
+</Callout>
+
+- **Hardware diversity**: Use different hardware configurations to avoid common failure modes
+- **Network redundancy**: Ensure multiple network paths between cluster nodes
+- **Storage considerations**: Use local storage for best performance, shared storage for specific use cases
+- **Monitoring setup**: Implement comprehensive monitoring before going to production
+
+### Operational Guidelines
+
+- **Regular testing**: Perform controlled failover tests in non-production environments
+- **Capacity planning**: Size cluster nodes appropriately for failover scenarios
+- **Backup strategy**: Maintain regular backups independent of HA setup
+- **Documentation**: Keep runbooks updated for emergency procedures
+
+### Common Pitfalls
 
 <Callout type="warn">
-**Minimum 3 Nodes**: HA requires at least 3 nodes for meaningful quorum and fault tolerance.
+**Avoid These Common Mistakes:**
+- Insufficient network bandwidth between nodes
+- Inadequate monitoring of replication lag
+- Not testing failover procedures regularly
+- Incorrect firewall configurations
 </Callout>
 
-- **Odd Number of Nodes**: Always deploy odd numbers (3, 5, 7) for etcd consensus
-- **Geographic Distribution**: Spread nodes across availability zones
-- **Resource Isolation**: Dedicated hardware for critical clusters
-- **Network Redundancy**: Multiple network paths between nodes
+--------
 
-### Operational Procedures
+## Summary
 
-```bash
-# Manual switchover (zero downtime)
-patronictl switchover --force
+Pigsty's high availability solution provides:
 
-# Controlled failover testing
-patronictl failover --force
+- **Automatic failover** with sub-minute RTO
+- **Configurable consistency** with RPO control
+- **Self-healing capabilities** for hardware failures
+- **Load balancing** for read scaling
+- **Minimal operational overhead** with automated management
 
-# Cluster status monitoring
-patronictl list
-patronictl topology
-```
-
-### Backup Integration
-
-Combine HA with robust backup strategy:
-
-- **Continuous Archiving**: WAL-E/pgBackRest integration
-- **Point-in-Time Recovery**: Complements HA for logical errors
-- **Cross-Region Backups**: Disaster recovery beyond local HA
-
-<Callout>
-**Remember**: HA protects against hardware failures, not human errors or software defects. Always maintain comprehensive backup and monitoring strategies.
-</Callout>
-
-## Limitations & Considerations
-
-### What HA Cannot Prevent
-
-- **Human Errors**: Accidental data deletion or schema changes
-- **Application Bugs**: Logic errors causing data corruption  
-- **Cascade Failures**: Multiple simultaneous component failures
-- **Split-Brain**: In extreme network partition scenarios
-
-### Planning Considerations
-
-- **Network Requirements**: Stable, low-latency connectivity essential
-- **Storage Performance**: Fast storage for reduced lag accumulation
-- **Monitoring Overhead**: Additional metrics and log volume
-- **Complexity**: More components require operational expertise
+The combination of Patroni, Etcd, and HAProxy creates a robust, production-ready HA solution that handles the majority of failure scenarios automatically while providing the flexibility to tune behavior based on specific requirements.
 
 ---
 
-Pigsty's high availability implementation provides enterprise-grade reliability through proven open-source components, intelligent automation, and comprehensive monitoring. With proper configuration and operational practices, it delivers the uptime guarantees modern applications demand.
+**High availability is not just about technology—it's about building resilient systems that your business can depend on.**
+

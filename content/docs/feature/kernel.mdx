@@ -1,34 +1,311 @@
 ---
-title: Kernel Replacement
+title: Kernel Forks
 description: Simulate other DBMS, and replace vanilla PostgreSQL with exotic forks
-icon: Boxes
+icon: Cpu
 ---
 
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Network, Database, Shield, CircleEqual, Zap, Layers, Flame, Grid3x3, Fish, RefreshCcw, PawPrint, Cherry, Target } from 'lucide-react';
+
+Pigsty supports various PostgreSQL kernels and compatible forks, 
+enabling you to simulate different database systems while leveraging PostgreSQL's ecosystem.
+Each kernel provides unique capabilities and compatibility layers.
+
+
+## Database Kernels
+
+<Cards>
+  <Card 
+    title="Citus" 
+    description="Distributed PostgreSQL for horizontal scaling"
+    href="#citus-distributive"
+    icon={<Network className="text-emerald-600"/>}
+  />
+  <Card 
+    title="Babelfish" 
+    description="SQL Server wire-compatibile"
+    href="#babelfish-mssql"
+    icon={<Fish className="text-gray-600"/>}
+  />
+  <Card 
+    title="IvorySQL" 
+    description="Oracle-compatible PostgreSQL"
+    href="#ivorysql-oracle"
+    icon={<Target className="text-sky-700"/>}
+  />
+  <Card 
+    title="OpenHalo" 
+    description="MySQL compatibility layer"
+    href="#openhalo-mysql"
+    icon={<RefreshCcw className="text-red-600"/>}
+  />
+  <Card 
+    title="OrioleDB" 
+    description="OLTP-optimized storage engine"
+    href="#orioledb-oltp"
+    icon={<Zap className="text-yellow-500"/>}
+  />
+  <Card 
+    title="PolarDB PG" 
+    description="Aurora-like shared storage"
+    href="#polardb-pg-rac"
+    icon={<PawPrint className="text-orange-500"/>}
+  />
+  <Card 
+    title="Supabase" 
+    description="Firebase alternative stack"
+    href="#supabase-firebase"
+    icon={<Zap className="text-green-400"/>}
+  />
+  <Card 
+    title="Greenplum" 
+    description="Massively parallel processing"
+    href="#greenplum-mpp"
+    icon={<Cherry className="text-emerald-700"/>}
+  />
+</Cards>
 
 
 
-## Babelfish
+--------
+
+## Choose the Right Kernel
+
+<Callout type="info">
+**Flexible Kernel**: Choose the right kernel for your specific use case - whether you need MSSQL compatibility, Oracle features, or horizontal scaling capabilities.
+</Callout>
+
+| Kernel     | Use Case                 | Key Benefit                          |
+|------------|--------------------------|--------------------------------------|
+| Citus      | **Horizontal Scaling**   | Native Distributive PostgreSQL       |
+| WiltonDB   | **SQL Server Migration** | T-SQL compatibility                  |
+| IvorySQL   | **Oracle Migration**     | Oracle Grammer and PL/SQL            |
+| OpenHalo   | **MySQL Migration**      | MySQL wire-protocol compatible         |
+| OrioleDB   | **OLTP Optimization**    | No bloat, cloud-native               |
+| PolarDB PG | **Read Scaling**         | Shared storage architecture          |
+| Supabase   | **Rapid Development**    | Complete BaaS solution               |
+| Greenplum  | **Analytics/DW**         | Massively parallel processing        |
 
 
-## IvorySQL
 
 
-## PolarDB
+--------
 
+## Citus (Distributive)
 
-## OpenHalo
+<Callout variant="secondary">Horizontal Scaling</Callout> <Callout variant="outline">Production Ready</Callout>
 
+Citus transforms PostgreSQL into a distributed database system, enabling horizontal scaling across multiple nodes. Deploy native HA Citus clusters with Pigsty for better throughput and performance.
 
-## OrioleDB
+### Key Features
 
+- **Distributed Tables**: Automatically shard tables across worker nodes
+- **Distributed Queries**: Execute queries across the entire cluster
+- **High Availability**: Built-in replication and failover capabilities
+- **Real-time Analytics**: Handle both transactional and analytical workloads
+- **Postgres Compatibility**: Maintain full PostgreSQL feature compatibility
 
-## Supabase
+### Use Cases
 
+- Multi-tenant SaaS applications requiring horizontal scaling
+- Real-time analytics on large datasets
+- High-throughput OLTP workloads
+- Applications needing to scale beyond single-node limitations
 
-## FerretDB
+<Callout type="warn">
+**Planning Required**: Proper shard key selection is crucial for optimal performance and avoiding cross-shard queries.
+</Callout>
 
+--------
 
-## Citus
+## Babelfish (MSSQL)
 
+<Callout variant="secondary">SQL Server Compatible</Callout> <Callout variant="outline">Beta</Callout>
 
+Create SQL Server-compatible PostgreSQL clusters with WiltonDB and Babelfish, providing wire protocol-level compatibility with Microsoft SQL Server.
+
+### Key Features
+
+- **T-SQL Support**: Execute T-SQL queries natively
+- **Wire Protocol Compatibility**: Connect using SQL Server drivers and tools
+- **Stored Procedures**: Support for T-SQL stored procedures and functions
+- **Data Types**: Compatible with SQL Server data types and behaviors
+- **Migration Tools**: Simplified migration from SQL Server environments
+
+### Use Cases
+
+- Migrating legacy SQL Server applications to PostgreSQL
+- Multi-database environments requiring SQL Server compatibility
+- Cost reduction while maintaining application compatibility
+- Cloud migration from SQL Server to open-source alternatives
+
+<Callout type="info">
+**Migration Path**: Ideal for organizations looking to reduce licensing costs while maintaining existing SQL Server application compatibility.
+</Callout>
+
+--------
+
+## IvorySQL (Oracle)
+
+<Callout variant="secondary">Oracle Compatible</Callout> <Callout variant="outline">Community</Callout>
+
+Run Oracle-compatible PostgreSQL clusters with the IvorySQL kernel, open-sourced by HighGo, providing Oracle syntax and feature compatibility.
+
+### Key Features
+
+- **PL/SQL Support**: Execute PL/SQL code with minimal modifications
+- **Oracle Syntax**: Support for Oracle-specific SQL syntax and functions
+- **Package Support**: Oracle-style package and procedure definitions
+- **Data Types**: Oracle-compatible data types and behaviors
+- **Migration Tools**: Utilities for Oracle to PostgreSQL migration
+
+### Use Cases
+
+- Oracle database migration projects
+- Organizations seeking Oracle feature compatibility
+- Cost optimization while preserving Oracle functionality
+- Development environments requiring Oracle compatibility
+
+<Callout type="note">
+**Enterprise Focus**: Particularly valuable for enterprises with significant Oracle investments looking for migration paths.
+</Callout>
+
+--------
+
+## OpenHalo (MySQL)
+
+<Callout variant="secondary">MySQL Compatible</Callout> <Callout variant="outline">Experimental</Callout>
+
+The OpenHalo kernel provides MySQL-compatible PostgreSQL functionality, accessible using standard MySQL clients and protocols.
+
+### Key Features
+
+- **MySQL Protocol**: Wire-level compatibility with MySQL protocol
+- **Client Compatibility**: Use existing MySQL drivers and tools
+- **SQL Dialect**: Support for MySQL-specific SQL syntax
+- **Migration Support**: Simplified migration from MySQL environments
+- **Ecosystem Integration**: Leverage PostgreSQL's advanced features with MySQL compatibility
+
+### Use Cases
+
+- MySQL application migration to PostgreSQL
+- Multi-database environments requiring MySQL compatibility
+- Leveraging PostgreSQL features while maintaining MySQL interface
+- Gradual migration strategies from MySQL to PostgreSQL
+
+<Callout type="warn">
+**Early Stage**: Currently experimental - evaluate thoroughly before production use.
+</Callout>
+
+--------
+
+## OrioleDB (OLTP)
+
+<Callout variant="secondary">OLTP Optimized</Callout> <Callout variant="outline">Innovation</Callout>
+
+A PostgreSQL storage engine optimized for OLTP workloads, eliminating transaction ID wraparound issues and table bloat while supporting cloud storage.
+
+Compatible with PostgreSQL 17, Available on all support platforms.
+
+### Key Features
+
+- **No XID Wraparound**: Eliminates transaction ID wraparound maintenance
+- **No Table Bloat**: Advanced storage management prevents table bloat
+- **Cloud Storage**: Native support for S3-compatible object storage
+- **OLTP Optimization**: Specifically designed for transactional workloads
+- **Improved Performance**: Better space utilization and query performance
+
+### Use Cases
+
+- High-frequency transactional applications
+- Cloud-native deployments requiring object storage
+- Applications suffering from PostgreSQL maintenance overhead
+- Systems requiring consistent performance without vacuum cycles
+
+<Callout type="warn">
+**Early Stage**: Currently in Beta - evaluate thoroughly before production use.
+</Callout>
+
+--------
+
+## PolarDB PG (RAC)
+
+<Callout variant="secondary">Shared Storage</Callout> <Callout variant="outline">Alibaba Cloud</Callout>
+
+Replace vanilla PostgreSQL with PolarDB PG, an open-source Aurora-like solution similar to Oracle RAC with shared storage architecture.
+
+### Key Features
+
+- **Shared Storage**: Multiple compute nodes sharing the same storage layer
+- **Read Scaling**: Add read replicas without storage duplication
+- **Fast Recovery**: Rapid recovery through shared storage architecture
+- **Cost Efficiency**: Reduced storage costs through sharing
+- **High Availability**: Built-in failover and disaster recovery
+
+### Use Cases
+
+- Applications requiring extreme read scalability
+- Cost-sensitive deployments needing high availability
+- Cloud environments with shared storage infrastructure
+- Workloads with variable read/write patterns
+
+<Callout type="note">
+**Cloud Architecture**: Designed for cloud environments with disaggregated compute and storage.
+</Callout>
+
+--------
+
+## Supabase (Firebase)
+
+<Callout variant="secondary">Firebase Alternative</Callout> <Callout variant="outline">Self-Hosted</Callout>
+
+Self-host Supabase with existing managed HA PostgreSQL clusters, launching the stateless components with docker-compose for a complete Firebase alternative.
+
+### Key Features
+
+- **Real-time APIs**: Auto-generated REST and GraphQL APIs
+- **Real-time Subscriptions**: WebSocket-based real-time data sync
+- **Authentication**: Built-in user authentication and authorization
+- **Storage**: File storage with CDN capabilities
+- **Edge Functions**: Serverless functions for custom logic
+
+### Use Cases
+
+- Rapid application development with backend-as-a-service
+- Real-time applications requiring instant data sync
+- JAMstack applications needing serverless backend
+- Mobile and web apps requiring authentication and storage
+
+<Callout type="tip">
+**Full Stack**: Provides a complete backend solution with PostgreSQL as the foundation.
+</Callout>
+
+--------
+
+## Greenplum (MPP)
+
+<Callout variant="secondary">Massively Parallel</Callout> <Callout variant="outline">Analytics</Callout>
+
+Deploy and monitor Greenplum/YMatrix MPP clusters with Pigsty for large-scale analytical processing and data warehousing.
+
+### Key Features
+
+- **Massively Parallel Processing**: Distribute queries across multiple nodes
+- **Columnar Storage**: Optimized storage for analytical workloads
+- **Advanced Analytics**: Built-in machine learning and statistical functions
+- **Petabyte Scale**: Handle massive datasets with linear scalability
+- **Standard SQL**: Full SQL compliance with PostgreSQL compatibility
+
+### Use Cases
+
+- Data warehousing and business intelligence
+- Large-scale analytics and reporting
+- Machine learning on big datasets
+- ETL processing for enterprise data platforms
+
+<Callout type="info">
+**Enterprise Analytics**: Designed for enterprise-scale analytical workloads requiring massive parallel processing capabilities.
+</Callout>
 

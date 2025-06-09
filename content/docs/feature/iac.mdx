@@ -1,5 +1,5 @@
 ---
-title: Infrastructure as Code
+title: Infra as Code
 description: Declarative infrastructure and database management with YAML-driven configuration
 icon: SquareCode
 ---
@@ -9,747 +9,231 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-Pigsty embraces **Infrastructure as Code** principles, enabling you to declaratively define entire database environments through version-controlled YAML configurations. From cluster topology to database schemas, everything is code.
+Pigsty provides a **declarative** interface: Describe everything in a [config](/docs/setup/config/) file, and Pigsty operates it to the desired state with idempotent [playbooks](/docs/setup/playbook/). It works like Kubernetes CRDs & Operators but for databases and infrastructures on any nodes: bare metal or virtual machines.
 
 <Callout type="info">
-**Everything is Code**: Describe your infrastructure, clusters, databases, users, and services through declarative configuration files that can be versioned, reviewed, and consistently deployed.
+**Infra as Code, Database as Code**: Declarative API & Idempotent Playbooks, GitOPS works like a charm.
 </Callout>
 
-## IaC Philosophy
+--------
 
-### Core Principles
+## Declare Module
 
-<Cards>
-<Card title="Declarative" icon="📋">
-**Describe desired state**, not imperative steps. Define what you want, let Pigsty figure out how.
-</Card>
-<Card title="Idempotent" icon="🔄">
-**Run repeatedly safely**. Same configuration always produces same result, regardless of current state.
-</Card>
-<Card title="Version-Controlled" icon="📚">
-**Track all changes**. Infrastructure configurations live in Git alongside application code.
-</Card>
-<Card title="Composable" icon="🧩">
-**Modular design**. Mix and match components to build complex infrastructures from simple building blocks.
-</Card>
-</Cards>
+You can declare modules on a single node:
 
-### Traditional vs IaC Approach
+```yaml
+# infra cluster for proxy, monitor, alert, etc...
+infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
 
-| Aspect | Traditional | Infrastructure as Code |
-|--------|-------------|----------------------|
-| **Configuration** | Manual CLI commands | Declarative YAML files |
-| **Deployment** | Snowflake servers | Reproducible environments |
-| **Documentation** | Wiki pages (outdated) | Self-documenting code |
-| **Change Management** | Ad-hoc procedures | Git workflows |
-| **Disaster Recovery** | Rebuild from memory | Deploy from repository |
+# minio cluster, s3 compatible object storage
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+
+# etcd cluster for ha postgres DCS
+etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+
+# postgres example cluster: pg-meta
+pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+```
+
+And apply with playbooks:
+
+```bash
+./infra.yml -l infra    # init infra module on node 10.10.10.10
+./etcd.yml  -l etcd     # init etcd  module on node 10.10.10.10
+./minio.yml -l minio    # init minio module on node 10.10.10.10
+./pgsql.yml -l pg-meta  # init pgsql module on node 10.10.10.10
+```
 
 --------
 
-## Configuration Architecture
+## Declare Cluster
 
-Pigsty's IaC operates across multiple hierarchical layers, providing fine-grained control at every level:
+To create a three-node HA postgres cluster with streaming replication:
 
-### Configuration Hierarchy
-
-<Steps>
-
-<Step>
-### Global Defaults
-System-wide baseline configuration applied to all components
 ```yaml
-# Global PostgreSQL settings
-pg_mode: pgsql                    # PostgreSQL kernel mode
-pg_conf: auto                     # Auto-tuned configuration
-pg_shared_libraries: [timescaledb, pg_stat_statements]
-```
-</Step>
-
-<Step>
-### Cluster-Level Configuration  
-Shared settings for all instances within a cluster
-```yaml
-pg-test:                          # Cluster name
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica }
   vars:
-    pg_cluster: pg-test           # Cluster identifier
-    pg_version: 16                # PostgreSQL version
-    pg_users: [...]               # Cluster users
-    pg_databases: [...]           # Cluster databases
+    pg_cluster: pg-test
 ```
-</Step>
 
-<Step>
-### Instance-Level Customization
-Node-specific overrides and role assignments
-```yaml
-hosts:
-  10.10.10.11: { pg_seq: 1, pg_role: primary }
-  10.10.10.12: { pg_seq: 2, pg_role: replica }
-  10.10.10.13: { pg_seq: 3, pg_role: offline }
+And apply with:
+
+```bash
+./pgsql.yml -l pg-test  # init pg-test cluster
 ```
-</Step>
-
-</Steps>
-
-### Module Architecture
-
-Pigsty organizes functionality into composable modules:
-
-<Tabs items={['Core Modules', 'Optional Modules', 'Custom Modules']}>
-<Tab value="Core Modules">
-```yaml
-# Essential infrastructure modules
-modules:
-  - INFRA         # Infrastructure services (DNS, NTP, etc.)
-  - NODE          # Node-level services and monitoring
-  - ETCD          # Distributed consensus and configuration
-  - PGSQL         # PostgreSQL database clusters
-```
-**Always Required**: Foundation for any Pigsty deployment
-</Tab>
-<Tab value="Optional Modules">
-```yaml
-# Additional capability modules  
-modules:
-  - REDIS         # Redis clusters and caching
-  - MINIO         # Object storage for backups
-  - MONGO         # MongoDB document databases (via FerretDB)
-  - DOCKER        # Container orchestration
-```
-**Add as Needed**: Extend functionality based on requirements
-</Tab>
-<Tab value="Custom Modules">
-```yaml
-# User-defined modules
-custom_modules:
-  - name: KAFKA
-    playbook: kafka.yml
-    dependencies: [NODE, INFRA]
-  - name: ELASTIC
-    playbook: elasticsearch.yml
-    dependencies: [NODE]
-```
-**Extensible**: Define your own modules following Pigsty patterns
-</Tab>
-</Tabs>
 
 --------
 
-## Declarative Infrastructure
+## Declare Cluster Internal
 
-### Single Node Configuration
+You can deep customize a database cluster:
 
-Perfect for development and testing environments:
-
-<Tabs items={['Minimal', 'Rich', 'Production']}>
-<Tab value="Minimal">
 ```yaml
-# meta.yml - Minimal single-node setup
-meta:
-  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
   vars:
     pg_cluster: pg-meta
-    pg_databases:
-      - { name: meta, extensions: [{ name: postgis }] }
-    pg_users:
-      - { name: dbuser_meta, password: DBUser.Meta, pgbouncer: true }
-```
-**Use Case**: Quick prototyping, local development
-</Tab>
-<Tab value="Rich">
-```yaml
-# rich.yml - Feature-complete single node
-meta:
-  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
-  vars:
-    pg_cluster: pg-meta
-    pg_extensions:
-      - postgis timescaledb citus pg_roaringbitmap
-      - pg_analytics pg_duckdb pg_lakehouse wrappers
     pg_databases:
       - name: meta
-        extensions: [{ name: postgis }, { name: timescaledb }]
-        schemas: [{ name: analytics, owner: dbuser_meta }]
+        baseline: cmdb.sql
+        comment: pigsty meta database
+        schemas: [pigsty]
+        extensions:
+          - { name: adminpack, schema: pg_catalog }
+          - { name: postgis, schema: public }
+          - { name: timescaledb, schema: public }
+    pg_users:
+      - { name: dbuser_meta, password: DBUser.Meta, pgbouncer: true, roles: [dbrole_admin], comment: pigsty admin user }
+      - { name: dbuser_view, password: DBUser.Viewer, pgbouncer: true, roles: [dbrole_readonly], comment: pigsty read-only user }
+    pg_services:
+      - { name: primary, port: 5433, dest: default }
+      - { name: replica, port: 5434, dest: default, selector: "[]" }
+      - { name: default, port: 5436, dest: postgres }
+      - { name: offline, port: 5438, dest: postgres, selector: "[]" }
+    pg_hba_rules:
+      - { user: dbuser_view, db: all, addr: infra, auth: pwd, title: 'allow view user from infra nodes' }
+    pgb_hba_rules:
+      - { user: dbuser_view, db: all, addr: infra, auth: pwd, title: 'allow view user from infra nodes' }
 ```
-**Use Case**: Full-featured development environment
-</Tab>
-<Tab value="Production">
+
+--------
+
+## Declare Access Control
+
+Define advanced access control rules:
+
 ```yaml
-# Production single-node with monitoring
-meta:
+pg_hba_rules:
+  - { user: '${dbsu}', db: all, addr: local, auth: ident, title: 'dbsu access via local os user ident' }
+  - { user: '${dbsu}', db: replication, addr: local, auth: ident, title: 'dbsu replication from local os ident' }
+  - { user: '${repl}', db: replication, addr: '${ip}/32', auth: pwd, title: 'replicator replication from ${ip}' }
+  - { user: '${repl}', db: postgres, addr: '${ip}/32', auth: pwd, title: 'replicator postgres db from ${ip}' }
+  - { user: '${monitor}', db: all, addr: '${ip}/32', auth: pwd, title: 'monitor from ${ip}' }
+  - { user: '${monitor}', db: all, addr: infra, auth: pwd, title: 'monitor from infra nodes' }
+  - { user: '${admin}', db: all, addr: infra, auth: ssl, title: 'admin @ infra nodes with pwd & ssl' }
+  - { user: '+dbrole_readonly', db: all, addr: '${vip}/32', auth: ssl, title: 'allow readonly role from ${vip} with ssl' }
+  - { user: '+dbrole_offline', db: all, addr: '${vip}/32', auth: ssl, title: 'allow offline role from ${vip} with ssl' }
+  - { user: dbuser_meta, db: meta, addr: '10.0.0.0/8', auth: ssl, title: 'allow meta user from 10.0.0.0/8 with ssl' }
+```
+
+--------
+
+## Citus Distributive Cluster
+
+Declare a horizontally distributed Citus cluster:
+
+<Tabs items={['Coordinator', 'Workers']}>
+<Tab value="Coordinator">
+```yaml
+pg-citus0: # coordinator
   hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
   vars:
-    pg_cluster: pg-meta
-    pg_conf: auto
-    pgbackrest_enabled: true
-    pgbackrest_repo: { minio: {...} }
-    pg_monitoring_enabled: true
-    pg_exporter_include_database: '*'
-    node_crontab:
-      - '0 2 * * * postgres /pg/bin/pg-backup full'
-```
-**Use Case**: Production single-node deployment
-</Tab>
-</Tabs>
-
-### Multi-Cluster Architecture
-
-Define complex topologies with multiple specialized clusters:
-
-```yaml
-# Multi-cluster production environment
-all:
-  children:
-    infra:      # Infrastructure cluster
-      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
-      vars: { pg_cluster: pg-infra, pg_role: infra }
-        
-    pg-primary: # Primary OLTP cluster
-      hosts:
-        10.10.10.11: { pg_seq: 1, pg_role: primary }
-        10.10.10.12: { pg_seq: 2, pg_role: replica }
-        10.10.10.13: { pg_seq: 3, pg_role: replica, pg_offline_query: true }
-      vars:
-        pg_cluster: pg-primary
-        pg_conf: oltp.yml
-        synchronous_mode: true
-        
-    pg-analytics: # Analytics OLAP cluster  
-      hosts:
-        10.10.10.21: { pg_seq: 1, pg_role: primary }
-        10.10.10.22: { pg_seq: 2, pg_role: replica }
-      vars:
-        pg_cluster: pg-analytics
-        pg_conf: olap.yml
-        pg_extensions: [citus, pg_analytics, duckdb_fdw]
-        
-    redis-cache: # Redis caching cluster
-      hosts:
-        10.10.10.31: { redis_node: 1 }
-        10.10.10.32: { redis_node: 2 }
-        10.10.10.33: { redis_node: 3 }
-      vars:
-        redis_cluster: redis-cache
-        redis_mode: cluster
-```
-
---------
-
-## Database as Code
-
-### Schema and Object Management
-
-Define databases, schemas, and database objects declaratively:
-
-<Tabs items={['Databases', 'Users & Roles', 'Extensions', 'Services']}>
-<Tab value="Databases">
-```yaml
-# Database definitions
-pg_databases:
-  - name: app_prod
-    owner: app_admin
-    template: template1
-    encoding: UTF8
-    locale: en_US.UTF8
-    lc_collate: en_US.UTF8
-    lc_ctype: en_US.UTF8
-    tablespace: default
-    allowconn: true
-    revokeconn: false
-    comment: 'Production application database'
-    extensions:
-      - { name: postgis, schema: public }
-      - { name: timescaledb, schema: public }
-      - { name: pg_roaringbitmap }
-    schemas:
-      - { name: analytics, owner: analyst_user }
-      - { name: audit, owner: audit_user }
-      - { name: staging, owner: app_admin }
-```
-</Tab>
-<Tab value="Users & Roles">
-```yaml
-# User and role management
-pg_users:
-  - name: app_admin
-    password: '{{ vault_app_admin_password }}'
-    login: true
-    superuser: false
-    createdb: true
-    createrole: false
-    inherit: true
-    nologin: false
-    replication: false
-    bypassrls: false
-    pgbouncer: true
-    connlimit: 16
-    expire_in: 365
-    comment: 'Application administrator'
-    
-  - name: app_readonly  
-    password: '{{ vault_readonly_password }}'
-    roles: [pg_read_all_data]
-    pgbouncer: true
-    pools:
-      - { name: app_prod, auth_user: app_readonly }
-```
-</Tab>
-<Tab value="Extensions">
-```yaml
-# Extension management across clusters
-pg_extensions:
-  # Analytics extensions
-  - postgis timescaledb pg_roaringbitmap
-  - pg_analytics duckdb_fdw parquet_s3_fdw
-  
-  # Monitoring extensions  
-  - pg_stat_statements pg_stat_monitor
-  - pg_qualstats pg_track_settings
-  
-  # Security extensions
-  - pgcrypto uuid-ossp
-  - pg_permissions pg_audit
-  
-  # Performance extensions
-  - pg_hint_plan auto_explain
-  - pg_squeeze pg_repack
-```
-</Tab>
-<Tab value="Services">
-```yaml
-# Service endpoint definitions
-pg_services:
-  - name: primary
-    port: 5433
-    dest: primary
-    check: /primary
-    selector: "[]"
-    haproxy:
-      maxconn: 3000
-      options: 'check port 8008'
-      
-  - name: replica  
-    port: 5434
-    dest: replica
-    check: /replica
-    selector: "[]"
-    backup: "[? pg_role == `primary`]"
-    
-  - name: analytics
-    port: 5435
-    dest: offline
-    check: /replica  
-    selector: "[? pg_role == `offline`]"
-    comment: 'Dedicated analytics queries'
-```
-</Tab>
-</Tabs>
-
-### Application Integration
-
-Integrate database definitions with application deployment:
-
-```yaml
-# GitOps-friendly application database
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pigsty-database-config
-data:
-  inventory.yml: |
-    app-cluster:
-      hosts:
-        db1.example.com: { pg_seq: 1, pg_role: primary }
-        db2.example.com: { pg_seq: 2, pg_role: replica }
-      vars:
-        pg_cluster: app-cluster
-        pg_version: 16
-        pg_databases:
-          - name: "{{ app.database.name }}"
-            owner: "{{ app.database.owner }}"
-            extensions: "{{ app.database.extensions }}"
-        pg_users:
-          - name: "{{ app.database.owner }}"
-            password: "{{ secrets.database.password }}"
-            pgbouncer: true
-```
-
---------
-
-## Cluster Configuration
-
-### Topology Patterns
-
-<Tabs items={['Primary-Replica', 'Sync Standby', 'Delayed Replica', 'Citus Cluster']}>
-<Tab value="Primary-Replica">
-```yaml
-# Standard HA cluster with async replication
-pg-ha:
-  hosts:
-    10.10.10.11: { pg_seq: 1, pg_role: primary }
-    10.10.10.12: { pg_seq: 2, pg_role: replica }
-    10.10.10.13: { pg_seq: 3, pg_role: replica }
-  vars:
-    pg_cluster: pg-ha
-    pg_conf: auto
-    pg_version: 16
-    synchronous_mode: false
-    pg_rpo: 1048576  # 1MB max data loss
-    pg_rto: 30       # 30s recovery time
-```
-**Use Case**: Standard production HA with good performance
-</Tab>
-<Tab value="Sync Standby">
-```yaml
-# Zero data loss with synchronous replication
-pg-sync:
-  hosts:
-    10.10.10.11: { pg_seq: 1, pg_role: primary }
-    10.10.10.12: { pg_seq: 2, pg_role: replica, pg_sync: true }
-    10.10.10.13: { pg_seq: 3, pg_role: replica }
-  vars:
-    pg_cluster: pg-sync
-    synchronous_mode: true
-    synchronous_mode_strict: true
-    synchronous_standby_names: 'ANY 1 (pg-sync-2)'
-    pg_rpo: 0  # Zero data loss
-```
-**Use Case**: Financial systems, critical transactional workloads
-</Tab>
-<Tab value="Delayed Replica">
-```yaml
-# Delayed replica for point-in-time recovery
-pg-delayed:
-  hosts:
-    10.10.10.11: { pg_seq: 1, pg_role: primary }
-    10.10.10.12: { pg_seq: 2, pg_role: replica }
-    10.10.10.13: { pg_seq: 3, pg_role: replica, pg_delay: 3600 }
-  vars:
-    pg_cluster: pg-delayed
-    pg_delay: 3600  # 1 hour delay
-    recovery_min_apply_delay: '1h'
-```
-**Use Case**: Protection against logical corruption, human errors
-</Tab>
-<Tab value="Citus Cluster">
-```yaml
-# Horizontally scaled Citus cluster  
-pg-citus:
-  hosts:
-    10.10.10.11: { pg_seq: 1, pg_role: primary, citus_role: coordinator }
-    10.10.10.12: { pg_seq: 2, pg_role: primary, citus_role: worker }
-    10.10.10.13: { pg_seq: 3, pg_role: primary, citus_role: worker }
-  vars:
-    pg_cluster: pg-citus
+    pg_cluster: pg-citus0
     pg_mode: citus
-    pg_extensions: [citus]
-    citus_coordinator: 10.10.10.11
-```
-**Use Case**: Distributed databases, horizontal scaling
-</Tab>
-</Tabs>
-
-### Parameter Management
-
-Fine-tune PostgreSQL and system parameters:
-
-```yaml
-# Performance-tuned OLTP configuration
-pg_parameters:
-  # Memory settings
-  shared_buffers: 4GB
-  effective_cache_size: 12GB
-  work_mem: 32MB
-  maintenance_work_mem: 1GB
-  
-  # Connection settings  
-  max_connections: 200
-  superuser_reserved_connections: 8
-  
-  # WAL settings
-  wal_buffers: 64MB
-  checkpoint_completion_target: 0.9
-  max_wal_size: 4GB
-  min_wal_size: 1GB
-  
-  # Query planner
-  random_page_cost: 1.1
-  effective_io_concurrency: 200
-  
-  # Logging
-  log_min_duration_statement: 1000
-  log_line_prefix: '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
-  log_checkpoints: true
-  log_connections: true
-  log_disconnections: true
-  log_lock_waits: true
-  
-  # Extensions
-  shared_preload_libraries: 'pg_stat_statements,auto_explain,timescaledb'
-  
-  # Custom settings
-  auto_explain.log_min_duration: 10s
-  auto_explain.log_analyze: true
-  pg_stat_statements.max: 10000
-  pg_stat_statements.track: all
-```
-
---------
-
-## Configuration Templates
-
-### Pre-built Templates
-
-Pigsty provides battle-tested templates for common scenarios:
-
-<Cards>
-<Card title="Meta" icon="⚙️">
-**Single-node minimal** - Infrastructure services and basic PostgreSQL
-</Card>
-<Card title="Rich" icon="🎯">
-**Feature-complete** - All extensions, monitoring, and analytics capabilities
-</Card>
-<Card title="Full" icon="🏗️">
-**Multi-node sandbox** - 4-node cluster with complete infrastructure
-</Card>
-<Card title="Prod" icon="🏭">
-**Production-ready** - Security-hardened, monitoring-enabled, backup-configured
-</Card>
-</Cards>
-
-### Template Customization
-
-```yaml
-# Extend existing templates
-- import_playbook: templates/full.yml
-  vars:
-    # Override specific parameters
-    pg_version: 15
-    pg_extensions: [postgis, timescaledb, pg_roaringbitmap]
-    
-    # Add custom configuration
-    custom_pg_parameters:
-      shared_preload_libraries: 'timescaledb,pg_stat_statements'
-      timescaledb.max_background_workers: 8
-      
-    # Environment-specific settings  
-    environment: production
-    backup_retention_days: 30
-    monitoring_retention_days: 90
-```
-
-### Environment Promotion
-
-Promote configurations across environments:
-
-<Tabs items={['Development', 'Staging', 'Production']}>
-<Tab value="Development">
-```yaml
-# dev/inventory.yml
-all:
-  vars:
-    environment: development
-    pg_conf: auto
-    pgbackrest_enabled: false
-    pg_log_min_duration_statement: 0
-    pg_track_activity_query_size: 2048
-    shared_buffers: 128MB
+    pg_shard: pg-citus
+    pg_primary_db: meta
+    pg_users: [ { name: dbuser_meta, password: DBUser.Meta, pgbouncer: true, roles: [ dbrole_admin ] } ]
+    pg_databases: [ { name: meta, extensions: [ { name: citus }, { name: postgis }, { name: timescaledb } ] } ]
+    pg_hba_rules:
+      - { user: 'all', db: all, addr: '10.10.10.0/24', auth: trust }
 ```
 </Tab>
-<Tab value="Staging">
+<Tab value="Workers">
 ```yaml
-# staging/inventory.yml  
-all:
-  vars:
-    environment: staging
-    pg_conf: auto
-    pgbackrest_enabled: true
-    pgbackrest_repo: { local: { retention_full: 3 } }
-    pg_log_min_duration_statement: 1000
-    shared_buffers: 1GB
-```
-</Tab>
-<Tab value="Production">
-```yaml
-# prod/inventory.yml
-all:
-  vars:
-    environment: production
-    pg_conf: auto
-    pgbackrest_enabled: true
-    pgbackrest_repo: 
-      local: { retention_full: 2 }
-      minio: { retention_full: 14 }
-    pg_log_min_duration_statement: 5000
-    shared_buffers: 8GB
-    synchronous_mode: true
+pg-citus1: # worker1
+  hosts: { 10.10.10.11: { pg_seq: 1, pg_role: primary } }
+  vars: { pg_cluster: pg-citus1, pg_mode: citus, pg_shard: pg-citus }
+pg-citus2: # worker2
+  hosts: { 10.10.10.12: { pg_seq: 1, pg_role: primary } }
+  vars: { pg_cluster: pg-citus2, pg_mode: citus, pg_shard: pg-citus }
+pg-citus3: # worker3
+  hosts: { 10.10.10.13: { pg_seq: 1, pg_role: primary } }
+  vars: { pg_cluster: pg-citus3, pg_mode: citus, pg_shard: pg-citus }
 ```
 </Tab>
 </Tabs>
 
 --------
 
-## GitOps Integration
+## Redis Clusters
 
-### Repository Structure
+Declare different types of Redis clusters:
 
-```bash
-# Recommended repository structure
-pigsty-infrastructure/
-├── environments/
-│   ├── dev/
-│   │   ├── inventory.yml
-│   │   └── group_vars/
-│   ├── staging/
-│   │   ├── inventory.yml
-│   │   └── group_vars/
-│   └── prod/
-│       ├── inventory.yml
-│       └── group_vars/
-├── templates/
-│   ├── postgres-ha.yml
-│   ├── redis-cluster.yml
-│   └── analytics.yml
-├── playbooks/
-│   ├── deploy.yml
-│   └── backup.yml
-└── scripts/
-    ├── validate-config.sh
-    └── deploy.sh
+<Tabs items={['Standalone', 'Sentinel', 'Cluster']}>
+<Tab value="Standalone">
+```yaml
+redis-ms: # redis classic primary-replica
+  hosts: { 10.10.10.10: { redis_node: 1 , redis_instances: { 6379: { }, 6380: { replica_of: '10.10.10.10 6379' } } } }
+  vars: { redis_cluster: redis-ms ,redis_password: 'redis.ms' }
 ```
+</Tab>
+<Tab value="Sentinel">
+```yaml
+redis-sentinel: # redis sentinel x3
+  hosts:
+    10.10.10.10: { redis_node: 1, redis_instances: { 26379: { sentinel_monitor: redis-src } } }
+    10.10.10.11: { redis_node: 2, redis_instances: { 26379: { sentinel_monitor: redis-src } } }
+    10.10.10.12: { redis_node: 3, redis_instances: { 26379: { sentinel_monitor: redis-src } } }
+  vars: { redis_cluster: redis-sentinel, redis_password: 'redis.sentinel' }
+```
+</Tab>
+<Tab value="Cluster">
+```yaml
+redis-cluster: # native redis cluster: 3m x 3s
+  hosts:
+    10.10.10.10: { redis_node: 1 ,redis_instances: { 6379: { }, 6380: { } } }
+    10.10.10.11: { redis_node: 2 ,redis_instances: { 6379: { }, 6380: { } } }
+    10.10.10.12: { redis_node: 3 ,redis_instances: { 6379: { }, 6380: { } } }
+  vars: { redis_cluster: redis-cluster, redis_password: 'redis.cluster', redis_mode: cluster, redis_max_memory: 64MB }
+```
+</Tab>
+</Tabs>
 
-### CI/CD Pipeline
+--------
+
+## Etcd Cluster
+
+Declare a 3-node etcd consensus cluster:
 
 ```yaml
-# .github/workflows/deploy.yml
-name: Deploy Infrastructure
-on:
-  push:
-    branches: [main]
-    paths: ['environments/prod/**']
-
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Validate Configuration
-        run: |
-          ansible-playbook --syntax-check environments/prod/inventory.yml
-          ansible-inventory --list environments/prod/inventory.yml > /dev/null
-          
-  deploy:
-    needs: validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Production
-        run: |
-          ansible-playbook -i environments/prod/inventory.yml \
-            playbooks/deploy.yml \
-            --diff --check-mode
-```
-
-### Configuration Validation
-
-```bash
-#!/bin/bash
-# scripts/validate-config.sh
-
-# Syntax validation
-ansible-playbook --syntax-check "$1"
-
-# Inventory validation  
-ansible-inventory --list "$1" > /dev/null
-
-# Custom validation rules
-python3 scripts/validate-pigsty-config.py "$1"
-
-# Security checks
-ansible-playbook -i "$1" playbooks/security-check.yml --check
+etcd:
+  hosts:
+    10.10.10.10: { etcd_seq: 1 }
+    10.10.10.11: { etcd_seq: 2 }
+    10.10.10.12: { etcd_seq: 3 }
+  vars:
+    etcd_cluster: etcd
+    etcd_safeguard: false
+    etcd_clean: true
 ```
 
 --------
 
-## Best Practices
+## MinIO Cluster
 
-### Configuration Management
-
-<Callout type="warn">
-**Immutable Infrastructure**: Treat configuration changes as code deployments. Avoid manual modifications to running systems.
-</Callout>
-
-- **Version Everything**: All configuration in Git with meaningful commit messages
-- **Environment Parity**: Use same tooling across dev/staging/production
-- **Secrets Management**: Use Ansible Vault or external secret management
-- **Validation**: Implement comprehensive configuration validation
-- **Documentation**: Self-documenting configuration with inline comments
-
-### Security Considerations
+Declare a 3-node MinIO object storage cluster:
 
 ```yaml
-# Security best practices
-security_hardening:
-  # Encrypt sensitive data
-  pg_users:
-    - name: app_user
-      password: !vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        66386439653236336463646637663766...
-        
-  # Network security
-  pg_hba_rules:
-    - { user: 'all', db: 'all', addr: '10.0.0.0/8', auth: 'md5' }
-    - { user: 'all', db: 'all', addr: '0.0.0.0/0', auth: 'reject' }
-    
-  # SSL configuration
-  pg_ssl: true
-  pg_ssl_ca: /etc/ssl/certs/ca.crt
-  pg_ssl_cert: /etc/ssl/certs/server.crt
-  pg_ssl_key: /etc/ssl/private/server.key
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 }
+    10.10.10.11: { minio_seq: 2 }
+    10.10.10.12: { minio_seq: 3 }
+  vars:
+    minio_cluster: minio
+    minio_data: '/data/minio'
+    minio_domain: sss.pigsty
+    minio_buckets: [ { name: pgsql }, { name: infra }, { name: redis } ]
+    minio_users:
+      - { access_key: dba, secret_key: S3User.DBA, policy: consoleAdmin }
+      - { access_key: pgbackrest, secret_key: S3User.Backup, policy: readwrite }
 ```
-
-### Performance Tuning
-
-```yaml
-# Environment-specific tuning
-performance_profiles:
-  development:
-    pg_conf: auto
-    shared_buffers: '25%'  # Conservative memory usage
-    
-  production:
-    pg_conf: auto
-    shared_buffers: '40%'  # Aggressive memory usage
-    effective_cache_size: '75%'
-    checkpoint_completion_target: 0.9
-    wal_compression: true
-    
-  analytics:
-    pg_conf: olap
-    work_mem: 256MB
-    maintenance_work_mem: 2GB
-    max_parallel_workers: 8
-    max_parallel_workers_per_gather: 4
-```
-
---------
-
-## Limitations & Considerations
-
-### What IaC Cannot Do
-
-- **Real-time Changes**: Configuration changes require deployment cycles
-- **Dynamic Scaling**: Auto-scaling requires external orchestration
-- **State Management**: Complex state transitions may need manual intervention
-- **Live Migration**: Zero-downtime migrations require careful planning
-
-### Planning Considerations
-
-- **Change Management**: Implement proper review processes for configuration changes
-- **Rollback Strategy**: Plan for configuration rollbacks and their implications
-- **State Drift**: Monitor and detect configuration drift from desired state
-- **Testing**: Validate configurations in non-production environments first
 
 ---
 
-Pigsty's Infrastructure as Code approach transforms database and infrastructure management into a software engineering discipline. With declarative configurations, version control, and automated deployment, you can achieve reliable, repeatable, and scalable infrastructure operations.
+Pigsty enables you to describe your entire infrastructure declaratively and manage it through code, providing consistency, repeatability, and scalability for your database and infrastructure operations.

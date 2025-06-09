@@ -1,6 +1,6 @@
 ---
-title: Point-in-Time Recovery
-description: Auto-configured Point-in-Time Recovery with pgBackRest and battle-tested backup strategies
+title: Disaster Recovery
+description: Battle-tested backup strategies and auto-configured Point-in-Time Recovery
 icon: DatabaseBackup
 ---
 
@@ -8,8 +8,9 @@ import { Callout } from 'fumadocs-ui/components/callout';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Clock, Shield, Archive } from 'lucide-react';
 
-Pigsty provides **enterprise-grade Point-in-Time Recovery** with zero-configuration setup, automated backups, and flexible restore options. Built on pgBackRest with MinIO/S3 support, it protects against data corruption, human errors, and logical disasters.
+Point-in-Time Recovery (PITR) allows rolling back a PostgreSQL cluster to any specific moment in the past, preventing data loss from software defects or human errors. Pigsty uses pgBackRest for PITR, with configurable backup strategies using local filesystems or object storage like MinIO.
 
 ![PITR Architecture](https://pigsty.io/img/pigsty/pitr.png)
 
@@ -17,541 +18,123 @@ Pigsty provides **enterprise-grade Point-in-Time Recovery** with zero-configurat
 **Time Travel for Databases**: Roll back your cluster to any point in time, protecting against software defects, human errors, and data corruption scenarios that high availability cannot address.
 </Callout>
 
-## Problem & Solution
+## Overview
 
-### What PITR Solves
-
-| Scenario | Without PITR | With PITR |
-|----------|-------------|-----------|
-| **Accidental DROP TABLE** | ∞ Data Loss | Minutes to recover |
-| **Software Bug Corruption** | ∞ Data Loss | Roll back to before bug |
-| **Human Error** | ∞ Data Loss | Restore to any point |
-| **Datacenter Failure** | Permanent loss | Restore from offsite backup |
-
-### Recovery Objectives
+Pigsty provides **enterprise-grade Point-in-Time Recovery** with zero-configuration setup, automated backups, and flexible restore options. Built on pgBackRest with MinIO/S3 support, it protects against data corruption, human errors, and logical disasters.
 
 <Cards>
-<Card title="RPO (Data Loss)" icon="📊">
-**< 16MB** typically (one WAL segment)
-</Card>
-<Card title="RTO (Recovery Time)" icon="⏱️">
-**Minutes to Hours** (depends on backup size)
-</Card>
-<Card title="Retention" icon="📅">
-**Configurable** from days to years
-</Card>
-<Card title="Granularity" icon="🎯">
-**Transaction-level** precision
-</Card>
+  <Card title="Reduced RPO" icon={<Clock className="text-amber-600"/>}>
+    Minimize Recovery Point Objective with continuous WAL archiving
+  </Card>
+  <Card title="Data Integrity" icon={<Shield className="text-blue-600"/>}>
+    Enhanced data integrity protection against corruption
+  </Card>
+  <Card title="Disaster Recovery" icon={<Archive className="text-green-600"/>}>
+    Improved disaster recovery capabilities with flexible restore options
+  </Card>
 </Cards>
 
---------
+## How PITR Works
 
-## Architecture Overview
+PITR requires two key components working together to enable point-in-time recovery:
 
-Pigsty's PITR leverages a robust multi-component design:
-
-<Cards>
-<Card title="pgBackRest" icon="🗄️">
-Industry-standard PostgreSQL backup and restore tool
-</Card>
-<Card title="Base Backups" icon="📸">
-Full, incremental, and differential backup strategies
-</Card>
-<Card title="WAL Archiving" icon="📜">
-Continuous Write-Ahead Log streaming and storage
-</Card>
-<Card title="Object Storage" icon="☁️">
-Local, MinIO, or S3-compatible backup repositories
-</Card>
-</Cards>
-
-### How PITR Works
-
-<Steps>
-
-<Step>
-### Base Backup Creation
-pgBackRest creates periodic snapshots of your entire database cluster
-- **Full Backup**: Complete physical copy of database
-- **Incremental**: Changes since last full backup
-- **Differential**: Changes since last backup of any type
-</Step>
-
-<Step>
-### Continuous WAL Archiving
-PostgreSQL streams Write-Ahead Log segments to backup repository
-- **Real-time**: WAL segments archived as they're filled
-- **Automatic**: No manual intervention required
-- **Compressed**: Space-efficient storage with optional encryption
-</Step>
-
-<Step>
-### Point-in-Time Restore
-Combine base backup + WAL replay to restore to exact moment
-- **Precision**: Down to specific transaction or timestamp
-- **Flexibility**: Multiple recovery targets supported
-- **Speed**: Parallel, differential recovery for optimal performance
-</Step>
-
-</Steps>
-
---------
-
-## Backup Strategies
-
-### Local Storage Strategy
-
-<Tabs items={['Configuration', 'Schedule', 'Retention']}>
-<Tab value="Configuration">
-```yaml
-# Default local backup repository
-pgbackrest_repo:
-  local:
-    path: /pg/backup              # Local backup directory
-    retention_full_type: count    # Retain by backup count
-    retention_full: 2             # Keep 2 full backups max
-```
-**Best for**: Development, testing, single-node deployments
-</Tab>
-<Tab value="Schedule">
-```bash
-# Default backup schedule (via crontab)
-# Full backup daily at 1 AM
-1 1 * * * /pg/bin/pg-backup full
-
-# Check WAL archiving every 5 minutes
-*/5 * * * * /pg/bin/pg-backup check
-```
-**Recovery Window**: 24-48 hours typically
-</Tab>
-<Tab value="Retention">
-- **Full Backups**: 2-3 retained locally
-- **WAL Archives**: Automatically managed
-- **Storage**: Direct to local filesystem
-- **Cleanup**: Automatic when limits exceeded
-</Tab>
-</Tabs>
-
-### Object Storage Strategy
-
-<Tabs items={['MinIO Setup', 'S3 Setup', 'Advanced Config']}>
-<Tab value="MinIO Setup">
-```yaml
-# MinIO-based backup repository
-pgbackrest_repo:
-  minio:
-    type: s3
-    s3_endpoint: sss.pigsty       # MinIO endpoint
-    s3_bucket: pgsql              # Backup bucket
-    s3_key: pgbackrest            # Access key
-    s3_key_secret: S3User.Backup  # Secret key
-    cipher_type: aes-256-cbc      # Encryption
-    retention_full_type: time     # Time-based retention
-    retention_full: 14            # 14 days retention
-```
-**Best for**: Production clusters, multi-site deployments
-</Tab>
-<Tab value="S3 Setup">
-```yaml
-# AWS S3 backup repository
-pgbackrest_repo:
-  s3:
-    type: s3
-    s3_region: us-west-1
-    s3_endpoint: s3-us-west-1.amazonaws.com
-    s3_bucket: my-postgres-backups
-    s3_key: AKIAIOSFODNN7EXAMPLE
-    s3_key_secret: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-    cipher_type: aes-256-cbc
-    retention_full: 90            # 90 days retention
-```
-**Best for**: Cloud deployments, compliance requirements
-</Tab>
-<Tab value="Advanced Config">
-```yaml
-# Multi-repository setup
-pgbackrest_repo:
-  local:                          # Fast local backups
-    retention_full: 2
-  minio:                          # Long-term offsite storage
-    retention_full: 30
-  s3_cold:                        # Cold storage for compliance
-    retention_full: 2555          # 7 years
-    storage_class: GLACIER
-```
-**Best for**: Enterprise compliance, multi-tier storage
-</Tab>
-</Tabs>
-
---------
-
-## Backup Operations
-
-### Manual Backup Commands
-
-```bash
-# Wrapper commands (recommended)
-pg-backup                        # Incremental backup (default)
-pg-backup full                   # Full backup
-pg-backup diff                   # Differential backup
-pg-backup incr                   # Incremental backup
-
-# Direct pgBackRest commands
-pgbackrest --stanza=pg-meta backup --type=full
-pgbackrest --stanza=pg-meta backup --type=incr
-pgbackrest --stanza=pg-meta backup --type=diff
-```
-
-### Backup Scheduling
-
-<Tabs items={['Daily Full', 'Weekly + Incremental', 'Custom Schedule']}>
-<Tab value="Daily Full">
-```bash
-# Simple daily full backup
-node_crontab_overwrite: true
-node_crontab:
-  - '1 1 * * * postgres /pg/bin/pg-backup full'
-```
-**Use case**: Small databases, short retention needs
-</Tab>
-<Tab value="Weekly + Incremental">
-```bash
-# Optimized backup schedule
-node_crontab:
-  - '1 1 * * 1 postgres /pg/bin/pg-backup full'    # Monday full
-  - '1 1 * * 2-7 postgres /pg/bin/pg-backup incr'  # Daily incremental
-  - '*/15 * * * * postgres /pg/bin/pg-backup check' # WAL check
-```
-**Use case**: Production systems, balanced performance/storage
-</Tab>
-<Tab value="Custom Schedule">
-```bash
-# Enterprise backup schedule
-node_crontab:
-  - '0 2 * * 1 postgres /pg/bin/pg-backup full'    # Weekly full
-  - '0 6,18 * * 2-7 postgres /pg/bin/pg-backup incr' # Twice daily incr
-  - '0 12 * * * postgres /pg/bin/pg-backup diff'   # Daily differential
-  - '*/5 * * * * postgres /pg/bin/pg-backup check' # Frequent WAL check
-```
-**Use case**: Critical systems, multiple recovery points
-</Tab>
-</Tabs>
-
-### Backup Monitoring
-
-```bash
-# Check backup status
-pgbackrest --stanza=pg-meta info
-
-# Verify backup integrity
-pgbackrest --stanza=pg-meta check
-
-# Monitor WAL archiving
-pgbackrest --stanza=pg-meta info --output=json | jq '.[] | .archive[]'
-```
-
---------
-
-## Recovery Procedures
-
-### Common Recovery Scenarios
-
-<Tabs items={['Time-based', 'Transaction-based', 'Named Point', 'Emergency']}>
-<Tab value="Time-based">
-```bash
-# Restore to specific timestamp
-pg-pitr --time="2024-01-15 14:30:00+08"
-
-# Alternative formats
-pg-pitr -t "2024-01-15 14:30:00"
-pg-pitr --time="yesterday 18:00"
-pg-pitr --time="2 hours ago"
-```
-**Use case**: "Restore to just before the bad deployment"
-</Tab>
-<Tab value="Transaction-based">
-```bash
-# Restore to specific transaction (exclusive)
-pg-pitr --xid="1234567" -X
-
-# Restore and promote immediately
-pg-pitr --xid="1234567" -X -P
-
-# Restore to specific LSN
-pg-pitr --lsn="0/7C82CB8" -X
-```
-**Use case**: Surgical precision recovery from transaction logs
-</Tab>
-<Tab value="Named Point">
-```bash
-# Create named restore point first
-SELECT pg_create_restore_point('before_migration');
-
-# Later, restore to that point
-pg-pitr --name="before_migration"
-```
-**Use case**: Planned maintenance, risky operations
-</Tab>
-<Tab value="Emergency">
-```bash
-# Restore to latest archived WAL
-pg-pitr
-
-# Restore to latest backup (immediate)
-pg-pitr -i
-
-# Restore specific backup set
-pg-pitr --backup=20240115-143025F
-```
-**Use case**: Complete system failure, disaster recovery
-</Tab>
-</Tabs>
-
-### Recovery Process
-
-<Steps>
-
-<Step>
-### Stop PostgreSQL Services
-```bash
-# Stop all PostgreSQL services
-systemctl stop patroni
-systemctl stop pgbouncer
-systemctl stop pg_exporter
-```
-</Step>
-
-<Step>
-### Execute Recovery Command
-```bash
-# Choose appropriate recovery method
-pg-pitr --time="2024-01-15 14:30:00+08"
-
-# Or use direct pgBackRest command
-pgbackrest --stanza=pg-meta \
-  --type=time \
-  --target="2024-01-15 14:30:00+08" \
-  --target-action=promote \
-  restore
-```
-</Step>
-
-<Step>
-### Validate Recovery
-```bash
-# Check PostgreSQL logs
-tail -f /pg/log/postgres.log
-
-# Verify data consistency
-pg_controldata /pg/data
-
-# Test application connectivity
-psql -h localhost -p 5432 -c "SELECT now();"
-```
-</Step>
-
-<Step>
-### Resume Operations
-```bash
-# Restart services in order
-systemctl start patroni
-systemctl start pgbouncer
-systemctl start pg_exporter
-
-# Verify cluster health
-patronictl list
-```
-</Step>
-
-</Steps>
-
---------
-
-## Configuration Management
-
-### Repository Configuration
-
-```yaml
-# Multiple backup repositories
-pgbackrest_repo:
-  local:                          # Local fast recovery
-    path: /pg/backup
-    retention_full_type: count
-    retention_full: 2
+<Tabs items={['Base Backups', 'WAL Archiving']}>
+  <Tab value="Base Backups">
+    ### Base Backups
     
-  minio:                          # Offsite backup
-    type: s3
-    s3_endpoint: backup.company.com
-    s3_bucket: postgres-backups
-    cipher_type: aes-256-cbc
-    cipher_pass: "{{ vault_backup_encryption_key }}"
-    retention_full_type: time
-    retention_full: 30
+    Uses pgBackRest to create database cluster snapshots with multiple backup types:
     
-  archive:                        # Long-term archival
-    type: s3
-    s3_endpoint: glacier.amazonaws.com
-    storage_class: DEEP_ARCHIVE
-    retention_full: 2555          # 7 years
-```
-
-### WAL Archiving Tuning
-
-```yaml
-# Optimize WAL archiving performance
-wal_level: replica               # Enable WAL archiving
-archive_mode: on                 # Enable archiving
-archive_timeout: 300             # Force archive every 5 minutes
-wal_segment_size: 16MB           # Default segment size
-max_wal_size: 2GB               # Control WAL disk usage
-
-# Performance tuning
-archive_command_batch_size: 24   # Batch multiple WAL files
-archive_command_timeout: 300     # Archive timeout
-```
-
-### Backup Performance Tuning
-
-```yaml
-# pgBackRest performance options
-pgbackrest_config:
-  global:
-    compress-type: lz4           # Fast compression
-    compress-level: 3            # Balanced compression
-    process-max: 4               # Parallel processes
-    protocol-timeout: 120        # Network timeout
+    - **Full backups**: Complete database cluster snapshots
+    - **Incremental backups**: Only changes since the last backup
+    - **Differential backups**: Changes since the last full backup
+    - **Scheduled backups**: Periodic backups configured via Crontab
+  </Tab>
+  
+  <Tab value="WAL Archiving">
+    ### WAL Archiving
     
-  backup:
-    bundle: y                    # Bundle small files
-    delta: y                     # Delta backup optimization
-    checksum-page: y             # Page-level checksums
-```
+    Continuously archives Write-Ahead Log (WAL) segment files:
+    
+    - **Continuous archiving**: Real-time WAL file preservation
+    - **Automatic management**: WAL files and cleanup handled automatically
+    - **Optional feature**: Can be disabled if PITR is not needed
+  </Tab>
+</Tabs>
 
---------
+## Implementation
 
-## Monitoring & Observability
+Pigsty provides two default backup strategies with flexible configuration options:
 
-### Key Metrics to Monitor
+<Tabs items={['Local Filesystem', 'MinIO/S3']}>
+  <Tab value="Local Filesystem">
+    ### Local Filesystem Strategy
+    
+    - **Frequency**: Daily full backups
+    - **Storage**: Local filesystem storage
+    - **Use case**: Single-node or local development environments
+  </Tab>
+  
+  <Tab value="MinIO/S3">
+    ### MinIO/S3 Strategy
+    
+    - **Frequency**: Weekly full backup with daily incremental backups
+    - **Storage**: Object storage (MinIO, S3)
+    - **Use case**: Production environments with distributed storage
+  </Tab>
+</Tabs>
 
-| Metric | Threshold | Alert Level |
-|--------|-----------|-------------|
-| **Backup Age** | > 25 hours | Critical |
-| **WAL Archive Lag** | > 5 segments | Warning |
-| **WAL Archive Lag** | > 10 segments | Critical |
-| **Backup Size Growth** | > 50% week-over-week | Warning |
-| **Repository Space** | > 80% full | Warning |
-| **Repository Space** | > 90% full | Critical |
+### Configuration Options
 
-### Health Check Commands
+Backup configuration is highly flexible with options to specify:
 
-```bash
-# Backup repository status
-pgbackrest --stanza=pg-meta info --output=json
+- **Repository type**: Local, S3, or other supported backends
+- **Retention policies**: How long to keep backups
+- **Encryption**: Secure backup storage
+- **Storage locations**: Multiple backup destinations
 
-# WAL archiving status  
-SELECT * FROM pg_stat_archiver;
+## Recovery Options
 
-# Current WAL position
-SELECT pg_current_wal_lsn();
-
-# Archive lag monitoring
-SELECT 
-  CASE 
-    WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() 
-    THEN 'Caught up' 
-    ELSE pg_size_pretty(pg_wal_lsn_diff(pg_last_wal_receive_lsn(), pg_last_wal_replay_lsn())) 
-  END AS replication_lag;
-```
-
-### Backup Verification
-
-```bash
-# Automated backup testing
-#!/bin/bash
-BACKUP_DATE=$(date +%Y%m%d)
-STANZA="pg-meta"
-
-# Verify latest backup
-pgbackrest --stanza=$STANZA check
-
-# Test restore to temp location
-pgbackrest --stanza=$STANZA \
-  --pg1-path=/tmp/pitr-test-$BACKUP_DATE \
-  --type=immediate \
-  restore
-
-# Validate restored data
-pg_controldata /tmp/pitr-test-$BACKUP_DATE
-```
-
---------
-
-## Best Practices
-
-### Operational Guidelines
-
-<Callout type="warn">
-**Test Your Backups**: Regularly test backup restoration procedures. A backup you haven't tested is not a backup.
+<Callout type="warning">
+Recovery operations should be performed carefully as they will replace the current database state.
 </Callout>
 
-- **Regular Testing**: Schedule monthly disaster recovery drills
-- **Multiple Repositories**: Use both local and remote backup targets
-- **Encryption**: Always encrypt backups containing sensitive data
-- **Monitoring**: Implement comprehensive backup monitoring and alerting
-- **Documentation**: Maintain runbooks for common recovery scenarios
+Recovery commands allow restoring to various points in time:
 
-### Performance Optimization
+<Steps>
+  <Step>
+    ### Latest WAL Archive
+    Restore to the most recent point available in WAL archives:
+    ```bash
+    pg-pitr
+    ```
+  </Step>
+  
+  <Step>
+    ### Specific Timestamp
+    Restore to an exact moment in time:
+    ```bash
+    pg-pitr --time="2022-12-30 14:44:44+08"
+    ```
+  </Step>
+  
+  <Step>
+    ### Named Restore Point
+    Restore to a previously created named point:
+    ```bash
+    pg-pitr --name="my-restore-point"
+    ```
+  </Step>
+  
+  <Step>
+    ### Specific LSN or Transaction ID
+    Restore to a particular Log Sequence Number or transaction:
+    ```bash
+    pg-pitr --lsn="0/1234567"
+    pg-pitr --xid="12345"
+    ```
+  </Step>
+</Steps>
 
-```yaml
-# High-performance backup configuration
-pgbackrest_config:
-  global:
-    process-max: 8               # More parallel processes
-    compress-type: zst           # Better compression ratio
-    compress-level: 3            # Balanced speed/size
-    
-  backup:
-    bundle: y                    # Reduce small file overhead
-    delta: y                     # Incremental optimization
-    
-  restore:
-    process-max: 8               # Parallel restore
-    delta: y                     # Differential restore
-```
-
-### Security Considerations
-
-- **Access Control**: Restrict backup repository access
-- **Encryption**: Use AES-256-CBC for backup encryption
-- **Key Management**: Secure backup encryption keys
-- **Network Security**: Use TLS for remote repositories
-- **Audit Trail**: Log all backup and restore operations
-
---------
-
-## Limitations & Considerations
-
-### What PITR Cannot Do
-
-- **Prevent Logical Corruption**: Cannot fix application-level data corruption
-- **Real-time Recovery**: RTO is measured in minutes/hours, not seconds
-- **Schema Changes**: May require manual intervention for complex schema migrations
-- **Cross-version Recovery**: Limited compatibility across major PostgreSQL versions
-
-### Planning Considerations
-
-- **Storage Capacity**: Plan for 2-3x database size for full backups
-- **Network Bandwidth**: Consider bandwidth for large backup transfers
-- **Recovery Testing**: Regular testing is essential for reliable recovery
-- **Retention Policies**: Balance compliance needs with storage costs
-
-### Complementary Strategies
-
-<Callout>
-**Layered Defense**: Combine PITR with High Availability for comprehensive protection. HA handles hardware failures (seconds), PITR handles logical disasters (minutes to hours).
+<Callout type="info">
+While PITR is powerful for data recovery, it should ideally be combined with High Availability solutions for comprehensive data protection against both logical and physical failures.
 </Callout>
-
----
-
-Pigsty's Point-in-Time Recovery provides enterprise-grade data protection through automated backups, flexible recovery options, and battle-tested reliability. With proper configuration and regular testing, it ensures your critical data remains protected against both physical and logical disasters.

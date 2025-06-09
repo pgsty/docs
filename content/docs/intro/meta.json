@@ -1,13 +1,11 @@
 {
-    "title": "Introduction",
-    "description": "Features, Values, Cases, and Comparison",
+    "title": "Reference",
+    "description": "Arch, use cases, comparison, and other reference",
     "icon": "BookMarked",
     "defaultOpen": false,
     "pages": [
-        "value",
-        "feature",
-        "compare",
         "arch",
-        "case"
+        "case",
+        "compare"
     ]
 }

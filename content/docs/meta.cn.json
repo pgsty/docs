@@ -2,10 +2,22 @@
   "root": true,
   "pages": [
     "[文档](/cn/docs)",
+
+    "value",
+    "feature",
     "intro",
-    "setup",
+
+    "--- ---",
+    "install",
+    "prepare",
+    "config",
+    "admin",
+    "--- ---",
+
+    "guide",
     "about",
-    "---模块---",
+
+    "--- ---",
     "pgsql",
     "infra",
     "node",
