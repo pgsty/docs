@@ -330,7 +330,7 @@ In the initialization process, Pigsty will download all packages and their depen
 
 When creating a local repo, Pigsty will skip the software download phase if the directory already exists and if there is a marker file named `repo_complete` in the dir.
 
-If the download speed of some packages is too slow, you can set the download proxy to complete the first download by using the [`proxy_env`](#proxy_env) config entry or directly download the pre-packaged [offline package](https://pigsty.io/docs/install/offline/), which is essentially a local software source built on the same operating system.
+If the download speed of some packages is too slow, you can set the download proxy to complete the first download by using the [`proxy_env`](#proxy_env) config entry or directly download the pre-packaged [offline package](/docs/install/offline), which is essentially a local software source built on the same operating system.
 
 ```yaml
 repo_enabled: true                # create a yum repo on this infra node?

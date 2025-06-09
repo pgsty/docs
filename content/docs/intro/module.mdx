@@ -1,0 +1,143 @@
+---
+title: Modules
+description: Available modules in Pigsty
+icon: Boxes
+full: true
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    FileCode,
+    AtomIcon,
+    ToyBrickIcon,
+    Landmark,
+    Cog,
+    Settings,
+    FileJson,
+    Wrench,
+    Shield,
+    GraduationCap,
+    Container,
+    Leaf,
+    Box,
+    Layers,
+    Server,
+    Rocket,
+    SquareStack,
+    Code,
+    Network,
+    Fish,
+    Target,
+    RefreshCcw,
+    Zap,
+    PawPrint,
+    Cherry,
+    PawPrintIcon
+} from 'lucide-react';
+
+
+
+
+--------
+
+## Core Modules
+
+Pigsty consists of multiple **modules**. The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">ESSENTIAL</span> for self-hosting Postgres RDS service.
+
+<Cards>
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
+        HA PG Cluster with PITR, IaC, ACL, Monitor, and 420+ extensions
+    </Card>
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra"}>
+        Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/docs/node"}>
+        Enroll nodes into the desired state and monitor it, and VIP, HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd"}>
+        Reliable distributive consensus storage (DCS), empowering PGSQL HA
+    </Card>
+</Cards>
+
+
+
+------
+
+## Extra Modules
+
+Pigsty also have some <span className="text-emerald-500 font-black">OPTIONAL</span> "Bonus" modules, which works well with PostgreSQL, and brings extra value to your data infrastructure.
+
+<Cards>
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio"}>
+        S3 compatible object storage compatible, optional backup storage
+    </Card>
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/docs/redis"}>
+        High-performance in-memory cache, optinal data structure server
+    </Card>
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/docs/docker"}>
+        Container runtime, optional for running stateless app and tools
+    </Card>
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/docs/ferret"}>
+        MongoDB wire-protocal compatible on PostgreSQL, optional middleware
+    </Card>
+</Cards>
+
+
+------
+
+## Kernel Modules
+
+Pigsty allows using 8 exotic PostgreSQL  <span className="text-red-500 font-black">KERNEL</span> forks, as an optional in-place replacement:
+
+<Cards>
+    <Card
+        title="Citus"
+        description="Native Distributive Extension"
+        href="/docs/feat/kernel#citus"
+        icon={<Network className="text-emerald-600"/>}
+    />
+    <Card
+        title="Babelfish"
+        description="SQL Server wire-compatibile"
+        href="/docs/feat/kernel#babelfish"
+        icon={<Fish className="text-gray-600"/>}
+    />
+    <Card
+        title="IvorySQL"
+        description="Oracle grammar & PL/SQL compatible"
+        href="/docs/feat/kernel#ivorysql"
+        icon={<Target className="text-sky-700"/>}
+    />
+    <Card
+        title="OpenHalo"
+        description="MySQL wire-compatibility"
+        href="/docs/feat/kernel#openhalo"
+        icon={<RefreshCcw className="text-red-600"/>}
+    />
+    <Card
+        title="OrioleDB"
+        description="OLTP-optimized cloud-native storage engine"
+        href="/docs/feat/kernel#orioledb"
+        icon={<Zap className="text-yellow-500"/>}
+    />
+    <Card
+        title="PolarDB PG"
+        description="Aurora-like shared storage, with china compliance"
+        href="/docs/feat/kernel#polardb"
+        icon={<PawPrint className="text-orange-500"/>}
+    />
+    <Card
+        title="Supabase"
+        description="Backend as a Service, self-hosting Firebase"
+        href="/docs/feat/kernel#supabase"
+        icon={<Zap className="text-green-400"/>}
+    />
+    <Card
+        title="Greenplum"
+        description="Massively parallel processing data warehouse"
+        href="/docs/feat/kernel#greenplum"
+        icon={<Cherry className="text-emerald-700"/>}
+    />
+</Cards>

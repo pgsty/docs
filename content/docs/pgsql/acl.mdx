@@ -4,9 +4,18 @@ description: Access Control with default roles and privileges
 icon: Fingerprint
 ---
 
-## acl
-
 Pigsty has a default role system consist of four [default roles](#default-roles) and four [default users](#default-users):
+
+| Default User     | User Description   | Default Role       | Role Description                     |
+|:-----------------|--------------------|:-------------------|--------------------------------------|
+| `postgres`       | system superuser   | `dbrole_readonly`  | role for global read-only access     |
+| `replicator`     | system replicator  | `dbrole_readwrite` | role for global read-write access    |
+| `dbuser_dba`     | pgsql admin user   | `dbrole_admin`     | role for object creation             |
+| `dbuser_monitor` | pgsql monitor user | `dbrole_offline`   | role for restricted read-only access |
+
+--------
+
+## Summary
 
 | Role name          | Attributes    | Member of                   | Description                          |
 |--------------------|---------------|-----------------------------|--------------------------------------|

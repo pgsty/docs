@@ -53,13 +53,13 @@ EOF
 Pigsty **strongly recommends** using domains instead of direct IP+Port access for several reasons:
 
 - Domains are easier to remember (unless you’re a robot 🤖)
-- More flexible - point to different IPs without changing configs
+- More flexible — point to different IPs without changing configs
 - Consolidate all services behind Nginx for better management, auditing, and reduced attack surface
 - Enable HTTPS encryption to prevent traffic snooping
 - In China, HTTP access to unregistered domains gets hijacked by ISPs, but HTTPS doesn’t
 - Access services bound to 127.0.0.1 or internal Docker networks via Nginx proxy
 
-Pigsty uses **internal static domains** by default - just add DNS records locally, **no need to register real domains**.
+Pigsty uses **internal static domains** by default — just add DNS records locally, **no need to register real domains**.
 
 For internet-facing deployments, consider using real domains with free HTTPS certs.
 
@@ -79,7 +79,7 @@ If you’re not familiar with HTTP/DNS protocols, here’s a quick primer on how
 **HTTP Protocol**
 
 - HTTP requests (HTTP/1.1+) include a **Host** header with the requested domain
-- This Host header is crucial - HTTP/1.1 spec requires clients to include it
+- This Host header is crucial — HTTP/1.1 spec requires clients to include it
 - Nginx uses the Host header to match and route requests to different sites
 - Thus, one port can serve different content based on the Host value
 
@@ -89,16 +89,16 @@ If you’re not familiar with HTTP/DNS protocols, here’s a quick primer on how
 
 Pigsty configures these four **internal domains** by default:
 
-|   Domain   | Name           |    Port    |                          Component                           | Description                 |
-| :--------: | -------------- | :--------: | :----------------------------------------------------------: | --------------------------- |
-| `h.pigsty` | `home`         | **80/443** |    [**Nginx**](/docs/infra/arch/#nginx)     | Default server, local repo  |
-| `g.pigsty` | `grafana`      |  **3000**  |  [**Grafana**](/docs/infra/arch/#grafana)   | Monitoring & visualization  |
-| `p.pigsty` | `prometheus`   |    9090    | [**Prometheus**](/docs/infra/arch/#prometheus) | Time series DB              |
+|   Domain   | Name           |    Port    |                     Component                      | Description                 |
+|:----------:|----------------|:----------:|:--------------------------------------------------:|-----------------------------|
+| `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/docs/infra/arch/#nginx)        | Default server, local repo  |
+| `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/docs/infra/arch/#grafana)      | Monitoring & visualization  |
+| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/docs/infra/arch/#prometheus)   | Time series DB              |
 | `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/docs/infra/arch/#alertmanager) | Alert aggregation & routing |
 
 Since these domains don’t use TLDs, you’ll need [**local static**](https://pigsty.io/docs/tasks/dns/#local-static-resolution) or [**internal dynamic**](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution) resolution.
 
-Don’t worry - it’s just one config line away! 🚀
+Don’t worry — it’s just one config line away! 🚀
 
 ------
 
@@ -113,9 +113,9 @@ Assuming Pigsty’s internal IP is `10.10.10.10`, add this to your client machin
 
 ### Adding Resolution
 
-The client machine is where you browse Pigsty services - your laptop, desktop, VM, etc.
+The client machine is where you browse Pigsty services — your laptop, desktop, VM, etc.
 
-For Linux/MacOS: `sudo nano /etc/hosts` For Windows: Run notepad as admin, edit `C:\Windows\System32\drivers\etc\hosts`
+For Linux / macOS: `sudo nano /etc/hosts` For Windows: Run notepad as admin, edit `C:\Windows\System32\drivers\etc\hosts`
 
 After adding the record, you can access Pigsty web services via these domains.
 
@@ -139,7 +139,7 @@ Then update your hosts file accordingly:
 10.10.10.10 h.pigsty.xxx g.pigsty.xxx p.pigsty.xxx a.pigsty.xxx
 ```
 
-Use any domain you like - real or made-up - as long as it resolves to Pigsty’s IP via [local](https://pigsty.io/docs/tasks/dns/#local-static-resolution), [internal](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution), or [public](https://pigsty.io/docs/tasks/dns/#public-domain-resolution) DNS.
+Use any domain you like — real or made-up - as long as it resolves to Pigsty’s IP via [local](https://pigsty.io/docs/tasks/dns/#local-static-resolution), [internal](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution), or [public](https://pigsty.io/docs/tasks/dns/#public-domain-resolution) DNS.
 
 ### Additional Records
 
@@ -174,6 +174,8 @@ Example: If your cloud server’s public IP is `1.2.3.4` and VPC IP is `10.10.10
 1.2.3.4 h.pigsty g.pigsty p.pigsty a.pigsty
 ```
 
+
+
 ------
 
 ## Internal Dynamic Resolution
@@ -203,6 +205,9 @@ dig h.pigsty @192.168.1.1
 Pigsty [Infra module](/docs/infra/arch/#dnsmasq) includes DNS server (port 53).
 
 ⚠️ Warning for China deployments: Public servers typically **cannot** run DNS services (port 53)!
+
+
+
 
 ------
 
@@ -253,6 +258,10 @@ MacOS: Double-click `ca.crt`, add to Keychain, search `pigsty-ca`, open and “T
 Windows: Add `ca.crt` to “Trusted Root Certification Authorities”.
 
 After trusting Pigsty’s CA, no more “untrusted certificate” warnings! 🎉
+
+
+
+
 
 ------
 

@@ -5,7 +5,6 @@ icon: PiggyBank
 full: true
 ---
 
-
 <span className="text-sky-700 font-black">P</span>ostgres <span className="text-blue-400 font-black">I</span>n <span className="text-orange-500 font-black">G</span>reat <span className="text-gray-500 font-black">S</span><span className="text-red-700 font-black">T</span><span className="text-green-600 font-black">Y</span>le ——
 <span className="text-sky-700 font-black">P</span>ostgres
 <span className="text-blue-400 font-black">I</span>nfra
@@ -13,7 +12,6 @@ full: true
 <span className="text-gray-500 font-black">S</span>ervice
 <span className="text-red-700 font-black">T</span>oolbox, 
 <span className="text-green-600 font-black">Y</span>ours
-
 
 import {
     Database,
@@ -38,21 +36,18 @@ import {
     SquareStack,
     Code
 } from 'lucide-react';
-import { DynamicLink } from 'fumadocs-core/dynamic-link';
-import { Button } from "@/components/ui/button"
-
 
 ## Introduction
 
 <span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
-is a Battery-Included, FOSS <a href="/docs/feat/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
-as a Local-First <a href="/docs/feat/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
+is a Battery-Included, FOSS <a href="/docs/intro/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
+as a Local-First <a href="/docs/intro/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
 
 <Cards>
 
     <Card icon={<Rocket className="text-blue-300" />} title='Values' href={"/docs/value"}>
         Why using pigsty?
-        The 8 core value proposition of Pigstys
+        The 8 core value proposition of Pigsty
     </Card>
 
     <Card icon={<SquareStack className={"text-red-500"} />} title='Features' href={"/docs/feature"}>
@@ -78,7 +73,7 @@ Pigsty assembles all the superpowers from the PostgreSQL and Database world, pro
 
 ## Installation
 
-[**Single node installation**](/docs/install): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
+[**Quick Start**](/docs/install/start): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
 run as [user](/docs/prepare/admin#user) with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) privileges:
 
 ```bash title="install"
@@ -86,7 +81,7 @@ curl -fsSL https://repo.pigsty.io/get | bash;
 cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
 ```
 
-[**Download**](/docs/prepare/software#pigsty), [Bootstrap](/docs/install/offline#bootstrap), [**Configure**](/docs/config/configure) and [**Install**](/docs/install). Pigsty Installed! You can [**add more**](/docs/install/multinode) nodes and database clusters later.
+[**Download**](/docs/prepare/software#pigsty), [Bootstrap](/docs/install/offline#bootstrap), [**Configure**](/docs/config/configure) and [**Install**](/docs/install). Pigsty [**Installed**](/docs/install)! You can [**add more**](/docs/install/multinode) nodes and database clusters later.
 
 Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/docs/pgsql) [Service](/docs/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
 
@@ -113,11 +108,11 @@ Explore the [**User Interface**](/docs/install/interface), check port `5432` for
 
 ## Modules
 
-Pigsty consists of multiple **modules**. The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">REQUIRED</span> for self-hosting Postgres RDS service.
+Pigsty consists of multiple [**Modules**](/docs/intro/module). The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">REQUIRED</span> for self-hosting Postgres RDS service.
 
 <Cards>
     <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
-        PostgreSQL Cluster with HA, PITR, IaC, ACL, Monitoring, Pooling,…
+        HA PG Cluster with HA, PITR, IaC, ACL, Monitor, and 420+ extensions
     </Card>
     <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra"}>
         Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability

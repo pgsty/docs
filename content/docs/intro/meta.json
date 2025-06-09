@@ -8,6 +8,7 @@
         "rds",
         "arch",
         "case",
-        "compare"
+        "compare",
+        "module"
     ]
 }
