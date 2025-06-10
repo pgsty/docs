@@ -13,19 +13,19 @@ Once installed, you’ll have the four core modules:
 | 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
 
 
-You can access WebUI services from the following **Ports** directly (not recommended for prod).
+You can access [WebUI](#grafana) services from the following **Ports** directly (not recommended for prod).
 Or use local / public [Domain Names](/docs/admin/domain) to access them via [Nginx Portal](/docs/admin/portal).
 [SSL Certs](/docs/admin/cert) can only be used with domains.
 
 
-|  Component   |   Port   |   Domain   | Comment                     | Public Demo                                |
-|:------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
-|  **Nginx**   | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.io`](https://h.pigsty.cio)   |
-| **Grafana**  |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.io`](https://demo.pigsty.io) |
-|  Prometheus  |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
-| AlertManager |  `9093`  | `a.pigsty` | Alter Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
+|            Component            |   Port   |   Domain   | Comment                     | Public Demo                                |
+|:-------------------------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
+| [**Nginx**](/docs/admin/portal) | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.io`](https://h.pigsty.cio)   |
+|     [**Grafana**](#grafana)     |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.io`](https://demo.pigsty.io) |
+|           Prometheus            |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
+|          AlertManager           |  `9093`  | `a.pigsty` | Alter Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
 
-You can access the default PostgreSQL database (`meta`) @ default port `5342` via the following `PGURL`:
+You can access the default PostgreSQL database (`meta`) @ default port `5342` via the following users and corresponding `PGURL`:
 
 ```bash tab="dbuser_dba"
 psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta
@@ -138,7 +138,7 @@ In that case, your traffic is usually distributed by haproxy and pooled by pgbou
 
 -------
 
-## Web UI
+## Grafana
 
 Grafana is the platform for monitoring and observability, it listens on port `3000` by default:
 

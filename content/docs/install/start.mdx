@@ -17,8 +17,8 @@ This is a one-node installation guide, check [**Multi-Node**](/docs/install/mult
 
 ## Short Version
 
-[Prepare](#prepare) an [ssh-accessible](/docs/prepare#accessibility) [node](/docs/prepare#node) with [Compatible Linux OS](/docs/prepare/linux),
-run as user with nopass [`ssh`](/docs/prepare#ssh) and [`sudo`](/docs/prepare#admin-user):
+[Prepare](#prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with [Compatible Linux Distro](/docs/prepare/linux),
+run as user with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges):
 
 <Steps>
     <Step>
@@ -134,7 +134,7 @@ In case of no Internet access, get [offline package](/docs/install/offline#what-
 The [`configure`](https://github.com/pgsty/pigsty/blob/main/configure) script will generate the `pigsty.yml` config file [inventory](/docs/config/inventory) with good defaults according to your environment and input.
 It's **OPTIONAL**, you can edit the `pigsty.yml` directly as the [**tutorial**](/docs/config/tutorial) shows.
 
-There are many [**config tempalte**](/docs/config/template) for your reference, But here are some quick examples:
+There are many [**Config Tempalte**](/docs/config/template) for your reference, here are some quick examples:
 
 ```bash
 ./configure                  # use the default template, PG 17 with minimal extensions
@@ -453,7 +453,7 @@ Once installed, you can explore the [**Interface**](/docs/install/interface) and
 
 ## More
 
-You can deploy & monitor [More Clusters](/docs/install/multinode) with pigsty: add definition to the [inventory](/docs/config/inventory) and run:
+You can deploy & monitor [More Clusters](/docs/install/multinode) with pigsty: add definition to the [Inventory](/docs/config/inventory) and run:
 
 ```bash
 bin/node-add pg-test    # init 3 nodes of cluster pg-test
@@ -464,8 +464,7 @@ bin/redis-add redis-ms  # init redis cluster redis-ms
 Remember that most modules require the [`NODE`](/docs/node/) module installed first. Check available [**modules**](/docs/intro/module) for detail
 
 [**`PGSQL`**](/docs/pgsql/), [**`INFRA`**](/docs/infra/), [**`NODE`**](/docs/node/), [**`ETCD`**](/docs/etcd/),
-[**`MINIO`**](/docs/minio/), [**`REDIS`**](/docs/redis/), [**`FERRET`**](/docs/ferret/),
-[**`DOCKER`**](/docs/node/), ……
+[**`MINIO`**](/docs/minio/), [**`REDIS`**](/docs/redis/), [**`FERRET`**](/docs/ferret/), [**`DOCKER`**](/docs/node/), ……
 
 
 
