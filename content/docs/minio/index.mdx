@@ -5,10 +5,10 @@ icon: Box
 ---
 
 
-[Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html): S3-Compatible Open-Source Multi-Cloud Object Storage
-It’s designed to be scalable, secure, and easy to use. It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups.
+[Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html): S3-Compatible Open-Source Multi-Cloud Object Storage designed to be scalable, secure, and handy.
+It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups. It's an [optional module](/docs/intro/module) in Pigsty.
 
-Pigsty uses MinIO as an optional PostgreSQL backup storage repo, in addition to the default local posix FS repo. If the MinIO repo is used, 
+You can uses MinIO as an optional PostgreSQL [backup](/docs/pgsql/backup) storage repo, in addition to the default local posix FS repo. If the MinIO repo is used,
 the `MINIO` module should be installed before any [`PGSQL`](/docs/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it after [`NODE`](/docs/node/).
 
 --------

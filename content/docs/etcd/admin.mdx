@@ -1,20 +1,20 @@
 ---
-title: Admin
-description: run administrative tasks
+title: Administration
+description: Manage your etcd cluster
 icon: Wrench
 ---
 
 
 Here are some administration SOP for etcd:
 
-- [Create Cluster](/docs/etcd/admin/#create-cluster)
-- [Remove Cluster](/docs/etcd/admin/#remove-cluster)
-- [CLI Environment](/docs/etcd/admin/#cli-environment)
-- [Reload Config](/docs/etcd/admin/#reload-config)
-- [Add Member](/docs/etcd/admin/#add-member)
-- [Remove Member](/docs/etcd/admin/#remove-member)
+- [Create Cluster](#create-cluster)
+- [Remove Cluster](#remove-cluster)
+- [CLI Environment](#cli-environment)
+- [Reload Config](#reload-config)
+- [Add Member](#add-member)
+- [Remove Member](#remove-member)
 
-Check [ETCD: FAQ](/docs/etcd/faq/) for more questions.
+Check [ETCD: FAQ](/docs/etcd/faq) for more questions.
 
 
 ------
@@ -29,7 +29,7 @@ etcd:
     10.10.10.10: { etcd_seq: 1 }
     10.10.10.11: { etcd_seq: 2 }
     10.10.10.12: { etcd_seq: 3 }
-  vars: { etcd_cluster: etcd }
+  vars: { etcd_cluster: etcd   }
 ```
 
 Then run the [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook.
@@ -38,9 +38,11 @@ Then run the [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook.
 ./etcd.yml   # init etcd module on group 'etcd'
 ```
 
-Pigsty has a safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/docs/etcd/param#etcd_clean) is `true`, and [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard) is `false`, which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent, which is useful for development, testing, and emergency rebuild of etcd cluster in production.
+Pigsty has a safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/docs/etcd/param#etcd_clean) is `true`, and [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard) is `false`,
+which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent,
+which is useful for development, testing, and emergency rebuild of etcd cluster in production.
 
-For provsioned etcd cluster in prod env, you can enable safeguard to prevent accidental clean.
+For provisioned etcd cluster in prod env, you can enable safeguard to prevent accidental clean.
 
 
 
@@ -64,14 +66,13 @@ The `etcd_clean` subtask will honor the [`etcd_safeguard`](/docs/etcd/param#etcd
 
 ## CLI Environment
 
-Pigsty use etcd v3 API by default.
+Pigsty use etcd v3 API by default. (`v2` support is dropped since v3.6.0)
 
 Here’s an example of client environment config.
 
 ```bash
 alias e="etcdctl"
 alias em="etcdctl member"
-export ETCDCTL_API=3
 export ETCDCTL_ENDPOINTS=https://10.10.10.10:2379
 export ETCDCTL_CACERT=/etc/pki/ca.crt
 export ETCDCTL_CERT=/etc/etcd/server.crt
@@ -125,11 +126,13 @@ ansible all -f 1 -b -a 'systemctl restart vip-manager' # restart vip-manager to 
 ```
 
 
+
+
 ------
 
 ## Add Member
 
-ETCD Reference: [Add a member](https://etcd.io/docs/v3.5/op-guide/runtime-configuration/#add-a-new-member)
+ETCD Reference: [Add a member](https://etcd.io/docs/v3.6/op-guide/runtime-configuration/#add-a-new-member)
 
 You can add new members to existing etcd cluster in 5 steps:
 
@@ -137,7 +140,7 @@ You can add new members to existing etcd cluster in 5 steps:
 2. update inventory group `etcd` with new instance
 3. init the new member with `etcd_init=existing`, to join the existing cluster rather than create a new one (**VERY IMPORTANT**)
 4. promote the new member from leaner to follower
-5. update etcd endpoints reference with [reload-config](/docs/etcd/admin/#reload-config)
+5. update etcd endpoints reference with [reload-config](#reload-config)
 
 **Short Version**
 
@@ -154,7 +157,7 @@ etcdctl member promote <new_ins_server_id>
 
 To remove a member from existing etcd cluster, it usually takes 3 steps:
 
-1. remove/uncomment it from inventory and [reload config](/docs/etcd/admin/#reload-config)
+1. remove/uncomment it from inventory and [reload config](#reload-config)
 2. remove it with `etcdctl member remove <server_id>` command and kick it out of the cluster
 3. temporarily add it back to inventory and purge that instance, then remove it from inventory permanently
 

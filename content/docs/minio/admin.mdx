@@ -1,20 +1,22 @@
 ---
-title: Admin
+title: Administraion
 description: Create, remove, expand, shrink, upgrade minio cluster
 icon: Wrench
 ---
 
 Here are some administration SOP for MinIO:
 
-- [Create Cluster](/docs/minio/admin/#create-cluster)
-- [Remove Cluster](/docs/minio/admin/#remove-cluster)
-- [Expand Cluster](/docs/minio/admin/#expand-cluster)
-- [Shrink Cluster](/docs/minio/admin/#shrink-cluster)
-- [Upgrade Cluster](/docs/minio/admin/#upgrade-cluster)
-- [Node Failure Recovery](/docs/minio/admin/#node-failure-recovery)
-- [Disk failure Recovery](/docs/minio/admin/#disk-failure-recovery)
+- [Create Cluster](#create-cluster)
+- [Remove Cluster](#remove-cluster)
+- [Expand Cluster](#expand-cluster)
+- [Shrink Cluster](#shrink-cluster)
+- [Upgrade Cluster](#upgrade-cluster)
+- [Node Failure Recovery](#node-failure-recovery)
+- [Disk failure Recovery](#disk-failure-recovery)
 
 Check [ETCD: FAQ](/docs/minio/faq/) for more questions.
+
+
 
 ------
 
@@ -34,6 +36,8 @@ This snippet defines a single-node MinIO cluster, using the following command to
 ./minio.yml -l minio  # init MinIO module on the minio group
 ```
 
+
+
 ------
 
 ## Remove Cluster
@@ -50,13 +54,15 @@ If you wish to remove prometheus monitor target too:
 ansible infra -b -a 'rm -rf /etc/prometheus/targets/minio/minio-1.yml'  # delete the minio monitoring target
 ```
 
+
+
 ------
 
 ## Expand Cluster
 
 - [Tutorial: Expand MinIO Deployment](https://min.io/docs/minio/linux/operations/install-deploy-manage/expand-minio-deployment.html)
 
-You can not scale MinIO at node/disk level, but you can scale at storage pool (multiple nodes) level.
+You cannot scale MinIO at node/disk level, but you can scale at storage pool (multiple nodes) level.
 
 Assume you have a 4-node MinIO cluster and want to double the capacity by adding another four-node storage pool.
 
@@ -99,7 +105,9 @@ minio:
           - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
 ```
 
-Step 1, add 4 node definition in the group, allocate sequence number 5 to 8. The key step is to modify the [`minio_volumes`](/docs/minio/param#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
+Step 1, add 4 node definitions in the group, allocate sequence number 5 to 8.
+The key step is to modify the [`minio_volumes`](/docs/minio/param#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
+
 
 ```yaml
 minio:
@@ -186,6 +194,9 @@ If node L2 VIP is also used to ensure reliable load balancer access, you also ne
 ./node.yml -l minio -t node_vip  # reload node l2 vip configuration
 ```
 
+
+
+
 ------
 
 ## Shrink Cluster
@@ -193,6 +204,8 @@ If node L2 VIP is also used to ensure reliable load balancer access, you also ne
 MinIO cannot scale down at the node/disk level, but you can retire at the storage pool (multiple nodes) level —— Add a new storage pool, drain the old storage pool, migrate to the new storage pool, and then retire the old storage pool.
 
 - [Tutorial: Decommission Server Pool](https://min.io/docs/minio/linux/operations/install-deploy-manage/decommission-server-pool.html)
+
+
 
 ------
 
@@ -202,19 +215,12 @@ MinIO cannot scale down at the node/disk level, but you can retire at the storag
 
 First, download the new version of the MinIO software package to the local software repository of the INFRA node:
 
-- minio
-
-:
-
-- amd64: https://dl.min.io/server/minio/release/linux-amd64/
-- arm64: https://dl.min.io/server/minio/release/linux-arm64/
-
-- mcli
-
-:
-
-- amd64: https://dl.min.io/client/mc/release/linux-amd64/
-- arm64: https://dl.min.io/client/mc/release/linux-arm64/
+- minio:
+  - amd64: https://dl.min.io/server/minio/release/linux-amd64/
+  - arm64: https://dl.min.io/server/minio/release/linux-arm64/
+- mcli:
+  - amd64: https://dl.min.io/client/mc/release/linux-amd64/
+  - arm64: https://dl.min.io/client/mc/release/linux-arm64/
 
 and then rebuild the software repo with:
 
@@ -235,6 +241,8 @@ Finlly, notify the MinIO cluster to restart with the `mc` command line tool:
 mc admin service restart sss
 ```
 
+
+
 ------
 
 ## Node Failure Recovery
@@ -254,6 +262,8 @@ bin/node-add <your_new_node_ip>
 # 4. instruct MinIO to perform heal action
 mc admin heal
 ```
+
+
 
 ------
 

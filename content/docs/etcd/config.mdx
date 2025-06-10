@@ -1,5 +1,5 @@
 ---
-title: Config
+title: Configure
 description: describe the cluster you want
 icon: CodeXml
 ---
@@ -8,9 +8,9 @@ You have to define the etcd cluster in the [config inventory](/docs/config/inven
 
 Usually you can choose an etcd cluster with:
 
-- [One Node](/docs/etcd/config/#one-node), no high availability, just the functionality of etcd, suitable for development, testing, demonstration.
-- [Three Nodes](/docs/etcd/config/#three-nodes), basic high availability, tolerate one node failure, suitable for medium production environment.
-- [Five Nodes](/docs/etcd/config/#five-nodes), better high availability, tolerate two node failure, suitable for large production environment.
+- [One Node](#one-node), no high availability, just the functionality of etcd, suitable for development, testing, demonstration.
+- [Three Nodes](#three-nodes), basic high availability, tolerate one node failure, suitable for medium production environment.
+- [Five Nodes](#five-nodes), better high availability, tolerate two node failure, suitable for large production environment.
 
 Use even number of etcd nodes is meaningless, and more than five nodes is not common.
 

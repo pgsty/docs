@@ -7,29 +7,38 @@ icon: MessageCircleQuestion
 
 ## What is the role of the etcd in pigsty?
 
-etcd is a distributed, reliable key-value store used to store the most critical config / consensus data in the deployment. Pigsty uses etcd as the DCS (Distributed Configuration Store) service for Patroni, which will store the high availability status information of the PostgreSQL cluster.
+etcd is a distributed, reliable key-value store used to store the most critical config / consensus data in the deployment.
+Pigsty uses etcd as the DCS (Distributed Configuration Store) service for Patroni, which will store the high availability status information of the PostgreSQL cluster.
+
+
 
 ------
 
 ## How many etcd instances should I choose?
 
-If more than (include) half of the etcd instances are down, the etcd cluster and its service will be unavailable.
+If more than (include) half of the etcd instances are down, the etcd cluster, and its service will be unavailable.
 
 For example, a 3-node etcd cluster can tolerate at most one node failure, and the other two nodes can still work normally; while a 5-node etcd cluster can tolerate 2 node failures.
 
-Beware that the **learner** instances in the etcd cluster do not count in the member number, so in a 3-node etcd cluster, if there is a learner instance, the actual member count is 2, so no node failure can be tolerated.
+Beware that the **learner** instances in the etcd cluster do not count in the member number.
+So in a 3-node etcd cluster, if there is a learner instance, the actual member count is 2, so no node failure can be tolerated.
 
 It is advisable to choose an odd number of etcd instances to avoid split-brain scenarios. It is recommended to use 3 or 5 nodes for the production environment.
+
+
 
 ------
 
 ## What is the impact of etcd failure?
 
-If etcd cluster is unavailable, it will affect the control plane of Pigsty, but not the data plane - the existing PostgreSQL cluster will continue to serve, but admin operations through Patroni will not work.
+If etcd cluster is unavailable, it will affect the control plane of Pigsty, but not the data plane — the existing PostgreSQL cluster will continue to serve, but admin operations through Patroni will not work.
 
-During etcd failure, PostgreSQL HA is unable to perform automatic failover, and most of the Patroni operations will be blocked, such as edit-config, restart, switchover, etc… Admin tasks through Ansible playbooks are usually not affected by etcd failure, such as create database, create user, reload HBA and Service, etc…, And you can always operate the PostgreSQL cluster directly to achieve most of the patroni functions.
+During etcd failure, PostgreSQL HA is unable to perform automatic failover; and most of the Patroni operations will be blocked, such as edit-config, restart, switchover, etc…
+Admin tasks through Ansible playbooks are usually not affected by etcd failure, such as create database, create user, reload HBA and Service, etc…,
+and you can always operate the PostgreSQL cluster directly to achieve most of the patroni functions.
 
-Beware that the above description is only applicable to newer versions of Patroni `(>=3.0, Pigsty >= 2.0)`. If you are using an older version of Patroni (`<3.0`, corresponding to Pigsty version `1.x`), etcd / consul failure will cause a serious impact: All PostgreSQL clusters will be demoted and reject write requests, and etcd failure will be amplified as a global PostgreSQL failure. After Patroni 3.0’s DCS Failsafe feature, this situation has been significantly improved.
+Beware that the above description is only applicable to newer versions of Patroni `(>=3.0, Pigsty >= 2.0)`. If you are using an older version of Patroni (`<3.0`, corresponding to Pigsty version `1.x`), etcd / consul failure will cause a serious impact:
+All PostgreSQL clusters will be demoted and reject write requests, and etcd failure will be amplified as a global PostgreSQL failure. After Patroni 3.0’s DCS Failsafe feature, this situation has been significantly improved.
 
 
 ------
@@ -43,6 +52,9 @@ These consensus data are managed by Patroni, and when these data are lost in etc
 Thus, by default, the **etcd** in Pigsty can be regarded as a “stateless service” that is disposable, which brings great convenience to maintenance work.
 
 If you use etcd for other purposes, such as storing metadata for Kubernetes, or storing other data, you need to back up the etcd data yourself and restore the data after the etcd cluster is restored.
+
+
+
 
 ------
 
@@ -64,6 +76,9 @@ To **Reset** the etcd cluster, you can run this playbook, it will **nuke** the e
 
 Beware that if you use etcd to store other data, don’t forget to backup etcd data before nuking the etcd cluster.
 
+
+
+
 ------
 
 ## Is any maintenance work for etcd cluster?
@@ -79,6 +94,9 @@ Pigsty has auto compact enabled by default since v2.6, so you usually don’t ha
 #### Fill etcd may lead to PostgreSQL failure!
 
 For Pigsty v2.0 - v2.5 users, we strongly recommend upgrading to a newer version, or following the instructions below to enable etcd auto compaction!
+
+
+
 
 ------
 
@@ -97,6 +115,9 @@ quota-backend-bytes: 17179869184
 You can set all the PostgreSQL cluster to **maintenance mode** and then redeploy the etcd cluster with `./etcd.yml` to apply the these changes.
 
 It will increase the etcd default quota from 2 GiB to 16 GiB, and ensure that only the most recent day’s write history is retained, avoiding the infinite growth of the etcd database size.
+
+
+
 
 ------
 
@@ -124,6 +145,8 @@ pg-meta-1
 {"optime":184549376,"slots":{"pg_meta_2":184549376,"pg_meta_1":184549376},"retain_slots":["pg_meta_1","pg_meta_2"]}
 ```
 
+
+
 ------
 
 ## How to use existing external etcd cluster?
@@ -131,6 +154,8 @@ pg-meta-1
 The hard-coded group, `etcd`, will be used as DCS servers for PGSQL. You can initialize them with `etcd.yml` or assume it is an existing external etcd cluster.
 
 To use an existing external etcd cluster, define them as usual and make sure your current etcd cluster certificate is signed by the same CA as your self-signed CA for PGSQL.
+
+
 
 ------
 
@@ -143,6 +168,8 @@ etcdctl member add <etcd-?> --learner=true --peer-urls=https://<new_ins_ip>:2380
 ./etcd.yml -l <new_ins_ip> -e etcd_init=existing                                 # init new etcd member
 etcdctl member promote <new_ins_server_id>                                       # on admin node
 ```
+
+
 
 ------
 
