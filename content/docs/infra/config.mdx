@@ -30,7 +30,7 @@ all:
     infra: { hosts: { 10.10.10.10: { infra_seq: 1 } }}
 ```
 
-The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](https://pigsty.io/docs/prepare/#network-configuration) during [**configuration**](/docs/config/configure), meaning the INFRA module will be installed on the current node.
+The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](/docs/prepare/#network-configuration) during [**configuration**](/docs/config/configure), meaning the INFRA module will be installed on the current node.
 
 Then use the [`infra.yml`](/docs/infra/playbook/#infrayml) playbook to initialize the INFRA module on the node.
 

@@ -11,7 +11,7 @@ Widely used in the industry by operators.
 
 ## Install
 
-Pigsty will try its best to install `ansible` and its dependencies during [**bootstrap**](/docs/install/offline#bootstrap).
+Pigsty will try its best to install `ansible` and its dependencies during [**bootstrap**](/docs/install/start#bootstrap).
 But you can always install it manually, it is available on most OS's official repos and can be installed with one command.
 
 <Callout title="Install Ansible" type="info">
@@ -61,7 +61,7 @@ Running the `./node.yml` playbook essentially translates to `ansible-playbook no
 The hashbang at the top of the file makes it directly executable.
 And you can use Args to control the playbook execution:
 
-```bash title="~/pigsty"s
+```bash title="~/pigsty"
 ./node.yml                         # run infra playbook on all hosts
 ./pgsql.yml -l pg-test             # run pgsql playbook on pg-test cluster
 ./infra.yml -t repo                # run subtask repo of infra.yml
@@ -129,7 +129,7 @@ Here are some task limit examples:
 ./minio.yml -t minio_alias   # write minio cli config
 ```
 
-To run multiple tasks, specify multiple tags and seprate with comma: `-t tag1,tag2`:
+To run multiple tasks, specify multiple tags and separate with comma: `-t tag1,tag2`:
 
 ```bash
 ./node.yml  -t node_repo,node_pkg   # add repo, then install packages
@@ -147,7 +147,7 @@ You can override config param at runtime with cli args, it has the [**highest pr
 Extra command-line args can be passed via `-e|--extra-vars KEY=VALUE`, it can be used multiple times:
 
 ```bash
-# create admin with another amdin user
+# create admin with another admin user
 ./node.yml -e ansible_user=admin -k -K -t node_admin
 
 # init a specific redis instance: 10.10.10.11:6379

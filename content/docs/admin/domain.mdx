@@ -16,19 +16,19 @@ Let’s say your node’s internal IP is 10.10.10.10, then by default:
 
 While IP + Port works fine for dev/test environments (hey, we’re all lazy sometimes!), for more serious deployments, I strongly recommend accessing these services via **domain names**.
 
-Using domains has [**numerous advantages**](https://pigsty.io/docs/tasks/dns/#why-use-domains), doesn’t cost extra, and requires just one simple config line.
+Using domains has [**numerous advantages**](#why-use-domains), doesn’t cost extra, and requires just one simple config line.
 
 Let’s dive into these topics:
 
-- [**TL;DR**](https://pigsty.io/docs/tasks/dns/#tldr)
-- [**Why Use Domains?**](https://pigsty.io/docs/tasks/dns/#why-use-domains)
-- [**How DNS Works**](https://pigsty.io/docs/tasks/dns/#how-dns-works)
-- [**Pigsty Default Domains**](https://pigsty.io/docs/tasks/dns/#pigsty-default-domains)
-- [**Local Static Resolution**](https://pigsty.io/docs/tasks/dns/#local-static-resolution)
-- [**Internal Dynamic Resolution**](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution)
-- [**Local HTTPS Access**](https://pigsty.io/docs/tasks/dns/#local-https-access)
-- [**Trust Self-signed CA**](https://pigsty.io/docs/tasks/dns/#trust-self-signed-ca)
-- [**Public Domain Resolution**](https://pigsty.io/docs/tasks/dns/#public-domain-resolution)
+- [**TL;DR**](#tldr)
+- [**Why Use Domains?**](#why-use-domains)
+- [**How DNS Works**](#how-dns-works)
+- [**Pigsty Default Domains**](#pigsty-default-domains)
+- [**Local Static Resolution**](#local-static-resolution)
+- [**Internal Dynamic Resolution**](#internal-dynamic-resolution)
+- [**Local HTTPS Access**](#local-https-access)
+- [**Trust Self-signed CA**](#trust-self-signed-ca)
+- [**Public Domain Resolution**](#public-domain-resolution)
 
 ------
 
@@ -72,7 +72,7 @@ If you’re not familiar with HTTP/DNS protocols, here’s a quick primer on how
 **DNS Protocol**
 
 - When a client (e.g., browser) accesses [https://a.pigsty.cc](https://a.pigsty.cc/), it first resolves the domain via DNS
-- Resolution can use [**local static files**](https://pigsty.io/docs/tasks/dns/#local-static-resolution), [**internal DNS servers**](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution), or [**public DNS**](https://pigsty.io/docs/tasks/dns/#public-domain-resolution)
+- Resolution can use [**local static files**](#local-static-resolution), [**internal DNS servers**](#internal-dynamic-resolution), or [**public DNS**](#public-domain-resolution)
 - DNS returns an IP - multiple domains can point to the same IP
 - The client just needs to know: which IP to send requests to
 
@@ -96,7 +96,7 @@ Pigsty configures these four **internal domains** by default:
 | `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/docs/infra/arch/#prometheus)   | Time series DB              |
 | `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/docs/infra/arch/#alertmanager) | Alert aggregation & routing |
 
-Since these domains don’t use TLDs, you’ll need [**local static**](https://pigsty.io/docs/tasks/dns/#local-static-resolution) or [**internal dynamic**](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution) resolution.
+Since these domains don’t use TLDs, you’ll need [**local static**](#local-static-resolution) or [**internal dynamic**](#internal-dynamic-resolution) resolution.
 
 Don’t worry — it’s just one config line away! 🚀
 
@@ -139,7 +139,7 @@ Then update your hosts file accordingly:
 10.10.10.10 h.pigsty.xxx g.pigsty.xxx p.pigsty.xxx a.pigsty.xxx
 ```
 
-Use any domain you like — real or made-up - as long as it resolves to Pigsty’s IP via [local](https://pigsty.io/docs/tasks/dns/#local-static-resolution), [internal](https://pigsty.io/docs/tasks/dns/#internal-dynamic-resolution), or [public](https://pigsty.io/docs/tasks/dns/#public-domain-resolution) DNS.
+Use any domain you like — real or made-up - as long as it resolves to Pigsty’s IP via [local](#local-static-resolution), [internal](#internal-dynamic-resolution), or [public](#public-domain-resolution) DNS.
 
 ### Additional Records
 
@@ -230,7 +230,7 @@ Your options:
 
 For internal access needing HTTPS without constant warnings, trust Pigsty’s **self-signed CA**.
 
-For production, we recommend using [**public domains**](https://pigsty.io/docs/tasks/dns/#public-domain-resolution) with free HTTPS certs via [`certbot`](https://pigsty.io/docs/tasks/certbot/).
+For production, we recommend using [**public domains**](#public-domain-resolution) with free HTTPS certs via [`certbot`](/docs/admin/cert).
 
 ------
 
@@ -280,12 +280,10 @@ Example: With domain `pigsty.xxx`, add wildcard `*` A record or individual A rec
 - p.pigsty.xxx → 1.2.3.4
 - g.pigsty.xxx → 1.2.3.4
 
-Pigsty includes [**Certbot support**](https://pigsty.io/docs/tasks/certbot/) for free HTTPS certs (renew every 3 months).
+Pigsty includes [**Certbot support**](/docs/admin/cert) for free HTTPS certs (renew every 3 months).
 
 ------
 
 ## Further Reading
 
-- [**Tutorial: DNS: Configure Domain Resolution**](https://pigsty.io/docs/tasks/dns/)
-- [**Tutorial: Nginx: Expose Web Services**](https://pigsty.io/docs/tasks/nginx/)
-- [**Tutorial: Certbot: Request & Renew HTTPS Certs**](https://pigsty.io/docs/tasks/certbot/)
+For more advanced configurations, check the Pigsty documentation for DNS, Nginx, and HTTPS certificate management.

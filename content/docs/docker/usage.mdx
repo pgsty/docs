@@ -7,6 +7,9 @@ icon: Rocket
 
 Pigsty includes built-in [**Docker**](https://www.docker.com/) support, allowing you to quickly deploy containerized applications.
 
+
+--------
+
 ## Getting Started
 
 Docker is an **optional module** and is **not enabled by default** in most Pigsty configuration templates. Users must explicitly **download** and **configure** Docker to use it within Pigsty.
@@ -38,6 +41,11 @@ Finally, use the `docker.yml` playbook to install:
 ./docker.yml -l infra    # Install Docker on the infra group
 ```
 
+
+
+
+--------
+
 ## Installation
 
 To temporarily install Docker directly from the internet on selected nodes:
@@ -50,6 +58,10 @@ This enables the required repos (`node,docker`) and installs packages `docker-ce
 
 For automatic Docker downloads during Pigsty initialization, see below.
 
+
+
+--------
+
 ## Uninstallation
 
 Pigsty does not provide a dedicated Docker uninstall playbook due to simplicity. Uninstall Docker with Ansible directly:
@@ -57,6 +69,10 @@ Pigsty does not provide a dedicated Docker uninstall playbook due to simplicity.
 ```go
 ansible minio -m package -b -a 'name=docker-ce state=absent'
 ```
+
+
+
+--------
 
 ## Download
 
@@ -76,6 +92,9 @@ After Pigsty installation, update repositories by running `./infra.yml -t repo_b
 
 Docker installation requires enabling the Docker module in `repo_modules`.
 
+
+--------
+
 ## Repository
 
 Docker requires external repositories, pre-configured under `repo_upstream` with the module name `docker`:
@@ -86,6 +105,10 @@ Docker requires external repositories, pre-configured under `repo_upstream` with
 ```
 
 Note: The official Docker repo is blocked by default in Mainland China. Use regional mirrors to resolve this.
+
+
+
+--------
 
 ## Proxy
 
@@ -100,6 +123,10 @@ proxy_env:
 ```
 
 Use `curl` to verify proxy effectiveness. Avoid combining proxy servers with Mainland China mirrors.
+
+
+--------
+
 
 ## Mirror Sites
 
@@ -118,6 +145,10 @@ Example mirrors:
 ```bash
 ["https://ccr.ccs.tencentyun.com"]
   ```
+
+
+
+--------
 
 ## Pulling Images
 
@@ -140,6 +171,9 @@ Or preload using local compressed images (`tgz` files):
   copy: src="{{ item }}" dest="/tmp/docker/"
   with_fileglob: "/tmp/supabase/*.tgz"
 ```
+
+
+--------
 
 ## Applications
 

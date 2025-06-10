@@ -48,7 +48,7 @@ New features allowed users to quickly set up local DevBoxes or production server
 automating PostgreSQL and monitoring system deployment through Infra as Code.
 
 We then redesigned the production PostgreSQL architecture, introducing Patroni and pgBackRest
-for [high availability](https://pigsty.io/docs/concept/ha/) and [point-in-time recovery](https://pigsty.io/docs/concept/pitr/).
+for [high availability](/docs/feat/ha) and [point-in-time recovery](/docs/feat/pitr).
 We developed a zero-downtime [migration](/docs/pgsql/migration/) strategy based on logical replication,
 performing rolling updates across 200 database clusters to the latest major version using blue-green deployments.
 These capabilities were integrated into Pigsty.
@@ -103,7 +103,7 @@ This is what Pigsty aims to achieve —— **a superior, open-source, free RDS a
 Enabling users to deploy a database service better than cloud RDS with just one click, anywhere (including on cloud servers).
 
 Pigsty is a comprehensive enhancement for PostgreSQL and spicy satire on cloud RDS. We offer "the Simple Data Stack",
-which consists of PostgreSQL, Redis, MinIO, and more optional [**modules**](https://pigsty.io/docs/about/module/).
+which consists of PostgreSQL, Redis, MinIO, and more optional [**modules**](/docs/intro/module).
 
 Pigsty is entirely open-source and free, sustained through [**consulting**](/docs/about/service).
 A well-built system might run for years without issues, but when database problems arise, they’re serious.

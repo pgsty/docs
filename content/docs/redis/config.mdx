@@ -4,7 +4,7 @@ description: describe the redis cluster you want
 icon: CodeXml
 ---
 
-The entity model of Redis is almost the same as that of [PostgreSQL](https://pigsty.io/docs/concept/model/#er-diagram), which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
+The entity model of Redis is almost the same as that of [PostgreSQL](/docs/concept/model/#er-diagram), which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
 
 The core difference between the REDIS module and the [PGSQL](/docs/pgsql/) module is that Redis uses a **single-node multi-instance** deployment rather than the 1:1 deployment: multiple Redis instances are typically deployed on a physical/virtual machine node to utilize multi-core CPUs fully. Therefore, the ways to [configure](/docs/redis/config/#configuration) and [administer](/docs/redis/config/#administration) Redis instances are slightly different from PGSQL.
 
