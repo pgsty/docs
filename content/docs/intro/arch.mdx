@@ -65,10 +65,13 @@ pg-test:
     10.10.10.12: { pg_seq: 2, pg_role: replica }
     10.10.10.13: { pg_seq: 3, pg_role: replica }
   vars: { pg_cluster: pg-test }
-$ bin/pgsql-add pg-test  # init cluster 'pg-test'
 ```
 
-Which will gives you a following cluster with monitoring , replica, backup all set.
+```bash
+$ bin/pgsql-add pg-test
+```
+
+Which will give you the following cluster with monitoring, replica, backup all set.
 
 [![pigsty-ha.png](https://pigsty.io/img/pigsty/ha.png)](/docs/feat/ha)
 
@@ -120,6 +123,9 @@ pg-test:
     10.10.10.12: { pg_seq: 2, pg_role: replica }
     10.10.10.13: { pg_seq: 3, pg_role: replica } # <-- add new instance
   vars: { pg_cluster: pg-test }
+```
+
+```bash
 $ bin/pgsql-add  pg-test 10.10.10.13
 ```
 
