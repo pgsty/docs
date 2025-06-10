@@ -1,10 +1,9 @@
 ---
 title: Node
-description: Transform bare metal, VMs, or containers into standardized infrastructure nodes with monitoring, service exposure, and high availability features.
+description: Enroll linux machine hosts into desired state
 icon: Server
 full: true
 ---
-
 
 import {
     CodeXml,
@@ -14,6 +13,8 @@ import {
     Telescope,
     MessageCircleQuestion
 } from 'lucide-react';
+
+To deploy [modules](/docs/intro/modules), you'll have to enroll your linux servers into pigsty by installing the [NODE](/docs/node) module on them.
 
 
 <Cards>
@@ -36,6 +37,27 @@ import {
         Frequently Asked Questions about node module
     </Card>
 </Cards>
+
+--------
+
+## Architecture
+
+
+
+The module provides:
+
+- Setup node name
+- Setup node repo and install packages
+- Sync clock time via `chrony`
+- System tuning via `tuned`
+- Service exposure via `haproxy`
+- Host monitoring via `node_exporter`
+- Log collection via `promtail`
+- L2 VIP support via `keepalived` (**OPTIONAL**)
+
+
+
+
 
 --------
 

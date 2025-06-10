@@ -11,7 +11,7 @@ icon: Cpu
 Pigsty currently runs on nodes with [`Linux`](#linux-os) kernel and `x86_64` / `aarch64` architecture.
 
 A "**node**" refers to a resource that is SSH [accessible](#accessibility) and offers a bare Linux OS environment.
-It could be a physical machine, a virtual machine, or a OS-like container equipped with `systemd`, `sudo` and `sshd`.
+It could be a physical machine, a virtual machine, or an OS-like container equipped with `systemd`, `sudo` and `sshd`.
 
 It requires at least <span className="text-xl font-black"> 1 </span> node to deploy pigsty,
 You can prepare more and setup everything in [one-pass](/docs/admin/playbook#deployment), or add them later.
@@ -99,16 +99,16 @@ and use `/data1`, `/data2`, `/dataN` for extra disk drivers.
 
 If you are mounting it elsewhere, you'll have to change the following parameters accordingly:
 
-| Name | Description | Default |
-|------|-------------|---------|
-| [`node_data`](/docs/node/param#node_data_dir) | node main data directory | `/data` |
-| [`pg_fs_main`](/docs/pgsql/param#pg_fs_main) | postgres main data directory | `/data` |
-| [`pg_fs_bkup`](/docs/pgsql/param#pg_fs_bkup) | postgres backup data directory | `/data/backups` |
-| [`etcd_data`](/docs/etcd/param#etcd_data) | etcd data directory | `/data/etcd` |
-| [`prometheus_data`](/docs/infra/param#prometheus_data) | prometheus data directory | `/data/prometheus` |
-| [`loki_data`](/docs/infra/param#loki_data) | loki data directory | `/data/loki` |
-| [`minio_data`](/docs/minio/param#minio_data) | minio data directory | `/data/minio` |
-| [`redis_data`](/docs/redis/param#redis_data) | redis data directory | `/data/redis` |
+| Name                                                   | Description                    | Default            |
+|--------------------------------------------------------|--------------------------------|--------------------|
+| [`node_data`](/docs/node/param#node_data_dir)          | node main data directory       | `/data`            |
+| [`pg_fs_main`](/docs/pgsql/param#pg_fs_main)           | postgres main data directory   | `/data`            |
+| [`pg_fs_bkup`](/docs/pgsql/param#pg_fs_bkup)           | postgres backup data directory | `/data/backups`    |
+| [`etcd_data`](/docs/etcd/param#etcd_data)              | etcd data directory            | `/data/etcd`       |
+| [`prometheus_data`](/docs/infra/param#prometheus_data) | prometheus data directory      | `/data/prometheus` |
+| [`loki_data`](/docs/infra/param#loki_data)             | loki data directory            | `/data/loki`       |
+| [`minio_data`](/docs/minio/param#minio_data)           | minio data directory           | `/data/minio`      |
+| [`redis_data`](/docs/redis/param#redis_data)           | redis data directory           | `/data/redis`      |
 
 </Callout>
 
@@ -153,8 +153,8 @@ which does not require Internet access in this case.
 Pigsty supports optional L2 VIP for NODE clusters (`keepalived`) and PGSQL clusters (`vip-manager`).
 
 To use L2 VIP features, You have to explicitly assign an L2 VIP for them. 
-It's not a big deal when running on your own hardwares,
-but may become an issue when working in public cloud environment.
+It's not a big deal when running on your own hardware,
+but may become an issue when working in a public cloud environment.
 
 
 

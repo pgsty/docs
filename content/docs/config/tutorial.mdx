@@ -177,7 +177,12 @@ all:
     infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
     etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
     pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
-    pg-test: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: replica } }, vars: { pg_cluster: pg-test } }
+    pg-test:
+      hosts:
+        10.10.10.11: { pg_seq: 1, pg_role: primary }
+        10.10.10.12: { pg_seq: 2, pg_role: replica  }
+        10.10.10.13: { pg_seq: 3, pg_role: replica  }
+      vars: { pg_cluster: pg-test }
   vars:
     admin_ip: 10.10.10.10
 ```

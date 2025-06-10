@@ -44,14 +44,14 @@ Common nodes form the backbone of your Pigsty-managed infrastructure. These are 
 
 Every common node includes these essential services:
 
-| Component | Port | Description | Status |
-|:---------:|:----:|-------------|--------|
-| **Node Exporter** | 9100 | System metrics collection for monitoring | Enabled |
-| **HAProxy Admin** | 9101 | Load balancer management interface | Enabled |
-| **Promtail** | 9080 | Log aggregation and forwarding agent | Enabled |
-| **Docker Daemon** | 9323 | Container runtime (when containerization is needed) | *Optional* |
-| **Keepalived** | - | L2 VIP management for high availability | *Optional* |
-| **Keepalived Exporter** | 9650 | VIP status monitoring | *Optional* |
+|        Component        | Port | Description                                         | Status     |
+|:-----------------------:|:----:|-----------------------------------------------------|------------|
+|    **Node Exporter**    | 9100 | System metrics collection for monitoring            | Enabled    |
+|    **HAProxy Admin**    | 9101 | Load balancer management interface                  | Enabled    |
+|      **Promtail**       | 9080 | Log aggregation and forwarding agent                | Enabled    |
+|    **Docker Daemon**    | 9323 | Container runtime (when containerization is needed) | *Optional* |
+|     **Keepalived**      |  -   | L2 VIP management for high availability             | *Optional* |
+| **Keepalived Exporter** | 9650 | VIP status monitoring                               | *Optional* |
 
 ### Key Features
 
@@ -107,19 +107,19 @@ Since the admin node has privileged access to your entire infrastructure:
 
 Infra nodes run essential infrastructure components:
 
-| Component | Port | Domain | Description |
-|:---------:|:----:|:------:|-------------|
-| **Nginx** | 80 | `h.pigsty` | Web portal and package repository |
-| **AlertManager** | 9093 | `a.pigsty` | Alert aggregation and notification routing |
-| **Prometheus** | 9090 | `p.pigsty` | Metrics collection and time-series database |
-| **Grafana** | 3000 | `g.pigsty` | Visualization and dashboard platform |
-| **Loki** | 3100 | - | Centralized log aggregation and querying |
-| **PushGateway** | 9091 | - | Metrics collection for batch jobs |
-| **Blackbox Exporter** | 9115 | - | Network and service health probing |
-| **Dnsmasq** | 53 | - | DNS resolution and service discovery |
-| **Chronyd** | 123 | - | Network time synchronization |
-| **PostgreSQL** | 5432 | - | Configuration database (CMDB) |
-| **Ansible** | - | - | Infrastructure automation engine |
+|       Component       | Port |   Domain   | Description                                 |
+|:---------------------:|:----:|:----------:|---------------------------------------------|
+|       **Nginx**       |  80  | `h.pigsty` | Web portal and package repository           |
+|   **AlertManager**    | 9093 | `a.pigsty` | Alert aggregation and notification routing  |
+|    **Prometheus**     | 9090 | `p.pigsty` | Metrics collection and time-series database |
+|      **Grafana**      | 3000 | `g.pigsty` | Visualization and dashboard platform        |
+|       **Loki**        | 3100 |     -      | Centralized log aggregation and querying    |
+|    **PushGateway**    | 9091 |     -      | Metrics collection for batch jobs           |
+| **Blackbox Exporter** | 9115 |     -      | Network and service health probing          |
+|      **Dnsmasq**      |  53  |     -      | DNS resolution and service discovery        |
+|      **Chronyd**      | 123  |     -      | Network time synchronization                |
+|    **PostgreSQL**     | 5432 |     -      | Configuration database (CMDB)               |
+|      **Ansible**      |  -   |     -      | Infrastructure automation engine            |
 
 ### Deployment Patterns
 
@@ -160,39 +160,39 @@ PGSQL nodes can inherit their identity from their PostgreSQL instances when [`no
 
 Each PGSQL node runs a comprehensive PostgreSQL stack:
 
-| Component | Port | Description | Status |
-|:---------:|:----:|-------------|--------|
-| **PostgreSQL** | 5432 | Primary database engine | Enabled |
-| **Pgbouncer** | 6432 | Connection pooling and management | Enabled |
-| **Patroni** | 8008 | High availability and cluster management | Enabled |
-| **HAProxy Primary** | 5433 | Read/write connection routing | Enabled |
-| **HAProxy Replica** | 5434 | Read-only connection routing | Enabled |
-| **HAProxy Default** | 5436 | Direct primary connection | Enabled |
-| **HAProxy Offline** | 5438 | Offline/maintenance connection | Enabled |
-| **HAProxy Services** | 543x | Custom service definitions | On Demand |
+|      Component       | Port | Description                              | Status    |
+|:--------------------:|:----:|------------------------------------------|-----------|
+|    **PostgreSQL**    | 5432 | Primary database engine                  | Enabled   |
+|    **Pgbouncer**     | 6432 | Connection pooling and management        | Enabled   |
+|     **Patroni**      | 8008 | High availability and cluster management | Enabled   |
+| **HAProxy Primary**  | 5433 | Read/write connection routing            | Enabled   |
+| **HAProxy Replica**  | 5434 | Read-only connection routing             | Enabled   |
+| **HAProxy Default**  | 5436 | Direct primary connection                | Enabled   |
+| **HAProxy Offline**  | 5438 | Offline/maintenance connection           | Enabled   |
+| **HAProxy Services** | 543x | Custom service definitions               | On Demand |
 
 ### Monitoring Stack
 
 PGSQL nodes include specialized monitoring for database workloads:
 
-| Component | Port | Description | Status |
-|:---------:|:----:|-------------|--------|
-| **PG Exporter** | 9630 | PostgreSQL metrics and performance data | Enabled |
-| **PGBouncer Exporter** | 9631 | Connection pool metrics and statistics | Enabled |
-| **Node Exporter** | 9100 | System-level metrics and OS monitoring | Enabled |
-| **HAProxy Admin** | 9101 | Load balancer statistics and management | Enabled |
-| **Promtail** | 9080 | Database log collection and forwarding | Enabled |
+|       Component        | Port | Description                             | Status  |
+|:----------------------:|:----:|-----------------------------------------|---------|
+|    **PG Exporter**     | 9630 | PostgreSQL metrics and performance data | Enabled |
+| **PGBouncer Exporter** | 9631 | Connection pool metrics and statistics  | Enabled |
+|   **Node Exporter**    | 9100 | System-level metrics and OS monitoring  | Enabled |
+|   **HAProxy Admin**    | 9101 | Load balancer statistics and management | Enabled |
+|      **Promtail**      | 9080 | Database log collection and forwarding  | Enabled |
 
 ### Optional Components
 
 Additional services can be enabled based on requirements:
 
-| Component | Port | Description | Status |
-|:---------:|:----:|-------------|--------|
-| **Docker Daemon** | 9323 | Container runtime for additional services | Optional |
-| **vip-manager** | - | Automatic VIP binding for primary instances | Optional |
-| **Keepalived** | - | L2 VIP management for cluster failover | Optional |
-| **Keepalived Exporter** | 9650 | VIP monitoring and status reporting | Optional |
+|        Component        | Port | Description                                 | Status   |
+|:-----------------------:|:----:|---------------------------------------------|----------|
+|    **Docker Daemon**    | 9323 | Container runtime for additional services   | Optional |
+|     **vip-manager**     |  -   | Automatic VIP binding for primary instances | Optional |
+|     **Keepalived**      |  -   | L2 VIP management for cluster failover      | Optional |
+| **Keepalived Exporter** | 9650 | VIP monitoring and status reporting         | Optional |
 
 ### Architecture Benefits
 

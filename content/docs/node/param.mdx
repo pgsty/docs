@@ -1,15 +1,10 @@
 ---
 title: Parameter
-description:  64 parameters to customize node
+description: 65 parameters to customize node
 icon: Variable
 ---
 
-
-# Parameter
-
-There are 64 parameters to customize node, monitor agent and haproxy load balancer
-
-There are 10 sections, 66 parameters in the `NODE` module.
+There are 10 sections, 65 parameters in the `NODE` module.
 
 - [`NODE_ID`](#node_id) : Node identity parameters
 - [`NODE_DNS`](#node_dns) : Node Domain Name Resolution
@@ -278,7 +273,7 @@ This section is about upstream yum repos & packages to be installed.
 ```yaml
 node_repo_modules: local          # upstream repo to be added on node, local by default
 node_repo_remove: true            # remove existing repo on node?
-node_packages: [openssh-server]   # packages to be installed current nodes with latest version
+node_packages: [openssh-server]   # packages to be installed current nodes with the latest version
 #node_default_packages: []        # default packages to be installed on infra nodes, (defaults are load from node_id/vars)
 ```
 
@@ -314,7 +309,8 @@ Each element is a comma-separated list of package names, which will be installed
 
 Packages specified in this parameter will be **upgraded** to the latest version, and the default value is `[openssh-server]`, which will upgrade `sshd` by default to avoid SSH CVE.
 
-This parameters is usually used to install additional software packages that is ad hoc for the current node/cluster.
+This parameter is usually used to install additional software packages that are ad hoc for the current node/cluster.
+
 
 ------
 
@@ -326,7 +322,7 @@ default packages to be installed on all nodes, the default values is not defined
 
 This param is an array os strings, each string is a comma-separated list of package names, which will be installed on all nodes by default.
 
-This param **DOES NOT** have a default value, you can specify it explicitly, or leaving it empty if you want to use the default values.
+This param **DOES NOT** have a default value, you can specify it explicitly, or leave it empty if you want to use the default values.
 
 When leaving it empty, Pigsty will use the default values from the `node_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
 

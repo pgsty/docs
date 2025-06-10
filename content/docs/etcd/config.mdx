@@ -8,9 +8,9 @@ You have to define the etcd cluster in the [config inventory](/docs/config/inven
 
 Usually you can choose an etcd cluster with:
 
-- [One Node](#one-node), no high availability, just the functionality of etcd, suitable for development, testing, demonstration.
-- [Three Nodes](#three-nodes), basic high availability, tolerate one node failure, suitable for medium production environment.
-- [Five Nodes](#five-nodes), better high availability, tolerate two node failure, suitable for large production environment.
+- [One Node](#one-node), no high availability, just the functionality of etcd, suitable for dev, test & demo purpose.
+- [Three Nodes](#three-nodes), basic high availability, tolerate one node failure, suitable for medium production env.
+- [Five Nodes](#five-nodes), better high availability, tolerate two-node failure, suitable for large production env.
 
 Use even number of etcd nodes is meaningless, and more than five nodes is not common.
 
@@ -37,7 +37,7 @@ The only necessary parameters are [`etcd_seq`](/docs/etcd/param#etcd_seq) and [`
 
 ## Three Nodes
 
-It’s common to use a three-node etcd cluster, which can tolerate one node failure, suitable for medium prod env.
+Three-node etcd cluster is quite common, which tolerate one-node failure, suitable for most cases.
 
 The [`trio`](/docs/conf/trio/) and [`safe`](/docs/conf/safe/) config templates use a three-node etcd cluster, as shown below:
 
@@ -46,7 +46,7 @@ etcd: # dcs service for postgres/patroni ha consensus
   hosts:  # 1 node for testing, 3 or 5 for production
     10.10.10.10: { etcd_seq: 1 }  # etcd_seq required
     10.10.10.11: { etcd_seq: 2 }  # assign from 1 ~ n
-    10.10.10.12: { etcd_seq: 3 }  # odd number please
+    10.10.10.12: { etcd_seq: 3 }  # use odd numbers
   vars: # cluster level parameter override roles/etcd
     etcd_cluster: etcd  # mark etcd cluster name etcd
     etcd_safeguard: false # safeguard against purging
@@ -74,8 +74,13 @@ etcd:
   vars: { etcd_cluster: etcd    }
 ```
 
-You can use more nodes for production environment, but 3 or 5 nodes are recommended. Remember to use odd number for cluster size.
+You can use even more nodes, but 3 or 5 nodes are recommended.
 
+<Callout title="">
+
+    Use odd number for cluster size, like 1, 3, 5, 7, ...
+
+</Callout>
 
 
 ------

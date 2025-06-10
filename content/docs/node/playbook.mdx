@@ -4,18 +4,13 @@ description: Automate node lifecycle management with Ansible playbooks
 icon: ScrollText
 ---
 
-# Node Playbooks
+Pigsty provides two playbooks for node management:
 
-Pigsty provides two primary Ansible playbooks for complete node lifecycle management: **initialization** and **removal**. These playbooks encapsulate years of operational experience into automated, idempotent procedures that ensure consistent and reliable node management.
+| Playbook                         | Purpose                 | Usage                       | Scope                  |
+|----------------------------------|-------------------------|-----------------------------|------------------------|
+| **[`node.yml`](#nodeyml)**       | Add node to pigsty      | `./node.yml -l <target>`    | Single node or cluster |
+| **[`node-rm.yml`](#node-rmyml)** | remove node from pigsty | `./node-rm.yml -l <target>` | Single node or cluster |
 
-## Playbook Overview
-
-| Playbook | Purpose | Usage | Scope |
-|----------|---------|-------|-------|
-| **[`node.yml`](#nodeyml)** | Node initialization and configuration | `./node.yml -l <target>` | Single node or cluster |
-| **[`node-rm.yml`](#node-rmyml)** | Clean node removal | `./node-rm.yml -l <target>` | Single node or cluster |
-
-Both playbooks support flexible targeting through Ansible's inventory selectors, allowing operation on individual nodes, entire clusters, or custom groups.
 
 ------
 
@@ -23,65 +18,52 @@ Both playbooks support flexible targeting through Ansible's inventory selectors,
 
 The **[`node.yml`](https://github.com/pgsty/pigsty/blob/main/node.yml)** playbook transforms bare computing resources into fully configured, monitored, and service-ready nodes within your Pigsty infrastructure. This comprehensive automation handles everything from basic OS configuration to advanced monitoring setup.
 
-### Execution Roles
-
-The playbook orchestrates four primary roles in sequence:
-
-1. **`node_id`**: Generate and establish node identity
-2. **`node`**: Configure system-level settings and optimization  
-3. **`haproxy`**: Deploy and configure load balancer services
-4. **`node_monitor`**: Setup monitoring and observability stack
-
-### Comprehensive Task Execution
-
-The playbook executes over 30 discrete tasks organized into logical phases:
-
-#### **Phase 1: Identity & Networking**
-- `node-id`: Generate unique node identity and naming
-- `node_name`: Configure hostname and system identification
-- `node_hosts`: Setup `/etc/hosts` records for service discovery
-- `node_resolv`: Configure DNS resolution and nameservers
-
-#### **Phase 2: Security & System Hardening**
-- `node_firewall`: Configure firewall rules and SELinux policies
-- `node_ca`: Install and trust CA certificates
-- `node_admin`: Create admin users and distribute SSH keys
-
-#### **Phase 3: Package Management & Repositories**
-- `node_repo`: Add upstream package repositories
-- `node_pkg`: Install essential system packages
-
-#### **Phase 4: System Optimization**
-- `node_feature`: Configure NUMA, GRUB, and static networking
-- `node_kernel`: Load required kernel modules
-- `node_tune`: Apply performance tuning profiles
-- `node_sysctl`: Set additional kernel parameters
-- `node_ulimit`: Configure resource limits
-- `node_profile`: Install system-wide shell profiles
-
-#### **Phase 5: Infrastructure Services**
-- `node_data`: Setup primary data directories
-- `node_timezone`: Configure system timezone
-- `node_ntp`: Setup NTP time synchronization
-- `node_crontab`: Install scheduled tasks
-
-#### **Phase 6: High Availability (Optional)**
-- `node_vip`: Configure L2 VIP with Keepalived
-  - VIP installation and configuration
-  - Service launch and reload automation
-
-#### **Phase 7: Service Exposure**
-- `haproxy`: Deploy HAProxy load balancer
-  - Service installation and configuration
-  - Automatic service discovery integration
-  - Health check and monitoring setup
-
-#### **Phase 8: Monitoring & Observability**
-- `monitor`: Deploy comprehensive monitoring stack
-  - **Node Exporter**: System metrics collection
-  - **Promtail**: Log aggregation and forwarding
-  - **VIP Exporter**: High availability monitoring (when VIP enabled)
-  - **Service Registration**: Automatic Prometheus target registration
+```yaml
+node-id       : generate node identity
+node_name     : setup hostname
+node_hosts    : setup /etc/hosts records
+node_resolv   : setup dns resolver
+node_firewall : setup firewall & selinux
+node_ca       : add & trust ca certificate
+node_repo     : add upstream repo
+node_pkg      : install yum packages
+node_feature  : setup numa, grub, static network
+node_kernel   : enable kernel modules
+node_tune     : setup tuned profile
+node_sysctl   : setup additional sysctl parameters
+node_profile  : write /etc/profile.d/node.sh
+node_ulimit   : setup resource limits
+node_data     : setup main data dir
+node_admin    : setup admin user and ssh key
+node_timezone : setup timezone
+node_ntp      : setup ntp server/clients
+node_crontab  : add/overwrite crontab tasks
+node_vip      : setup optional l2 vrrp vip for node cluster
+  - vip_install
+  - vip_config
+  - vip_launch
+  - vip_reload
+haproxy       : setup haproxy on node to expose services
+  - haproxy_install
+  - haproxy_config
+  - haproxy_launch
+  - haproxy_reload
+monitor       : setup node_exporter & promtail for metrics & logs
+  - haproxy_register
+  - vip_dns
+  - node_exporter
+    - node_exporter_config
+    - node_exporter_launch
+  - vip_exporter
+    - vip_exporter_config
+    - vip_exporter_launch
+  - node_register
+  - promtail
+    - promtail_clean
+    - promtail_config
+    - promtail_install
+    - promtail_launch
+```
 
 [![asciicast](https://asciinema.org/a/568807.svg)](https://asciinema.org/a/568807)
 
@@ -91,147 +73,15 @@ The playbook executes over 30 discrete tasks organized into logical phases:
 
 The **[`node-rm.yml`](https://github.com/pgsty/pigsty/blob/main/node-rm.yml)** playbook performs clean, comprehensive removal of nodes from your Pigsty infrastructure. This automation ensures all services, configurations, and monitoring integrations are properly deregistered and cleaned up, preventing orphaned resources and maintaining system hygiene.
 
-### Removal Strategy
 
-The playbook follows a methodical **reverse-order teardown** approach, ensuring dependencies are handled correctly and no services are left in inconsistent states.
-
-### Cleanup Phases
-
-#### **Phase 1: Service Deregistration**
-- **Prometheus**: Remove monitoring targets and service discovery entries
-- **Nginx**: Clean up proxy records and HAProxy admin page references  
-- **DNS**: Remove service discovery entries and hostname records
-
-#### **Phase 2: High Availability Cleanup**
-- **Keepalived**: Stop VIP services and remove cluster configuration
-- **VIP Exporter**: Deregister and remove keepalived monitoring
-
-#### **Phase 3: Service Removal**
-- **HAProxy**: Stop load balancer and remove service configurations
-- **Node Exporter**: Remove system monitoring and metrics collection
-- **Promtail**: Stop log forwarding and remove Loki integration
-
-#### **Phase 4: System Cleanup**
-- **Profile Scripts**: Remove `/etc/profile.d/node.sh` and custom configurations
-- **Service Files**: Clean up systemd services and configuration files
-- **Temporary Files**: Remove runtime state and temporary artifacts
-
-### Safety Features
-
-- **Dependency Checking**: Validates removal order to prevent service disruptions
-- **Graceful Shutdown**: Services are stopped cleanly before removal
-- **Configuration Backup**: Critical configurations can be preserved before cleanup
-- **Rollback Protection**: Playbook can be safely interrupted and resumed
-
-### Usage Examples
-
-```bash
-# Remove a single node
-./node-rm.yml -l 10.10.10.100
-
-# Remove an entire node cluster
-./node-rm.yml -l <node_cls>
-
-# Selective removal (specific services only)
-./node-rm.yml -l target-nodes -t monitor,haproxy
+```yaml
+register       : remove register from prometheus & nginx
+  - prometheus : remove registered prometheus monitor target
+  - nginx      : remove nginx proxy record for haproxy admin
+vip            : remove node keepalived if enabled
+haproxy        : remove haproxy load balancer
+node_exporter  : remove monitoring exporter
+vip_exporter   : remove keepalived_exporter if enabled
+promtail       : remove loki log agent
+profile        : remove /etc/profile.d/node.sh
 ```
-
-------
-
-## Practical Examples
-
-### Common Playbook Patterns
-
-#### **Complete Node Initialization**
-```bash
-# Initialize a new node cluster
-./node.yml -l web-cluster
-
-# Initialize with custom parameters
-./node.yml -l 10.10.10.100 -e node_cluster=cache -e node_tune=oltp
-```
-
-#### **Selective Task Execution**
-```bash
-# Only setup monitoring stack
-./node.yml -l target-nodes -t monitor
-
-# Configure only HAProxy services
-./node.yml -l proxy-nodes -t haproxy
-
-# Update system tuning without reinstalling packages
-./node.yml -l all-nodes -t node_tune,node_sysctl
-```
-
-#### **High Availability Operations**
-```bash
-# Enable VIP for the first time
-./node.yml -l ha-cluster -t node_vip
-
-# Refresh VIP configuration (e.g., change master)
-./node.yml -l ha-cluster -t vip_config,vip_reload
-
-# Update HAProxy service definitions
-./node.yml -l lb-cluster -t haproxy_config,haproxy_reload
-```
-
-#### **Monitoring and Registration**
-```bash
-# Register nodes with Prometheus
-./node.yml -l new-nodes -t register_prometheus
-
-# Register HAProxy admin pages with Nginx
-./node.yml -l proxy-nodes -t register_nginx
-
-# Refresh all monitoring configurations
-./node.yml -l all -t monitor
-```
-
-### Advanced Use Cases
-
-#### **Rolling Updates**
-```bash
-# Update nodes one by one to minimize service impact
-for node in 10.10.10.{11..13}; do
-    ./node.yml -l $node
-    sleep 30  # Allow time for service stabilization
-done
-```
-
-#### **Configuration Validation**
-```bash
-# Dry-run to validate configuration changes
-./node.yml -l target-cluster --check --diff
-
-# Test specific tasks without making changes
-./node.yml -l test-node -t node_tune --check
-```
-
-#### **Emergency Operations**
-```bash
-# Quick security hardening
-./node.yml -l compromised-nodes -t node_firewall,node_admin
-
-# Rapid monitoring deployment for new infrastructure
-./node.yml -l emergency-nodes -t node_exporter,promtail
-
-# Force configuration refresh
-./node.yml -l problematic-nodes --force-handlers
-```
-
-### Performance Considerations
-
-- **Parallel Execution**: Use `-f <number>` to control concurrency
-- **Targeted Updates**: Always use specific tags to avoid unnecessary operations  
-- **Batch Processing**: Group similar nodes for efficient playbook execution
-- **Resource Monitoring**: Monitor system resources during large-scale deployments
-
-### Best Practices
-
-1. **Always use version control** for inventory and configuration changes
-2. **Test in development** before applying to production environments
-3. **Monitor deployment progress** using the built-in logging and progress indicators
-4. **Maintain rollback plans** for critical infrastructure changes
-5. **Document customizations** and parameter overrides for operational clarity
-
-------

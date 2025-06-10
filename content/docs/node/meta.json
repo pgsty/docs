@@ -4,7 +4,7 @@
   "icon": "Server",
   "root": false,
   "pages": [
-    "concept",
+    "arch",
     "config",
     "param",
     "admin",
