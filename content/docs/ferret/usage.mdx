@@ -1,0 +1,107 @@
+---
+title: Usage
+description: Connect to FerretDB with client tools
+icon: Rocket
+---
+
+
+
+## Install Client Tools
+
+You can use MongoDB’s command-line tool [MongoSH](https://www.mongodb.com/docs/mongodb-shell/) to access FerretDB.
+
+Use the `pig` command to add MongoDB repository, then install `mongosh` using `yum` or `apt`:
+
+```bash
+pig repo add mongo -u
+yum install mongodb-mongosh
+apt install mongodb-mongosh
+```
+
+------
+
+## Connect to FerretDB
+
+You can access FerretDB using MongoDB connection strings with any MongoDB driver in any language. Here’s an example using the `mongosh` CLI tool:
+
+```bash
+$ mongosh
+Current Mongosh Log ID:	67ba8c1fe551f042bf51e943
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.4.0
+Using MongoDB:		7.0.77
+Using Mongosh:		2.4.0
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+test>
+```
+
+
+
+------
+
+## Authentication
+
+You can log in with different users. See [FerretDB: Authentication](https://docs.ferretdb.io/security/authentication/) for details.
+
+```bash
+mongosh 'mongodb://dbuser_meta:DBUser.Meta@10.10.10.10:27017/meta'      # Business admin user
+mongosh 'mongodb://dbuser_view:DBUser.Viewer@10.10.10.10:27017/meta'    # Read-only user
+```
+
+
+
+------
+
+## Quick Start
+
+You can connect to FerretDB and use it as if it were a MongoDB cluster.
+
+```bash
+$ mongosh 'mongodb://dbuser_meta:DBUser.Meta@10.10.10.10:27017/meta'
+```
+
+MongoDB commands are translated to `SQL` and executed in the underlying PostgreSQL:
+
+```bash
+use test                            // CREATE SCHEMA test;
+db.dropDatabase();                  // DROP SCHEMA test;
+db.createCollection('posts');       // CREATE TABLE posts(_data JSONB,...)
+db.posts.insertOne({                // INSERT INTO posts VALUES(...);
+    title: 'Post One',body: 'Body of post one',category: 'News',tags: ['news', 'events'],
+    user: {name: 'John Doe',status: 'author'},date: Date()}
+);
+db.posts.find().limit(2).pretty();  // SELECT * FROM posts LIMIT 2;
+db.posts.createIndex({ title: 1 })  // CREATE INDEX ON posts(_data->>'title');
+```
+
+If you’re not familiar with MongoDB, here’s a quick tutorial that works with FerretDB: [Perform CRUD Operations with MongoDB Shell](https://www.mongodb.com/docs/ferretdb-shell/crud/)
+
+To generate sample workload, you can use this simple test script with `mongosh`:
+
+```bash
+cat > benchmark.js <<'EOF'
+const coll = "testColl";
+const numDocs = 1000;
+
+for (let i = 0; i < numDocs; i++) {  // insert
+  db.getCollection(coll).insertOne({ num: i, name: "MongoDB Benchmark Test" });
+}
+
+for (let i = 0; i < numDocs; i++) {  // select
+  db.getCollection(coll).find({ num: i });
+}
+
+for (let i = 0; i < numDocs; i++) {  // update
+  db.getCollection(coll).updateOne({ num: i }, { $set: { name: "Updated" } });
+}
+
+for (let i = 0; i < numDocs; i++) {  // delete
+  db.getCollection(coll).deleteOne({ num: i });
+}
+EOF
+
+mongosh 'mongodb://dbuser_meta:DBUser.Meta@10.10.10.10:27017' benchmark.js
+```
+
+You can check FerretDB’s [supported MongoDB commands](https://docs.ferretdb.io/reference/supported-commands/) and [known differences](https://docs.ferretdb.io/diff/). For basic usage, these differences are usually not significant.

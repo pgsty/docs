@@ -1,5 +1,5 @@
 ---
-title: Admin
+title: Administration
 description: run administrative tasks
 icon: Wrench
 ---
@@ -23,13 +23,15 @@ Here are some common administration tasks for Redis. Check [FAQ: Redis](/docs/re
 ./redis.yml -l 10.10.10.11 -e redis_port=6379 -t redis
 ```
 
-You can also use wrapper script:
+You can also use the wrapper script:
 
 ```bash
 bin/redis-add redis-ms          # create redis cluster 'redis-ms'
 bin/redis-add 10.10.10.10       # create redis node '10.10.10.10'
 bin/redis-add 10.10.10.10 6379  # create redis instance '10.10.10.10:6379'
 ```
+
+
 
 ------
 
@@ -51,7 +53,7 @@ redis-rm.yml -l 10.10.10.13
 redis-rm.yml -l 10.10.10.13 -e redis_port=6379
 ```
 
-You can also use wrapper script:
+You can also use the wrapper script:
 
 ```bash
 bin/redis-rm redis-ms          # remove redis cluster 'redis-ms'
@@ -59,9 +61,11 @@ bin/redis-rm 10.10.10.10       # remove redis node '10.10.10.10'
 bin/redis-rm 10.10.10.10 6379  # remove redis instance '10.10.10.10:6379'
 ```
 
+
+
 ------
 
-## Reconfigure Redis
+## Reload Redis
 
 You can partially run [`redis.yml`](/docs/redis/playbook/#redisyml) tasks to re-configure redis.
 
@@ -69,11 +73,14 @@ You can partially run [`redis.yml`](/docs/redis/playbook/#redisyml) tasks to re-
 ./redis.yml -l <cluster> -t redis_config,redis_launch
 ```
 
-Beware that redis can not be reload online, you have to restart redis to make config effective.
+Beware that redis cannot be reloaded online; you have to restart redis to make config effective.
+
+
+
 
 ------
 
-## Use Redis Client Tools
+## Use Redis CLI
 
 Access redis instance with `redis-cli`:
 
@@ -93,9 +100,11 @@ Redis also has a `redis-benchmark` which can be used for benchmark and generate 
 redis-benchmark -h 10.10.10.13 -p 6379
 ```
 
+
+
 ------
 
-## Configure Redis Replica
+## Replicate Redis
 
 https://redis.io/commands/replicaof/
 
@@ -109,9 +118,11 @@ https://redis.io/commands/replicaof/
 "OK"
 ```
 
+
+
 ------
 
-## Configure HA with Sentinel
+## HA with Sentinel
 
 You have to enable HA for redis standalone m-s cluster manually with your redis sentinel.
 
@@ -134,7 +145,7 @@ redis_sentinel_monitor: # primary list for redis sentinel, use cls as name, prim
   - { name: redis-dst, host: 10.10.10.48, port: 6379 ,password: redis.dst, quorum: 1 }
 ```
 
-And refresh master list on sentinel cluster with:
+And refresh the master list on sentinel cluster with:
 
 ```bash
 ./redis.yml -l redis-meta -t redis-ha   # replace redis-meta if your sentinel cluster has different name

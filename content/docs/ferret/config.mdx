@@ -1,0 +1,89 @@
+---
+title: Configure
+description: describe the ferret cluster you want
+icon: CodeXml
+---
+
+
+## FerretDB Cluster
+
+Before deploying a Mongo (FerretDB) cluster, you need to define it in the inventory using the relevant [parameters](https://pigsty.io/docs/ferret/config/#parameters).
+
+The following example uses the default single-node `pg-meta` cluster’s `meta` database as FerretDB’s underlying storage:
+
+```yaml
+all:
+  children:
+
+    #----------------------------------#
+    # ferretdb for mongodb on postgresql
+    #----------------------------------#
+    # ./mongo.yml -l ferret
+    ferret:
+      hosts:
+        10.10.10.10: { mongo_seq: 1 }
+      vars:
+        mongo_cluster: ferret
+        mongo_pgurl: 'postgres://mongod:DBUser.Mongo@10.10.10.10:5432/meta'
+```
+
+Here, `mongo_cluster` and `mongo_seq` are essential identity parameters. For FerretDB, `mongo_pgurl` is also required to specify the underlying PG location.
+
+Note that the `mongo_pgurl` parameter requires a PostgreSQL **superuser**. In this example, a dedicated `mongod` superuser is defined for FerretDB.
+
+Note that FerretDB’s [authentication](https://docs.ferretdb.io/security/authentication/) is entirely based on PostgreSQL. You can create other regular users using either FerretDB or PostgreSQL.
+
+------
+
+## PostgreSQL Cluster
+
+FerretDB 2.0+ requires an extension: [DocumentDB](https://pigsty.io/ext/sim/documentdb/), which depends on several other extensions. Here’s a template for creating a PostgreSQL cluster for FerretDB:
+
+```yaml
+all:
+  children:
+
+    #----------------------------------#
+    # pgsql (singleton on current node)
+    #----------------------------------#
+    # postgres cluster: pg-meta
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - { name: mongod      ,password: DBUser.Mongo  ,pgbouncer: true ,roles: [dbrole_admin ] ,superuser: true ,comment: ferretdb super user }
+          - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
+          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
+        pg_databases:
+          - {name: meta, owner: mongod ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [ documentdb, postgis, vector, pg_cron, rum ]}
+        pg_hba_rules:
+          - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+          - { user: mongod      , db: all ,addr: world ,auth: pwd ,title: 'mongodb password access from everywhere' }
+        pg_extensions:
+          - documentdb, citus, postgis, pgvector, pg_cron, rum
+        pg_parameters:
+          cron.database_name: meta
+        pg_libs: 'pg_documentdb, pg_documentdb_core, pg_cron, pg_stat_statements, auto_explain'  # add timescaledb to shared_preload_libraries
+```
+
+------
+
+## High Availability
+
+You can use [Services](https://pigsty.io/docs/concept/svc/) to connect to a highly available PostgreSQL cluster and deploy multiple FerretDB instance replicas with L2 VIP binding for FerretDB layer high availability.
+
+```yaml
+ferret:
+  hosts:
+    10.10.10.45: { mongo_seq: 1 }
+    10.10.10.46: { mongo_seq: 2 }
+    10.10.10.47: { mongo_seq: 3 }
+  vars:
+    mongo_cluster: ferret
+    mongo_pgurl: 'postgres://mongod:DBUser.Mongo@10.10.10.3:5436/test'
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.99
+    vip_interface: eth1
+```

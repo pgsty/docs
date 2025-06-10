@@ -1,16 +1,20 @@
 ---
-title: Config
+title: Configure
 description: describe the redis cluster you want
 icon: CodeXml
 ---
 
-The entity model of Redis is almost the same as that of [PostgreSQL](/docs/pgsql/cluster), which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
+The entity model of Redis is almost the same as that of [PostgreSQL](/docs/pgsql/cluster),
+which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
 
-The core difference between the REDIS module and the [PGSQL](/docs/pgsql/) module is that Redis uses a **single-node multi-instance** deployment rather than the 1:1 deployment: multiple Redis instances are typically deployed on a physical/virtual machine node to utilize multi-core CPUs fully. Therefore, the ways to [configure](/docs/redis/config/#configuration) and [administer](/docs/redis/config/#administration) Redis instances are slightly different from PGSQL.
+The core difference between the REDIS module and the [PGSQL](/docs/pgsql/) module is that Redis uses a **single-node multi-instance** deployment rather than the 1:1 deployment:
+multiple Redis instances are typically deployed on a physical/virtual machine node to utilize multicore CPUs fully.
+Therefore, the ways to [configure](/docs/redis/config/#configuration) and [administer](/docs/redis/config/#administration) Redis instances are slightly different from PGSQL.
 
-In Redis managed by Pigsty, nodes are entirely subordinate to the cluster, which means that currently, it is not allowed to deploy Redis instances of two different clusters on one node. However, this does not affect deploying multiple independent Redis primary replica instances on one node.
+In Redis managed by Pigsty, nodes are entirely subordinate to the cluster, which means that currently,
+it is not allowed to deploy Redis instances of two different clusters on one node.
+However, this does not affect deploying multiple independent Redis primary replica instances on one node.
 
-## Configuration
 
 ------
 
@@ -18,10 +22,10 @@ In Redis managed by Pigsty, nodes are entirely subordinate to the cluster, which
 
 Redis [**identity parameters**](/docs/redis/param#redis_id) are required parameters when defining a Redis cluster.
 
-|                             Name                             |          Attribute          |     Description      |          Example          |
-| :----------------------------------------------------------: | :-------------------------: | :------------------: | :-----------------------: |
-| [`redis_cluster`](/docs/redis/param#redis_cluster) | **REQUIRED**, cluster level |     cluster name     |       `redis-test`        |
-| [`redis_node`](/docs/redis/param#redis_node) |  **REQUIRED**, node level   | Node Sequence Number |          `1`,`2`          |
+|                          Name                          |          Attribute          |     Description      |          Example          |
+|:------------------------------------------------------:|:---------------------------:|:--------------------:|:-------------------------:|
+|   [`redis_cluster`](/docs/redis/param#redis_cluster)   | **REQUIRED**, cluster level |     cluster name     |       `redis-test`        |
+|      [`redis_node`](/docs/redis/param#redis_node)      |  **REQUIRED**, node level   | Node Sequence Number |          `1`,`2`          |
 | [`redis_instances`](/docs/redis/param#redis_instances) |  **REQUIRED**, node level   | Instance Definition  | `{ 6001 : {} ,6002 : {}}` |
 
 ------

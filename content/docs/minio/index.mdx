@@ -8,7 +8,7 @@ icon: Box
 [Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html): S3-Compatible Open-Source Multi-Cloud Object Storage designed to be scalable, secure, and handy.
 It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups. It's an [optional module](/docs/intro/module) in Pigsty.
 
-You can uses MinIO as an optional PostgreSQL [backup](/docs/pgsql/backup) storage repo, in addition to the default local posix FS repo. If the MinIO repo is used,
+You can use MinIO as an optional PostgreSQL [backup](/docs/pgsql/backup) storage repo, in addition to the default local posix FS repo. If the MinIO repo is used,
 the `MINIO` module should be installed before any [`PGSQL`](/docs/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it after [`NODE`](/docs/node/).
 
 --------
@@ -39,7 +39,7 @@ import {
     <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/minio/monitor"}>
         Dashboards, metrics, record & alerting rules.
     </Card>
-    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/minio/faq"}>
-        Frequently Asked Questions about minio module
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='Usage' href={"/docs/minio/usage"}>
+        How to use the mcli and configure backup repo
     </Card>
 </Cards>

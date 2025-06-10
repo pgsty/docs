@@ -9,11 +9,11 @@ There are two playbooks for redis:
 - [`redis.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml): create redis cluster / node / instance
 - [`redis-rm.yml`](https://github.com/pgsty/pigsty/blob/main/redis-rm.yml): remove redis cluster /node /instance
 
-### `redis.yml`
+## `redis.yml`
 
 The playbook [`redis.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml) will init redis cluster/node/instance:
 
-```bash
+```yaml
 redis_node        : init redis node
   - redis_install : install redis & redis_exporter
   - redis_user    : create os user redis
@@ -32,7 +32,7 @@ redis_join        : join redis cluster
 ```
 
 
-### `redis-rm.yml`
+## `redis-rm.yml`
 
 The playbook [`redis-rm.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml) will remove redis cluster/node/instance:
 

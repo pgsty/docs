@@ -1,0 +1,27 @@
+---
+title: Playbook
+description: Install ferretdb with playbooks
+icon: ScrollText
+---
+
+
+There's a built-in playbook [`mongo.yml`](https://github.com/pgsty/pigsty/blob/main/mongo.yml) for installing FerretDB on nodes.
+
+
+--------
+
+## `mongo.yml`
+
+[`mongo.yml`](https://github.com/pgsty/pigsty/blob/main/mongo.yml): Install MongoDB/FerretDB on the target host.
+
+This playbook consists of the following subtasks:
+
+- `mongo_check` : check mongo identity
+- `mongo_dbsu` : create os user mongod
+- `mongo_install` : install mongo/ferretdb rpm
+- `mongo_purge` : purge mongo/ferretdb
+- `mongo_config`: config mongo/ferretdb
+- `mongo_cert` : issue mongo/ferretdb ssl certs
+- `mongo_launch` : launch mongo/ferretdb service
+- `mongo_register` : register mongo/ferretdb to prometheus
+

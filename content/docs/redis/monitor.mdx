@@ -1,6 +1,6 @@
 ---
 title: Monitor
-description: redis monitor dashboards
+description: Redis monitoring dashboards and alerting rules
 icon: Telescope
 ---
 
@@ -30,12 +30,14 @@ There are three dashboards for [`REDIS`](/docs/redis/) module.
 
 There are 6 predefined alert rules for Redis, defined in [`files/prometheus/rules/redis.yml`](https://github.com/pgsty/pigsty/blob/main/files/prometheus/rules/redis.yml).
 
-- `RedisDown`：redis server is down
-- `RedisRejectConn`：redis instance reject connection
-- `RedisRTHigh`：redis instance response time is too high
-- `RedisCPUHigh`：redis instance CPU usage is too high
-- `RedisMemHigh`：redis instance memory usage is too high
-- `RedisQPSHigh`：redis instance QPS is too high
+| Name              | Description                              | Level        |
+|-------------------|------------------------------------------|--------------|
+| `RedisDown`       | Redis server is down                     | **Critical** |
+| `RedisRejectConn` | Redis instance rejects connection        | **Critical** |
+| `RedisRTHigh`     | Redis instance response time is too high | Warning      |
+| `RedisCPUHigh`    | Redis instance CPU usage is too high     | Warning      |
+| `RedisMemHigh`    | Redis instance memory usage is too high  | Warning      |
+| `RedisQPSHigh`    | Redis instance QPS is too high           | Warning      |
 
 ```yaml
 #==============================================================#

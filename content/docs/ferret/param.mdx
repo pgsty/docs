@@ -1,0 +1,132 @@
+---
+title: Parameter
+description: customize FerretDB with 9-parameter
+icon: Variable
+---
+
+There are 9 parameters in the [`FERRET`](/docs/ferret) module.
+
+| Parameter             |  Type  | Level | Comment                                      |
+|-----------------------|:------:|:-----:|----------------------------------------------|
+| `mongo_seq`           |  int   |   I   | mongo instance identifier, REQUIRED          |
+| `mongo_cluster`       | string |   C   | mongo cluster name, MONGO by default         |
+| `mongo_pgurl`         | pgurl  |  C/I  | underlying postgres URL for ferretdb         |
+| `mongo_ssl_enabled`   |  bool  |   C   | mongo/ferretdb ssl enabled, false by default |
+| `mongo_listen`        |   ip   |   C   | mongo listen address, empty for all addr     |
+| `mongo_port`          |  port  |   C   | mongo service port, 27017 by default         |
+| `mongo_ssl_port`      |  port  |   C   | mongo tls listen port, 27018 by default      |
+| `mongo_exporter_port` |  port  |   C   | mongo exporter port, 9216 by default         |
+| `mongo_extra_vars`    | string |   C   | extra environment variables for MONGO server |
+
+
+------
+
+## Defaults
+
+The default parameters are defined in [`roles/ferret/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/ferret/defaults/main.yml)
+
+```yaml
+# mongo_cluster:        #CLUSTER  # mongo cluster name, required identity parameter
+# mongo_seq: 0          #INSTANCE # mongo instance seq number, required identity parameter
+# mongo_pgurl: 'postgres:///'     # mongo/ferretdb underlying postgresql url, required
+mongo_ssl_enabled: false          # mongo/ferretdb ssl enabled, false by default
+mongo_listen: ''                  # mongo/ferretdb listen address, '' for all addr
+mongo_port: 27017                 # mongo/ferretdb listen port, 27017 by default
+mongo_ssl_port: 27018             # mongo/ferretdb tls listen port, 27018 by default
+mongo_exporter_port: 9216         # mongo/ferretdb exporter port, 9216 by default
+mongo_extra_vars: ''              # extra environment variables for mongo/ferretdb
+```
+
+------
+
+## `mongo_cluster`
+
+name: `mongo_cluster`, type: `string`, level: `C`
+
+mongo cluster name, required identity parameter.
+
+default value is `MONGO`, but you should define it explicitly for production use.
+
+Comply with regexp `[a-z][a-z0-9-]*`, it is recommended to use descriptive names and start with `mongo-`
+
+------
+
+## `mongo_seq`
+
+name: `mongo_seq`, type: `int`, level: `I`
+
+mongo instance sequence number, unique integer among mongo cluster is required
+
+You have to explicitly define the sequence number for each mongo instance. integer start from 0 or 1.
+
+------
+
+## `mongo_pgurl`
+
+name: `mongo_pgurl`, type: `pgurl`, level: `C/I`
+
+underlying postgres URL for ferretdb connection.
+
+no default value, you have to define it explicitly. This is the PostgreSQL database URL that FerretDB will use as its backend storage.
+
+Format: `postgres://username:password@host:port/database`
+
+------
+
+## `mongo_ssl_enabled`
+
+name: `mongo_ssl_enabled`, type: `bool`, level: `C`
+
+mongo/ferretdb ssl enabled flag.
+
+default value is `false`. Set to `true` to enable SSL/TLS encryption for mongo connections.
+
+------
+
+## `mongo_listen`
+
+name: `mongo_listen`, type: `ip`, level: `C`
+
+mongo listen address for binding.
+
+default value is empty string `''`, which means listen on all available addresses. You can specify a specific IP address to bind to.
+
+------
+
+## `mongo_port`
+
+name: `mongo_port`, type: `port`, level: `C`
+
+mongo service port for client connections.
+
+default value is `27017`, which is the standard MongoDB port. Change this if you need to avoid port conflicts.
+
+------
+
+## `mongo_ssl_port`
+
+name: `mongo_ssl_port`, type: `port`, level: `C`
+
+mongo tls listen port for encrypted connections.
+
+default value is `27018`. This port is used when SSL/TLS is enabled for secure connections.
+
+------
+
+## `mongo_exporter_port`
+
+name: `mongo_exporter_port`, type: `port`, level: `C`
+
+mongo exporter port for metrics collection.
+
+default value is `9216`. This port is used by the monitoring exporter to expose metrics for Prometheus.
+
+------
+
+## `mongo_extra_vars`
+
+name: `mongo_extra_vars`, type: `string`, level: `C`
+
+extra environment variables for MONGO server.
+
+default value is empty string `''`. You can specify additional environment variables that will be passed to the FerretDB process.
