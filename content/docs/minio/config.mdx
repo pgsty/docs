@@ -28,12 +28,12 @@ There’s one and only one core param for MinIO deployment, which is `MINIO_VOLU
 
 Pigsty will auto-generate `MINIO_VOLUMES` according to the config inventory for you, but you can always override it directly. If not explicitly specified, Pigsty will generate it according to the following rules:
 
-- SNSD: `MINIO_VOLUMES` is point to any dir on local node, from [`minio_data`](/docs/minio/param/#minio_data)
-- SNMD: `MINIO_VOLUMES` is point to a series of real driver on local node, from [`minio_data`](/docs/minio/param/#minio_data)
+- SNSD: `MINIO_VOLUMES` is point to any dir on local node, from [`minio_data`](/docs/minio/param#minio_data)
+- SNMD: `MINIO_VOLUMES` is point to a series of real driver on local node, from [`minio_data`](/docs/minio/param#minio_data)
 - MNMD: `MINIO_VOLUMES` is point to multiple node & multiple drivers, according to  `minio_data`  and  `minio_node`
 
-- Use [`minio_data`](/docs/minio/param/#minio_data) to specify drivers on each node, such as `/data{1...4}`
-- Use [`minio_node`](/docs/minio/param/#minio_node) to specify node name pattern, such as `${minio_cluster}-${minio_seq}.pigsty`
+- Use [`minio_data`](/docs/minio/param#minio_data) to specify drivers on each node, such as `/data{1...4}`
+- Use [`minio_node`](/docs/minio/param#minio_node) to specify node name pattern, such as `${minio_cluster}-${minio_seq}.pigsty`
 
 - Multi-Pool: `MINIO_VOLUMES` need to be explicitly specified
 
@@ -50,11 +50,11 @@ To define a singleton MinIO instance, it’s straightforward:
 minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 ```
 
-The only required params are [`minio_seq`](/docs/minio/param/#minio_seq) and [`minio_cluster`](/docs/minio/param/#minio_cluster), which generate a unique identity for each MinIO instance.
+The only required params are [`minio_seq`](/docs/minio/param#minio_seq) and [`minio_cluster`](/docs/minio/param#minio_cluster), which generate a unique identity for each MinIO instance.
 
-Single-Node Single-Driver mode is for dev purposes, so you can use a common dir as the data dir. The default data dir for SNSD minio is specified by [`minio_data`](/docs/minio/param/#minio_data), which is `/data/minio` by default. Beware that in multi-driver or multi-node mode, MinIO will refuse to start if using a common dir as the data dir rather than a mount point.
+Single-Node Single-Driver mode is for dev purposes, so you can use a common dir as the data dir. The default data dir for SNSD minio is specified by [`minio_data`](/docs/minio/param#minio_data), which is `/data/minio` by default. Beware that in multi-driver or multi-node mode, MinIO will refuse to start if using a common dir as the data dir rather than a mount point.
 
-We strongly recommend using a static domain name record to access MinIO. For example, the default `sss.pigsty` if [`minio_domain`](/docs/minio/param/#minio_domain) can be added to all nodes through:
+We strongly recommend using a static domain name record to access MinIO. For example, the default `sss.pigsty` if [`minio_domain`](/docs/minio/param#minio_domain) can be added to all nodes through:
 
 ```yaml
 node_etc_hosts: ["10.10.10.10 sss.pigsty"] # domain name to access minio from all nodes (required)
@@ -66,7 +66,7 @@ node_etc_hosts: ["10.10.10.10 sss.pigsty"] # domain name to access minio from al
 
 Reference: [deploy-minio-single-node-multi-drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-multi-drive.html)
 
-To use multiple disks on a single node, you have to specify the [`minio_data`](/docs/minio/param/#minio_data) in the format of `{{ prefix }}{x...y}`, which defines a series of disk mount points.
+To use multiple disks on a single node, you have to specify the [`minio_data`](/docs/minio/param#minio_data) in the format of `{{ prefix }}{x...y}`, which defines a series of disk mount points.
 
 ```yaml
 minio:
@@ -110,7 +110,7 @@ But it can do nothing with node failure, and you can’t add new nodes at runtim
 
 Reference: [deploy-minio-multi-node-multi-drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html)
 
-The extra [`minio_node`](/docs/minio/param/#minio_node) param will be used for a multi-node deployment in addition to the [`minio_data`](/docs/minio/param/#minio_data)
+The extra [`minio_node`](/docs/minio/param#minio_node) param will be used for a multi-node deployment in addition to the [`minio_data`](/docs/minio/param#minio_data)
 
 For example, this configuration defines a 4-node MinIO cluster with 4 drivers per node:
 
@@ -127,7 +127,7 @@ minio:
     minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio name pattern
 ```
 
-The [`minio_node`](/docs/minio/param/#minio_node) param specifies the MinIO node name pattern, which is `${minio_cluster}-${minio_seq}.pigsty` by default. The server name is very important for MinIO to identify and access other nodes in the cluster. It will be populated with `minio_cluster` and `minio_seq`, and write to `/etc/hosts` of all minio cluster members.
+The [`minio_node`](/docs/minio/param#minio_node) param specifies the MinIO node name pattern, which is `${minio_cluster}-${minio_seq}.pigsty` by default. The server name is very important for MinIO to identify and access other nodes in the cluster. It will be populated with `minio_cluster` and `minio_seq`, and write to `/etc/hosts` of all minio cluster members.
 
 In this case, the `MINIO_VOLUMES` will be set to `https://minio-{1...4}.pigsty/data{1...4}` to identify the 16 disks on 4 nodes.
 
@@ -135,11 +135,11 @@ In this case, the `MINIO_VOLUMES` will be set to `https://minio-{1...4}.pigsty/d
 
 ## Multi-Pool
 
-MinIO’s architecture allows for [cluster expansion](/docs/minio/admin/#expand-cluster) by adding new storage pools. In Pigsty, you can achieve this by explicitly specifying the [`minio_volumes`](/docs/minio/param/#minio_volumes) param to specify nodes/disks for each pool.
+MinIO’s architecture allows for [cluster expansion](/docs/minio/admin/#expand-cluster) by adding new storage pools. In Pigsty, you can achieve this by explicitly specifying the [`minio_volumes`](/docs/minio/param#minio_volumes) param to specify nodes/disks for each pool.
 
 For example, suppose you have already created a MinIO cluster as defined in the [Multi-Node Multi-Disk](/docs/minio/config/#multi-node-multi-drive) example, and now you want to add a new storage pool consisting of four nodes.
 
-You can specify [`minio_volumes`](/docs/minio/param/#minio_volumes) here to allocate nodes for each pool to scale out the cluster.
+You can specify [`minio_volumes`](/docs/minio/param#minio_volumes) here to allocate nodes for each pool to scale out the cluster.
 
 ```yaml
 minio:
@@ -203,9 +203,9 @@ Please note that by default, Pigsty allows only one MinIO cluster per deployment
 
 ## Expose Service
 
-MinIO will serve on port `9000` by default. If a multi-node MinIO cluster is deployed, you can access its service via any node. It would be better to expose MinIO service via a load balancer, such as the default [`haproxy`](/docs/node/param/#haproxy) on [`NODE`](/docs/node/), or use the L2 [vip](/docs/node/param/#node_vip).
+MinIO will serve on port `9000` by default. If a multi-node MinIO cluster is deployed, you can access its service via any node. It would be better to expose MinIO service via a load balancer, such as the default [`haproxy`](/docs/node/param#haproxy) on [`NODE`](/docs/node/), or use the L2 [vip](/docs/node/param#node_vip).
 
-To expose MinIO service with haproxy, you have to define an extra service with [`haproxy_services`](/docs/node/param/#haproxy_services):
+To expose MinIO service with haproxy, you have to define an extra service with [`haproxy_services`](/docs/node/param#haproxy_services):
 
 ```yaml
 minio:
@@ -236,7 +236,7 @@ MinIO uses port `9000` by default. A multi-node MinIO cluster can be accessed by
 
 Service access falls under the scope of the [NODE](/docs/node/) module, and we’ll provide only a basic introduction here.
 
-High-availability access to a multi-node MinIO cluster can be achieved using an L2 VIP or HAProxy. For example, you can use Keepalived to bind an L2 [VIP](/docs/node/param/#node_vip) to the MinIO cluster, or use the [`haproxy`](/docs/node/param/#haproxy) component provided by the [`NODE`](/docs/node/) module to expose MinIO services through a load balancer.
+High-availability access to a multi-node MinIO cluster can be achieved using an L2 VIP or HAProxy. For example, you can use Keepalived to bind an L2 [VIP](/docs/node/param#node_vip) to the MinIO cluster, or use the [`haproxy`](/docs/node/param#haproxy) component provided by the [`NODE`](/docs/node/) module to expose MinIO services through a load balancer.
 
 ```yaml
 # minio cluster with 4 nodes and 4 drivers per node
@@ -280,7 +280,7 @@ minio:
 
 In the configuration above, HAProxy is enabled on all nodes of the MinIO cluster, exposing MinIO services on port `9002`, and a Layer 2 VIP is bound to the cluster. When in use, users should point the `sss.pigsty` domain name to the VIP address `10.10.10.9` and access MinIO services using port `9002`. This ensures high availability, as the VIP will automatically switch to another node if any node fails.
 
-In this scenario, you may also need to globally modify the destination of domain name resolution and adjust the [`minio_endpoint`](/docs/minio/param/#minio_endpoint) parameter to change the endpoint address corresponding to the MinIO alias on the management node:
+In this scenario, you may also need to globally modify the destination of domain name resolution and adjust the [`minio_endpoint`](/docs/minio/param#minio_endpoint) parameter to change the endpoint address corresponding to the MinIO alias on the management node:
 
 ```yaml
 minio_endpoint: https://sss.pigsty:9002   # Override the default https://sss.pigsty:9000
@@ -355,7 +355,7 @@ minio_ha:
 
 ## Expose Console
 
-MinIO has a built-in console that can be accessed via HTTPS @ [`minio_admin_port`](/docs/minio/param/#minio_admin_port). If you want to expose the MinIO console to the outside world, you can add MinIO to [`infra_portal`](/docs/infra/param/#infra_portal).
+MinIO has a built-in console that can be accessed via HTTPS @ [`minio_admin_port`](/docs/minio/param#minio_admin_port). If you want to expose the MinIO console to the outside world, you can add MinIO to [`infra_portal`](/docs/infra/param#infra_portal).
 
 ```yaml
 # ./infra.yml -t nginx

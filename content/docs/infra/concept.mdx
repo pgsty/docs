@@ -26,7 +26,7 @@ A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module th
 
 - [Chronyd](/docs/infra/arch/#chronyd): NTP time synchronization to keep all nodes in sync
 
-The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/docs/install/minimal/) mode.
+The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/docs/install/minimal) mode.
 
 However, since INFRA provides essential supporting services for production-grade HA PostgreSQL clusters, it’s strongly recommended for most deployments.
 
@@ -38,17 +38,17 @@ If you already have your own infrastructure (Nginx, local repos, monitoring, DNS
 
 INFRA module includes these components with default ports and domains:
 
-|                          Component                           |   Port   | Default Domain | Description                |
-| :----------------------------------------------------------: | :------: | :------------: | -------------------------- |
-|      [Nginx](/docs/infra/arch/#nginx)       | `80/443` |   `h.pigsty`   | Web Portal & Package Repos |
-|    [Grafana](/docs/infra/arch/#grafana)     |  `3000`  |   `g.pigsty`   | Visualization Platform     |
-| [Prometheus](/docs/infra/arch/#prometheus)  |  `9090`  |   `p.pigsty`   | TSDB for Metrics           |
-| [AlertManager](/docs/infra/arch/#alertmanager) |  `9093`  |   `a.pigsty`   | Alert Management           |
-|      [Loki](/docs/infra/arch/#grafana)      |  `3100`  |       -        | Log Aggregation            |
-| [PushGateway](/docs/infra/arch/#pushgateway) |  `9091`  |       -        | One-off Metrics Collector  |
+|                        Component                        |   Port   | Default Domain | Description                |
+|:-------------------------------------------------------:|:--------:|:--------------:|----------------------------|
+|            [Nginx](/docs/infra/arch/#nginx)             | `80/443` |   `h.pigsty`   | Web Portal & Package Repos |
+|          [Grafana](/docs/infra/arch/#grafana)           |  `3000`  |   `g.pigsty`   | Visualization Platform     |
+|       [Prometheus](/docs/infra/arch/#prometheus)        |  `9090`  |   `p.pigsty`   | TSDB for Metrics           |
+|     [AlertManager](/docs/infra/arch/#alertmanager)      |  `9093`  |   `a.pigsty`   | Alert Management           |
+|            [Loki](/docs/infra/arch/#grafana)            |  `3100`  |       -        | Log Aggregation            |
+|      [PushGateway](/docs/infra/arch/#pushgateway)       |  `9091`  |       -        | One-off Metrics Collector  |
 | [BlackboxExporter](/docs/infra/arch/#blackbox-exporter) |  `9115`  |       -        | Blackbox Monitoring        |
-|    [DNSMasq](/docs/infra/arch/#dnsmasq)     |   `53`   |       -        | DNS Server                 |
-|    [Chronyd](/docs/infra/arch/#chronyd)     |  `123`   |       -        | NTP Server                 |
+|          [DNSMasq](/docs/infra/arch/#dnsmasq)           |   `53`   |       -        | DNS Server                 |
+|          [Chronyd](/docs/infra/arch/#chronyd)           |  `123`   |       -        | NTP Server                 |
 
 Here’s how components look in a full single-node Pigsty installation:
 
@@ -61,15 +61,15 @@ The [PGSQL](/docs/pgsql/) module relies on several [INFRA](/docs/infra/) service
 - DNS resolution via DNSMASQ for cluster/host domains
 - Pigsty itself uses direct IP connections to avoid DNS dependency
 - Software installation via Nginx’s local yum/apt repos
-- Users can specify [`repo_upstream`](/docs/infra/param/#repo_upstream) & [`node_repo_modules`](/docs/node/param/#node_repo_modules) to use internet/other repos
+- Users can specify [`repo_upstream`](/docs/infra/param#repo_upstream) & [`node_repo_modules`](/docs/node/param#node_repo_modules) to use internet/other repos
 - Metrics collection by Prometheus
-- Disabled when [`prometheus_enabled`](/docs/infra/param/#prometheus_enabled) is `false`
-- Log shipping to Loki via Promtail (only to [`infra_portal`](/docs/infra/param/#infra_portal) endpoint)
-- Disabled when [`loki_enabled`](/docs/infra/param/#loki_enabled) is `false`
+- Disabled when [`prometheus_enabled`](/docs/infra/param#prometheus_enabled) is `false`
+- Log shipping to Loki via Promtail (only to [`infra_portal`](/docs/infra/param#infra_portal) endpoint)
+- Disabled when [`loki_enabled`](/docs/infra/param#loki_enabled) is `false`
 - Time sync from INFRA/ADMIN’s NTP/Chronyd
 - INFRA nodes use public NTP servers
 - Other nodes sync from INFRA/ADMIN
-- Custom NTP servers configurable via [`node_ntp_servers`](/docs/node/param/#node_ntp_servers)
+- Custom NTP servers configurable via [`node_ntp_servers`](/docs/node/param#node_ntp_servers)
 - Patroni uses INFRA’s etcd as DCS (if no dedicated cluster)
 - pgBackRest uses INFRA’s MinIO as optional backup repo (if no dedicated cluster)
 - Admins manage database nodes from INFRA/ADMIN via Ansible or other tools:
@@ -85,7 +85,7 @@ Nginx is the gateway for all WebUI services in Pigsty, serving HTTP/HTTPS on por
 
 It exposes web UIs like Grafana, Prometheus, AlertManager, and HAProxy console, while also serving static resources like local yum/apt repos.
 
-Nginx configuration follows [`infra_portal`](/docs/infra/param/#infra_portal) definitions, for example:
+Nginx configuration follows [`infra_portal`](/docs/infra/param#infra_portal) definitions, for example:
 
 ```yaml
 infra_portal:
@@ -106,9 +106,11 @@ Pigsty allows rich Nginx customization as a local file server or reverse proxy, 
 
 For more details, check these tutorials:
 
-- [**Tutorial: DNS Configuration**](https://pigsty.io/docs/tasks/dns/)
-- [**Tutorial: Nginx Service Exposure**](https://pigsty.io/docs/tasks/nginx/)
-- [**Tutorial: Certbot HTTPS Certificate Management**](https://pigsty.io/docs/tasks/certbot/)
+- [**Tutorial: DNS Configuration**](/docs/admin/domain)
+- [**Tutorial: Nginx Service Exposure**](/docs/admin/portal)
+- [**Tutorial: Certbot HTTPS Certificate Management**](/docs/admin/cert)
+
+
 
 ------
 
@@ -136,7 +138,7 @@ enabled=1
 gpgcheck=0
 ```
 
-Local repo configs are in: [Config: INFRA - REPO](/docs/infra/param/#repo)
+Local repo configs are in: [Config: INFRA - REPO](/docs/infra/param#repo)
 
 ------
 
@@ -166,7 +168,7 @@ Fun fact: We’ve supercharged Grafana with extra viz plugins like ECharts - it�
 
 Loki handles logs on port 3100, with Promtail shipping logs from nodes to the mothership.
 
-Configs live in: [Config: INFRA - GRAFANA](/docs/infra/param/#grafana) and [Config: INFRA - Loki](/docs/infra/param/#loki)
+Configs live in: [Config: INFRA - GRAFANA](/docs/infra/param#grafana) and [Config: INFRA - Loki](/docs/infra/param#loki)
 
 ------
 
@@ -182,7 +184,7 @@ DNSMASQ handles DNS resolution, with other modules registering their domains to 
 
 DNS records live in `/etc/hosts.d/` on all INFRA nodes.
 
-Configs: [Config: INFRA - DNS](/docs/infra/param/#dns)
+Configs: [Config: INFRA - DNS](/docs/infra/param#dns)
 
 ------
 
@@ -190,4 +192,4 @@ Configs: [Config: INFRA - DNS](/docs/infra/param/#dns)
 
 Time waits for no one, but Chronyd helps keep all nodes in sync! (Optional)
 
-NTP configs: [Config: NODES - NTP](/docs/node/param/#node_time)
+NTP configs: [Config: NODES - NTP](/docs/node/param#node_time)

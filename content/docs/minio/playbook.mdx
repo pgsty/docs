@@ -62,7 +62,7 @@ MINIO Playbook cheatsheet and common commands
 
 Minio has a safeguard to prevent accidental deletion. Control by the following parameter:
 
-- [`minio_clean`](/docs/minio/param/#minio_clean), `false` by default, which means Pigsty will not remove existing MinIO data by default
+- [`minio_clean`](/docs/minio/param#minio_clean), `false` by default, which means Pigsty will not remove existing MinIO data by default
 
 If you wish to remove existing minio data during init, please set this parameter to `true` in the config file, or override it with command-line parameter `-e minio_clean=true`.
 

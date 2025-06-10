@@ -143,7 +143,7 @@ There are **115** parameters about the `PGSQL` module.
 
 ## `PG_ID`
 
-Here are some common parameters used to identify PGSQL [entities](/docs/pgsql/concept/#identity-parameters): instance, service, etc…
+Here are some common parameters used to identify PGSQL [entities](/docs/pgsql/cluster/#identity-parameters): instance, service, etc…
 
 ------
 
@@ -384,7 +384,7 @@ name: `pg_databases`, type: `database[]`, level: `C`
 
 postgres business databases, has to be defined at cluster level.
 
-default values: `[]`, each object in the array defines a [Database](/docs/pgsql/db/). Examples:
+default values: `[]`, each object in the array defines a [Database](/docs/pgsql/database/). Examples:
 
 ```yaml
 - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
@@ -427,7 +427,7 @@ postgres business services exposed via haproxy, has to be defined at cluster lev
 
 You can define ad hoc services with [`pg_services`](#pg_services) in additional to default [`pg_default_services`](#pg_default_services)
 
-default values: `[]`, each object in the array defines a [**Service**](/docs/pgsql/svc/#define-service). Examples:
+default values: `[]`, each object in the array defines a [**Service**](/docs/pgsql/service/#define-service). Examples:
 
 ```yaml
 - name: standby                   # required, service name, the actual svc name will be prefixed with `pg_cluster`, e.g: pg-meta-standby
@@ -686,7 +686,7 @@ postgres binary dir, `/usr/pgsql/bin` by default
 
 The default value is a soft link created manually during the installation process, pointing to the specific Postgres version dir installed.
 
-For example `/usr/pgsql -> /usr/pgsql-17`. For more details, check [PGSQL File Structure](/docs/reference/fhs/#postgres-fhs) for details.
+For example `/usr/pgsql -> /usr/pgsql-17`. For more details, check [PGSQL File Structure](/docs/pgsql) for details.
 
 ------
 
@@ -956,7 +956,7 @@ The Patroni API server listens on this port for health checking & API requests.
 
 name: `patroni_log_dir`, type: `path`, level: `C`
 
-patroni log dir, `/pg/log/patroni` by default, which will be collected by [`promtail`](/docs/node/param/#promtail).
+patroni log dir, `/pg/log/patroni` by default, which will be collected by [`promtail`](/docs/node/param#promtail).
 
 ------
 
@@ -988,7 +988,7 @@ default value is `off`, you should not enable watchdog on infra nodes to avoid f
 
 For those critical systems where data consistency prevails over availability, it is recommended to enable watchdog.
 
-Beware that if all your traffic is [accessed](/docs/pgsql/svc/#access-service) via haproxy, there is no risk of brain split at all.
+Beware that if all your traffic is [accessed](/docs/pgsql/service/#access-service) via haproxy, there is no risk of brain split at all.
 
 ------
 
@@ -1669,7 +1669,7 @@ remove pg backup data during init? default value is `true`
 
 name: `pgbackrest_log_dir`, type: `path`, level: `C`
 
-pgBackRest log dir, `/pg/log/pgbackrest` by default, which is referenced by [`promtail`](/docs/node/param/#promtail) the logging agent.
+pgBackRest log dir, `/pg/log/pgbackrest` by default, which is referenced by [`promtail`](/docs/node/param#promtail) the logging agent.
 
 ------
 
@@ -1786,7 +1786,7 @@ pg_default_services:             # alloc port 10001 and 10002 for pg-test primar
 
 name: `pg_default_service_dest`, type: `enum`, level: `G/C`
 
-When defining a [service](/docs/pgsql/svc/#define-service), if svc.dest=‘default’, this parameter will be used as the default value.
+When defining a [service](/docs/pgsql/service/#define-service), if svc.dest=‘default’, this parameter will be used as the default value.
 
 default values: `pgbouncer`, means 5433 primary service and 5434 replica service will route traffic to pgbouncer by default.
 
@@ -1800,7 +1800,7 @@ name: `pg_default_services`, type: `service[]`, level: `G/C`
 
 postgres default service definitions
 
-default value is four default services definition, which is explained in [PGSQL Service](/docs/pgsql/svc/#define-service)
+default value is four default services definition, which is explained in [PGSQL Service](/docs/pgsql/service/#define-service)
 
 ```yaml
 pg_default_services:               # postgres default service definitions

@@ -43,7 +43,7 @@ The `configure` script is an interactive wizard unless `-n|--non-interactive` is
 | `-i\|--ip`              | Replace IP address placeholder `10.10.10.10` with given IP                                  |
 | `-v\|--version`         | Specify PostgreSQL major version number (`13\|14\|15\|16\|17`)                              |
 | `-r\|--region`          | Set upstream repo mirror according to `region` (`default\|china\|europe`)                   |
-| `-x\|--proxy`           | Write current proxy env to the config [`proxy_env`](/docs/infra/param/#proxy_env)           |
+| `-x\|--proxy`           | Write current proxy env to the config [`proxy_env`](/docs/infra/param#proxy_env)           |
 | `-s\|--skip`            | Skip interactive wizard and using default/arg values                                        |
 | `-n\|--non-interactive` | Non-interactively mode                                                                      |
 | `-p\|--port`            | Specify SSH port (only used if set)                                                         |
@@ -116,7 +116,7 @@ proceed with ./install.yml
 </Callout>
 
 <Callout title="Proxy Environment">
-    If `-x|--proxy` is specified, it will write the current proxy environment variables to the config [`proxy_env`](/docs/infra/param/#proxy_env).
+    If `-x|--proxy` is specified, it will write the current proxy environment variables to the config [`proxy_env`](/docs/infra/param#proxy_env).
     Will be reused during installation. Including: `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY`.
 </Callout>
 
@@ -134,7 +134,7 @@ proceed with ./install.yml
 </Callout>
 
 <Callout title="Low-End Hardware Optimization">
-    If current node CPU cores &le; 4, it will use the `tiny` mode for [`pg_conf`](/docs/pgsql/param/#pg_conf) and [`node_tune`](/docs/node/param/#node_tune) to optimize for low-end hardware.
+    If current node CPU cores &le; 4, it will use the `tiny` mode for [`pg_conf`](/docs/pgsql/param#pg_conf) and [`node_tune`](/docs/node/param#node_tune) to optimize for low-end hardware.
 </Callout>
 
 <Callout title="Locale Setting">

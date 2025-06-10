@@ -32,9 +32,9 @@ If you plan to deploy a production-grade large-scale multi-node MinIO cluster, w
 
 You have to access MinIO via HTTPS, so make sure the default minio service domain (`sss.pigsty`) point to the right place:
 
-1. You can add static resolution records in [`node_etc_hosts`](/docs/node/param/#node_etc_hosts) or manually modify the `/etc/hosts` file
+1. You can add static resolution records in [`node_etc_hosts`](/docs/node/param#node_etc_hosts) or manually modify the `/etc/hosts` file
 2. You can add a record on the internal DNS server if you are using DNS service
-3. You can add a record in [`dns_records`](/docs/infra/param/#dns_records) if you are using the DNSMASQ on infra nodes
+3. You can add a record in [`dns_records`](/docs/infra/param#dns_records) if you are using the DNSMASQ on infra nodes
 
 It is recommended to use the first method: static DNS resolution records to avoid MinIO’s additional dependency on DNS in production environments.
 

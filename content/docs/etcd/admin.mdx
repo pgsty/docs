@@ -37,7 +37,7 @@ Then run the [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook.
 ./etcd.yml   # init etcd module on group 'etcd'
 ```
 
-Pigsty has safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/docs/etcd/param/#etcd_clean) is `true`, and [`etcd_safeguard`](/docs/etcd/param/#etcd_safeguard) is `false`, which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent, which is useful for development, testing, and emergency rebuild of etcd cluster in production.
+Pigsty has safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/docs/etcd/param#etcd_clean) is `true`, and [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard) is `false`, which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent, which is useful for development, testing, and emergency rebuild of etcd cluster in production.
 
 For provsioned etcd cluster in prod env, you can enable safeguard to prevent accidental clean.
 
@@ -52,7 +52,7 @@ To remove an existing etcd cluster, use the `etcd_clean` subtask of [`etcd.yml`]
 ./etcd.yml -t etcd_purge  # purge with brutal force, omit the etcd_safeguard
 ```
 
-The `etcd_clean` subtask will honor the [`etcd_safeguard`](/docs/etcd/param/#etcd_safeguard), while the `etcd_purge` subtask will ignore that and wipe out the entire etcd cluster.
+The `etcd_clean` subtask will honor the [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard), while the `etcd_purge` subtask will ignore that and wipe out the entire etcd cluster.
 
 ------
 

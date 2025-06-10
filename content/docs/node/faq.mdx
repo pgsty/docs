@@ -54,13 +54,13 @@ pg-test:
 
 **When performing deployments and changes**, the admin user used **must** have `ssh` and `sudo` privileges for all nodes. Password-free is not required.
 
-You can pass in ssh and sudo passwords via the `-k|-K` parameter when executing the playbook or even use another user to run the playbook via `-e`[`ansible_host`](/docs/infra/param/#connect)`=<another_user>`. However, Pigsty strongly recommends configuring SSH **passwordless login** with passwordless `sudo` for the admin user.
+You can pass in ssh and sudo passwords via the `-k|-K` parameter when executing the playbook or even use another user to run the playbook via `-e`[`ansible_host`](/docs/infra/param#connect)`=<another_user>`. However, Pigsty strongly recommends configuring SSH **passwordless login** with passwordless `sudo` for the admin user.
 
 ------
 
 ## Create an admin user with the existing admin user.
 
-This will create an admin user specified by [`node_admin_username`](/docs/node/param/#node_admin_username) with the existing one on that node.
+This will create an admin user specified by [`node_admin_username`](/docs/node/param#node_admin_username) with the existing one on that node.
 
 ```bash
 ./node.yml -k -K -e ansible_user=<another_admin> -t node_admin`
@@ -70,7 +70,7 @@ This will create an admin user specified by [`node_admin_username`](/docs/node/p
 
 ## Exposing node services with HAProxy
 
-You can expose service with [`haproxy_services`](/docs/node/param/#haproxy_services) in `node.yml`.
+You can expose service with [`haproxy_services`](/docs/node/param#haproxy_services) in `node.yml`.
 
 And here’s an example of exposing MinIO service with it: [Expose MinIO Service](/docs/minio/config/#expose-service)
 
@@ -78,11 +78,11 @@ And here’s an example of exposing MinIO service with it: [Expose MinIO Service
 
 ## Why my nodes /etc/yum.repos.d/* are nuked?
 
-Pigsty will try to include all dependencies in the local yum repo on infra nodes. This repo file will be added according to [`node_repo_modules`](/docs/node/param/#node_repo_modules). And existing repo files will be removed by default according to the default value of [`node_repo_remove`](/docs/node/param/#node_repo_remove). This will prevent the node from using the Internet repo or some stupid issues.
+Pigsty will try to include all dependencies in the local yum repo on infra nodes. This repo file will be added according to [`node_repo_modules`](/docs/node/param#node_repo_modules). And existing repo files will be removed by default according to the default value of [`node_repo_remove`](/docs/node/param#node_repo_remove). This will prevent the node from using the Internet repo or some stupid issues.
 
-If you want to keep existing repo files during node init, just set [`node_repo_remove`](/docs/node/param/#node_repo_remove) to `false`.
+If you want to keep existing repo files during node init, just set [`node_repo_remove`](/docs/node/param#node_repo_remove) to `false`.
 
-If you want to keep existing repo files during infra node local repo bootstrap, just set [`repo_remove`](/docs/infra/param/#repo_remove) to `false`.
+If you want to keep existing repo files during infra node local repo bootstrap, just set [`repo_remove`](/docs/infra/param#repo_remove) to `false`.
 
 ------
 
@@ -96,7 +96,7 @@ To restore your existing prompt, just remove that file and login again.
 
 ## Tencent OpenCloudOS Compatibility Issue
 
-OpenCloudOS does not have softdog module, overwrite [`node_kernel_modules`](/docs/node/param/#node_kernel_modules) on global vars:
+OpenCloudOS does not have softdog module, overwrite [`node_kernel_modules`](/docs/node/param#node_kernel_modules) on global vars:
 
 ```yaml
 node_kernel_modules: [ br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]

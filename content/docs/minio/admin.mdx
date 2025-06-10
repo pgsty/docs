@@ -26,7 +26,7 @@ To create a MinIO cluster, define the `minio` cluster in [inventory](/docs/confi
 minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 ```
 
-The [`minio_cluster`](/docs/minio/param/#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
+The [`minio_cluster`](/docs/minio/param#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
 
 This snippet defines a single-node MinIO cluster, using the following command to create the MinIO cluster:
 
@@ -99,7 +99,7 @@ minio:
           - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
 ```
 
-Step 1, add 4 node definition in the group, allocate sequence number 5 to 8. The key step is to modify the [`minio_volumes`](/docs/minio/param/#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
+Step 1, add 4 node definition in the group, allocate sequence number 5 to 8. The key step is to modify the [`minio_volumes`](/docs/minio/param#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
 
 ```yaml
 minio:

@@ -40,28 +40,28 @@ icon: Contrast
 
 这里列出了一些重要扩展，对比基于最新的 PostgreSQL 16 主干版本进行，截止至 2024-02-28
 
-- [**Pigsty 扩展列表**](/docs/reference/extension/)
+- [**Pigsty 扩展列表**](https://pigsty.cc/ext/list)
 - [**AWS RDS 扩展列表**](https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-extensions.html):
 - [**阿里云 RDS 扩展列表**](https://help.aliyun.com/zh/rds/apsaradb-rds-for-postgresql/extensions-supported-by-apsaradb-rds-for-postgresql)
 
-| **扩展名称** | **Pigsty RDS** / PGDG 官方仓库 |      **阿里云 RDS**       |   **AWS RDS**   |
-| ------------ | ------------------------------ | :-----------------------: | :-------------: |
-| 加装扩展     | 自由加装                       |          不允许           |     不允许      |
-| 地理空间     | PostGIS 3.4.2                  | PostGIS 3.3.4 / Ganos 6.1 |  PostGIS 3.4.1  |
+| **扩展名称** | **Pigsty RDS** / PGDG 官方仓库     |        **阿里云 RDS**        |   **AWS RDS**   |
+|----------|--------------------------------|:-------------------------:|:---------------:|
+| 加装扩展     | 自由加装                           |            不允许            |       不允许       |
+| 地理空间     | PostGIS 3.5.1                  | PostGIS 3.3.4 / Ganos 6.1 |  PostGIS 3.4.1  |
 | 雷达点云     | PG PointCloud 1.2.5            |   Ganos PointCloud 6.1    |                 |
-| 向量嵌入     | PGVector 0.6.1 / Svector 0.5.6 |        pase 0.0.1         |  PGVector 0.6   |
-| 机器学习     | PostgresML 2.8.1               |                           |                 |
-| 时序扩展     | TimescaleDB 2.14.2             |                           |                 |
-| 水平分布式   | Citus 12.1                     |                           |                 |
-| 列存扩展     | Hydra 1.1.1                    |                           |                 |
+| 向量嵌入     | PGVector 0.8.1 / Svector 0.5.6 |        pase 0.0.1         |  PGVector 0.6   |
+| 机器学习     | PostgresML 2.10.0              |                           |                 |
+| 时序扩展     | TimescaleDB 2.20.2             |                           |                 |
+| 水平分布式    | Citus 13.1                     |                           |                 |
+| 数据分析     | Hydra 1.1.1                    |                           |                 |
 | 全文检索     | pg_bm25 0.5.6                  |                           |                 |
 | 图数据库     | Apache AGE 1.5.0               |                           |                 |
-| GraphQL      | PG GraphQL 1.5.0               |                           |                 |
-| OLAP         | pg_analytics 0.5.6             |                           |                 |
+| GraphQL  | PG GraphQL 1.5.0               |                           |                 |
+| OLAP     | pg_analytics 0.5.6             |                           |                 |
 | 消息队列     | pgq 3.5.0                      |                           |                 |
-| DuckDB       | duckdb_fdw 1.1                 |                           |                 |
-| 模糊分词     | zhparser 1.1 / pg_bigm 1.2     |  zhparser 1.0 / pg_jieba  |   pg_bigm 1.2   |
-| CDC抽取      | wal2json 2.5.3                 |                           |  wal2json 2.5   |
+| DuckDB   | duckdb_fdw 1.1                 |                           |                 |
+| 模糊分词     | zhparser 1.1 / pg_bigm 1.2     |   parser 1.0 / pg_jieba   |   pg_bigm 1.2   |
+| CDC抽取    | wal2json 2.5.3                 |                           |  wal2json 2.5   |
 | 膨胀治理     | pg_repack 1.5.0                |      pg_repack 1.4.8      | pg_repack 1.5.0 |
 
 
@@ -70,14 +70,14 @@ icon: Contrast
 
 ### 性能对比
 
-| **指标**               | **Pigsty**                                                   | **Aliyun RDS**                                               | **AWS RDS**                                                  |
-| ---------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 最佳性能               | [PGTPC on NVME SSD 评测](https://github.com/Vonng/pgtpc/tree/master/sysbench) sysbench oltp_rw | [RDS PG 性能白皮书](https://help.aliyun.com/document_detail/101470.html) sysbench oltp 场景 每核 QPS 4000 ~ 8000 |                                                              |
-| 存储规格：最高档容量   | 32TB / [NVME SSD](https://en.shannon-sys.com/product.html?name=gen_4) | 32 TB / **ESSD PL3**                                         | 64 TB / **io2** [EBS](https://aws.amazon.com/cn/blogs/storage/achieve-higher-database-performance-using-amazon-ebs-io2-block-express-volumes/) Block Express |
-| 存储规格：最高档IOPS   | 4K随机读：最大3M，随机写 2000~350K                           | 4K随机读：最大 1M                                            | 16K随机IOPS： 256K                                           |
-| 存储规格：最高档延迟   | 4K随机读：75µs，随机写 15µs                                  | 4K随机读：200µs                                              | 500µs / 推断为16K随机IO                                      |
-| 存储规格：最高档可靠性 | UBER < 1e-18，折合18个9 MTBF: 200万小时 5DWPD，持续三年      | 可靠性 9个9， 合 UBER 1e-9 [存储与数据可靠性](https://help.aliyun.com/document_detail/476273.html) | **持久性**：99.999%，5个9 （0.001% 年故障率） [io2 说明](https://aws.amazon.com/cn/blogs/storage/achieve-higher-database-performance-using-amazon-ebs-io2-block-express-volumes/) |
-| 存储规格：最高档成本   | 31.5 ¥/TB·月 ( 5年质保均摊 / 3.2T / 企业级 / MLC )           | 3200¥/TB·月 （原价 6400¥，包月4000¥） 3年预付整体打5折才有此价格 | 1900 ¥/TB·月 使用最大规格 65536GB / 256K IOPS 最大优惠       |
+| **指标**       | **Pigsty**                                                                                   | **Aliyun RDS**                                                                                          | **AWS RDS**                                                                                                                                                         |
+|--------------|----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 最佳性能         | [PGTPC on NVME SSD 评测](https://github.com/Vonng/pgtpc/tree/master/sysbench) sysbench oltp_rw | [RDS PG 性能白皮书](https://help.aliyun.com/document_detail/101470.html) sysbench oltp 场景 每核 QPS 4000 ~ 8000 |                                                                                                                                                                     |
+| 存储规格：最高档容量   | 32TB / [NVME SSD](https://en.shannon-sys.com/product.html?name=gen_4)                        | 32 TB / **ESSD PL3**                                                                                    | 64 TB / **io2** [EBS](https://aws.amazon.com/cn/blogs/storage/achieve-higher-database-performance-using-amazon-ebs-io2-block-express-volumes/) Block Express        |
+| 存储规格：最高档IOPS | 4K随机读：最大3M，随机写 2000~350K                                                                     | 4K随机读：最大 1M                                                                                             | 16K随机IOPS： 256K                                                                                                                                                     |
+| 存储规格：最高档延迟   | 4K随机读：75µs，随机写 15µs                                                                          | 4K随机读：200µs                                                                                             | 500µs / 推断为16K随机IO                                                                                                                                                  |
+| 存储规格：最高档可靠性  | UBER < 1e-18，折合18个9 MTBF: 200万小时 5DWPD，持续三年                                                  | 可靠性 9个9， 合 UBER 1e-9 [存储与数据可靠性](https://help.aliyun.com/document_detail/476273.html)                    | **持久性**：99.999%，5个9 （0.001% 年故障率） [io2 说明](https://aws.amazon.com/cn/blogs/storage/achieve-higher-database-performance-using-amazon-ebs-io2-block-express-volumes/) |
+| 存储规格：最高档成本   | 31.5 ¥/TB·月 ( 5年质保均摊 / 3.2T / 企业级 / MLC )                                                    | 3200¥/TB·月 （原价 6400¥，包月4000¥） 3年预付整体打5折才有此价格                                                            | 1900 ¥/TB·月 使用最大规格 65536GB / 256K IOPS 最大优惠                                                                                                                         |
 
 ------
 
@@ -107,28 +107,28 @@ Pigsty 提供了 638 与 PostgreSQL 有关的监控指标，而 AWS RDS 只有 9
 
 ### 可维护性
 
-| **指标**      | **Pigsty**                                                   | **Aliyun RDS**                                               | **AWS RDS**      |
-| ------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------- |
-| 系统易用性    | 简单                                                         | 简单                                                         | 简单             |
-| 配置管理      | 配置文件 / CMDB 基于 Ansible Inventory                       | 可使用 Terraform                                             | 可使用 Terraform |
-| 变更方式      | 幂等剧本 基于 Ansible Playbook                               | 控制台点击操作                                               | 控制台点击操作   |
-| 参数调优      | 自动根据节点适配 四种预置模板 OLTP, OLAP, TINY, CRIT         |                                                              |                  |
-| Infra as Code | 原生支持                                                     | 可使用 Terraform                                             | 可使用 Terraform |
-| 可定制参数点  | [Pigsty Parameters](/docs/about/param/) 283 个 |                                                              |                  |
-| 服务与支持    | 提供商业订阅支持兜底                                         | 提供售后工单支持                                             | 提供售后工单支持 |
-| 无互联网部署  | 可离线安装部署                                               | N/A                                                          | N/A              |
-| 数据库迁移    | 提供从现有v10+ PG实例基于逻辑复制不停机迁移至Pigsty托管实例的剧本 | 提供上云辅助迁移 [Aliyun RDS 数据同步](https://help.aliyun.com/document_detail/322179.html?spm=a2c4g.11186623.0.0.5fb374c9OOi4Dm) |                  |
+| **指标**        | **Pigsty**                              | **Aliyun RDS**                                                                                                        | **AWS RDS**   |
+|---------------|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------|---------------|
+| 系统易用性         | 简单                                      | 简单                                                                                                                    | 简单            |
+| 配置管理          | 配置文件 / CMDB 基于 Ansible Inventory        | 可使用 Terraform                                                                                                         | 可使用 Terraform |
+| 变更方式          | 幂等剧本 基于 Ansible Playbook                | 控制台点击操作                                                                                                               | 控制台点击操作       |
+| 参数调优          | 自动根据节点适配 四种预置模板 OLTP, OLAP, TINY, CRIT  |                                                                                                                       |               |
+| Infra as Code | 原生支持                                    | 可使用 Terraform                                                                                                         | 可使用 Terraform |
+| 可定制参数点        | [总计](/docs/config/inventory) 280+ 个     |                                                                                                                       |               |
+| 服务与支持         | 提供商业订阅支持兜底                              | 提供售后工单支持                                                                                                              | 提供售后工单支持      |
+| 无互联网部署        | 可离线安装部署                                 | N/A                                                                                                                   | N/A           |
+| 数据库迁移         | 提供从现有v10+ PG实例基于逻辑复制不停机迁移至Pigsty托管实例的剧本 | 提供上云辅助迁移 [Aliyun RDS 数据同步](https://help.aliyun.com/document_detail/322179.html?spm=a2c4g.11186623.0.0.5fb374c9OOi4Dm) |               |
 
 ------
 
 ### 成本
 
-经验上看，软硬件资源的部分 RDS 单位成本是自建的 5 ～ 15 倍，租售比通常在一个月。详情请参考 [成本分析](/docs/reference/cost/)。
+经验上看，软硬件资源的部分 RDS 单位成本是自建的 5 ～ 15 倍，租售比通常在一个月。详情请参考 [成本分析](/docs/intro/compare)。
 
-| 要素 | **指标**          | **Pigsty**                   | **Aliyun RDS**     | **AWS RDS**        |
-| ---- | ----------------- | ---------------------------- | ------------------ | ------------------ |
+| 要素 | **指标**    | **Pigsty**           | **Aliyun RDS**  | **AWS RDS**      |
+|----|-----------|----------------------|-----------------|------------------|
 | 成本 | 软件授权/服务费用 | 免费，硬件约 20 - 40 ¥/核·月 | 200 ～ 400 ¥/核·月 | 400 ~ 1300 ¥/核·月 |
-|      | 服务支持费用      | 服务约 100 ¥/ 核·月          | 包含在 RDS 成本中  |                    |
+|    | 服务支持费用    | 服务约 100 ¥/ 核·月       | 包含在 RDS 成本中     |                  |
 
 ------
 

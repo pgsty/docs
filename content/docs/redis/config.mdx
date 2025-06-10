@@ -4,7 +4,7 @@ description: describe the redis cluster you want
 icon: CodeXml
 ---
 
-The entity model of Redis is almost the same as that of [PostgreSQL](/docs/concept/model/#er-diagram), which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
+The entity model of Redis is almost the same as that of [PostgreSQL](/docs/pgsql/cluster), which also includes the concepts of **Cluster** and **Instance**. The Cluster here does not refer to the native Redis Cluster mode.
 
 The core difference between the REDIS module and the [PGSQL](/docs/pgsql/) module is that Redis uses a **single-node multi-instance** deployment rather than the 1:1 deployment: multiple Redis instances are typically deployed on a physical/virtual machine node to utilize multi-core CPUs fully. Therefore, the ways to [configure](/docs/redis/config/#configuration) and [administer](/docs/redis/config/#administration) Redis instances are slightly different from PGSQL.
 
@@ -16,19 +16,19 @@ In Redis managed by Pigsty, nodes are entirely subordinate to the cluster, which
 
 ## Redis Identity
 
-Redis [**identity parameters**](/docs/redis/param/#redis_id) are required parameters when defining a Redis cluster.
+Redis [**identity parameters**](/docs/redis/param#redis_id) are required parameters when defining a Redis cluster.
 
 |                             Name                             |          Attribute          |     Description      |          Example          |
 | :----------------------------------------------------------: | :-------------------------: | :------------------: | :-----------------------: |
-| [`redis_cluster`](/docs/redis/param/#redis_cluster) | **REQUIRED**, cluster level |     cluster name     |       `redis-test`        |
-| [`redis_node`](/docs/redis/param/#redis_node) |  **REQUIRED**, node level   | Node Sequence Number |          `1`,`2`          |
-| [`redis_instances`](/docs/redis/param/#redis_instances) |  **REQUIRED**, node level   | Instance Definition  | `{ 6001 : {} ,6002 : {}}` |
+| [`redis_cluster`](/docs/redis/param#redis_cluster) | **REQUIRED**, cluster level |     cluster name     |       `redis-test`        |
+| [`redis_node`](/docs/redis/param#redis_node) |  **REQUIRED**, node level   | Node Sequence Number |          `1`,`2`          |
+| [`redis_instances`](/docs/redis/param#redis_instances) |  **REQUIRED**, node level   | Instance Definition  | `{ 6001 : {} ,6002 : {}}` |
 
 ------
 
 ## Redis Mode
 
-There are three [`redis_mode`](/docs/redis/param/#redis_mode) available in Pigsty:
+There are three [`redis_mode`](/docs/redis/param#redis_mode) available in Pigsty:
 
 - `standalone`: setup Redis in standalone (master-slave) mode
 - `cluster`: setup this Redis cluster as a Redis native cluster

@@ -20,7 +20,7 @@ Using more than 3 INFRA nodes provides limited benefits, but you can use more ET
 
 ## Configuration Examples
 
-To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/docs/config/inventory) and assign them an Infra instance number [`infra_seq`](/docs/infra/param/#infra_seq).
+To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/docs/config/inventory) and assign them an Infra instance number [`infra_seq`](/docs/infra/param#infra_seq).
 
 By default, a single INFRA node configuration meets most requirements. All configuration templates include a default `infra` group definition:
 
@@ -94,4 +94,4 @@ infra:
       loki         : { endpoint: "10.10.10.8:3100" }
 ```
 
-In addition to configuring VIP-related parameters like [`vip_address`](/docs/node/param/#vip_address), you need to modify endpoints for Infra services in [`infra_portal`](/docs/infra/param/#infra_portal).
+In addition to configuring VIP-related parameters like [`vip_address`](/docs/node/param#vip_address), you need to modify endpoints for Infra services in [`infra_portal`](/docs/infra/param#infra_portal).

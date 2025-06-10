@@ -73,7 +73,7 @@ You can restore them again with the following:
 
 ## How to expose new Nginx upstream service
 
-If you wish to expose a new WebUI service via the Nginx portal, you can add the service definition to the [`infra_portal`](/docs/infra/param/#infra_portal) parameter.
+If you wish to expose a new WebUI service via the Nginx portal, you can add the service definition to the [`infra_portal`](/docs/infra/param#infra_portal) parameter.
 
 And re-run `./infra.yml -t nginx_config,nginx_launch` to update & apply the Nginx configuration.
 
@@ -85,7 +85,7 @@ If you wish to access with HTTPS, you must remove `files/pki/csr/pigsty.csr`, `f
 
 While you can directly access services via IP:Port, we still recommend consolidating access points by using domain names and uniformly accessing various web-based services through the Nginx portal. This approach helps centralize access, reduce the number of exposed ports, and facilitates access control and auditing.
 
-If you wish to expose a new WebUI service through the Nginx portal, you can add the service definition to the [`infra_portal`](/docs/infra/param/#infra_portal) parameter. For example, here is the config used by the public demo site, which exposes several additional web services:
+If you wish to expose a new WebUI service through the Nginx portal, you can add the service definition to the [`infra_portal`](/docs/infra/param#infra_portal) parameter. For example, here is the config used by the public demo site, which exposes several additional web services:
 
 ```yaml
 infra_portal:

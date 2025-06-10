@@ -29,7 +29,7 @@ etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
 
 This line exists almost in all single-node [config](/docs/conf/) templates, where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
 
-The only necessary parameters are [`etcd_seq`](/docs/etcd/param/#etcd_seq) and [`etcd_cluster`](/docs/etcd/param/#etcd_cluster), which uniquely identify the cluster and each instance.
+The only necessary parameters are [`etcd_seq`](/docs/etcd/param#etcd_seq) and [`etcd_cluster`](/docs/etcd/param#etcd_cluster), which uniquely identify the cluster and each instance.
 
 
 

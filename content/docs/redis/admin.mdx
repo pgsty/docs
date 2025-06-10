@@ -126,7 +126,7 @@ $ redis-cli -h 10.10.10.11 -p 26379 -a redis.meta
 
 If you wish to remove a redis master from sentinel, use `SENTINEL REMOVE <name>`.
 
-You can configure multiple redis master on sentinel cluster with [`redis_sentinel_monitor`](/docs/redis/param/#redis_sentinel_monitor).
+You can configure multiple redis master on sentinel cluster with [`redis_sentinel_monitor`](/docs/redis/param#redis_sentinel_monitor).
 
 ```yaml
 redis_sentinel_monitor: # primary list for redis sentinel, use cls as name, primary ip:port

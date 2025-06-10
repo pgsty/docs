@@ -44,13 +44,13 @@ It is strong enough for most common scenarios, as long as you follow the securit
 
 Always change these default passwords in serious deployment
 
-- [`grafana_admin_password`](/docs/infra/param/#grafana_admin_password) : `pigsty`
+- [`grafana_admin_password`](/docs/infra/param#grafana_admin_password) : `pigsty`
 - [`pg_admin_password`](/docs/pgsql/param#pg_admin_password) : `DBUser.DBA`
 - [`pg_monitor_password`](/docs/pgsql/param#pg_monitor_password) : `DBUser.Monitor`
 - [`pg_replication_password`](/docs/pgsql/param#pg_replication_password) : `DBUser.Replicator`
 - [`patroni_password`](/docs/pgsql/param#patroni_password) : `Patroni.API`
-- [`haproxy_admin_password`](/docs/node/param/#haproxy_admin_password) : `pigsty`
-- [`minio_secret_key`](/docs/minio/param/#minio_secret_key) : `minioadmin`
+- [`haproxy_admin_password`](/docs/node/param#haproxy_admin_password) : `pigsty`
+- [`minio_secret_key`](/docs/minio/param#minio_secret_key) : `minioadmin`
 
 </Callout>
     
@@ -58,7 +58,7 @@ Always change these default passwords in serious deployment
 
 If you are using MinIO as backup storage, also change these credentials:
 
-- Change the password for [`minio_users`.`[pgbackrest]`.`secret_key`](/docs/minio/param/#minio_users)
+- Change the password for [`minio_users`.`[pgbackrest]`.`secret_key`](/docs/minio/param#minio_users)
 - Change pgbackrest references: [`pgbackrest_repo`.`minio`.`s3_key_secret`](/docs/pgsql/param#pgbackrest_repo)
 
 </Callout>
@@ -129,7 +129,7 @@ SET log_statement TO DEFAULT;
 
 - Grafana/Prometheus are bind to **all** IP address by default for convenience.
 - You can modify their bind configuration to listen on localhost/intranet IP and expose by Nginx.
-- Redis server are bind to **all** IP address by default for convenience. You can change [`redis_bind_address`](/docs/redis/param/#redis_bind_address) to listen on intranet IP.
+- Redis server are bind to **all** IP address by default for convenience. You can change [`redis_bind_address`](/docs/redis/param#redis_bind_address) to listen on intranet IP.
 - You can also implement it with the security group or firewall rules.
 
 </Callout>
@@ -154,8 +154,8 @@ SET log_statement TO DEFAULT;
 
 <Callout title="Access Nginx with SSL and domain names" type="warn">
 
-- Nginx SSL is controlled by [`nginx_sslmode`](/docs/infra/param/#haproxy_sslmode), which is `enable` by default.
-- Nginx Domain names are specified by [`infra_portal..domain`](/docs/infra/param/#infra_portal).
+- Nginx SSL is controlled by [`nginx_sslmode`](/docs/infra/param#haproxy_sslmode), which is `enable` by default.
+- Nginx Domain names are specified by [`infra_portal..domain`](/docs/infra/param#infra_portal).
 
 </Callout>
 
@@ -188,7 +188,7 @@ SET log_statement TO DEFAULT;
 
 <Callout title="Use node crit tuned template for better consistency" type="warn">
 
-- set [`node_tune`](/docs/node/param/#node_tune) to `crit` to reduce dirty page ratio.
+- set [`node_tune`](/docs/node/param#node_tune) to `crit` to reduce dirty page ratio.
 
 - Enable data checksum to detect silent data corruption.
 - [`pg_checksum`](/docs/pgsql/param#pg_checksum) is disabled by default, and enabled for `crit.yml` by default

@@ -77,7 +77,7 @@ The **admin node** serves as the control plane for your entire Pigsty deployment
 ### Characteristics
 
 - **Unique Role**: Exactly one admin node exists per Pigsty deployment
-- **Primary IP**: Identified by the [`admin_ip`](/docs/infra/param/#admin_ip) parameter, set during initial configuration
+- **Primary IP**: Identified by the [`admin_ip`](/docs/infra/param#admin_ip) parameter, set during initial configuration
 - **SSH Access**: Must have passwordless SSH and sudo access to all other nodes in the deployment
 - **Security Critical**: Requires comprehensive security hardening as it controls the entire infrastructure
 
@@ -151,9 +151,9 @@ For production deployments, consider:
 
 ### Identity Inheritance
 
-PGSQL nodes can inherit their identity from their PostgreSQL instances when [`node_id_from_pg`](/docs/node/param/#node_id_from_pg) is enabled (default behavior):
+PGSQL nodes can inherit their identity from their PostgreSQL instances when [`node_id_from_pg`](/docs/node/param#node_id_from_pg) is enabled (default behavior):
 
-- **Node Cluster**: Inherits from [`pg_cluster`](/docs/pgsql/param/#pg_cluster)
+- **Node Cluster**: Inherits from [`pg_cluster`](/docs/pgsql/param#pg_cluster)
 - **Node Name**: Uses pattern `${pg_cluster}-${pg_seq}` (e.g., `pg-test-1`, `pg-test-2`)
 
 ### Database Services

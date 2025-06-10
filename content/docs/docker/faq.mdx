@@ -7,7 +7,7 @@ icon: MessageCircleQuestion
 
 ## Who Can Run Docker Commands?
 
-By default, Pigsty adds both the **management user** running the playbook on the remote host (i.e., the SSH login user) and the user defined by the [`node_admin_username`](/docs/node/param/#node_admin_username) parameter to the operating-system group **`docker`**.
+By default, Pigsty adds both the **management user** running the playbook on the remote host (i.e., the SSH login user) and the user defined by the [`node_admin_username`](/docs/node/param#node_admin_username) parameter to the operating-system group **`docker`**.
  Any account in this group can manage Docker via the `docker` CLI.
 
 Need to grant another user Docker access? Just add that OS user to the **`docker`** group:
@@ -20,7 +20,7 @@ sudo usermod -aG docker <username>
 
 ## Working Through a Proxy
 
-During installation, if the [`proxy_env`](/docs/infra/param/#proxy_env) parameter is set, Pigsty writes the specified HTTP proxy settings to `/etc/docker/daemon.json`.
+During installation, if the [`proxy_env`](/docs/infra/param#proxy_env) parameter is set, Pigsty writes the specified HTTP proxy settings to `/etc/docker/daemon.json`.
 
 Docker will then route all image pulls from upstream registries through this proxy.
 
