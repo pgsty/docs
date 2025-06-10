@@ -7,23 +7,13 @@ icon: Shapes
 A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module that provides essential services for managed nodes and database clusters:
 
 - [Nginx](/docs/infra/arch/#nginx): Acts as a web server for local package repositories and a reverse proxy for other web UI services
-
-- Grafana
-
-: Visualization platform for metrics, dashboards, and data analytics
-
+- Grafana : Visualization platform for metrics, dashboards, and data analytics
 - [Loki](/docs/infra/arch/#loki): Centralized log aggregation and querying via Grafana
-
-- Prometheus
-
-: Time-series monitoring database for metrics collection, storage, and alert evaluation
-
+- Prometheus: Time-series monitoring database for metrics collection, storage, and alert evaluation
 - [AlertManager](/docs/infra/arch/#alertmanager): Alert aggregation, notification dispatch, and silencing
 - [PushGateway](/docs/infra/arch/#pushgateway): Collects metrics from one-off and batch jobs
 - [BlackboxExporter](/docs/infra/arch/#blackbox-exporter): Probes node IP and VIP reachability
-
 - [DNSMASQ](/docs/infra/arch/#dnsmasq): DNS resolution for Pigsty’s internal domains
-
 - [Chronyd](/docs/infra/arch/#chronyd): NTP time synchronization to keep all nodes in sync
 
 The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/docs/install/minimal) mode.

@@ -1,16 +1,13 @@
 ---
 title: Parameter
-description: customize docker with 8 parameters
+description: customize docker with 8-parameter
 icon: Variable
 ---
 
-
-## Parameters
-
 There are **8** parameters for the Docker module:
 
-| Name                                                                     | Type       | Level | Comment                                                   |
-|--------------------------------------------------------------------------|------------|-------|-----------------------------------------------------------|
+| Name                                                                    | Type       | Level | Comment                                                   |
+|-------------------------------------------------------------------------|------------|-------|-----------------------------------------------------------|
 | [`docker_enabled`](/docs/docker/param#docker_enabled)                   | `bool`     | G/C/I | enable docker on this node?                               |
 | [`docker_data`](/docs/docker/param#docker_data)                         | `path`     | G/C/I | Docker data directory, `/var/lib/docker` by default       |
 | [`docker_storage_driver`](/docs/docker/param#docker_storage_driver)     | `enum`     | G/C/I | Docker storage driver, `overlay2` by default              |
@@ -63,11 +60,13 @@ Docker storage driver, `overlay2` by default.
 
 Please refer to: https://docs.docker.com/engine/storage/drivers/select-storage-driver/
 
-- overlay2
-- fuse-overlayfs
-- brtfs
-- zfs
-- vfs
+- `overlay2`
+- `fuse-overlayfs`
+- `brtfs`
+- `zfs`
+- `vfs`
+
+
 
 ------
 
@@ -76,6 +75,9 @@ Please refer to: https://docs.docker.com/engine/storage/drivers/select-storage-d
 name: `docker_cgroups_driver`, type: `enum`, level: `G/C/I`
 
 docker cgroup fs driver, could be `cgroupfs` or `systemd`, default values: `systemd`
+
+
+
 
 ------
 
@@ -98,6 +100,9 @@ Consider using Cloudflare Worker [Docker Proxy](https://github.com/cmliu/CF-Work
 
 If the pull speed is too slow, you can also consider: `docker login quay.io` use other Registry.
 
+
+
+
 ------
 
 ## `docker_exporter_port`
@@ -105,6 +110,8 @@ If the pull speed is too slow, you can also consider: `docker login quay.io` use
 name: `docker_exporter_port`, type: `port`, level: `G`
 
 Docker metrics exporter port, `9323` by default.
+
+
 
 ------
 
@@ -114,7 +121,9 @@ name: `docker_image`, type: `string[]`, level: `G/C/I`
 
 docker image to be pulled, `[]` by default
 
-Image listed here will be pulled during docker provisioning.
+The Image listed here will be pulled during docker provisioning.
+
+
 
 ------
 

@@ -4,8 +4,31 @@ description: run administrative tasks
 icon: Wrench
 ---
 
+import {
+    GlobeIcon,
+    ShieldCheckIcon,
+    Warehouse,
+    DoorOpen,
+} from 'lucide-react';
 
-Here are some admin tasks related to the INFRA module (because who doesn’t love infrastructure management?):
+Here are some admin tasks related to the INFRA module
+
+<Cards>
+    <Card icon={<DoorOpen className="text-violet-500"/>} title='Nginx Portal' href={"/docs/admin/portal"}>
+        Nginx Portal for WebUI services
+    </Card>
+    <Card icon={<Warehouse className="text-amber-500"/>} title='Local Repo' href={"/docs/admin/repo"}>
+        Manage local APT / YUM repository
+    </Card>
+    <Card icon={<GlobeIcon className="text-cyan-500"/>} title='Domain Name' href={"/docs/admin/domain"}>
+        Use local / public domain names
+    </Card>
+    <Card icon={<ShieldCheckIcon className="text-rose-500"/>} title='CA & Cert' href={"/docs/admin/cert"}>
+        Use self-signed or real HTTPS certificates
+    </Card>
+</Cards>
+
+
 
 ------
 

@@ -4,7 +4,6 @@ description: configure infra nodes, nginx, repo, dns, ntp, monitor system
 icon: CodeXml
 ---
 
-## Configuration Overview
 
 The INFRA module primarily provides **monitoring** infrastructure and is **optional** for PostgreSQL databases.
 
@@ -15,6 +14,8 @@ In most cases, a single INFRA node is sufficient for typical scenarios. For prod
 To improve resource utilization, PostgreSQL high availability typically relies on the [**`ETCD`**](/docs/etcd/) module, which can share nodes with the INFRA module.
 
 Using more than 3 INFRA nodes provides limited benefits, but you can use more ETCD nodes (e.g., 5) to enhance the availability and reliability of DCS services.
+
+
 
 ------
 
@@ -34,7 +35,7 @@ The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the 
 
 Then use the [`infra.yml`](/docs/infra/playbook/#infrayml) playbook to initialize the INFRA module on the node.
 
-### Additional Nodes
+### More Nodes
 
 To configure two INFRA nodes, add new IPs to `infra.hosts`:
 
@@ -63,9 +64,12 @@ all:
         loki_clean: false
 ```
 
+
+
+
 ------
 
-## Infra High Availability
+## High Availability
 
 Most components in the Infra module are “stateless/shared-state”. For these components, high availability primarily requires addressing load balancing.
 

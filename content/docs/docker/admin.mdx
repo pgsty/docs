@@ -1,0 +1,111 @@
+---
+title: Administration
+description: Administration tasks for Docker
+full: false
+icon: Wrench
+---
+
+
+
+
+
+--------
+
+## Install
+
+To install & enable docker on nodes, [configure](/docs/docker/config) the [`docker_enabled`](/docs/docker/param#docker_enabled) parameter to `true`.
+
+```yaml
+all:
+  vars:
+
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1, nodename: infra-1 }
+        10.10.10.11: { infra_seq: 2, nodename: infra-2 }
+      vars:
+        docker_enabled: true  # Install Docker on this group
+```
+
+Then run the `docker.yml` playbook (on target hosts/groups):
+
+```bash
+./docker.yml -l infra
+```
+
+Docker will be installed on that `infra` group.
+
+<Callout title="infra is a placeholder" type="warn">
+
+    We are using the `infra` group here as an example, you can define it elsewhere as long as it apply to expected hosts.
+
+</Callout>
+
+
+--------
+
+## Repository
+
+Docker repo is part of the `infra` repo module, and will automatically add during [repo](/docs/infra/repo) build.
+
+```yaml tab="EL"
+- name: docker-ce
+  description: 'Docker CE'
+  module: infra
+  releases: [7,8,9]
+  arch: [x86_64, aarch64]
+  baseurl:
+    default: 'https://download.docker.com/linux/centos/$releasever/$basearch/stable'
+    europe:  'https://mirrors.xtom.de/docker-ce/linux/centos/$releasever/$basearch/stable'
+    china:   'https://mirrors.aliyun.com/docker-ce/linux/centos/$releasever/$basearch/stable'
+```
+```yaml tab="Debian/Ubuntu"
+- name: docker-ce
+  description: 'Docker CE'
+  module: infra
+  releases: [11,12,20,22,24]
+  arch: [x86_64, aarch64]
+  baseurl:
+    default: 'https://download.docker.com/linux/${distro_name} ${distro_codename} stable'
+    china: 'https://mirrors.aliyun.com/docker-ce/linux/${distro_name} ${distro_codename} stable'
+```
+
+You can add this repo to your nodes with:
+
+```bash
+./node.yml -t node_repo -e node_repo_modules=infra -l infra
+```
+
+
+--------
+
+## Upgrade
+
+To upgrade Docker Daemon, using the [`ansible`](/docs/admin/ansible) command, add docker [repo](#repository), then:
+
+```bash title="~/pigsty"
+ansible infra -m package -b -a 'name=docker-ce state=latest'
+```
+
+It will upgrade the `docker-ce` package to the latest version available on your configured repositories.
+
+
+
+--------
+
+## Remove
+
+To remove Docker Daemon, using the [`ansible`](/docs/admin/ansible) command to run:
+
+```bash title="~/pigsty"
+ansible infra -m package -b -a 'name=docker-ce state=absent'
+```
+
+It will remove the `docker-ce` package with your os package manager.
+
+--------
+
+## Applications
+
+Pigsty provides ready-to-use **software templates** based on Docker Compose to deploy external applications
+seamlessly integrated with Pigsty-managed database clusters.

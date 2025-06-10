@@ -1,0 +1,96 @@
+---
+title: Configure
+description: Configure your docker setup
+full: false
+icon: CodeXml
+---
+
+Pigsty includes built-in [**Docker**](https://www.docker.com/) support, allowing you to quickly deploy containerized applications.
+
+
+--------
+
+## Quick Start
+
+To install & enable docker on nodes, set the [`docker_enabled`](/docs/docker/param#docker_enabled) parameter to `true`.
+
+```yaml
+all:
+  vars:
+
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1, nodename: infra-1 }
+        10.10.10.11: { infra_seq: 2, nodename: infra-2 }
+      vars:
+        docker_enabled: true  # Install Docker on this group
+```
+
+Then run the `docker.yml` playbook (on target hosts/groups):
+
+```bash
+./docker.yml -l infra
+```
+
+Docker will be installed on that `infra` group.
+
+To uninstall docker (from the `infra` group), you can use the `ansible` command 
+
+```bash title="~/pigsty"
+ansible infra -m package -b -a 'name=docker-ce state=absent'
+```
+
+
+--------
+
+## Proxy
+
+Docker will use the [`proxy_env`](/docs/infra/param#proxy_env) parameter if defined.
+
+For example, if you define it on the global `all.vars` or the example `infra` group cluster vars, the following http proxy setting will be added to `/etc/docker/daemon.json`:
+
+```bash
+all:
+  vars:
+    proxy_env:
+      no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*"
+      http_proxy: 'http://127.0.0.1:12345'
+      https_proxy: 'http://127.0.0.1:12345'
+      all_proxy: 'http://127.0.0.1:12345'
+```
+
+This is useful if your region / network is blocked.
+
+
+--------
+
+## Images
+
+Preload Docker images using [`docker_image`](/docs/docker/param#docker_image) and [`docker_image_cache`](/docs/docker/param#docker_image_cache):
+
+```yaml
+infra:
+  hosts:
+    10.10.10.10: { infra_seq: 1 }
+  vars:
+    docker_enabled: true
+    docker_image:
+      - redis:latest
+```
+
+
+
+
+--------
+
+## Registry
+
+Specify Docker Registry Mirrors using [`docker_registry_mirrors`](/docs/docker/param#docker_registry_mirrors):
+
+Example mirrors:
+
+- Alibaba Cloud: `["https://registry.cn-hangzhou.aliyuncs.com"]`
+- Tencent Cloud: `["https://ccr.ccs.tencentyun.com"]`
+
+
+

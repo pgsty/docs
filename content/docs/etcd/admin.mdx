@@ -16,6 +16,7 @@ Here are some administration SOP for etcd:
 
 Check [ETCD: FAQ](/docs/etcd/faq/) for more questions.
 
+
 ------
 
 ## Create Cluster
@@ -37,9 +38,11 @@ Then run the [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook.
 ./etcd.yml   # init etcd module on group 'etcd'
 ```
 
-Pigsty has safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/docs/etcd/param#etcd_clean) is `true`, and [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard) is `false`, which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent, which is useful for development, testing, and emergency rebuild of etcd cluster in production.
+Pigsty has a safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/docs/etcd/param#etcd_clean) is `true`, and [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard) is `false`, which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent, which is useful for development, testing, and emergency rebuild of etcd cluster in production.
 
 For provsioned etcd cluster in prod env, you can enable safeguard to prevent accidental clean.
+
+
 
 ------
 
@@ -53,6 +56,9 @@ To remove an existing etcd cluster, use the `etcd_clean` subtask of [`etcd.yml`]
 ```
 
 The `etcd_clean` subtask will honor the [`etcd_safeguard`](/docs/etcd/param#etcd_safeguard), while the `etcd_purge` subtask will ignore that and wipe out the entire etcd cluster.
+
+
+
 
 ------
 
@@ -72,11 +78,13 @@ export ETCDCTL_CERT=/etc/etcd/server.crt
 export ETCDCTL_KEY=/etc/etcd/server.key
 ```
 
-You can do CRUD with following commands after setting up the envs:
+You can do CRUD with the following commands after setting up the envs:
 
 ```bash
 e put a 10 ; e get a; e del a ; # V3 API
 ```
+
+
 
 ------
 
@@ -115,6 +123,7 @@ To update etcd endpoints reference on `vip-manager`, (optional, if you are using
 ./pgsql.yml -t pg_vip_config                           # regenerate vip-manager config
 ansible all -f 1 -b -a 'systemctl restart vip-manager' # restart vip-manager to use new config
 ```
+
 
 ------
 

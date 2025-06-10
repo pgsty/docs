@@ -4,8 +4,9 @@
   "icon": "Container",
   "root": false,
   "pages": [
-    "usage",
+    "config",
     "param",
+    "admin",
     "playbook",
     "monitor",
     "faq",
