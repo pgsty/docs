@@ -11,13 +11,16 @@ import {
     Wrench,
     ScrollText,
     Telescope,
-    MessageCircleQuestion
+    Blocks
 } from 'lucide-react';
 
 To deploy [modules](/docs/intro/modules), you'll have to enroll your linux servers into pigsty by installing the [NODE](/docs/node) module on them.
 
 
 <Cards>
+    <Card icon={<Blocks className="text-red-600"/>} title='Architecture' href={"/docs/node/arch"}>
+        Architecture, core concepts, identity management
+    </Card>
     <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/node/config"}>
         Configure node identities
     </Card>
@@ -33,129 +36,9 @@ To deploy [modules](/docs/intro/modules), you'll have to enroll your linux serve
     <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/node/monitor"}>
         Dashboards, metrics, record & alerting rules.
     </Card>
-    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/node/faq"}>
+
+    <Card icon={<Blocks className="text-emerald-600"/>} title='FAQ' href={"/docs/node/faq"}>
         Frequently Asked Questions about node module
     </Card>
 </Cards>
-
---------
-
-## Architecture
-
-
-
-The module provides:
-
-- Setup node name
-- Setup node repo and install packages
-- Sync clock time via `chrony`
-- System tuning via `tuned`
-- Service exposure via `haproxy`
-- Host monitoring via `node_exporter`
-- Log collection via `promtail`
-- L2 VIP support via `keepalived` (**OPTIONAL**)
-
-
-
-
-
---------
-
-The **NODE** module is Pigsty's foundational infrastructure layer, responsible for transforming raw computing resources—whether bare metal servers, virtual machines, or containerized environments—into standardized, monitored, and service-ready nodes within your infrastructure cluster.
-
-## Overview
-
-NODE provides comprehensive node lifecycle management through automated configuration, system optimization, and integrated monitoring. It establishes the essential foundation upon which other Pigsty modules like [PGSQL](/docs/pgsql), [REDIS](/docs/redis), and [INFRA](/docs/infra) can operate reliably.
-
-### Core Capabilities
-
-- **Identity Management**: Establish consistent node naming and cluster organization
-- **System Optimization**: Apply performance tuning, kernel configuration, and resource management
-- **Service Exposure**: Deploy HAProxy load balancer for service discovery and traffic routing
-- **Monitoring Integration**: Install and configure exporters for metrics and log collection
-- **High Availability**: Optional L2 VIP support for cluster-level failover capabilities
-- **Security Hardening**: Firewall configuration, admin user management, and SSH key distribution
-
-### Architecture
-
-Every node in Pigsty follows a standardized deployment pattern:
-
-```
-┌─────────────────────────────────────────┐
-│               Node Instance             │
-├─────────────────────────────────────────┤
-│  System Layer                           │
-│  • OS tuning & kernel modules           │
-│  • Network & firewall configuration     │
-│  • Time sync & cron scheduling          │
-│  • Admin user & SSH key management      │
-├─────────────────────────────────────────┤
-│  Service Layer                          │
-│  • HAProxy (service exposure)           │
-│  • Keepalived (optional L2 VIP)         │
-│  • Docker (optional containers)         │
-├─────────────────────────────────────────┤
-│  Monitoring Layer                       │
-│  • Node Exporter (system metrics)       │
-│  • Promtail (log collection)            │
-│  • Keepalived Exporter (VIP metrics)    │
-└─────────────────────────────────────────┘
-```
-
-### Node Types
-
-Pigsty recognizes several node categories based on their roles:
-
-- **[Common Nodes](/docs/node/concept/#common-node)**: Standard managed nodes running application workloads
-- **[Admin Node](/docs/node/concept/#admin-node)**: Control plane node where Pigsty is installed and orchestration commands are executed
-- **[Infra Nodes](/docs/node/concept/#infra-node)**: Infrastructure service nodes running DNS, monitoring, and web services
-- **[PGSQL Nodes](/docs/node/concept/#pgsql-node)**: Database nodes with PostgreSQL instances and associated services
-
-## Quick Start
-
-### Adding a Node
-
-```bash
-# Add a single node
-bin/node-add 10.10.10.100
-
-# Add an entire node cluster
-bin/node-add node-cluster
-
-# Initialize with custom configuration
-./node.yml -l 10.10.10.100 -e node_cluster=web-servers
-```
-
-### Removing a Node
-
-```bash
-# Remove a single node
-bin/node-rm 10.10.10.100
-
-# Remove an entire cluster
-bin/node-rm node-cluster
-```
-
-### Service Management
-
-```bash
-# Enable L2 VIP for high availability
-./node.yml -l proxy-cluster -t node_vip
-
-# Configure HAProxy services
-./node.yml -l web-cluster -t haproxy
-
-# Update monitoring configuration
-./node.yml -l all -t monitor
-```
-
-## Next Steps
-
-- **[Concepts](/docs/node/concept)**: Understand node types and architecture
-- **[Configuration](/docs/node/config)**: Learn identity and cluster configuration
-- **[Parameters](/docs/node/param)**: Explore all 64+ configuration parameters
-- **[Playbooks](/docs/node/playbook)**: Master node management automation
-- **[Administration](/docs/node/admin)**: Common operational procedures
-- **[Monitoring](/docs/node/monitor)**: Dashboards, alerts, and observability
-- **[FAQ](/docs/node/faq)**: Troubleshooting and common questions
 

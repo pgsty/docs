@@ -10,11 +10,14 @@ import {
     Wrench,
     ScrollText,
     Telescope,
-    MessageCircleQuestion
+    Blocks
 } from 'lucide-react';
 
 
 <Cards>
+    <Card icon={<Blocks className="text-red-600"/>} title='Architecture' href={"/docs/node/arch"}>
+        Architecture, core concepts, identity management
+    </Card>
     <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/infra/config"}>
         Configure infra module, and use multiple infra nodes.
     </Card>
@@ -30,7 +33,7 @@ import {
     <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/infra/monitor"}>
         Dashboards, metrics, record & alerting rules.
     </Card>
-    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/docs/infra/faq"}>
+    <Card icon={<Blocks className="text-emerald-600"/>} title='FAQ' href={"/docs/infra/faq"}>
         Frequently Asked Questions about infra module
     </Card>
 </Cards>

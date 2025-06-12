@@ -4,7 +4,7 @@
   "root": false,
   "icon": "Landmark",
   "pages": [
-    "concept",
+    "arch",
     "config",
     "param",
     "admin",

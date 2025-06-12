@@ -1,11 +1,11 @@
 ---
-title: Config
+title: Configure
 description: configure infra nodes, nginx, repo, dns, ntp, monitor system
 icon: CodeXml
 ---
 
 
-The INFRA module primarily provides **monitoring** infrastructure and is **optional** for PostgreSQL databases.
+The INFRA module primarily provides **monitoring** infrastructure and is [**optional**](/docs/install/minimal) for PostgreSQL service.
 
 Unless you have manually configured dependencies on DNS/NTP services from INFRA nodes elsewhere, failures in the INFRA module typically won’t affect the normal operation of PostgreSQL database clusters.
 
@@ -19,7 +19,7 @@ Using more than 3 INFRA nodes provides limited benefits, but you can use more ET
 
 ------
 
-## Configuration Examples
+## Examples
 
 To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/docs/config/inventory) and assign them an Infra instance number [`infra_seq`](/docs/infra/param#infra_seq).
 

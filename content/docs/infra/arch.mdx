@@ -1,12 +1,35 @@
 ---
-title: Concept
-description: architecture and entities
-icon: Shapes
+title: Architecture
+description: Architecture and entities in the infra module
+icon: Blocks
 ---
 
-A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module that provides essential services for managed nodes and database clusters:
+A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module that provides the following services:
 
-- [Nginx](/docs/infra/arch/#nginx): Acts as a web server for local package repositories and a reverse proxy for other web UI services
+![](/img/pigsty/infra.png)
+
+These are essential for a production-grade PostgreSQL service, and will be installed by default.
+
+|      Component      |  Port  |   Domain   | Description                       |
+|:-------------------:|:------:|:----------:|-----------------------------------|
+|       `nginx`       |  `80`  | `h.pigsty` | Web Service Portal (YUM/APT Repo) |
+|   `alertmanager`    | `9093` | `a.pigsty` | Alert Aggregation and delivery    |
+|    `prometheus`     | `9090` | `p.pigsty` | Monitoring Time Series Database   |
+|      `grafana`      | `3000` | `g.pigsty` | Visualization Platform            |
+|        `lok`        | `3100` |     -      | Logging Collection Server         |
+|    `pushgateway`    | `9091` |     -      | Collect One-Time Job Metrics      |
+| `blackbox_exporter` | `9115` |     -      | ICMP, TCP, HTTP Probing           |
+|      `dnsmasq`      |  `53`  |     -      | DNS Server, optional              |
+|      `chronyd`      | `123`  |     -      | NTP Time Server, optional         |
+
+<Callout title="HA PG can be deployed without INFRA" type="warn">
+
+If you don't want these, the [**Minimal Install**](/docs/install/minimal) mode deploy HA Postgres without the Infra module.
+
+</Callout>
+
+
+- [Nginx](/docs/infra/arch/#nginx): Acts as a web server for local repo and a reverse proxy for other web UI services
 - Grafana : Visualization platform for metrics, dashboards, and data analytics
 - [Loki](/docs/infra/arch/#loki): Centralized log aggregation and querying via Grafana
 - Prometheus: Time-series monitoring database for metrics collection, storage, and alert evaluation
@@ -16,62 +39,22 @@ A standard Pigsty deployment comes with an [**`INFRA`**](/docs/infra/) module th
 - [DNSMASQ](/docs/infra/arch/#dnsmasq): DNS resolution for Pigsty’s internal domains
 - [Chronyd](/docs/infra/arch/#chronyd): NTP time synchronization to keep all nodes in sync
 
+
+
 The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/docs/install/minimal) mode.
 
 However, since INFRA provides essential supporting services for production-grade HA PostgreSQL clusters, it’s strongly recommended for most deployments.
 
 If you already have your own infrastructure (Nginx, local repos, monitoring, DNS, NTP), you can disable INFRA and [**configure**](/docs/infra/config/) Pigsty to use your existing stack instead.
 
-------
-
-## Architecture Overview
-
-INFRA module includes these components with default ports and domains:
-
-|                        Component                        |   Port   | Default Domain | Description                |
-|:-------------------------------------------------------:|:--------:|:--------------:|----------------------------|
-|            [Nginx](/docs/infra/arch/#nginx)             | `80/443` |   `h.pigsty`   | Web Portal & Package Repos |
-|          [Grafana](/docs/infra/arch/#grafana)           |  `3000`  |   `g.pigsty`   | Visualization Platform     |
-|       [Prometheus](/docs/infra/arch/#prometheus)        |  `9090`  |   `p.pigsty`   | TSDB for Metrics           |
-|     [AlertManager](/docs/infra/arch/#alertmanager)      |  `9093`  |   `a.pigsty`   | Alert Management           |
-|            [Loki](/docs/infra/arch/#grafana)            |  `3100`  |       -        | Log Aggregation            |
-|      [PushGateway](/docs/infra/arch/#pushgateway)       |  `9091`  |       -        | One-off Metrics Collector  |
-| [BlackboxExporter](/docs/infra/arch/#blackbox-exporter) |  `9115`  |       -        | Blackbox Monitoring        |
-|          [DNSMasq](/docs/infra/arch/#dnsmasq)           |   `53`   |       -        | DNS Server                 |
-|          [Chronyd](/docs/infra/arch/#chronyd)           |  `123`   |       -        | NTP Server                 |
-
-Here’s how components look in a full single-node Pigsty installation:
-
-[![pigsty-arch.jpg](https://pigsty.io/img/pigsty/arch.jpg)](/docs/infra/)
-
-By design, INFRA module failures **typically** won’t impact existing PostgreSQL clusters’ operations.
-
-The [PGSQL](/docs/pgsql/) module relies on several [INFRA](/docs/infra/) services:
-
-- DNS resolution via DNSMASQ for cluster/host domains
-- Pigsty itself uses direct IP connections to avoid DNS dependency
-- Software installation via Nginx’s local yum/apt repos
-- Users can specify [`repo_upstream`](/docs/infra/param#repo_upstream) & [`node_repo_modules`](/docs/node/param#node_repo_modules) to use internet/other repos
-- Metrics collection by Prometheus
-- Disabled when [`prometheus_enabled`](/docs/infra/param#prometheus_enabled) is `false`
-- Log shipping to Loki via Promtail (only to [`infra_portal`](/docs/infra/param#infra_portal) endpoint)
-- Disabled when [`loki_enabled`](/docs/infra/param#loki_enabled) is `false`
-- Time sync from INFRA/ADMIN’s NTP/Chronyd
-- INFRA nodes use public NTP servers
-- Other nodes sync from INFRA/ADMIN
-- Custom NTP servers configurable via [`node_ntp_servers`](/docs/node/param#node_ntp_servers)
-- Patroni uses INFRA’s etcd as DCS (if no dedicated cluster)
-- pgBackRest uses INFRA’s MinIO as optional backup repo (if no dedicated cluster)
-- Admins manage database nodes from INFRA/ADMIN via Ansible or other tools:
-- Cluster creation, scaling, instance/cluster recycling
-- Business user/database creation, service/HBA modifications
-- Log collection, vacuum, backup, health checks
 
 ------
+
+
 
 ## Nginx
 
-Nginx is the gateway for all WebUI services in Pigsty, serving HTTP/HTTPS on ports 80/443.
+Nginx is the gateway for all WebUI services in Pigsty, serving on HTTP (80) / HTTPS (443) by default.
 
 It exposes web UIs like Grafana, Prometheus, AlertManager, and HAProxy console, while also serving static resources like local yum/apt repos.
 
@@ -92,8 +75,6 @@ These `endpoint` definitions are referenced by other services - logs go to `loki
 
 Pigsty allows rich Nginx customization as a local file server or reverse proxy, with self-signed or real HTTPS certs.
 
-
-
 For more details, check these tutorials:
 
 - [**Tutorial: DNS Configuration**](/docs/admin/domain)
@@ -104,9 +85,9 @@ For more details, check these tutorials:
 
 ------
 
-### Local Package Repository
+### Local Repo
 
-During installation, Pigsty creates a local package repo on the INFRA node to speed up subsequent software installations.
+During installation, Pigsty creates a local software repo on the INFRA node to speed up later software installations.
 
 Located at `/www/pigsty` and served by Nginx, it’s accessible via `http://h.pigsty/pigsty`.
 
@@ -164,7 +145,9 @@ Configs live in: [Config: INFRA - GRAFANA](/docs/infra/param#grafana) and [Confi
 
 ### Ansible
 
-Pigsty installs Ansible on meta-nodes because… who doesn’t love declarative, idempotent infrastructure as code? 🎭
+Ansible is already installed on the [Admin Node](/docs/node/arch#admin-node) during [bootstrap](/docs/install/start#bootstrap).
+So the `ansible` on [infra nodes](/docs/node/arch#infra-nodes) are not actually used.
+But it gives you a viable backup option in case of your admin node is nuked.
 
 ------
 
@@ -176,10 +159,15 @@ DNS records live in `/etc/hosts.d/` on all INFRA nodes.
 
 Configs: [Config: INFRA - DNS](/docs/infra/param#dns)
 
+Pigsty setup it just for your convenience, and pigsty is actually NOT using it internally (static DNS records in `/etc/hosts` are used instead).
+
+
 ------
 
 ### Chronyd
 
-Time waits for no one, but Chronyd helps keep all nodes in sync! (Optional)
+Chronyd helps keep all nodes in sync!
 
 NTP configs: [Config: NODES - NTP](/docs/node/param#node_time)
+
+This is purely optional, if you already have your own NTP servers configured, just leave it alone.

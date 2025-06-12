@@ -5,19 +5,19 @@ full: false
 icon: CodeXml
 ---
 
-Each node has **identity parameters** that are configured through the parameters in `<cluster>.hosts` and `<cluster>.vars`.
+You don't need to define node cluster and node instances on purpose.
+It is often implied by other database [module](/docs/intro/module)'s cluster definition.
+If you define a [PGSQL](/docs/pgsql/) cluster, it defines a node cluster implicitly.
 
-Pigsty uses **IP** as a unique identifier for **database nodes**. **This IP must be the IP that the database instance listens to and serves externally**, But it would be inappropriate to use a public IP address!
 
-**This is very important**. The IP is the `inventory_hostname` of the host in the inventory, which is reflected as the `key` in the `<cluster>.hosts` object.
+But there are some cases where you may want to use explicit named node clusters / instances.
+Such as running node groups for dedicated purpose (e.g., haproxy groups, node buffer pool, etc…)
 
-You can use `ansible_*` parameters to overwrite `ssh` behavior, e.g. connect via domain name / alias, but the primary IPv4 is still the core identity of the node.
+--------
 
-[`nodename`](/docs/node/param#nodename) and [`node_cluster`](/docs/node/param#node_cluster) are not **mandatory**; [`nodename`](/docs/node/param#nodename) will use the node’s current hostname by default, while [`node_cluster`](/docs/node/param#node_cluster) will use the fixed default value: `nodes`.
+## Identity Parameters
 
-If [`node_id_from_pg`](/docs/node/param#node_id_from_pg) is enabled, the node will borrow [`PGSQL`](/docs/pgsql/) [identity](/docs/pgsql/param#pg_id) and use it as Node’s identity, i.e. [`node_cluster`](/docs/node/param#node_cluster) is set to [`pg_cluster`](/docs/pgsql/param#pg_cluster) if applicable, and [`nodename`](/docs/node/param#nodename) is set to `${pg_cluster}-${pg_seq}`. If [`nodename_overwrite`](/docs/node/param#nodename_overwrite) is enabled, node’s hostname will be overwritten by [`nodename`](/docs/node/param#nodename)
-
-Pigsty labels a node with identity parameters in the monitoring system. Which maps `nodename` to `ins`, and `node_cluster` into `cls`.
+Pigsty uses node's primary IPv4 address (`inventory_hostname`) as its identity.
 
 |                    Name                    |   Type   | Level | Necessity    | Comment               |
 |:------------------------------------------:|:--------:|:-----:|--------------|-----------------------|
@@ -25,12 +25,9 @@ Pigsty labels a node with identity parameters in the monitoring system. Which ma
 |  [`nodename`](/docs/node/param#nodename)   | `string` | **I** | Optional     | **Node Name**         |
 | [`node_cluster`](/docs/node/#node_cluster) | `string` | **C** | Optional     | **Node cluster name** |
 
+The [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/param#node_cluster) can be used as optional secondary identity for monitoring purpose.
 
-## Examples
-
-The following cluster config declares a three-node node cluster:
-
-```yaml
+```yaml title="node cluster example"
 node-test:
   hosts:
     10.10.10.11: { nodename: node-test-1 }
@@ -40,12 +37,43 @@ node-test:
     node_cluster: node-test
 ```
 
-Default values:
+This can be useful when you just want to monitor these nodes rather than running database on them.
 
-```yaml
-#nodename:           # [INSTANCE] # node instance identity, use hostname if missing, optional
-node_cluster: nodes   # [CLUSTER] # node cluster identity, use 'nodes' if missing, optional
-nodename_overwrite: true          # overwrite node's hostname with nodename?
-nodename_exchange: false          # exchange nodename among play hosts?
-node_id_from_pg: true             # use postgres identity as node identity if applicable?
+
+
+--------
+
+## Borrowed Identity
+
+Because Pigsty is using a 1:1 mapping between NODE and PG instance (there's only one PG instance per node),
+the node's identity can be borrowed from corresponding PG instances:
+
+|                    Name                    | Label | Level | Borrowed Identity               | Comment              |
+|:------------------------------------------:|:-----:|:-----:|---------------------------------|----------------------|
+|  [`nodename`](/docs/node/param#nodename)   | `ins` | **I** | `{{ pg_cluster }}-{{ pg_seq }}` | **PG Instance Name** |
+| [`node_cluster`](/docs/node/#node_cluster) | `cls` | **C** | `{{ pg_cluster }}`              | **PG Cluster Name**  |
+
+This is default behavior, it's convenient to have PG & NODE with the same `cls` / `ins` identity labels in the monitoring system.
+This can be disabled by overwriting the [`node_id_from_pg`](/docs/node/param#node_id_from_pg) param to `false`
+
+If there's no corresponding PG instance defined, and no explicit [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/#node_cluster) defined,
+the node will be labeled with `cls` as `nodes` and `ins` as the current hostname.
+
+
+--------
+
+## SSH Connection
+
+The `inventory_hostname` is used by [Ansible](/docs/admin/ansible) to connect to the node via SSH.
+
+If your node cannot be simply access via `ssh <inventory_hostname>`, [ssh alias](/docs/prepare/alias) and more [ansible conn param](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) (even a different IP) can be used.
+But the `inventory_hostname` is still the core identity of the node.
+
+```yaml title="ssh param example"
+node-test:
+  hosts:
+    10.10.10.11: { nodename: node-test-1 , ansible_host: node-1 }
+    10.10.10.12: { nodename: node-test-2 , ansible_host: 192.168.0.1 , ansible_port: 2222 , ansible_user: root }
+  vars:
+    node_cluster: node-test
 ```
