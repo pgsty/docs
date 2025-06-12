@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react';
 import { TerminalIcon } from 'lucide-react';
+import Link from 'next/link';
 
 import scrollIntoView from 'scroll-into-view-if-needed';
 import { cn } from '@/lib/cn';
@@ -114,7 +115,8 @@ function LaunchAppWindow(
   props: HTMLAttributes<HTMLDivElement>,
 ): React.ReactElement {
   return (
-    <div
+    <Link href="/docs/install/interface">
+      <div
       {...props}
       className={cn(
         'overflow-hidden rounded-md border bg-fd-background shadow-xl',
@@ -122,10 +124,10 @@ function LaunchAppWindow(
       )}
     >
       <div className="relative flex h-6 flex-row items-center border-b bg-fd-muted px-4 text-xs text-fd-muted-foreground">
-        <p className="absolute inset-x-0 text-center">localhost:3000</p>
+        <p className="absolute inset-x-0 text-center">grafana @ :3000</p>
       </div>
-      <div className="p-4 text-sm">New App launched!</div>
-    </div>
+      <div className="p-4 text-sm"><code>admin:pigsty</code></div>
+    </div></Link>
   );
 }
 
@@ -145,9 +147,9 @@ export function WhyInteractive() {
   return (
     <div
       id="why-interactive"
-      className="flex flex-col-reverse gap-3 md:flex-row md:min-h-[380px]"
+      className="flex flex-col-reverse gap-6 md:flex-row md:min-h-[380px]"
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col md:w-80 md:flex-shrink-0">
         {items.map((item, i) => (
           <button
             key={item}
@@ -161,7 +163,7 @@ export function WhyInteractive() {
             }}
             type="button"
             className={cn(
-              'transition-colors text-nowrap border border-transparent rounded-lg px-3 py-2.5 text-start text-sm text-fd-muted-foreground font-medium',
+              'transition-colors text-nowrap border border-transparent rounded-lg px-4 py-4 text-center text-base text-fd-muted-foreground font-semibold flex-1',
               i === active
                 ? 'text-fd-primary bg-fd-primary/10 border-fd-primary/10'
                 : 'hover:text-fd-accent-foreground/80',
@@ -193,14 +195,14 @@ export function WhyInteractive() {
             <h3>Blossom of Possibilities</h3>
             <p>Nurturing all, thriving in synergy, forging infinite possibilities!</p>
             <Cards>
-              <Card title="Analytics" href="/docs/analytics">Big Data&apos;s new challenger</Card>
-              <Card title="AI Ready" href="/docs/ai">Baseline for RAG/vector app</Card>
-              <Card title="Geospatial" href="/docs/gis">De facto GIS standard</Card>
-              <Card title="Time Series" href="/docs/timeseries">Temporal data mastery</Card>
-              <Card title="Extensibility" href="/docs/extension">A Universe of Possibilities</Card>
-              <Card title="Text Search" href="/docs/textsearch">Built-in search engine</Card>
-              <Card title="Languages" href="/docs/language">Language of your choice</Card>
-              <Card title="FDW Federation" href="/docs/fdw">Connecting data silos</Card>
+              <Card title="Analytics" href="/docs/value/extensibility#analytics">OLAP&apos;s new challenger</Card>
+              <Card title="AI Ready" href="/docs/value/extensibility#ai-ready">RAG / Vector Defaults</Card>
+              <Card title="Geospatial" href="/docs/value/extensibility#geospatial">De facto GIS standard</Card>
+              <Card title="Time Series" href="/docs/value/extensibility#time-series">Temporal data mastery</Card>
+              <Card title="Featured" href="/docs/value/extensibility#featured">Database as a Platform</Card>
+              <Card title="Full-Text Search" href="/docs/value/extensibility#text-search">Built-in search engine</Card>
+              <Card title="PL Languages" href="/docs/value/extensibility#languages">Procedure Language</Card>
+              <Card title="FDW Federation" href="/docs/value/extensibility#foreign-data">Connecting data silos</Card>
             </Cards>
           </WhyPanel>
         ) : null}
@@ -210,14 +212,14 @@ export function WhyInteractive() {
             <h3>Rock-Solid and Secure</h3>
             <p>Towering peaks, bedrock solid, standing firm at any summit!</p>
             <Cards>
-              <Card title="High-Availability" href="/docs/ha">HA PostgreSQL</Card>
-              <Card title="Self-Healing" href="/docs/ha">Adaptive service failover</Card>
-              <Card title="PITR Protection" href="/docs/pitr">Auto-configured point-in-time recovery</Card>
-              <Card title="Infra Closure" href="/docs/infra">No external dependencies</Card>
-              <Card title="Access Control" href="/docs/security">Built-in best-practice model</Card>
-              <Card title="Confidentiality" href="/docs/security">Guaranteed data security</Card>
-              <Card title="Data Integrity" href="/docs/security">Thorough verification</Card>
-              <Card title="Battle-Tested" href="/docs/benchmark">Availability benchmark</Card>
+              <Card title="High-Availability" href="/docs/value/reliability#high-availability">Reliable PostgreSQL RDS</Card>
+              <Card title="Self-Healing" href="/docs/value/reliability#self-healing">Adaptive service failover</Card>
+              <Card title="PITR Protection" href="/docs/value/reliability#pitr-protection">Pre-configured Backup & Archives</Card>
+              <Card title="Infra Closure" href="/docs/value/reliability#infra-closure">No external dependencies</Card>
+              <Card title="Access Control" href="/docs/value/reliability#access-control">Built-in best-practice model</Card>
+              <Card title="Confidentiality" href="/docs/value/reliability#confidentiality">Guaranteed data security</Card>
+              <Card title="Data Integrity" href="/docs/value/reliability#data-integrity">Thorough verification</Card>
+              <Card title="Battle-Tested" href="/docs/value/reliability#battle-tested">Availability Results</Card>
             </Cards>
           </WhyPanel>
         ) : null}
@@ -227,14 +229,14 @@ export function WhyInteractive() {
             <h3>Clarity and Vision</h3>
             <p>Sky&apos;s movement, all-seeing view, perceiving details to master the whole!</p>
             <Cards>
-              <Card title="Monitoring Infra" href="/docs/monitor">Built-in monitoring infrastructure</Card>
-              <Card title="Data-Driven" href="/docs/monitor">Foundation for digital transformation</Card>
-              <Card title="Ultimate Experience" href="/docs/monitor">The definitive Postgres monitoring solution</Card>
-              <Card title="Universal Monitoring" href="/docs/monitor">Not limited to PG or RDS monitor</Card>
-              <Card title="Automatic Alerts" href="/docs/monitor">No more manual checks</Card>
-              <Card title="Performance Tuning" href="/docs/monitor">Slow-query bottlenecks uncovered</Card>
-              <Card title="Logging Analysis" href="/docs/monitor">Fast root-cause detection</Card>
-              <Card title="Custom Dashboards" href="/docs/monitor">Low-code visualization development</Card>
+              <Card title="Monitoring Infra" href="/docs/value/observability#monitoring-infra">Built-in Observability Stack</Card>
+              <Card title="Data-Driven" href="/docs/value/observability#data-driven">Measure what you Manage</Card>
+              <Card title="SOTA Experience" href="/docs/value/observability#sota-experience">The Definitive PG monitoring</Card>
+              <Card title="Universal Monitoring" href="/docs/value/observability#universal-monitoring">RDS or Compat Kernels</Card>
+              <Card title="Automatic Alerts" href="/docs/value/observability#automatic-alerts">No more manual checks</Card>
+              <Card title="Performance Tuning" href="/docs/value/observability#performance-tuning">Slow-query Optimize</Card>
+              <Card title="Log Analysis" href="/docs/value/observability#log-analysis">Fast root-cause detection</Card>
+              <Card title="Custom Dashboards" href="/docs/value/observability#custom-dashboards">Low-code Data App</Card>
             </Cards>
           </WhyPanel>
         ) : null}
@@ -243,30 +245,30 @@ export function WhyInteractive() {
             <h3>Elastic Performance</h3>
             <p>Flowing like water, soft yet resilient, converging to adapt to endless change!</p>
             <Cards>
-              <Card title="Blazing Performance" href="/docs/performance">New hardware fully harnessed</Card>
-              <Card title="R/W Separation" href="/docs/performance">Unlimited read scaling</Card>
-              <Card title="Connection Pooling" href="/docs/performance">High concurrency made easy</Card>
-              <Card title="Load Balancing" href="/docs/performance">Console-driven traffic control</Card>
-              <Card title="Horizontal Scaling" href="/docs/performance">In-place switch to distributed</Card>
-              <Card title="Disk Expansion" href="/docs/performance">External tables with transparent compression</Card>
-              <Card title="Mass Deployment" href="/docs/performance">Large clusters made easy</Card>
-              <Card title="Cloud Elasticity" href="/docs/performance">Cloud-like elasticity</Card>
+              <Card title="Great Performance" href="/docs/value/scalability#great-performance">Hardware Fully Harnessed</Card>
+              <Card title="R/W Separation" href="/docs/value/scalability#rw-separation">Unlimited Read Scaling</Card>
+              <Card title="Connection Pooling" href="/docs/value/scalability#connection-pooling">High Concurrency</Card>
+              <Card title="Load Balancing" href="/docs/value/scalability#load-balancing">Traffic Control</Card>
+              <Card title="Horizontal Scaling" href="/docs/value/scalability#horizontal-scaling">Distributive Extension</Card>
+              <Card title="Storage Expansion" href="/docs/value/scalability#storage-expansion">Transparent Compression</Card>
+              <Card title="Mass Deployment" href="/docs/value/scalability#mass-deployment">Large clusters made easy</Card>
+              <Card title="Elasticity" href="/docs/value/scalability#elasticity">Cloud-like Elasticity</Card>
             </Cards>
           </WhyPanel>
         ) : null}
         {active === 4 ? (
           <WhyPanel>
             <h3>Simple & Actionable</h3>
-            <p>Blazing like wildfire, illuminating all around—true to the core while constantly innovating, burning bright without end!</p>
+            <p>Blazing like wildfire, illuminating all around — constantly evolving and burning bright without end!</p>
             <Cards>
-              <Card title="Infra as Code" href="/docs/infra">Define and manage everything in code</Card>
-              <Card title="Simple & Easy" href="/docs/infra">Up and running in minutes</Card>
-              <Card title="Bare Linux" href="/docs/infra">No containers or K8s required</Card>
-              <Card title="Offline Install" href="/docs/infra">Stable, hassle-free delivery</Card>
-              <Card title="Admin SOP" href="/docs/infra">Best practices included</Card>
-              <Card title="No Downtime" href="/docs/infra">Online migration and resizing</Card>
-              <Card title="Rich Parameters" href="/docs/infra">Plenty of tunable parameters</Card>
-              <Card title="Provisioning" href="/docs/infra">One-click server provisioning</Card>
+              <Card title="Infra as Code" href="/docs/value/maintainability#infra-as-code">Define everything in Code</Card>
+              <Card title="Simple & Easy" href="/docs/value/maintainability#simple-easy">Up and Running in Minutes</Card>
+              <Card title="Bare Linux" href="/docs/value/maintainability#bare-linux">No Containers or Kubernetes</Card>
+              <Card title="Offline Install" href="/docs/value/maintainability#offline-install">Stable, Hassle-free Delivery</Card>
+              <Card title="Admin SOP" href="/docs/value/maintainability#admin-sop">Best Practices Included</Card>
+              <Card title="No Downtime" href="/docs/value/maintainability#no-downtime">Online Migration & Resizing</Card>
+              <Card title="Rich Parameters" href="/docs/value/maintainability#rich-parameters">Plenty of Tunable Knobs</Card>
+              <Card title="Provisioning" href="/docs/value/maintainability#provisioning">One-command IaaS Provisioning</Card>
             </Cards>
           </WhyPanel>
         ) : null}
@@ -275,14 +277,14 @@ export function WhyInteractive() {
             <h3>Flexible Building Blocks</h3>
             <p>Swift as the wind, simplifying complexity—riding the currents of change with freedom and ease!</p>
             <Cards>
-              <Card title="Modular Design" href="/docs/module">Lego-like assembly</Card>
-              <Card title="App Templates" href="/docs/module">One-click enterprise deployment</Card>
-              <Card title="Core Modules" href="/docs/module">Fully-featured Postgres RDS</Card>
-              <Card title="Extra Modules" href="/docs/module">Push the capability boundary</Card>
-              <Card title="Kernel Modules" href="/docs/module">Swappable database engines</Card>
-              <Card title="OLAP Modules" href="/docs/module">Powerful analytics capabilities</Card>
-              <Card title="Pilot Modules" href="/docs/module">Exploring cutting-edge frontiers</Card>
-              <Card title="Flavor Modules" href="/docs/module">Creative Postgres flavors</Card>
+              <Card title="Modular Design" href="/docs/value/composability#modular-design">Lego-like Assembly</Card>
+              <Card title="App Templates" href="/docs/value/composability#app-templates">One-Click Enterprise Deployment</Card>
+              <Card title="Core Modules" href="/docs/value/composability#core-modules">Fully-Featured Postgres RDS</Card>
+              <Card title="Extra Modules" href="/docs/value/composability#extra-modules">Extending RDS Capabilities</Card>
+              <Card title="Kernel Modules" href="/docs/value/composability#kernel-modules">Swappable Database Engines</Card>
+              <Card title="OLAP Modules" href="/docs/value/composability#olap-modules">Powerful Analytics Capabilities</Card>
+              <Card title="Pilot Modules" href="/docs/value/composability#pilot-modules">Exploring Cutting-Edge Frontiers</Card>
+              <Card title="Flavor Modules" href="/docs/value/composability#flavor-modules">Creative Postgres Flavors</Card>
             </Cards>
           </WhyPanel>
         ) : null}
@@ -291,14 +293,14 @@ export function WhyInteractive() {
             <h3>Sovereign Self-Hosting</h3>
             <p>Grounded like the earth, gathering all rivers—standing firm while gazing at the stars!</p>
             <Cards>
-              <Card title="Software Freedom" href="/docs/foss">Local-First OSS</Card>
-              <Card title="No Vendor Lock-In" href="/docs/foss">Free Extension</Card>
-              <Card title="Data Ownership" href="/docs/foss">Truly under your control</Card>
-              <Card title="Friendly License" href="/docs/foss">Compliance Ready</Card>
-              <Card title="Expert Support" href="/docs/foss">Top experts backing you</Card>
-              <Card title="Self-hosting" href="/docs/foss">Democratized</Card>
-              <Card title="Multi-Cloud" href="/docs/foss">No vendor lock-in</Card>
-              <Card title="DIY Development" href="/docs/foss">Roll up your sleeves and build</Card>
+              <Card title="Software Freedom" href="/docs/value/controllability#software-freedom">Self-hosting democratized</Card>
+              <Card title="Local-First" href="/docs/value/controllability#local-first">Run on-premises indefinitely</Card>
+              <Card title="Multi-Cloud" href="/docs/value/controllability#multi-cloud">No vendor lock-in</Card>
+              <Card title="Free Extensions" href="/docs/value/controllability#free-extensions">420+ PostgreSQL extensions</Card>
+              <Card title="Data Ownership" href="/docs/value/controllability#data-ownership">Pay fair cost for resources</Card>
+              <Card title="Friendly License" href="/docs/value/controllability#friendly-license">AGPLv3 preserving freedom</Card>
+              <Card title="Compliance Ready" href="/docs/value/controllability#compliance-ready">Meeting domestic requirements</Card>
+              <Card title="Expert Support" href="/docs/value/controllability#expert-support">Top-tier PostgreSQL specialists</Card>
             </Cards>
           </WhyPanel>
         ) : null}
@@ -307,14 +309,14 @@ export function WhyInteractive() {
             <h3>Cost-Effective RDS</h3>
             <p>Thunderous impact, breaking to build anew—keeping costs manageable and value ever rising!</p>
             <Cards>
-              <Card title="No License Fee" href="/docs/afford">Do Less, Save More</Card>
-              <Card title="DBA Efficiency" href="/docs/afford">Simple Architecture</Card>
-              <Card title="Enable Cloud-Exit" href="/docs/afford">Key blockers resolved</Card>
-              <Card title="Community Support" href="/docs/afford">Discuss, share, and co-create</Card>
-              <Card title="Expert Consulting" href="/docs/afford">Expert help on demand</Card>
-              <Card title="Commerical Support" href="/docs/afford">Transparent pricing, worth every penny</Card>
-              <Card title="Open-Source" href="/docs/afford">Fully leverage PostgreSQL ecosystem</Card>
-              <Card title="Save More" href="/docs/afford">Escape the RDS money pit</Card>
+              <Card title="Open-Source" href="/docs/value/affordability#open-source">Fully leverage PostgreSQL's eco</Card>
+              <Card title="Save More" href="/docs/value/affordability#save-more">Escape the RDS money pit</Card>
+              <Card title="DBA Efficiency" href="/docs/value/affordability#dba-efficiency">Everyone can be a DBA</Card>
+              <Card title="Simplified Arch" href="/docs/value/affordability#simplified-arch">No Containers or K8s</Card>
+              <Card title="Enable Cloud-Exit" href="/docs/value/affordability#cloud-exit">Key blockers resolved</Card>
+              <Card title="Community Support" href="/docs/value/affordability#community-support">Discuss & Share</Card>
+              <Card title="Expert Consultation" href="/docs/value/affordability#expert-consult">Pay as needed</Card>
+              <Card title="Subscription" href="/docs/value/affordability#subscription">Clear pricing, value for money</Card>
             </Cards>
           </WhyPanel>
         ) : null}

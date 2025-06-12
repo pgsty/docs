@@ -4,26 +4,14 @@ description: Key features and highlights
 icon: Feather
 ---
 
-import {
-    Database,
-    CpuIcon,
-    Landmark,
-    FileCode,
-    Settings,
-    FileJson,
-    Shield,
-    GraduationCap,
-    Box,
-    Layers,
-    Container,
-    Leaf,
-} from 'lucide-react';
+import {Boxes, SquareCode, Telescope, Zap, FileJson, DatabaseBackup, Cpu, Infinity, BookDashed} from 'lucide-react';
 
 
 
 <Cards>
 
-    <Card icon={<FileJson className="text-orange-600"/>} title='Postgres Distribution for Developers' href={"/docs/intro/distro"}>
+    <Card icon={<FileJson className="text-orange-600"/>} title='Postgres Distribution for Developers'
+          href={"/docs/intro/distro"}>
         Just use PostgreSQL for Everything! \
         Build data infra with assembled superpowers!
     </Card>
@@ -39,34 +27,34 @@ import {
 
 <Cards>
 
-    <Card icon={<CpuIcon className="text-green-700"/>} title='Postgres Extensions' href={"/docs/feat/ext"}>
+    <Card icon={<Boxes className="text-sky-700"/>} title='Postgres Extensions' href={"/docs/feat/ext"}>
         Get the superpower of **420+** PG extensions out of the box
     </Card>
 
-    <Card icon={<Database className="text-sky-600"/>} title='High-Availability' href={"/docs/feat/ha"}>
+    <Card icon={<Infinity className="text-orange-600"/>} title='High-Availability' href={"/docs/feat/ha"}>
         Self-healing architecture and hassle-free service access
     </Card>
-    <Card icon={<GraduationCap className={"text-yellow-600"}/>} title='Kernel Replacement' href={"/docs/feat/kernel"}>
+    <Card icon={<Cpu className={"text-yellow-600"}/>} title='Kernel Replacement' href={"/docs/feat/kernel"}>
         Simulating MySQL, Mongo, Oracle, SQL Server upon PGSQL
     </Card>
 
-    <Card icon={<Database className="text-sky-600"/>} title='Disaster Recovery' href={"/docs/feat/pitr"}>
+    <Card icon={<DatabaseBackup className="text-sky-600"/>} title='Disaster Recovery' href={"/docs/feat/pitr"}>
         Auto configured backups and PITR made simple
     </Card>
 
-    <Card icon={<Shield className="text-red-500"/>} title='Infra as Code' href={"/docs/feat/iac"}>
+    <Card icon={<SquareCode className="text-red-500"/>} title='Infra as Code' href={"/docs/feat/iac"}>
         Describe and materialize everything with Code / Data
     </Card>
 
-    <Card icon={<FileCode className="text-blue-500"/>} title='Built-in Monitoring' href={"/docs/feat/infra"}>
+    <Card icon={<Telescope className="text-blue-500"/>} title='Built-in Monitoring' href={"/docs/feat/infra"}>
         Pre-configured Dashboards with Grafana & Prometheus stack
     </Card>
 
-    <Card icon={<Database className="text-sky-600"/>} title='Self-Hosting Supabase' href={"/docs/feat/supabase"}>
+    <Card icon={<Zap className="text-emerald-500"/>} title='Self-Hosting Supabase' href={"/docs/feat/supabase"}>
         Turn Postgres into a full-featured backend as a service
     </Card>
 
-    <Card icon={<Database className="text-sky-600"/>} title='Application Templates' href={"/docs/feat/app"}>
+    <Card icon={<BookDashed className="text-sky-600"/>} title='Application Templates' href={"/docs/feat/app"}>
         Harden software with HA PG: Gitlab, Odoo, Dify, and more
     </Card>
 </Cards>

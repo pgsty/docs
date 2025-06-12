@@ -1,21 +1,13 @@
 import { cva } from 'class-variance-authority';
 import {
     BatteryChargingIcon,
-    CpuIcon,
-    FileEditIcon,
     FileTextIcon,
-    Heart,
-    KeyboardIcon,
-    LayoutIcon,
-    LibraryIcon,
     type LucideIcon,
     MousePointer,
-    PaperclipIcon,
-    PersonStandingIcon,
-    RocketIcon,
     SearchIcon,
-    Terminal,
+    FileCode,
     TimerIcon,
+    SquareCode, Telescope, Zap, DatabaseBackup, Cpu, Infinity, BookDashed, Cuboid,
 } from 'lucide-react';
 import { File, Files, Folder } from 'fumadocs-ui/components/files';
 import Link from 'next/link';
@@ -25,17 +17,16 @@ import { cn } from '@/lib/cn';
 import { buttonVariants } from '@/components/ui/button';
 import { CodeBlock } from '@/components/code-block';
 import { UwuHero } from '@/app/[lang]/(home)/uwu';
-import SourceImage from '@/public/source.png';
-import ContributorCounter from '@/components/contributor-count';
 import {
     CreateAppAnimation,
     PreviewImages,
     WhyInteractive,
 } from './page.client';
-import { NetlifyLogo, VercelLogo } from './icons';
-import { owner, repo } from '@/lib/github';
 import { Marquee } from '@/app/[lang]/(home)/marquee';
-import ArchImg from './arch.png';
+
+import HaImg from '@/public/img/pigsty/ha.png';
+import EcosystemImg from '@/public/img/pigsty/ecosystem.gif';
+import DistroImg from '@/public/img/pigsty/distro.gif';
 
 const badgeVariants = cva(
     'inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground',
@@ -66,24 +57,10 @@ export default function Page() {
                     </div>
                     <Feedback />
                     <Introduction />
-                    <div
-                        className="relative overflow-hidden border-x border-t px-8 py-16 sm:py-24"
-                        style={{
-                            backgroundImage:
-                                'radial-gradient(circle at center, var(--color-fd-secondary), var(--color-fd-background) 40%)',
-                        }}
-                    >
-                        <h2 className="text-center text-2xl font-semibold sm:text-3xl">
-                            Loved by users.
-                            <br />
-                            Built for developers.
-                        </h2>
-                    </div>
                     <Architecture />
-                    <Features />
+                    <Ecosystem />
                     <Highlights />
                     <Why />
-                    <Contributing />
                     <End />
                 </div>
             </main>
@@ -96,18 +73,37 @@ function Architecture() {
         <div className="flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row">
             <div className="text-start">
                 <p className="px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4">
-                    Designed with Love
+                    Build with Love
                 </p>
-                <h2 className="text-2xl font-semibold mb-4">A breakable framework.</h2>
+                <h2 className="text-2xl font-semibold mb-4">A Gift for the Postgres Community</h2>
+                <h5 className="text-sm  mb-3">Just use postgres for Everything, Self-Hosting Like a Pro!</h5>
                 <p className="text-fd-muted-foreground mb-6">
-                    Fumadocs makes it easy to build beautiful docs, write content, and
-                    transform content into data for your React.js framework.
+                    Pigsty turn the PG kernel, extensions, OSS tools into a integrated solution,
+                    makes it easy to self-hosting your own production-grade Postgres service.
+                    Launch without database expertise, save 90%+ comparing to cloud RDS.
                 </p>
             </div>
             <Image
-                src={ArchImg}
+                src={DistroImg}
                 alt="Architecture"
-                className="mx-auto -my-16 w-full max-w-[400px] invert dark:invert-0 lg:mx-0"
+                className="mx-auto -my-16 w-full max-w-[400px] lg:mx-0"
+            />
+        </div>
+    );
+}
+
+function Ecosystem() {
+    return (
+        <div className="flex flex-col gap-4 border-x border-t p-8 md:px-12">
+            <div className="text-start">
+
+                <h2 className="text-2xl font-semibold mb-4">Eating the database world with Postgres</h2>
+                <h5 className="text-sm  mb-3">Harness the superpower of PostgreSQL extension ecosystem! Unparalleded 420+ extensions and 8 kernel forks</h5>
+            </div>
+            <Image
+                src={EcosystemImg}
+                alt="Ecosystem"
+                className="w-full max-w-full h-auto mt-2 dark:invert"
             />
         </div>
     );
@@ -166,11 +162,11 @@ function End() {
                     </span>
                 </li>
                 <li className="flex flex-row flex-wrap gap-2 mt-auto">
-                    <Link href="/docs/setup/install" className={cn(buttonVariants())}>
+                    <Link href="/docs/install" className={cn(buttonVariants())}>
                         Get Started
                     </Link>
                     <a
-                        href="https://demo.pigsty.cc"
+                        href="http://demo.pigsty.cc"
                         rel="noreferrer noopener"
                         className={cn(
                             buttonVariants({
@@ -190,40 +186,6 @@ const searchItemVariants = cva(
     'flex flex-row items-center gap-2 rounded-md p-2 text-sm text-fd-popover-foreground',
 );
 
-function Search(): React.ReactElement {
-    return (
-        <div className="mt-6 rounded-lg bg-gradient-to-b from-fd-border p-px">
-            <div className="flex select-none flex-col rounded-[inherit] bg-gradient-to-b from-fd-popover">
-                <div className="inline-flex items-center gap-2 px-4 py-2 text-sm text-fd-muted-foreground">
-                    <SearchIcon className="size-4" />
-                    Search...
-                </div>
-                <div className="border-t p-2">
-                    {[
-                        'Getting Started',
-                        'Components',
-                        'MDX Content',
-                        'User Guide',
-                        'Javascript SDK',
-                    ].map((v, i) => (
-                        <div
-                            key={v}
-                            className={cn(
-                                searchItemVariants({
-                                    className: i === 0 ? 'bg-fd-accent' : '',
-                                }),
-                            )}
-                        >
-                            <FileTextIcon className="size-4 text-fd-muted-foreground" />
-                            {v}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
-
 function Highlights(): React.ReactElement {
     return (
         <div className="grid grid-cols-1 border-r md:grid-cols-2 lg:grid-cols-3">
@@ -233,25 +195,43 @@ function Highlights(): React.ReactElement {
                 </h2>
                 <MousePointer className="-ml-1 mt-8" />
             </div>
-            <Highlight icon={TimerIcon} heading="Light & Fast.">
-                Native Linux, no containers, blazing performance, instant deployment.
-            </Highlight>
-            <Highlight icon={LayoutIcon} heading="Stunning Observability.">
-                Built-in Grafana & Prometheus, best-practice monitoring, out-of-the-box dashboards.
-            </Highlight>
-            <Highlight icon={RocketIcon} heading="Cloud Native Experience.">
-                Declarative infra with Ansible, no K8s required, cloud-like elasticity.
-            </Highlight>
-            <Highlight icon={SearchIcon} heading="420+ Extensions.">
-                420+ PostgreSQL extensions included: TimescaleDB, PostGIS, pgvector, Babelfish, and more.
-            </Highlight>
-            <Highlight icon={KeyboardIcon} heading="Automation.">
-                Automated HA, PITR backup, self-healing clusters, zero-downtime upgrades.
-            </Highlight>
-            <Highlight icon={PersonStandingIcon} heading="Modular & Customizable.">
-                Modular design, rich parameters, easy to extend and hack.
-            </Highlight>
-        </div>
+            <Link href="/docs/feat/ext"><Highlight icon={TimerIcon} heading="Extension Overwhelming">
+                Gather the superpower of 420+ PG Extensions out-of-the-box together
+            </Highlight></Link>
+
+            <Link href="/docs/feat/ha"><Highlight icon={Infinity} heading="High-Availability">
+                Self-Healing architecture with reliable services access, 0-downtime migration
+            </Highlight></Link>
+
+            <Link href="/docs/feat/infra"><Highlight icon={Telescope} heading="Observability Stack">
+                Prometheus & Grafana best practice. Dashboards with unparalleled visibility
+            </Highlight></Link>
+
+            <Link href="/docs/feat/kernel"><Highlight icon={Cpu} heading="PG Kernel Replacement">
+                Simulating Oracle, MySQL, SQL Server, and MongoDB with exotic kernel forks
+            </Highlight></Link>
+
+            <Link href="/docs/feat/pitr"><Highlight icon={DatabaseBackup} heading="Enterprise Security">
+                Auto configured PITR, Backup Encryption, ACL Model, Local CA, SSL Certs, AuditLog
+            </Highlight></Link>
+
+            <Link href="/docs/feat/iac"><Highlight icon={SquareCode} heading="Infrastructure as Code">
+                Describe and materialize entire infra & database clusters with code & playbook
+            </Highlight></Link>
+
+            <Link href="/docs/feat/supabase"><Highlight icon={Zap} heading="Self-Hosting Supabase">
+                Tun postgres into a full-featured BaaS, Migration in an hour, scale to billion
+            </Highlight></Link>
+
+            <Link href="/docs/feat/raw"><Highlight icon={Cuboid} heading="No Container / Raw Linux">
+                Run directly on mainstream Linux distros. No need for containers & kubernetes
+            </Highlight></Link>
+
+            <Link href="/docs/app"><Highlight icon={BookDashed} heading="Application Templates">
+                Launch enterprise software like Odoo, Dify, Gitlab, Jira, Wiki.js, Gitea at ease
+            </Highlight></Link>
+
+</div>
     );
 }
 
@@ -313,7 +293,7 @@ function Hero() {
                     Get Started
                 </Link>
                 <a
-                    href="https://demo.pigsty.cc"
+                    href="http://demo.pigsty.cc"
                     target="_blank"
                     rel="noreferrer noopener"
                     className={cn(
@@ -426,19 +406,23 @@ function Feedback() {
 function Introduction(): React.ReactElement {
     return (
         <div className="grid grid-cols-1 border-r md:grid-cols-2">
+
             <div className="flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16">
-                <div className={cn(badgeVariants())}>1</div>
-                <h3 className="text-xl font-semibold">Install Pigsty</h3>
+                <Link href="/docs/install/start"><div className={cn(badgeVariants())}>1</div></Link>
+                <Link href="/docs/install/start"><h3 className="text-xl font-semibold">Install Pigsty</h3></Link>
                 <p className="mb-8 text-fd-muted-foreground">
-                    One command to bootstrap a production-ready PostgreSQL stack. No containers, no hassle, just pure Linux performance.
+                    One command to <Link className="font-bold text-sky-500" href="/docs/install/start">install</Link> PostgreSQL RDS with  <Link className="font-bold text-sky-500" href="https://ext.pigsty.io">420+</Link> extensions.
                 </p>
                 <CreateAppAnimation />
             </div>
+
             <div className="flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16">
-                <div className={cn(badgeVariants())}>2</div>
-                <h3 className="text-xl font-semibold">Deploy HA Clusters</h3>
+
+                <Link href="/docs/install/multinode"><div className={cn(badgeVariants())}>2</div></Link>
+                <Link href="/docs/install/multinode"><h3 className="text-xl font-semibold">Deploy Clusters</h3></Link>
+
                 <p className="text-fd-muted-foreground">
-                    Spin up self-healing, high-availability Postgres clusters across multiple nodes with declarative YAML. Built-in PITR, auto failover, and more.
+                    Spin up  <Link className="font-bold text-sky-500" href="/docs/install/multinode">multi-node</Link>, self-healing HA Database Clusters with code.
                 </p>
                 <div className="relative flex flex-col">
                     <CodeBlock
@@ -456,225 +440,31 @@ function Introduction(): React.ReactElement {
                     />
                     <Files className="z-[2] mt-40 shadow-xl">
                         <Folder name="pigsty" defaultOpen>
-                            <File name="pgsql.yml" />
-                            <File name="pigsty.yml" />
+                            <a href={"/docs/config/inventory"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
+                            <a href={"/docs/pgsql/playbook"}><File name="pgsql.yml" icon={<Cpu className="text-orange-500" />} /></a>
                         </Folder>
                     </Files>
                 </div>
             </div>
+
             <div className="col-span-full flex flex-col items-center gap-2 border-l border-t px-6 py-16 text-center">
                 <div className={cn(badgeVariants())}>3</div>
-                <h3 className="text-2xl font-semibold">Ship & Scale</h3>
+                <h3 className="text-2xl font-semibold">Deliver Service</h3>
                 <p className="text-fd-muted-foreground">
-                    Effortlessly scale, monitor, and manage your clusters. Pigsty is cloud-native, but runs anywhere. No vendor lock-in, ever.
-                </p>
+                    <span>Deliver enterprise-grade database service in minutes, </span>
+                    without caring about details.
+                </p><br /><br />
                 <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
-                    <a href="https://vercel.com" rel="noreferrer noopener">
-                        <VercelLogo className="h-auto w-32" />
-                    </a>
-                    <a href="https://netlify.com" rel="noreferrer noopener">
-                        <NetlifyLogo className="h-auto w-32" />
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function Contributing() {
-    return (
-        <div className="flex flex-col items-center border-x border-t px-4 py-16 text-center">
-            <Heart fill="currentColor" className="text-pink-500 mb-4" />
-            <h2 className="mb-4 text-xl font-semibold sm:text-2xl">
-                Made Possible by You.
-            </h2>
-            <p className="mb-4 text-fd-muted-foreground">
-                Fumadocs is 100% powered by passion and open source community.
-            </p>
-            <div className="mb-8 flex flex-row items-center gap-2">
-                <Link
-                    href="/sponsors"
-                    className={cn(buttonVariants({ variant: 'outline' }))}
-                >
-                    Sponsors
-                </Link>
-                <a
-                    href="https://github.com/pgsty/pigsty/graphs/contributors"
-                    rel="noreferrer noopener"
-                    className={cn(buttonVariants({ variant: 'ghost' }))}
-                >
-                    Contributors
-                </a>
-            </div>
-            <ContributorCounter repoOwner={owner} repoName={repo} />
-        </div>
-    );
-}
-
-function Features() {
-    return (
-        <div className="grid grid-cols-1 border-r md:grid-cols-2">
-            <Feature
-                icon={PaperclipIcon}
-                subheading="Extensible Postgres"
-                heading="A Universe of Possibilities"
-                description={
-                    <>
-                        <span className="font-medium text-fd-foreground">
-                            420+ extensions, FDW, plugins, analytics, AI, GIS, time-series, and more. Build your own Postgres platform.
-                        </span>
-                    </>
-                }
-                className="overflow-hidden"
-                style={{
-                    backgroundImage:
-                        'radial-gradient(circle at 60% 50%,var(--color-fd-secondary),var(--color-fd-background) 80%)',
-                }}
-            >
-                <div className="mt-8 flex flex-col">
-                    <div className="flex flex-row w-fit bg-fd-secondary border rounded-full *:rounded-full">
-                        <a
-                            href="https://github.com/Vonng/pigsty"
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className={cn(buttonVariants({ variant: 'outline' }))}
-                        >
-                            GitHub Repo
-                        </a>
-                        <a
-                            href="https://pigsty.io/docs/extensions/"
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className={cn(buttonVariants({ variant: 'ghost' }))}
-                        >
-                            Extension List
-                        </a>
-                    </div>
                     <Image
-                        alt="Source"
-                        src={SourceImage}
-                        sizes="600px"
-                        className="-mt-16 w-[400px] min-w-[400px] invert pointer-events-none dark:invert-0"
+                        src={HaImg}
+                        alt="Architecture"
+                        className="mx-auto -my-16 w-full max-w-[600px]lg:mx-0"
                     />
-                    <div className="z-[2] mt-[-170px] w-[300px] overflow-hidden rounded-lg border border-fd-foreground/10 shadow-xl backdrop-blur-lg">
-                        <div className="flex flex-row items-center gap-2 bg-fd-muted/50 px-4 py-2 text-xs font-medium text-fd-muted-foreground">
-                            <FileEditIcon className="size-4" />
-                            Extension Example
-                        </div>
-                        <pre className="p-4 text-[13px]">
-                            <code className="grid">
-                                <span className="font-medium"># Enable PostGIS</span>
-                                <span>CREATE EXTENSION postgis;</span>
-                                <span>{` `}</span>
-                                <span className="font-medium"># Use pgvector</span>
-                                <span>CREATE EXTENSION vector;</span>
-                            </code>
-                        </pre>
-                    </div>
                 </div>
-            </Feature>
-            <Feature
-                icon={SearchIcon}
-                subheading="Stunning Observability"
-                heading="Clarity and Vision"
-                description="Built-in monitoring, alerting, log analysis, custom dashboards. No more blind spots."
-            >
-                <Link
-                    href="/docs/monitoring"
-                    className={cn(
-                        buttonVariants({ variant: 'outline', className: 'mt-4' }),
-                    )}
-                >
-                    Learn More
-                </Link>
-                <Search />
-            </Feature>
-            <Feature
-                icon={Terminal}
-                subheading="Self-Healing HA"
-                heading="Rock-Solid Reliability"
-                description="One-click HA cluster, automatic failover, PITR protection, zero-downtime upgrades."
-            >
-                <div className="relative">
-                    <div className="grid grid-cols-[1fr_2fr_1fr] h-[220px] *:border-fd-foreground/50 *:border-dashed mask-radial-circle mask-radial-from-white">
-                        <div className="border-r border-b" />
-                        <div className="border-b" />
-                        <div className="border-l border-b" />
-                        <div className="border-r" />
-                        <div className="w-[200px]" />
-                        <div className="border-l" />
-                        <div className="border-r border-t" />
-                        <div className="border-t" />
-                        <div className="border-l border-t" />
-                    </div>
-                    <code className="absolute inset-0 flex items-center justify-center">
-                        <code className="text-sm text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-fd-foreground font-medium">
-                            bin/pgsql-add pg-prod
-                        </code>
-                    </code>
-                </div>
-            </Feature>
-            <Feature
-                icon={CpuIcon}
-                subheading="Reliable & Secure"
-                heading="Enterprise-Grade Security"
-                description="Built-in ACL, CA, SSL, data integrity, compliance ready. Your data, your rules."
-            >
-                <div className="mt-8 flex flex-col gap-4">
-                    <Link
-                        href="/docs/security"
-                        className="rounded-xl bg-gradient-to-br from-transparent via-fd-primary p-px shadow-lg shadow-fd-primary/20"
-                    >
-                        <div className="rounded-[inherit] bg-fd-background bg-gradient-to-br from-transparent via-fd-primary/10 p-4 transition-colors hover:bg-fd-muted">
-                            <LayoutIcon />
-                            <h3 className="font-semibold">Security Best Practices</h3>
-                            <p className="text-sm text-fd-muted-foreground">
-                                Built-in access control, SSL, CA, and more.
-                            </p>
-                        </div>
-                    </Link>
-                    <Link
-                        href="/docs/ha"
-                        className="rounded-xl border bg-fd-background p-4 shadow-lg transition-colors hover:bg-fd-muted"
-                    >
-                        <LibraryIcon />
-                        <h3 className="font-semibold">HA & PITR</h3>
-                        <p className="text-sm text-fd-muted-foreground">
-                            High-availability, point-in-time recovery, and automated failover.
-                        </p>
-                    </Link>
-                </div>
-            </Feature>
-        </div>
-    );
-}
-
-function Feature({
-                     className,
-                     icon: Icon,
-                     heading,
-                     subheading,
-                     description,
-                     ...props
-                 }: HTMLAttributes<HTMLDivElement> & {
-    icon: LucideIcon;
-    subheading: ReactNode;
-    heading: ReactNode;
-    description: ReactNode;
-}): React.ReactElement {
-    return (
-        <div
-            className={cn('border-l border-t px-6 py-12 md:py-16', className)}
-            {...props}
-        >
-            <div className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-fd-muted-foreground">
-                <Icon className="size-4" />
-                <p>{subheading}</p>
+                <br />
             </div>
-            <h2 className="mb-2 text-lg font-semibold">{heading}</h2>
-            <p className="text-fd-muted-foreground">{description}</p>
-
-            {props.children}
         </div>
     );
 }
+
+
