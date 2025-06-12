@@ -1,0 +1,338 @@
+---
+title: Dify
+description: setup docker with playbook
+icon: Bot
+---
+
+[**Dify**](https://dify.ai/zh) is a generative AI application innovation engine and open-source LLM application development platform. It provides capabilities from Agent construction to AI workflow orchestration, RAG retrieval, and model management, helping users easily build and operate generative AI-native applications.
+
+Pigsty provides support for self-hosting Dify, allowing you to deploy Dify with a single command while storing critical state in externally managed PostgreSQL. You can use pgvector in the same PostgreSQL instance as a vector database, further simplifying deployment.
+
+- [Quick Start](https://pigsty.io/docs/app/dify/#quick-start)
+- [Why Self-Host](https://pigsty.io/docs/app/dify/#why-self-host)
+- [Installation](https://pigsty.io/docs/app/dify/#installation)
+- [Configuration](https://pigsty.io/docs/app/dify/#configuration)
+- [Checklist](https://pigsty.io/docs/app/dify/#checklist)
+- [Domain & SSL](https://pigsty.io/docs/app/dify/#domain--ssl)
+- [File Backup](https://pigsty.io/docs/app/dify/#file-backup)
+
+> Current Pigsty v3.4 supports Dify version: v1.1.3
+
+------
+
+## Quick Start
+
+On a fresh Linux x86 / ARM server running a [**compatible distribution**](https://pigsty.io/docs/reference/compatibility/), execute:
+
+```bash
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
+./bootstrap                # Install Pigsty dependencies
+./configure -c app/dify    # Use Dify configuration template
+vi pigsty.yml              # edit passwords, domain, keys, etc.
+
+./install.yml              # Install Pigsty
+./docker.yml               # Install Docker & Compose
+./app.yml                  # Install Dify
+```
+
+Dify listens on port `5001` by default. You can access it via browser at `http://<ip>:5001` and set up your initial user credentials to log in.
+
+After Dify starts, you can install various extensions, configure system models, and begin using it!
+
+------
+
+## Why Self-Host
+
+There are many reasons to self-host Dify, but the primary motivation is data security. The DockerCompose template provided by Dify uses basic default database images, lacking enterprise-grade features like high availability, disaster recovery, monitoring, IaC, and PITR capabilities.
+
+Pigsty elegantly solves these issues for Dify, deploying all components with a single command based on configuration files, and using mirrors to resolve China region access challenges. This makes Dify deployment and delivery incredibly smooth. It handles PostgreSQL master database, PGVector vector database, MinIO object storage, Redis, Prometheus monitoring, Grafana visualization, Nginx reverse proxy, and free HTTPS certificates in one go.
+
+Pigsty ensures all Dify state is stored in externally managed services, including metadata in PostgreSQL and other data in the filesystem. Therefore, the Dify instance launched via Docker Compose becomes a stateless application that can be destroyed and rebuilt at any time, greatly simplifying operations.
+
+------
+
+## Installation
+
+Let’s start with single-node Dify deployment. We’ll cover production high-availability deployment methods later.
+
+First, use Pigsty’s [standard installation process](https://pigsty.io/docs/setup/install/) to install the PostgreSQL instance required by Dify:
+
+```bash
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
+./bootstrap               # Prepare Pigsty dependencies
+./configure -c app/supa   # Use Supabase application template
+vi pigsty.yml             # Edit config file, modify domain and passwords
+./install.yml             # Install Pigsty and various databases
+```
+
+When you use the `./configure -c app/dify` command, Pigsty automatically generates the configuration file based on the [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) template and your current environment. You should modify passwords, domain, and other relevant parameters in the generated `pigsty.yml` configuration file according to your actual needs, then use `./install.yml` to execute the standard installation process.
+
+Next, run [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml) to install Docker and Docker Compose, then use [`app.yml`](https://github.com/pgsty/pigsty/blob/main/app.yml) to complete Dify deployment:
+
+```bash
+./docker.yml              # Install Docker and Docker Compose
+./app.yml                 # Deploy Dify stateless components using Docker
+```
+
+You can access the Dify Web management interface at `http://<your_ip_address>:5001` on your local network.
+
+Default username, email, and password will be prompted for setup on first login.
+
+You can also use the locally resolved placeholder domain `dify.pigsty`, or follow the configuration below to use a real domain with HTTPS certificates.
+
+------
+
+## Configuration
+
+When you use the `./configure -c app/dify` command for configuration, Pigsty automatically generates the configuration file based on the [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) template and your current environment. Here’s a detailed explanation of the default configuration:
+
+```yaml
+all:
+  children:
+
+    # the dify application
+    dify:
+      hosts: { 10.10.10.10: {} }
+      vars:
+        app: dify   # specify app name to be installed (in the apps)
+        apps:       # define all applications
+          dify:     # app name, should have corresponding ~/pigsty/app/dify folder
+            file:   # data directory to be created
+              - { path: /data/dify ,state: directory ,mode: 0755 }
+            conf:   # override /opt/dify/.env config file
+
+              # change domain, mirror, proxy, secret key
+              NGINX_SERVER_NAME: dify.pigsty
+              # A secret key for signing and encryption, gen with `openssl rand -base64 42` (CHANGE PASSWORD!)
+              SECRET_KEY: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+              # expose DIFY nginx service with port 5001 by default
+              DIFY_PORT: 5001
+              # where to store dify files? the default is ./volume, we'll use another volume created above
+              DIFY_DATA: /data/dify
+
+              # proxy and mirror settings
+              #PIP_MIRROR_URL: https://pypi.tuna.tsinghua.edu.cn/simple
+              #SANDBOX_HTTP_PROXY: http://10.10.10.10:12345
+              #SANDBOX_HTTPS_PROXY: http://10.10.10.10:12345
+
+              # database credentials
+              DB_USERNAME: dify
+              DB_PASSWORD: difyai123456
+              DB_HOST: 10.10.10.10
+              DB_PORT: 5432
+              DB_DATABASE: dify
+              VECTOR_STORE: pgvector
+              PGVECTOR_HOST: 10.10.10.10
+              PGVECTOR_PORT: 5432
+              PGVECTOR_USER: dify
+              PGVECTOR_PASSWORD: difyai123456
+              PGVECTOR_DATABASE: dify
+              PGVECTOR_MIN_CONNECTION: 2
+              PGVECTOR_MAX_CONNECTION: 10
+
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - { name: dify ,password: difyai123456 ,pgbouncer: true ,roles: [ dbrole_admin ] ,superuser: true ,comment: dify superuser }
+        pg_databases:
+          - { name: dify ,owner: dify ,revokeconn: true ,comment: dify main database  }
+        pg_hba_rules:
+          - { user: dify ,db: all ,addr: 172.17.0.0/16  ,auth: pwd ,title: 'allow dify access from local docker network' }
+        node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
+
+    infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:  { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    #minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+
+  vars:                               # global variables
+    version: v3.4.1                   # pigsty version string
+    admin_ip: 10.10.10.10             # admin node ip address
+    region: default                   # upstream mirror region: default|china|europe
+    node_tune: oltp                   # node tuning specs: oltp,olap,tiny,crit
+    pg_conf: oltp.yml                 # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
+
+    docker_enabled: true              # enable docker on app group
+    #docker_registry_mirrors: ["https://docker.1ms.run"] # use mirror in mainland china
+
+    proxy_env:                        # global proxy env when downloading packages & pull docker images
+      no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.tsinghua.edu.cn"
+      #http_proxy:  127.0.0.1:12345 # add your proxy env here for downloading packages or pull images
+      #https_proxy: 127.0.0.1:12345 # usually the proxy is format as http://user:pass@proxy.xxx.com
+      #all_proxy:   127.0.0.1:12345
+
+    infra_portal: # domain names and upstream servers
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+      blackbox     : { endpoint: "${admin_ip}:9115" }
+      loki         : { endpoint: "${admin_ip}:3100" }
+      #minio        : { domain: m.pigsty    ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
+      dify:                            # nginx server config for dify
+        domain: dify.pigsty            # REPLACE WITH YOUR OWN DOMAIN!
+        endpoint: "10.10.10.10:5001"   # dify service endpoint: IP:PORT
+        websocket: true                # add websocket support
+        certbot: dify.pigsty           # certbot cert name, apply with `make cert`
+
+    #----------------------------------#
+    # Credential: CHANGE THESE PASSWORDS
+    #----------------------------------#
+    #grafana_admin_username: admin
+    grafana_admin_password: pigsty
+    #pg_admin_username: dbuser_dba
+    pg_admin_password: DBUser.DBA
+    #pg_monitor_username: dbuser_monitor
+    pg_monitor_password: DBUser.Monitor
+    #pg_replication_username: replicator
+    pg_replication_password: DBUser.Replicator
+    #patroni_username: postgres
+    patroni_password: Patroni.API
+    #haproxy_admin_username: admin
+    haproxy_admin_password: pigsty
+    #minio_access_key: minioadmin
+    minio_secret_key: minioadmin      # minio root secret key, `minioadmin` by default
+
+    repo_extra_packages: [ pg17-main ]
+    pg_version: 17
+```
+
+------
+
+## Checklist
+
+Here’s a checklist of configuration items you need to focus on:
+
+-  Hardware/Software: [Prepare required machine resources](https://pigsty.io/docs/setup/prepare/): Linux `x86_64/arm64` server, fresh installation of [mainstream Linux operating systems](https://pigsty.io/docs/reference/compatibility/)
+-  Network/Permissions: [SSH](https://pigsty.io/docs/setup/prepar/#management-user-preparation) passwordless login access, user has [passwordless sudo privileges](https://pigsty.io/docs/setup/prepare/#management-user-preparation)
+-  Ensure machine has static IPv4 network address in internal network and can access internet
+-  If accessing via public network, ensure you have an available domain name pointing to the current node’s **public IP address**
+- Ensure using `app/dify` config template and modify parameters as needed
+  - `configure -c app/dify`, and enter node’s internal primary IP address, or specify via `-i <primary_ip>` command line parameter
+- Have you modified all password-related configuration parameters?【Optional】
+  -  [`grafana_admin_password`](https://pigsty.io/docs/infra/param/#grafana_admin_password): `pigsty`, Grafana admin password
+  -  [`pg_admin_password`](https://pigsty.io/docs/pgsql/param/#pg_admin_password): `DBUser.DBA`, PG superuser password
+  -  [`pg_monitor_password`](https://pigsty.io/docs/pgsql/param/#pg_monitor_password): `DBUser.Monitor`, PG monitoring user password
+  -  [`pg_replication_password`](https://pigsty.io/docs/pgsql/param/#pg_replication_password): `DBUser.Replicator`, PG replication user password
+  -  [`patroni_password`](https://pigsty.io/docs/pgsql/param/#patroni_password): `Patroni.API`, Patroni HA component password
+  -  [`haproxy_admin_password`](https://pigsty.io/docs/node/param/#haproxy_admin_password): `pigsty`, Load balancer management password
+- Have you modified PostgreSQL cluster business user passwords and app configurations using these passwords?
+  - Default username `dify` and password `difyai123456` are generated by Pigsty for Dify, please modify according to actual situation
+  - In Dify’s configuration block, please modify `DB_USERNAME`, `DB_PASSWORD`, `PGVECTOR_USER`, `PGVECTOR_PASSWORD` and other parameters accordingly
+- Have you modified Dify’s default encryption key?
+  - You can use `openssl rand -base64 42` to randomly generate a password string and fill it in the `SECRET_KEY` parameter
+- Have you modified the domain used by Dify?
+  - Replace placeholder domain `dify.pigsty` with your actual domain, e.g. `dify.pigsty.cc`
+  - You can use `sed -ie 's/dify.pigsty/dify.pigsty.cc/g' pigsty.yml` to modify Dify’s domain
+
+
+
+
+
+------
+
+## Domain & SSL
+
+If you want to use a real domain with HTTPS certificates, you need to modify in the `pigsty.yml` configuration file:
+
+- [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal) parameter’s `dify` domain
+- Best to specify an email address [`certbot_email`](https://pigsty.io/docs/infra/param/#certbot_email) for receiving certificate expiration notifications
+- Configure Dify’s `NGINX_SERVER_NAME` parameter to specify your actual domain
+
+```yaml
+all:
+  children:                            # Cluster definition
+    dify:                              # Dify group
+      vars:                            # Dify group variables
+        apps:                          # Application configuration
+          dify:                        # Dify application definition
+            conf:                      # Dify application configuration
+              NGINX_SERVER_NAME: dify.pigsty
+
+  vars:                                # Global parameters
+    #certbot_sign: true                # Use Certbot to apply for free HTTPS certificate
+    certbot_email: your@email.com      # Email for certificate application, used for expiration notifications, optional
+    infra_portal:                      # Configure Nginx server
+      dify:                            # Dify server definition
+        domain: dify.pigsty            # Please replace with your own domain here!
+        endpoint: "10.10.10.10:5001"   # Please specify Dify's IP and port here (default auto-configured)
+        websocket: true                # Dify needs websocket enabled
+        certbot: dify.pigsty           # Specify Certbot certificate name
+```
+
+Use the following command to apply for Nginx certificates:
+
+```bash
+# Apply for certificates, can also manually execute /etc/nginx/sign-cert script
+make cert
+
+# The above Makefile shortcut command actually executes the following playbook tasks:
+./infra.yml -t nginx_certbot,nginx_reload -e certbot_sign=true
+```
+
+Execute `app.yml` playbook to redeploy Dify service to make `NGINX_SERVER_NAME` configuration take effect.
+
+```bash
+./app.yml
+```
+
+
+
+
+
+------
+
+## File Backup
+
+You can use [`restic`](https://pigsty.io/docs/tasks/restic/) to backup Dify’s filesystem. Dify’s data files are in the `/data/dify` directory. You can use the following commands to backup:
+
+```bash
+export RESTIC_REPOSITORY=/data/backups/dify   # Specify dify backup directory
+export RESTIC_PASSWORD=some-strong-password   # Specify backup encryption password
+mkdir -p ${RESTIC_REPOSITORY}                 # Create dify backup directory
+restic init
+```
+
+After creating the Restic backup repository, you can use the following commands to backup Dify:
+
+```bash
+export RESTIC_REPOSITORY=/data/backups/dify   # Specify dify backup directory
+export RESTIC_PASSWORD=some-strong-password   # Specify backup encryption password
+
+restic backup /data/dify                      # Backup /dify data directory to repository
+restic snapshots                              # View backup snapshot list
+restic restore -t /data/dify 0b11f778         # Restore snapshot xxxxxx to /data/dify
+restic check                                  # Periodically check repository integrity
+```
+
+Another more reliable way is to use JuiceFS to mount MinIO object storage to the `/data/dify` directory, so you can use MinIO/S3 to store file state.
+
+If you want to store all data in PostgreSQL, consider [using JuiceFS to store filesystem data in PostgreSQL](https://pigsty.io/blog/pg/pgfs/):
+
+For example, you can create another `dify_fs` database and use it as JuiceFS’s metadata storage:
+
+```bash
+METAURL=postgres://dify:difyai123456@:5432/dify_fs
+OPTIONS=(
+  --storage postgres
+  --bucket :5432/dify_fs
+  --access-key dify
+  --secret-key difyai123456
+  ${METAURL}
+  jfs
+)
+juicefs format "${OPTIONS[@]}"         # Create a PG filesystem
+juicefs mount ${METAURL} /data/dify -d # Mount to /data/dify directory in background
+juicefs bench /data/dify               # Test performance
+juicefs umount /data/dify              # Stop mounting
+```
+
+
+
+
+------
+
+## Reference
+
+- [Dify Self-Hosting FAQ](https://docs.dify.ai/learn-more/faq/install-faq)

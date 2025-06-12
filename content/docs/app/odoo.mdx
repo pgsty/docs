@@ -1,0 +1,256 @@
+---
+title: Playbook
+description: setup docker with playbook
+icon: ScrollText
+---
+
+[Odoo](https://www.odoo.com/) is an open-source enterprise resource planning (ERP) software
+that provides a full suite of business applications, including CRM, sales, purchasing, inventory, production, accounting,
+and other management functions. Odoo is a typical web application that uses PostgreSQL as the underlying database.
+
+> All your business on one platform, Simple, efficient, yet affordable
+
+
+
+------
+
+## Quick Start
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+./bootstrap                # install ansible
+./configure -c app/odoo    # use odoo config (please CHANGE CREDENTIALS in pigsty.yml)
+./install.yml              # install pigsty
+./docker.yml               # install docker compose
+./app.yml                  # launch odoo stateless part with docker
+```
+
+
+
+
+------
+
+## Config Template
+
+The [`conf/app/odoo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/odoo.yml) defines a template config file
+that defines the resources required for a single Odoo instance.
+
+```yaml
+all:
+  children:
+
+    # the odoo application (default username & password: admin/admin)
+    odoo:
+      hosts: { 10.10.10.10: {} }
+      vars:
+        app: odoo   # specify app name to be installed (in the apps)
+        apps:       # define all applications
+          odoo:     # app name should have the corresponding ~/app/odoo folder
+            file:   # optional directory to be created
+              - { path: /data/odoo         ,state: directory, owner: 100, group: 101 }
+              - { path: /data/odoo/webdata ,state: directory, owner: 100, group: 101 }
+              - { path: /data/odoo/addons  ,state: directory, owner: 100, group: 101 }
+            conf:   # override /opt/<app>/.env config file
+              PG_HOST: 10.10.10.10            # postgres host
+              PG_PORT: 5432                   # postgres port
+              PG_USERNAME: odoo               # postgres user
+              PG_PASSWORD: DBUser.Odoo        # postgres password
+              ODOO_PORT: 8069                 # odoo app port
+              ODOO_DATA: /data/odoo/webdata   # odoo webdata
+              ODOO_ADDONS: /data/odoo/addons  # odoo plugins
+              ODOO_DBNAME: odoo               # odoo database name
+              ODOO_VERSION: 18.0              # odoo image version
+
+    # the odoo database
+    pg-odoo:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-odoo
+        pg_users:
+          - { name: odoo    ,password: DBUser.Odoo ,pgbouncer: true ,roles: [ dbrole_admin ] ,createdb: true ,comment: admin user for odoo service }
+          - { name: odoo_ro ,password: DBUser.Odoo ,pgbouncer: true ,roles: [ dbrole_readonly ]  ,comment: read only user for odoo service  }
+          - { name: odoo_rw ,password: DBUser.Odoo ,pgbouncer: true ,roles: [ dbrole_readwrite ] ,comment: read write user for odoo service }
+        pg_databases:
+          - { name: odoo ,owner: odoo ,revokeconn: true ,comment: odoo main database  }
+        pg_hba_rules:
+          - { user: all ,db: all ,addr: 172.17.0.0/16  ,auth: pwd ,title: 'allow access from local docker network' }
+          - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+
+    infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:  { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    #minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+
+  vars:                               # global variables
+    version: v3.3.0                   # pigsty version string
+    admin_ip: 10.10.10.10             # admin node ip address
+    region: default                   # upstream mirror region: default|china|europe
+    node_tune: oltp                   # node tuning specs: oltp,olap,tiny,crit
+    pg_conf: oltp.yml                 # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
+
+    docker_enabled: true              # enable docker on app group
+    #docker_registry_mirrors: ["https://docker.m.daocloud.io"] # use dao cloud mirror in mainland china
+    proxy_env:                        # global proxy env when downloading packages & pull docker images
+      no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.tsinghua.edu.cn"
+      #http_proxy:  127.0.0.1:12345 # add your proxy env here for downloading packages or pull images
+      #https_proxy: 127.0.0.1:12345 # usually the proxy is format as http://user:pass@proxy.xxx.com
+      #all_proxy:   127.0.0.1:12345
+
+    infra_portal: # domain names and upstream servers
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+      blackbox     : { endpoint: "${admin_ip}:9115" }
+      loki         : { endpoint: "${admin_ip}:3100" }
+      minio        : { domain: m.pigsty    ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
+      odoo         : { domain: odoo.pigsty, endpoint: "127.0.0.1:8069"   ,websocket: true }  #cert: /path/to/crt ,key: /path/to/key
+      # setup your own domain name here ^^^, or use default domain name, or ip + 8069 port direct access
+      # certbot --nginx --agree-tos --email your@email.com -n -d odoo.your.domain    # replace with your email & odoo domain
+
+    #----------------------------------#
+    # Credential: CHANGE THESE PASSWORDS
+    #----------------------------------#
+    #grafana_admin_username: admin
+    grafana_admin_password: pigsty
+    #pg_admin_username: dbuser_dba
+    pg_admin_password: DBUser.DBA
+    #pg_monitor_username: dbuser_monitor
+    pg_monitor_password: DBUser.Monitor
+    #pg_replication_username: replicator
+    pg_replication_password: DBUser.Replicator
+    #patroni_username: postgres
+    patroni_password: Patroni.API
+    #haproxy_admin_username: admin
+    haproxy_admin_password: pigsty
+
+    repo_modules: infra,node,pgsql,docker
+    repo_packages: [ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-utility, docker ]
+    repo_extra_packages: [ pg17-main ]
+    pg_version: 17
+```
+
+
+
+--------
+
+## Basics
+
+Check [`.env`](https://pigsty.io/docs/app/odoo/.env) file for configurable environment variables:
+
+```bash
+# https://hub.docker.com/_/odoo#
+PG_HOST=10.10.10.10
+PG_PORT=5432
+PG_USER=dbuser_odoo
+PG_PASS=DBUser.Odoo
+ODOO_PORT=8069
+```
+
+Then launch odoo with:
+
+```bash
+make up  # docker compose up
+```
+
+Visit [http://ddl.pigsty](http://ddl.pigsty/) or http://10.10.10.10:8887
+
+## Makefile
+
+```bash
+make up         # pull up odoo with docker compose in minimal mode
+make run        # launch odoo with docker , local data dir and external PostgreSQL
+make view       # print odoo access point
+make log        # tail -f odoo logs
+make info       # introspect odoo with jq
+make stop       # stop odoo container
+make clean      # remove odoo container
+make pull       # pull latest odoo image
+make rmi        # remove odoo image
+make save       # save odoo image to /tmp/docker/odoo.tgz
+make load       # load odoo image from /tmp/docker/odoo.tgz
+```
+
+
+
+
+--------
+
+## Use External PostgreSQL
+
+You can use external PostgreSQL for Odoo. Odoo will create its own database during setup, so you don’t need to do that
+
+```yaml
+pg_users: [ { name: dbuser_odoo ,password: DBUser.Odoo ,pgbouncer: true ,roles: [ dbrole_admin ]    ,comment: admin user for odoo database } ]
+pg_databases: [ { name: odoo ,owner: dbuser_odoo ,revokeconn: true ,comment: odoo primary database } ]
+```
+
+And create business user & database with:
+
+```bash
+bin/pgsql-user  pg-meta  dbuser_odoo
+#bin/pgsql-db    pg-meta  odoo     # odoo will create the database during setup
+```
+
+Check connectivity:
+
+```bash
+psql postgres://dbuser_odoo:DBUser.Odoo@10.10.10.10:5432/odoo
+```
+
+
+
+
+------
+
+## Expose Odoo Service
+
+[Expose](https://pigsty.io/docs/tasks/nginx/) odoo seb service via nginx portal:
+
+```yaml
+    infra_portal:                     # domain names and upstream servers
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty    ,endpoint: "${admin_ip}:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty    ,endpoint: "${admin_ip}:9090" }
+      alertmanager : { domain: a.pigsty    ,endpoint: "${admin_ip}:9093" }
+      blackbox     : { endpoint: "${admin_ip}:9115" }
+      loki         : { endpoint: "${admin_ip}:3100" }
+      odoo         : { domain: odoo.pigsty, endpoint: "127.0.0.1:8069", websocket: true }  # <------ add this line
+./infra.yml -t nginx   # setup nginx infra portal
+```
+
+
+
+
+------
+
+## Odoo Addons
+
+There are lots of Odoo modules available in the community, you can install them by downloading and placing them in the `addons` folder.
+
+```yaml
+volumes:
+  - ./addons:/mnt/extra-addons
+```
+
+You can mount the `./addons` dir to the `/mnt/extra-addons` in the container, then download and unzip to the `addons` folder,
+
+To enable addon module, first entering the [Developer mode](https://www.odoo.com/documentation/17.0/applications/general/developer_mode.html)
+
+> Settings -> Generic Settings -> Developer Tools -> Activate the developer Mode
+
+Then go to the > Apps -> Update Apps List, then you can find the extra addons and install from the panel.
+
+Frequently used [free](https://apps.odoo.com/apps/modules/browse?order=Downloads) addons: [Accounting Kit](https://apps.odoo.com/apps/modules/17.0/base_accounting_kit/)
+
+
+
+
+------
+
+## Demo
+
+Check public demo: [http://odoo.pigsty.io](http://odoo.pigsty.io/), username: `test@pigsty.io`, password: `pigsty`
+
+If you want to access odoo through SSL, you have to trust `files/pki/ca/ca.crt` on your browser (or use the dirty hack `thisisunsafe` in chrome)
+
+## Feedback

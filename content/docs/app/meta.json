@@ -1,0 +1,12 @@
+{
+  "title": "APP",
+  "description": "Run application with templates",
+  "icon": "PencilRuler",
+  "root": false,
+  "pages": [
+    "supabase",
+    "odoo",
+    "dify",
+    "playbook"
+  ]
+}

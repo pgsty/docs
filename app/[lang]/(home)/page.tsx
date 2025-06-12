@@ -1,17 +1,15 @@
 import { cva } from 'class-variance-authority';
 import {
     BatteryChargingIcon,
-    FileTextIcon,
     type LucideIcon,
     MousePointer,
-    SearchIcon,
     FileCode,
     TimerIcon,
     SquareCode, Telescope, Zap, DatabaseBackup, Cpu, Infinity, BookDashed, Cuboid,
 } from 'lucide-react';
 import { File, Files, Folder } from 'fumadocs-ui/components/files';
 import Link from 'next/link';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
 import { buttonVariants } from '@/components/ui/button';
@@ -22,7 +20,6 @@ import {
     PreviewImages,
     WhyInteractive,
 } from './page.client';
-import { Marquee } from '@/app/[lang]/(home)/marquee';
 
 import HaImg from '@/public/img/pigsty/ha.png';
 import EcosystemImg from '@/public/img/pigsty/ecosystem.gif';
@@ -55,7 +52,6 @@ export default function Page() {
                         <Hero />
                         <UwuHero />
                     </div>
-                    <Feedback />
                     <Introduction />
                     <Architecture />
                     <Ecosystem />
@@ -181,10 +177,6 @@ function End() {
         </div>
     );
 }
-
-const searchItemVariants = cva(
-    'flex flex-row items-center gap-2 rounded-md p-2 text-sm text-fd-popover-foreground',
-);
 
 function Highlights(): React.ReactElement {
     return (
@@ -359,49 +351,6 @@ Like headless docs to build exactly what you need.`,
         message: `I'd have no shot building @arktypeio docs that looked half this good without it 😍`,
     }
 ];
-
-function Feedback() {
-    return (
-        <div className="relative border-x border-t pt-8 bg-fd-background">
-            <div className="flex flex-row gap-6 justify-between px-6 mb-6 items-center">
-                <p className="text-sm font-medium md:text-lg">
-                    Trusted by awesome teams and developers
-                </p>
-                <Link
-                    href="/showcase"
-                    className={cn(buttonVariants({ variant: 'outline' }))}
-                >
-                    Showcase
-                </Link>
-            </div>
-            <Marquee className="pb-8 [mask-image:linear-gradient(to_right,transparent,white_20px,white_calc(100%-20px),transparent)]">
-                {feedback.map((item) => (
-                    <div
-                        key={item.user}
-                        className="flex flex-col rounded-xl border bg-gradient-to-b from-fd-card p-4 shadow-lg w-[320px]"
-                    >
-                        <p className="text-sm whitespace-pre-wrap">{item.message}</p>
-
-                        <div className="mt-auto flex flex-row items-center gap-2 pt-4">
-                            <Image
-                                src={item.avatar}
-                                alt="avatar"
-                                width="32"
-                                height="32"
-                                unoptimized
-                                className="size-8 rounded-full"
-                            />
-                            <div>
-                                <p className="text-sm font-medium">{item.user}</p>
-                                <p className="text-xs text-fd-muted-foreground">{item.role}</p>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </Marquee>
-        </div>
-    );
-}
 
 function Introduction(): React.ReactElement {
     return (

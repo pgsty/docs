@@ -22,6 +22,7 @@
     "redis",
     "minio",
     "docker",
-    "ferret"
+    "ferret",
+    "app"
   ]
 }

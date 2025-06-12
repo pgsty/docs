@@ -1,0 +1,33 @@
+---
+title: App
+description: Run application tempaltes
+icon: Container
+---
+
+Tutorials: https://pigsty.io/docs/app
+
+import {
+    Database,
+    Boxes,
+    Bot,
+    Zap,
+    BookOpen,
+    ActivitySquare,
+    HelpCircle, ScrollText
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<Zap className="text-emerald-600" />} title='Supabase' href={"/docs/app/supabase"}>
+        Self-Hosting Supabase
+    </Card>
+    <Card icon={<Boxes className="text-yellow-600" />} title='Odoo' href={"/docs/app/odoo"}>
+        Run Odoo the OSS ERP
+    </Card>
+    <Card icon={<Bot className="text-purple-600" />} title='Dify' href={"/docs/app/dify"}>
+        Run Dify the AI workflow
+    </Card>
+    <Card icon={<ScrollText className="text-blue-500" />} title='Playbook' href={"/docs/app/playbook"}>
+        Run docker compose with playbook
+    </Card>
+</Cards>
