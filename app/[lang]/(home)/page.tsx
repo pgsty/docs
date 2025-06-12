@@ -14,7 +14,6 @@ import Image from 'next/image';
 import { cn } from '@/lib/cn';
 import { buttonVariants } from '@/components/ui/button';
 import { CodeBlock } from '@/components/code-block';
-import { UwuHero } from '@/app/[lang]/(home)/uwu';
 import {
     CreateAppAnimation,
     PreviewImages,
@@ -50,7 +49,6 @@ export default function Page() {
                 >
                     <div className="relative">
                         <Hero />
-                        <UwuHero />
                     </div>
                     <Introduction />
                     <Alternative />
@@ -113,11 +111,7 @@ function Distribution() {
                     Explore the world of possibility and maximize the synergistic effect of the ecosystem. Just use PostgreSQL for Everything, and it&apos;s time to conquer the database world with postgres.
                 </p>
             </div>
-            <Image
-                src={EcosystemImg}
-                alt="Ecosystem"
-                className="w-full max-w-full h-auto mt-2 dark:invert"
-            />
+            <Link href="/docs/intro/distro"><Image src={EcosystemImg} alt="Ecosystem" className="w-full max-w-full h-auto mt-2 dark:invert"/></Link>
         </div>
     );
 }
@@ -178,17 +172,13 @@ function End() {
                     <Link href="/docs/install" className={cn(buttonVariants())}>
                         Get Started
                     </Link>
-                    <a
-                        href="http://demo.pigsty.cc"
+                    <Link
+                        href="/showcase"
                         rel="noreferrer noopener"
-                        className={cn(
-                            buttonVariants({
-                                variant: 'outline',
-                            }),
-                        )}
+                        className={cn(buttonVariants({variant: 'outline'}))}
                     >
-                        Open Demo
-                    </a>
+                        Show cases
+                    </Link>
                 </li>
             </ul>
         </div>
@@ -285,7 +275,7 @@ function Hero() {
                         'repeating-linear-gradient(65deg, var(--color-purple-300), var(--color-purple-300) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)',
                 }}
             />
-            <h1 className="mb-8 text-4xl font-medium md:hidden">Build Your Docs</h1>
+            <h1 className="mb-8 text-4xl font-medium md:hidden">PostgreSQL in Great STYle</h1>
             <h1 className="mb-8 max-w-[600px] text-4xl font-medium max-md:hidden">
                 PostgreSQL in Great STYle
             </h1>
@@ -301,7 +291,7 @@ function Hero() {
                 >
                     Get Started
                 </Link>
-                <a
+                <Link
                     href="http://demo.pigsty.cc"
                     target="_blank"
                     rel="noreferrer noopener"
@@ -314,60 +304,13 @@ function Hero() {
                     )}
                 >
                     Live Demo
-                </a>
+                </Link>
             </div>
             <PreviewImages />
         </div>
     );
 }
 
-const feedback = [
-    {
-        avatar: 'https://avatars.githubusercontent.com/u/124599',
-        user: 'shadcn',
-        role: 'Creator of Shadcn UI',
-        message: `You know how you end up rebuilding a full docs site every time you start a new project? 
-
-Fumadocs fixes this by giving you all the right blocks that you compose together.
-
-Like headless docs to build exactly what you need.`,
-    },
-    {
-        avatar: 'https://avatars.githubusercontent.com/u/35677084',
-        user: 'Anthony Shew',
-        role: 'Turbo DX at Vercel',
-        message: `Major shoutout to @fuma_nama for making fumadocs, a gorgeous documentation framework that composes beautifully into the App Router.`,
-    },
-    {
-        user: 'Aiden Bai',
-        avatar: 'https://avatars.githubusercontent.com/u/38025074',
-        role: 'Creator of Million.js',
-        message: 'fumadocs is the best Next.js docs framework',
-    },
-    {
-        avatar: 'https://avatars.githubusercontent.com/u/10645823',
-        user: 'David Blass',
-        role: 'Creator of Arktype',
-        message: `I'd have no shot building @arktypeio docs that looked half this good without it 😍`,
-    },    {
-        avatar: 'https://avatars.githubusercontent.com/u/35677084',
-        user: 'aAnthony Shew',
-        role: 'Turbo DX at Vercel',
-        message: `Major shoutout to @fuma_nama for making fumadocs, a gorgeous documentation framework that composes beautifully into the App Router.`,
-    },
-    {
-        user: 'aAiden Bai',
-        avatar: 'https://avatars.githubusercontent.com/u/38025074',
-        role: 'Creator of Million.js',
-        message: 'fumadocs is the best Next.js docs framework',
-    },
-    {
-        avatar: 'https://avatars.githubusercontent.com/u/10645823',
-        user: 'aDavid Blass',
-        role: 'Creator of Arktype',
-        message: `I'd have no shot building @arktypeio docs that looked half this good without it 😍`,
-    }
-];
 
 function Introduction(): React.ReactElement {
     return (

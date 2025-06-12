@@ -15,7 +15,7 @@ export function UwuHero() {
       />
 
       <p className="mb-6 h-fit p-2 text-lg text-fd-muted-foreground md:max-w-[80%] md:text-xl">
-        Fumadocs is the framework for building documentation with{' '}
+        P
         <b className="font-medium text-fd-foreground">
           anime and fuwa fuwa power
         </b>

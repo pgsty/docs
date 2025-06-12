@@ -1,12 +1,13 @@
 ---
-title: Config
-description: describe the cluster you want
+title: Configure
+description: Describe and configure PostgreSQL clusters
 icon: CodeXml
 ---
 
 You can define different types of instances & clusters.
 
-- [Identity](#identity-parameters): Parameters used for describing a PostgreSQL cluster
+- [Identity Parameters](#identity-parameters): Parameters used for describing a PostgreSQL cluster
+- [Naming Convention](#naming-convention): Parameters used for describing a PostgreSQL cluster
 - [Primary](#primary): Define a single instance cluster.
 - [Replica](#replica): Define a basic HA cluster with one primary & one replica.
 - [Offline](#offline): Define a dedicated instance for OLAP/ETL/Interactive queries
@@ -15,7 +16,81 @@ You can define different types of instances & clusters.
 - [Standby Cluster](#standby-cluster): Clone an existing cluster and follow it
 - [Delayed Cluster](#delayed-cluster): Clone an existing cluster for emergency data recovery
 - [Citus Cluster](#citus-cluster): Define a Citus distributed database cluster
-- [Major Version](#major-version): Create postgres cluster with different major version
+- [Major Version](#major-version): Create postgres cluster with a different major version
+
+
+--------
+
+## Identity Parameters
+
+There are **4** **REQUIRED** parameters to describe a PostgreSQL Cluster:
+
+|                     Name                     |   Type   |    Level     | Description                   |
+|:--------------------------------------------:|:--------:|:------------:|-------------------------------|
+|             `inventory_hostname`             |   `ip`   | **Instance** | **PG node IPv4 address**      |
+| [`pg_cluster`](/docs/pgsql/param#pg_cluster) | `string` | **Cluster**  | **PG database cluster name**  |
+|     [`pg_seq`](/docs/pgsql/param#pg_seq)     | `number` | **Instance** | **PG database instance id**   |
+|    [`pg_role`](/docs/pgsql/param#pg_role)    |  `enum`  | **Instance** | **PG database instance role** |
+
+- [`pg_cluster`](/docs/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
+- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the ins. Only the `primary` role will be handled specially. If not filled in, the default is the `replica` role and the special `delayed` and `offline` roles.
+- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the ins within the cluster, usually with an integer number incremented from 0 or 1, which is not changed once it is assigned.
+  - `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the ins, i.e. `pg_instance`.
+  - `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
+- [`pg_shard`](/docs/pgsql/param#pg_shard) and [`pg_group`](/docs/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
+
+
+These identities will be used in the entire system, for example, the metrics may look like:
+
+```yaml
+pg_up{cls="pg-test", ins="pg-test-1", ip="10.10.10.11", job="pgsql"}
+pg_up{cls="pg-test", ins="pg-test-2", ip="10.10.10.12", job="pgsql"}
+pg_up{cls="pg-test", ins="pg-test-3", ip="10.10.10.13", job="pgsql"}
+```
+
+
+### Sharding Clusters
+
+You can use the extra (**OPTIONAL**) `pg_shard` and `pg_group` param to identify horizontal sharded clusters:
+
+|                     Name                     |   Type   | Level | Description                            |
+|:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
+|   [`pg_shard`](/docs/pgsql/param#pg_shard)   | `string` | **C** | **PG database shard name of cluster**  |
+|   [`pg_group`](/docs/pgsql/param#pg_group)   | `number` | **C** | **PG database shard index of cluster** |
+
+For example, Horizontal sharding with citus, greenplum or sharding it manually
+
+```yaml
+pg-citus:
+  hosts:
+    10.10.10.10: { pg_group: 0, pg_cluster: pg-citus0 ,pg_seq: 1, pg_role: primary }
+    10.10.10.11: { pg_group: 0, pg_cluster: pg-citus0 ,pg_seq: 2, pg_role: replica }
+    10.10.10.12: { pg_group: 1, pg_cluster: pg-citus1 ,pg_seq: 1, pg_role: primary }
+    10.10.10.13: { pg_group: 2, pg_cluster: pg-citus2 ,pg_seq: 1, pg_role: primary }
+  vars:
+    pg_mode: citus          # pgsql cluster mode: citus
+    pg_shard: pg-citus      # citus shard name: pg-citus
+```
+
+
+
+------
+
+## Naming Convention
+
+- Cluster name should be a valid domain name matches `[a-zA-Z0-9-]+`, and &le; 40 char
+- Service names are prefixed with cluster name, and suffixed with a single word join by `-`
+- Instance names are prefixed with cluster name and suffixed with an integer, join by `-`
+- Nodes are identified by its primary IPv4 address, hostname is used as secondary identifier
+
+|    Entity    | Naming Examples                                                                               |
+|:------------:|:----------------------------------------------------------------------------------------------|
+| **Cluster**  | `pg-meta`, `pg-test`, ...                                                                     |
+| **Service**  | `pg-meta-primary`, `pg-test-replcia`, `pg-test-offline`, `pg-test-standby`, `pg-meta-default` |
+| **Instance** | `pg-meta-1`, `pg-test-1`, `pg-test-2`, `pg-test-3`,...                                        |
+|   **Node**   | `10.10.10.10`, `10.10.10.11`, `10.10.10.12`, `10.10.10.13`...                                 |
+
+
 
 ------
 

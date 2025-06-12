@@ -382,6 +382,7 @@ export function PreviewImages() {
           Plugin
         </button>
       </div>
+      <Link href="/docs/intro/distro">
       <Image
         src={DistributionImg}
         alt="preview"
@@ -390,9 +391,10 @@ export function PreviewImages() {
           'w-full select-none duration-1000 animate-in fade-in -mb-60 slide-in-from-bottom-12 lg:-mb-40',
           active !== 0 && 'hidden',
         )}
-      />
+      /></Link>
       {active === 1 && (
-        <Image
+        <Link href="/docs/feat/infra">
+          <Image
           src={DashboardImg}
           alt="preview"
           priority
@@ -400,9 +402,10 @@ export function PreviewImages() {
             'w-full select-none duration-1000 animate-in fade-in -mb-60 slide-in-from-bottom-12 lg:-mb-40',
             active !== 1 && 'hidden',
           )}
-        />
+          /></Link>
       )}
       {active === 2 && (
+          <Link href="/docs/feat/ext">
           <Image
               src={ExtensionImg}
               alt="Extensions"
@@ -412,6 +415,7 @@ export function PreviewImages() {
                   active !== 2 && 'hidden',
               )}
           />
+        </Link>
       )}
     </div>
   );

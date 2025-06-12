@@ -124,9 +124,9 @@ Here are additional components & service port on PGSQL nodes:
 
 |       Component       |  Port  | Description                                  | Status   |
 |:---------------------:|:------:|----------------------------------------------|----------|
-|      `postgres`       | `5432` | PostgreSQL Database                          | Enabled  |
-|      `pgbouncer`      | `6432` | Pgbouncer Connection Pooling Service         | Enabled  |
-|       `patroni`       | `8008` | Patroni HA Component                         | Enabled  |
+|      `postgres`       | `5432` | PostgreSQL Server Process Managed by Patroni | Enabled  |
+|      `pgbouncer`      | `6432` | Pgbouncer Connection Pool                    | Enabled  |
+|       `patroni`       | `8008` | Patroni HA Component, Manage `postgres`      | Enabled  |
 | `primary` @ `haproxy` | `5433` | Primary connection pool: Read/Write Service  | Enabled  |
 | `replica` @ `haproxy` | `5434` | Replica connection pool: Read-only Service   | Enabled  |
 | `default` @ `haproxy` | `5436` | Primary Direct Connect Service               | Enabled  |
