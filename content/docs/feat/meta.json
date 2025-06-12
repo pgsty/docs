@@ -7,10 +7,10 @@
         "ext",
         "kernel",
         "infra",
-        "raw",
         "ha",
         "pitr",
         "iac",
+        "raw",
         "app",
         "supabase"
     ]

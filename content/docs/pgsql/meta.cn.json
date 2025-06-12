@@ -5,23 +5,21 @@
   "root": false,
   "defaultOpen": false,
   "pages": [
-    "---配置---",
-    "concept",
-    "config",
-    "param",
-    "admin",
-    "playbook",
-    "dashboard",
-
-    "---实体---",
-    "cluster",
+    "arch",
     "service",
     "user",
     "database",
     "extension",
     "hba",
     "acl",
-    "faq",
-    "..."
+    "config",
+    "param",
+    "admin",
+    "playbook",
+    "monitor",
+    "dashboard",
+    "migration",
+    "backup",
+    "faq"
   ]
 }

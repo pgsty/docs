@@ -53,8 +53,8 @@ export default function Page() {
                         <UwuHero />
                     </div>
                     <Introduction />
-                    <Architecture />
-                    <Ecosystem />
+                    <Alternative />
+                    <Distribution />
                     <Highlights />
                     <Why />
                     <End />
@@ -64,37 +64,54 @@ export default function Page() {
     );
 }
 
-function Architecture() {
+function Alternative() {
     return (
-        <div className="flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row">
-            <div className="text-start">
+        <div className="flex flex-col gap-8 border-x border-t p-8 md:px-12 lg:flex-row lg:items-center">
+            <div className="text-start lg:flex-1">
+                <Link href="/docs/intro/rds">
                 <p className="px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4">
-                    Build with Love
+                    The FOSS RDS Alternative
                 </p>
-                <h2 className="text-2xl font-semibold mb-4">A Gift for the Postgres Community</h2>
-                <h5 className="text-sm  mb-3">Just use postgres for Everything, Self-Hosting Like a Pro!</h5>
+                </Link>
+                <Link href="/docs/intro/rds">
+                <h2 className="text-2xl font-semibold mb-4">A Gift to the Community</h2>
+                </Link>
+                <h5 className="text-sm  mb-3">DBA as a Software, written for ourselves. Self-hosting PG Like a Pro!</h5>
                 <p className="text-fd-muted-foreground mb-6">
-                    Pigsty turn the PG kernel, extensions, OSS tools into a integrated solution,
-                    makes it easy to self-hosting your own production-grade Postgres service.
-                    Launch without database expertise, save 90%+ comparing to cloud RDS.
+                    Pigsty turn the kernels and OSS tools into a integrated solution,
+                    makes it easy to self-hosting your own production-grade RDS.
+                    Launch without DBA expertise, save 90%+ cost than cloud RDS.
                 </p>
             </div>
-            <Image
-                src={DistroImg}
-                alt="Architecture"
-                className="mx-auto -my-16 w-full max-w-[400px] lg:mx-0"
-            />
+            <div className="lg:flex-1 flex justify-center items-center">
+                <Link href="/docs/intro/rds"><Image
+                    src={DistroImg}
+                    alt="RDS Alternative"
+                    className="w-full h-auto max-w-none"
+                /></Link>
+            </div>
         </div>
     );
 }
 
-function Ecosystem() {
+function Distribution() {
     return (
         <div className="flex flex-col gap-4 border-x border-t p-8 md:px-12">
             <div className="text-start">
-
-                <h2 className="text-2xl font-semibold mb-4">Eating the database world with Postgres</h2>
-                <h5 className="text-sm  mb-3">Harness the superpower of PostgreSQL extension ecosystem! Unparalleded 420+ extensions and 8 kernel forks</h5>
+                <Link href="/docs/intro/distro">
+                <p className="px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4">
+                    The PG Database Distribution
+                </p>
+                </Link>
+                <Link href="/docs/intro/distro">
+                <h2 className="text-2xl font-semibold mb-4">Unite the PG Ecosystem</h2>
+                </Link>
+                <h5 className="text-sm  mb-3">PostgreSQL is eating the database world, Let&apos;s unite these extension superpowers!</h5>
+                <p className="text-fd-muted-foreground mb-6">
+                    Harness the superpower of PostgreSQL ecosystem! with unparalleled 420+ extensions.
+                    Simulate Oracle, MySQL, MSSQL, MONGO with exotic kernels, self-hosting Supabase, scaling with citus; analytic with duckdb;
+                    Explore the world of possibility and maximize the synergistic effect of the ecosystem. Just use PostgreSQL for Everything, and it&apos;s time to conquer the database world with postgres.
+                </p>
             </div>
             <Image
                 src={EcosystemImg}
@@ -211,7 +228,7 @@ function Highlights(): React.ReactElement {
                 Describe and materialize entire infra & database clusters with code & playbook
             </Highlight></Link>
 
-            <Link href="/docs/feat/supabase"><Highlight icon={Zap} heading="Self-Hosting Supabase">
+            <Link href="/docs/app/supabase"><Highlight icon={Zap} heading="Self-Hosting Supabase">
                 Tun postgres into a full-featured BaaS, Migration in an hour, scale to billion
             </Highlight></Link>
 
@@ -400,14 +417,13 @@ function Introduction(): React.ReactElement {
                 <div className={cn(badgeVariants())}>3</div>
                 <h3 className="text-2xl font-semibold">Deliver Service</h3>
                 <p className="text-fd-muted-foreground">
-                    <span>Deliver enterprise-grade database service in minutes, </span>
-                    without caring about details.
+                    <span>Deliver enterprise-grade database service in minutes, </span> without caring about details.
                 </p><br /><br />
                 <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
                     <Image
                         src={HaImg}
                         alt="Architecture"
-                        className="mx-auto -my-16 w-full max-w-[600px]lg:mx-0"
+                        className="mx-auto -my-16 w-full max-w-[1200px] lg:max-w-[1400px] xl:max-w-[1600px] lg:mx-0"
                     />
                 </div>
                 <br />
@@ -415,5 +431,4 @@ function Introduction(): React.ReactElement {
         </div>
     );
 }
-
 
