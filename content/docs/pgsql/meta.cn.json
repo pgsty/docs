@@ -6,20 +6,23 @@
   "defaultOpen": false,
   "pages": [
     "arch",
-    "service",
-    "user",
-    "database",
-    "extension",
-    "hba",
-    "acl",
+    "usage",
     "config",
     "param",
     "admin",
     "playbook",
     "monitor",
+    "faq",
+    "--- ---",
+    "user",
+    "hba",
+    "acl",
+    "database",
+    "service",
+    "backup",
     "dashboard",
     "migration",
-    "backup",
-    "faq"
+    "kernel",
+    "extension"
   ]
 }

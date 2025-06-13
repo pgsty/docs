@@ -1,0 +1,16 @@
+{
+  "title": "Extension",
+  "description": "PostgreSQL Extensions",
+  "icon": "Blocks",
+  "root": false,
+  "defaultOpen": false,
+  "pages": [
+    "repo",
+    "download",
+    "install",
+    "config",
+    "create",
+    "changelog",
+    "category"
+  ]
+}

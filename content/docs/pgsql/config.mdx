@@ -33,10 +33,14 @@ There are **4** **REQUIRED** parameters to describe a PostgreSQL Cluster:
 |    [`pg_role`](/docs/pgsql/param#pg_role)    |  `enum`  | **Instance** | **PG database instance role** |
 
 - [`pg_cluster`](/docs/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
-- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the ins. Only the `primary` role will be handled specially. If not filled in, the default is the `replica` role and the special `delayed` and `offline` roles.
-- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the ins within the cluster, usually with an integer number incremented from 0 or 1, which is not changed once it is assigned.
-  - `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the ins, i.e. `pg_instance`.
-  - `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
+- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the ins.
+- the `primary` role will mark this instance as cluster leader (initially).
+- the `replica` is the default role, which marks this instances as common read-only replica.
+- the `offline` marks this instance as special read-only replica that serves the `offline` service.
+- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the ins within the cluster, a non-negative integer
+- Start from 0 or 1, incremental allocation in sequence, never change once assigned,
+- `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the ins, i.e. `pg_instance`.
+- `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
 - [`pg_shard`](/docs/pgsql/param#pg_shard) and [`pg_group`](/docs/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
 
 
@@ -51,7 +55,7 @@ pg_up{cls="pg-test", ins="pg-test-3", ip="10.10.10.13", job="pgsql"}
 
 ### Sharding Clusters
 
-You can use the extra (**OPTIONAL**) `pg_shard` and `pg_group` param to identify horizontal sharded clusters:
+You can use the **OPTIONAL** `pg_shard` and `pg_group` param to identify horizontal sharded clusters:
 
 |                     Name                     |   Type   | Level | Description                            |
 |:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
@@ -89,6 +93,63 @@ pg-citus:
 | **Service**  | `pg-meta-primary`, `pg-test-replcia`, `pg-test-offline`, `pg-test-standby`, `pg-meta-default` |
 | **Instance** | `pg-meta-1`, `pg-test-1`, `pg-test-2`, `pg-test-3`,...                                        |
 |   **Node**   | `10.10.10.10`, `10.10.10.11`, `10.10.10.12`, `10.10.10.13`...                                 |
+
+
+
+------
+
+## Version Policy
+
+Pigsty follows the [**PostgreSQL Version Policy**](https://www.postgresql.org/support/versioning/) and "Officially" support the following major versions.
+
+| Major | Minor   | Comment                                     | Ext DEB | Ext RPM |
+|-------|---------|---------------------------------------------|:-------:|:-------:|
+| `17`  | `17.5`  | The latest stable version (**RECOMMENDED**) |   394   |   396   |
+| `16`  | `16.9`  | The secondary stable version                |   400   |   407   |
+| `15`  | `15.13` | First release on 2022-10-13                 |   402   |   409   |
+| `14`  | `14.18` | First release on 2021-09-30                 |   389   |   392   |
+| `13`  | `13.21` | First release on 2020-09-24, EOLed soon     |   362   |   367   |
+
+
+Pigsty has PG 13 - 17 (and 18beta1) support. Lower major version (12-) "may" work, with no guarantee.\
+For legacy PG version support, consider our [professional services](/docs/about/service).
+
+To use a different major version, configure the [`pg_version`](/docs/pgsql/param#pg_version) variable.
+Which can be globally [`configure`](/docs/config/configure) with `-v <ver>` option.
+No further changed needed as long as they are available in local / upstream repo.
+
+```yaml
+pg-v13:
+  hosts: { 10.10.10.13: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v13
+    pg_version: 13
+
+pg-v14:
+  hosts: { 10.10.10.14: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v14
+    pg_version: 14
+
+pg-v15:
+  hosts: { 10.10.10.15: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v15
+    pg_version: 15
+
+pg-v16:
+  hosts: { 10.10.10.16: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v16
+    pg_version: 16
+
+pg-v17:
+  hosts: { 10.10.10.17: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v17
+    pg_version: 17
+```
+
 
 
 
@@ -353,64 +414,3 @@ SELECT create_reference_table('pgbench_branches')         ; SELECT truncate_loca
 SELECT create_reference_table('pgbench_history')          ; SELECT truncate_local_data_after_distributing_table($$public.pgbench_history$$);
 SELECT create_reference_table('pgbench_tellers')          ; SELECT truncate_local_data_after_distributing_table($$public.pgbench_tellers$$);
 ```
-
-------
-
-## Major Version
-
-Pigsty works on PostgreSQL 10+. While the pre-packaged packages only includes 12 - 16 for now.
-
-| version | Comment                                                         | Packages       |
-|---------|-----------------------------------------------------------------|----------------|
-| 16      | The latest version with important extensions                    | Core, L1 L2    |
-| 15      | The stable major version, with full extension support (default) | Core, L1,L2,L3 |
-| 14      | The old stable major version, ith L1 extension support only     | Core, L1       |
-| 13      | Older major version, with L1 extension support only             | Core, L1       |
-| 12      | Older major version, with L1 extension support only             | Core, L1       |
-
-- Core: `postgresql*`, available on PG 12 - 16
-- L1 extensions: `wal2json`, `pg_repack`, `passwordcheck_cracklib` (PG 12 - 16)
-- L2 extensions: `postgis`, `citus`, `timescaledb`, `pgvector` (PG15, PG16)
-- L3 extensions: Other miscellaneous extensions (PG15 only)
-
-Since some extensions are not available on PG 12,13,14,16, you may have to change [`pg_extensions`](/docs/pgsql/param#pg_extensions) and [`pg_libs`](/docs/pgsql/param#pg_libs) to fit your needs.
-
-Here are some example cluster definition with different major versions.
-
-```yaml
-pg-v12:
-  hosts: { 10.10.10.12: { pg_seq: 1 ,pg_role: primary } }
-  vars:
-    pg_cluster: pg-v12
-    pg_version: 12
-    pg_libs: 'pg_stat_statements, auto_explain'
-    pg_extensions: [ 'wal2json_12* pg_repack_12* passwordcheck_cracklib_12*' ]
-
-pg-v13:
-  hosts: { 10.10.10.13: { pg_seq: 1 ,pg_role: primary } }
-  vars:
-    pg_cluster: pg-v13
-    pg_version: 13
-    pg_libs: 'pg_stat_statements, auto_explain'
-    pg_extensions: [ 'wal2json_13* pg_repack_13* passwordcheck_cracklib_13*' ]
-
-pg-v14:
-  hosts: { 10.10.10.14: { pg_seq: 1 ,pg_role: primary } }
-  vars:
-    pg_cluster: pg-v14
-    pg_version: 14
-
-pg-v15:
-  hosts: { 10.10.10.15: { pg_seq: 1 ,pg_role: primary } }
-  vars:
-    pg_cluster: pg-v15
-    pg_version: 15
-
-pg-v16:
-  hosts: { 10.10.10.16: { pg_seq: 1 ,pg_role: primary } }
-  vars:
-    pg_cluster: pg-v16
-    pg_version: 16
-```
-
-Beware that these extensions are just not included in Pigsty’s default repo. You can have these extensions on older pg version with proper configuration.
