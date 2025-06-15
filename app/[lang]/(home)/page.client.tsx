@@ -405,7 +405,7 @@ export function PreviewImages() {
           /></Link>
       )}
       {active === 2 && (
-          <Link href="/docs/feat/ext">
+          <Link href="/ext">
           <Image
               src={ExtensionImg}
               alt="Extensions"

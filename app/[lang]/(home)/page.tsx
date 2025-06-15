@@ -48,7 +48,7 @@ export default function Page() {
                     }}
                 >
                     <div className="relative">
-                        <Hero />
+                    <Hero />
                     </div>
                     <Introduction />
                     <Alternative />
@@ -111,7 +111,7 @@ function Distribution() {
                     Explore the world of possibility and maximize the synergistic effect of the ecosystem. Just use PostgreSQL for Everything, and it&apos;s time to conquer the database world with postgres.
                 </p>
             </div>
-            <Link href="/docs/intro/distro"><Image src={EcosystemImg} alt="Ecosystem" className="w-full max-w-full h-auto mt-2 dark:invert"/></Link>
+            <Link href="/ext/list"><Image src={EcosystemImg} alt="Ecosystem" className="w-full max-w-full h-auto mt-2 dark:invert"/></Link>
         </div>
     );
 }
@@ -194,7 +194,7 @@ function Highlights(): React.ReactElement {
                 </h2>
                 <MousePointer className="-ml-1 mt-8" />
             </div>
-            <Link href="/docs/feat/ext"><Highlight icon={TimerIcon} heading="Extension Overwhelming">
+            <Link href="/ext"><Highlight icon={TimerIcon} heading="Extension Overwhelming">
                 Gather the superpower of 420+ PG Extensions out-of-the-box together
             </Highlight></Link>
 
@@ -284,7 +284,7 @@ function Hero() {
             </p>
             <div className="inline-flex items-center gap-3 max-md:mx-auto">
                 <Link
-                    href="/docs/"
+                    href="/docs"
                     className={cn(
                         buttonVariants({ size: 'lg', className: 'rounded-full' }),
                     )}
