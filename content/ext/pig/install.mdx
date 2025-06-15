@@ -1,0 +1,54 @@
+---
+title: Install PIG CLI
+description: Get Started with pig, the PostgreSQL extension manager
+icon: Download
+---
+
+## Via Script
+
+The simplest way to install `pig` is to run the following script:
+
+```bash
+curl -fsSL https://repo.pigsty.io/pig | bash
+```
+
+This will download the latest `pig` RPM/DEB directly from the pigsty repo and install via `rpm` or `dpkg`.
+
+## Via YUM
+
+The `pig` RPM package is available in the `pigsty-infra` YUM repo for EL compatible platforms:
+
+```bash
+sudo tee /etc/yum.repos.d/pigsty.repo > /dev/null <<-'EOF'
+[pigsty-infra]
+name=Pigsty Infra for $basearch
+baseurl=https://repo.pigsty.io/yum/infra/$basearch
+enabled = 1
+gpgcheck = 0
+module_hotfixes=1
+EOF
+
+sudo yum makecache;
+sudo yum install -y pig
+```
+
+## Via APT
+
+The `pig` DEB package is available in the `pigsty-infra` APT repo for Debian/Ubuntu platforms:
+
+```bash
+sudo tee /etc/apt/sources.list.d/pigsty.list > /dev/null <<EOF
+deb [trusted=yes] https://repo.pigsty.io/apt/infra generic main 
+EOF
+
+sudo apt update;
+sudo apt install -y pig
+```
+
+## Self Update
+
+Once installed, you can self-update `pig` to the latest version with:
+
+```bash
+pig update   # upgrade pig itself to the latest version
+```

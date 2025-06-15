@@ -1,0 +1,66 @@
+---
+title: Extension Administration
+description: How to manage repositories with pig ext subcommand
+icon: Shapes
+---
+
+The `pig ext` command is a comprehensive tool for managing PostgreSQL extensions. It allows users to search, install, remove, update, and manage PostgreSQL extensions and even kernel packages.
+
+## Overview
+
+The `pig ext` command provides various subcommands for extension management:
+
+- `list`: Search and list available extensions
+- `info`: Display detailed extension information
+- `status`: Show installed extensions
+- `scan`: Scan installed extensions
+- `add`: Install extensions
+- `rm`: Remove extensions
+- `update`: Update installed extensions
+- `import`: Download extension packages
+- `link`: Link PostgreSQL installation
+- `upgrade`: Update extension catalog
+
+## Prerequisites
+
+To install postgres extensions, you'll need to setup the repositories first:
+
+```bash
+pig repo add pgdg pigsty -u    # Gently add pgdg and pigsty repo
+pig repo set -u                # Brute way to remove and add all required repos
+```
+
+## Key Features
+
+1. Supports multiple package formats (RPM/DEB)
+2. Automatic dependency resolution
+3. Version-specific extension management
+4. Comprehensive extension catalog
+
+## Usage Examples
+
+### List Extensions
+```bash
+pig ext list                # List all extensions
+pig ext list postgis        # Search extensions by name
+pig ext ls olap             # List OLAP category extensions
+```
+
+### Install Extensions
+```bash
+pig ext install pg_duckdb
+pig ext install pg_partman
+pig ext install pg_cron
+```
+
+### Extension Information
+```bash
+pig ext info postgis        # Show detailed PostGIS information
+```
+
+## Important Notes
+
+- Requires PGDG kernel packages
+- Supports PostgreSQL versions 13-17
+- Can specify PostgreSQL version with `-v` flag
+- Supports both RPM and DEB package systems

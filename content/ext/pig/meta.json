@@ -1,3 +1,13 @@
 {
-
+  "pages": [
+    "start",
+    "why",
+    "install",
+    "pig",
+    "repo",
+    "ext",
+    "sty",
+    "build",
+    "release"
+  ]
 }

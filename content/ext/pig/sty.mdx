@@ -1,0 +1,71 @@
+---
+title: Pigsty Administration
+description: How to manage pigsty with pig sty subcommand
+icon: SquareTerminal
+---
+
+## Overview
+
+The `pig` CLI can be used to manage Pigsty, a comprehensive PostgreSQL RDS solution that provides:
+- High Availability
+- Point-in-Time Recovery (PITR)
+- Monitoring
+- Infrastructure as Code (IaC)
+- PostgreSQL Extensions
+
+### Basic Commands
+
+```bash
+pig sty -Init (Download), Bootstrap, Configure, and Install Pigsty
+
+pig sty init    # install pigsty (~/pigsty by default)
+pig sty boot    # install ansible and prepare offline pkg
+pig sty conf    # configure pigsty and generate config
+pig sty install # use pigsty to install & provisioning env
+```
+
+## `sty init`
+
+Initialize Pigsty installation with optional flags:
+
+```bash
+pig sty init [flags]
+  -p | --path    : installation directory (default: ~/pigsty)
+  -f | --force   : overwrite existing pigsty directory
+  -v | --version : specify pigsty version
+  -d | --dir     : download directory (default: /tmp)
+```
+
+## `sty boot`
+
+Bootstrap Pigsty with configuration options:
+
+```bash
+pig sty boot [flags]
+  -r | --region : specify region (default, china, europe)
+  -p | --path  : offline package path
+  -k | --keep  : preserve existing upstream repo
+```
+
+## `sty conf`
+
+Configure Pigsty with various template and customization options:
+
+```bash
+pig sty conf [flags]
+  -c | --conf    : config template (meta, dual, trio, full, prod)
+  --ip           : primary IP address
+  -v | --version : PostgreSQL version
+  -r | --region  : upstream repo region
+  -s | --skip    : skip IP address probing
+  -x | --proxy   : configure proxy environment
+```
+
+## `sty install`
+
+Run the Pigsty installation playbook:
+
+```bash
+pig sty install [flags]
+  -c | --conf : specify config template (optional)
+```

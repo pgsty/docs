@@ -1,0 +1,63 @@
+---
+title: Repository Administration
+description: How to manage repositories with pig repo subcommand in Pigsty
+icon: SquareTerminal
+---
+
+## Overview
+
+The `pig repo` command is a comprehensive tool for managing package repositories. It provides functionality to manage, add, remove, create and interact with os software repos. It works on both RPM-based (EL) and Debian-based systems.
+
+## Key Features
+
+### Basic Commands
+
+- `pig repo list`: List available repositories
+- `pig repo add`: Add new repositories
+- `pig repo update`: Update repository cache
+- `pig repo rm`: Remove repositories
+- `pig repo status`: Show current repository status
+- `pig repo create`: Create local repository
+- `pig repo cache`: Create offline package
+- `pig repo boot`: Bootstrap repo from offline package
+
+### Repository Modules
+
+Pigsty organizes repos into modules. Essential modules include:
+
+- `pgdg`: Official PostgreSQL Repository
+- `pigsty`: Pigsty Extension Repository
+- `node`: Operating System Default Repository
+
+### Example Usage
+
+```bash
+# Add PostgreSQL and Pigsty repositories
+pig repo add pgdg pigsty
+
+# Update repository cache
+pig repo update
+
+# Add all recommended repositories
+pig repo add all -u
+```
+
+## Important Notes
+
+- Requires root/sudo privileges for repository management
+- Supports both RPM and Debian-based systems
+- Provides flexible repository configuration options
+- Supports regional mirrors and offline package management
+
+## Modules and Repositories
+
+Pigsty supports various repository modules including:
+- Infrastructure repos
+- PostgreSQL repos
+- Operating system repos
+- Extension repos
+- Additional specialized repos (Docker, Kubernetes, etc.)
+
+## Detailed Subcommands
+
+Each subcommand (`list`, `add`, `update`, etc.) has specific flags and use cases for comprehensive repository management.

@@ -1,0 +1,266 @@
+---
+title: pigsty-infra
+description: Packages that are generic to any PostgreSQL version and Linux major version.
+icon: Landmark
+---
+
+import { GithubInfo } from 'fumadocs-ui/components/github-info';
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+import { Badge } from "@/components/ui/badge";
+import { KeyRound, FileTerminal } from "lucide-react";
+
+The `pigsty-infra` repo contains packages that are generic to any PostgreSQL version and Linux major version,
+including prometheus & grafana stack, admin tools for postgres, and many utils written in go.
+
+<Files>
+    <Folder name="https://repo.pigsty.io" defaultOpen>
+        <Folder name="apt" defaultOpen>
+            <Folder name="infra" defaultOpen>
+                <Folder name="amd64" defaultOpen></Folder>
+                <Folder name="arm64" defaultOpen></Folder>
+            </Folder>
+        </Folder>
+        <Folder name="yum" defaultOpen>
+            <Folder name="infra" defaultOpen>
+                <Folder name="x86_64" defaultOpen></Folder>
+                <Folder name="aarch64" defaultOpen></Folder>
+            </Folder>
+        </Folder>
+        <a href={"https://repo.pigsty.io/pig"}><File name="pig" icon={<FileTerminal className="text-orange-500" />} /></a>
+        <a href={"https://repo.pigsty.io/key"}><File name="key" icon={<KeyRound className="text-blue-500" />} /></a>
+    </Folder>
+</Files>
+
+--------
+
+## Quick Start
+
+```bash tab="pig"
+curl https://repo.pigsty.io/pig | bash      # download and install the pig CLI tool
+pig repo add all infra -u                   # add pigsty-infra repo and update cache
+```
+```bash tab="apt"
+# Add Pigsty's GPG public key to your system keychain to verify package signatures
+curl -fsSL https://repo.pigsty.io/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg
+
+# Get Debian distribution codename (distro_codename=jammy, focal, bullseye, bookworm), and write the corresponding upstream repository address to the APT List file
+distro_codename=$(lsb_release -cs)
+sudo tee /etc/apt/sources.list.d/pigsty-infra.list > /dev/null <<EOF
+deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main
+EOF
+
+# Refresh APT repository cache
+sudo apt update
+```
+```bash tab="yum"
+# Add Pigsty's GPG public key to your system keychain to verify package signatures
+curl -fsSL https://repo.pigsty.io/key | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-pigsty >/dev/null
+
+# Add Pigsty Repo definition files to /etc/yum.repos.d/ directory, including two repositories
+sudo tee /etc/yum.repos.d/pigsty-infra.repo > /dev/null <<-'EOF'
+[pigsty-infra]
+name=Pigsty Infra for $basearch
+baseurl=https://repo.pigsty.io/yum/infra/$basearch
+skip_if_unavailable = 1
+enabled = 1
+priority = 1
+gpgcheck = 1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-pigsty
+module_hotfixes=1
+EOF
+
+# Refresh YUM/DNF repository cache
+sudo yum makecache;
+```
+
+
+
+--------
+
+## Compatibility
+
+| Linux  | Package | x86_64 | aarch64 |
+|:------:|:-------:|:------:|:-------:|
+|   EL   |  `rpm`  |   ✓    |    ✓    |
+| Debian |  `deb`  |   ✓    |    ✓    |
+
+
+
+--------
+
+## Content
+
+| Name                                                                                                  | Version        |
+|:------------------------------------------------------------------------------------------------------|:---------------|
+| [prometheus](https://github.com/prometheus/prometheus)                                                | 3.4.1          |
+| [pushgateway](https://github.com/prometheus/pushgateway)                                              | 1.11.1         |
+| [alertmanager](https://github.com/prometheus/alertmanager)                                            | 0.28.1         |
+| [blackbox_exporter](https://github.com/prometheus/blackbox_exporter)                                  | 0.26.0         |
+| [nginx_exporter](https://github.com/nginxinc/nginx-prometheus-exporter)                               | 1.4.2          |
+| [node_exporter](https://github.com/prometheus/node_exporter)                                          | 1.9.1          |
+| [zfs_exporter](https://github.com/waitingsong/zfs_exporter/releases/)                                 | 3.8.1          |
+| [keepalived_exporter](https://github.com/mehdy/keepalived-exporter)                                   | 1.7.0          |
+| [pgbackrest_exporter](https://github.com/woblerr/pgbackrest_exporter)                                 | 0.20.0         |
+| [mysqld_exporter](https://github.com/prometheus/mysqld_exporter)                                      | 0.17.2         |
+| [redis_exporter](https://github.com/oliver006/redis_exporter)                                         | 1.72.1         |
+| [kafka_exporter](https://github.com/danielqsj/kafka_exporter)                                         | 1.9.0          |
+| [mongodb_exporter](https://github.com/percona/mongodb_exporter)                                       | 0.44.0         |
+| [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)                                 | 1.117.1        |
+| [VictoriaLogs](https://github.com/VictoriaMetrics/VictoriaMetrics/releases)                           | 1.22.2         |
+| [duckdb](https://github.com/duckdb/duckdb)                                                            | 1.3.0          |
+| [etcd](https://github.com/etcd-io/etcd)                                                               | 3.6.0          |
+| [mtail](https://github.com/google/mtail)                                                              | 3.0.8          |
+| [restic](https://github.com/restic/restic)                                                            | 0.18.0         |
+| [juicefs](https://github.com/juicedata/juicefs)                                                       | 1.2.3          |
+| [dblab](https://github.com/danvergara/dblab)                                                          | 0.32.0         |
+| [pg_timetable](https://github.com/cybertec-postgresql/pg_timetable)                                   | 5.13.0         |
+| [ferretdb](https://github.com/FerretDB/FerretDB)                                                      | 2.2.0          |
+| [tigerbeetle](https://github.com/tigerbeetle/tigerbeetle)                                             | 0.16.41        |
+| [loki](https://github.com/grafana/loki)                                                               | 3.1.1          |
+| [promtail](https://github.com/grafana/loki/releases/tag/v3.0.0)                                       | 3.0.0          |
+| [grafana-victorialogs-ds](https://github.com/VictoriaMetrics/victorialogs-datasource/releases/)       | 0.16.3         |
+| [grafana-victoriametrics-ds](https://github.com/VictoriaMetrics/victoriametrics-datasource/releases/) | 0.15.1         |
+| [grafana-infinity-ds](https://github.com/grafana/grafana-infinity-datasource/)                        | 3.2.1          |
+| [kafka](https://kafka.apache.org/downloads)                                                           | 4.0.0          |
+| [grafana](https://github.com/grafana/grafana/)                                                        | 12.0.1         |
+| [pg_exporter](https://github.com/Vonng/pg_exporter)                                                   | 1.0.0          |
+| [vector](https://github.com/vectordotdev/vector/releases)                                             | 0.47.0         |
+| [vip-manager](https://github.com/cybertec-postgresql/vip-manager)                                     | 3.0.0          |
+| [minio](https://github.com/minio/minio)                                                               | 20250422221226 |
+| [mcli](https://github.com/minio/mc)                                                                   | 20250416181326 |
+| [sealos](https://github.com/labring/sealos)                                                           | 5.0.1          |
+| [rclone](https://github.com/rclone/rclone/releases/)                                                  | 1.69.3         |
+
+------
+
+## Source
+
+Building specs of this repo is open-sourced on GitHub:
+
+<GithubInfo owner="pgsty" repo="infra-pkg"/>
+
+
+------
+
+## Changelog
+
+
+|    Date    | Name                       | Old            | New            | Comment |
+|:----------:|:---------------------------|:---------------|:---------------|:--------|
+| 2025-06-01 | grafana                    | -              | 12.0.1         | -       |
+| 2025-06-01 | prometheus                 | -              | 3.4.1          | -       |
+| 2025-06-01 | keepalived_exporter        | -              | 1.7.0          | -       |
+| 2025-06-01 | redis_exporter             | -              | 1.73.0         | -       |
+| 2025-06-01 | victoriametrics            | -              | 1.118.0        | -       |
+| 2025-06-01 | victorialogs               | -              | 1.23.1         | -       |
+| 2025-06-01 | tigerbeetle                | -              | 0.16.42        | -       |
+| 2025-06-01 | grafana-victorialogs-ds    | -              | 0.17.0         | -       |
+| 2025-06-01 | grafana-infinity-ds        | -              | 3.2.2          | -       |
+| 2025-05-22 | dblab                      | -              | 0.32.0         | -       |
+| 2025-05-22 | prometheus                 | -              | 3.4.0          | -       |
+| 2025-05-22 | duckdb                     | -              | 1.3.0          | -       |
+| 2025-05-22 | etcd                       | -              | 3.6.0          | -       |
+| 2025-05-22 | pg_exporter                | -              | 1.0.0          | -       |
+| 2025-05-22 | ferretdb                   | -              | 2.2.0          | -       |
+| 2025-05-22 | rclone                     | -              | 1.69.3         | -       |
+| 2025-05-22 | minio                      | -              | 20250422221226 | -       |
+| 2025-05-22 | mcli                       | -              | 20250416181326 | -       |
+| 2025-05-22 | nginx_exporter             | -              | 1.4.2          | -       |
+| 2025-05-22 | keepalived_exporter        | -              | 1.6.2          | -       |
+| 2025-05-22 | pgbackrest_exporter        | -              | 0.20.0         | -       |
+| 2025-05-22 | redis_exporter             | -              | 1.27.1         | -       |
+| 2025-05-22 | victoriametrics            | -              | 1.117.1        | -       |
+| 2025-05-22 | victorialogs               | -              | 1.22.2         | -       |
+| 2025-05-22 | pg_timetable               | -              | 5.13.0         | -       |
+| 2025-05-22 | tigerbeetle                | -              | 0.16.41        | -       |
+| 2025-05-22 | pev2                       | -              | 1.15.0         | -       |
+| 2025-05-22 | grafana                    | -              | 12.0.0         | -       |
+| 2025-05-22 | grafana-victorialogs-ds    | -              | 0.16.3         | -       |
+| 2025-05-22 | grafana-victoriametrics-ds | -              | 0.15.1         | -       |
+| 2025-05-22 | grafana-infinity-ds        | -              | 3.2.1          | -       |
+| 2025-05-22 | grafana_plugins            | -              | 12.0.0         | -       |
+| 2025-04-23 | mtail                      | -              | 3.0.8          | new     |
+| 2025-04-23 | pig                        | -              | 0.4.0          | -       |
+| 2025-04-23 | pg_exporter                | -              | 0.9.0          | -       |
+| 2025-04-23 | prometheus                 | -              | 3.3.0          | -       |
+| 2025-04-23 | pushgateway                | -              | 1.11.1         | -       |
+| 2025-04-23 | keepalived_exporter        | -              | 1.6.0          | -       |
+| 2025-04-23 | redis_exporter             | -              | 1.70.0         | -       |
+| 2025-04-23 | victoriametrics            | -              | 1.115.0        | -       |
+| 2025-04-23 | victoria_logs              | -              | 1.20.0         | -       |
+| 2025-04-23 | duckdb                     | -              | 1.2.2          | -       |
+| 2025-04-23 | pg_timetable               | -              | 5.12.0         | -       |
+| 2025-04-23 | vector                     | -              | 0.46.1         | -       |
+| 2025-04-23 | minio                      | -              | 20250422221226 | -       |
+| 2025-04-23 | mcli                       | -              | 20250416181326 | -       |
+| 2025-04-05 | pig                        | -              | 0.3.4          | -       |
+| 2025-04-05 | etcd                       | -              | 3.5.21         | -       |
+| 2025-04-05 | restic                     | -              | 0.18.0         | -       |
+| 2025-04-05 | ferretdb                   | -              | 2.1.0          | -       |
+| 2025-04-05 | tigerbeetle                | -              | 0.16.34        | -       |
+| 2025-04-05 | pg_exporter                | -              | 0.8.1          | -       |
+| 2025-04-05 | node_exporter              | -              | 1.9.1          | -       |
+| 2025-04-05 | grafana                    | -              | 11.6.0         | -       |
+| 2025-04-05 | zfs_exporter               | -              | 3.8.1          | -       |
+| 2025-04-05 | mongodb_exporter           | -              | 0.44.0         | -       |
+| 2025-04-05 | victoriametrics            | -              | 1.114.0        | -       |
+| 2025-04-05 | minio                      | -              | 20250403145628 | -       |
+| 2025-04-05 | mcli                       | -              | 20250403170756 | -       |
+| 2025-03-23 | etcd                       | -              | 3.5.20         | -       |
+| 2025-03-23 | pgbackrest_exporter        | -              | 0.19.0         | rebuild |
+| 2025-03-23 | victorialogs               | -              | 1.17.0         | -       |
+| 2025-03-23 | vslogcli                   | -              | 1.17.0         | -       |
+| 2025-03-17 | kafka                      | -              | 4.0.0          | -       |
+| 2025-03-17 | Prometheus                 | -              | 3.2.1          | -       |
+| 2025-03-17 | AlertManager               | -              | 0.28.1         | -       |
+| 2025-03-17 | blackbox_exporter          | -              | 0.26.0         | -       |
+| 2025-03-17 | node_exporter              | -              | 1.9.0          | -       |
+| 2025-03-17 | mysqld_exporter            | -              | 0.17.2         | -       |
+| 2025-03-17 | kafka_exporter             | -              | 1.9.0          | -       |
+| 2025-03-17 | redis_exporter             | -              | 1.69.0         | -       |
+| 2025-03-17 | DuckDB                     | -              | 1.2.1          | -       |
+| 2025-03-17 | etcd                       | -              | 3.5.19         | -       |
+| 2025-03-17 | FerretDB                   | -              | 2.0.0          | -       |
+| 2025-03-17 | tigerbeetle                | -              | 0.16.31        | -       |
+| 2025-03-17 | vector                     | -              | 0.45.0         | -       |
+| 2025-03-17 | VictoriaMetrics            | -              | 1.114.0        | -       |
+| 2025-03-17 | VictoriaLogs               | -              | 1.16.0         | -       |
+| 2025-03-17 | rclone                     | -              | 1.69.1         | -       |
+| 2025-03-17 | pev2                       | -              | 1.14.0         | -       |
+| 2025-03-17 | grafana-victorialogs-ds    | -              | 0.16.0         | -       |
+| 2025-03-17 | grafana-victoriametrics-ds | -              | 0.14.0         | -       |
+| 2025-03-17 | grafana-infinity-ds        | -              | 3.0.0          | -       |
+| 2025-03-17 | timescaledb-event-streamer | -              | 0.12.0         | new     |
+| 2025-03-17 | restic                     | -              | 0.17.3         | new     |
+| 2025-03-17 | juicefs                    | -              | 1.2.3          | new     |
+| 2025-02-12 | pushgateway                | 1.10.0         | 1.11.0         | -       |
+| 2025-02-12 | alertmanager               | 0.27.0         | 0.28.0         | -       |
+| 2025-02-12 | nginx_exporter             | 1.4.0          | 1.4.1          | -       |
+| 2025-02-12 | pgbackrest_exporter        | 0.18.0         | 0.19.0         | -       |
+| 2025-02-12 | redis_exporter             | 1.66.0         | 1.67.0         | -       |
+| 2025-02-12 | mongodb_exporter           | 0.43.0         | 0.43.1         | -       |
+| 2025-02-12 | VictoriaMetrics            | 1.107.0        | 1.111.0        | -       |
+| 2025-02-12 | VictoriaLogs               | v1.3.2         | 1.9.1          | -       |
+| 2025-02-12 | DuckDB                     | 1.1.3          | 1.2.0          | -       |
+| 2025-02-12 | Etcd                       | 3.5.17         | 3.5.18         | -       |
+| 2025-02-12 | pg_timetable               | 5.10.0         | 5.11.0         | -       |
+| 2025-02-12 | FerretDB                   | 1.24.0         | 2.0.0          | -       |
+| 2025-02-12 | tigerbeetle                | 0.16.13        | 0.16.27        | -       |
+| 2025-02-12 | grafana                    | 11.4.0         | 11.5.1         | -       |
+| 2025-02-12 | vector                     | 0.43.1         | 0.44.0         | -       |
+| 2025-02-12 | minio                      | 20241218131544 | 20250207232109 | -       |
+| 2025-02-12 | mcli                       | 20241121172154 | 20250208191421 | -       |
+| 2025-02-12 | rclone                     | 1.68.2         | 1.69.0         | -       |
+| 2025-01-10 | Prometheus                 | -              | 3.1.0          | -       |
+| 2024-11-19 | Prometheus                 | 2.54.0         | 3.0.0          | -       |
+| 2024-11-19 | VictoriaMetrics            | 1.102.1        | 1.106.1        | -       |
+| 2024-11-19 | VictoriaLogs               | v0.28.0        | 1.0.0          | -       |
+| 2024-11-19 | MySQL Exporter             | 0.15.1         | 0.16.0         | -       |
+| 2024-11-19 | Redis Exporter             | 1.62.0         | 1.66.0         | -       |
+| 2024-11-19 | MongoDB Exporter           | 0.41.2         | 0.42.0         | -       |
+| 2024-11-19 | Keepalived Exporter        | 1.3.3          | 1.4.0          | -       |
+| 2024-11-19 | DuckDB                     | 1.1.2          | 1.1.3          | -       |
+| 2024-11-19 | etcd                       | 3.5.16         | 3.5.17         | -       |
+| 2024-11-19 | tigerbeetle                | 16.8           | 0.16.13        | -       |
+| 2024-11-19 | grafana                    | -              | 11.3.0         | -       |
+| 2024-11-19 | vector                     | -              | 0.42.0         | -       |

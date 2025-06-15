@@ -1,0 +1,54 @@
+---
+title: Get Started
+description: Get Started with pig, the PostgreSQL extension manager.
+icon: Play
+---
+
+## What is PIG?
+
+**PIG** (Postgres Install Genius) is a package manager for PostgreSQL extensions. It simplifies the installation, management, and discovery of PostgreSQL extensions across different Linux distributions and architectures.
+
+## Quick Start
+
+### 1. Install PIG
+
+```bash
+curl -fsSL https://repo.pigsty.io/pig | bash
+```
+
+### 2. Setup Repositories
+
+```bash
+pig repo add pgdg pigsty -u  # Add PostgreSQL and Pigsty repositories
+```
+
+### 3. Install Extensions
+
+```bash
+pig ext list                 # Browse available extensions
+pig ext install vector      # Install pgvector for vector operations
+pig ext install timescaledb # Install TimescaleDB for time-series data
+```
+
+### 4. Manage Your Setup
+
+```bash
+pig status                   # Check system status
+pig ext status               # Check installed extensions
+```
+
+## Key Features
+
+- **420+ Extensions**: Access to a comprehensive catalog of PostgreSQL extensions
+- **Multi-Platform**: Supports RHEL, Rocky, CentOS, Debian, and Ubuntu
+- **Multi-Architecture**: Works on both x86_64 and ARM64 systems
+- **Version Management**: Supports PostgreSQL versions 13-17
+- **Easy Installation**: Simple one-command installation process
+
+## What's Next?
+
+- [Why PIG?](./why) - Learn about the motivation behind PIG
+- [Installation Guide](./install) - Detailed installation instructions
+- [Command Reference](./pig) - Complete CLI documentation
+- [Extension Management](./ext) - How to manage PostgreSQL extensions
+- [Repository Management](./repo) - Working with package repositories

@@ -1,0 +1,69 @@
+---
+title: Building Infrastructure
+description: How to setup building infrastructure with pig build subcommand for PostgreSQL extensions
+icon: Hammer
+---
+
+## Overview
+
+`pig build` is a powerful command-line tool that simplifies the entire workflow of building and managing PostgreSQL extensions - from setting up the build environment to compiling extensions across different operating systems.
+
+## Build Workflow
+
+A typical workflow for building PostgreSQL extensions with `pig build`:
+
+1. Set up repositories: `pig build repo`
+2. Install build tools: `pig build tool`
+3. (Optional) Set up proxy: `pig build proxy id@host:port`
+4. (Optional, for Rust extensions) Set up Rust: `pig build rust`
+5. Initialize build specs: `pig build spec`
+6. Download source code: `pig build get [prefixes]`
+7. Build extensions: `pig build ext [extname...]`
+
+### OS Support
+
+The `pig build` command supports:
+- **EL distributions**: RHEL, Rocky, CentOS (versions 8 and 9)
+- **DEB distributions**: Debian (version 12), Ubuntu (versions 22.04 and 24.04)
+
+## Key Commands
+
+### `build repo`
+Adds required upstream repositories for building PostgreSQL extensions.
+
+### `build tool`
+Installs build tools required for compiling PostgreSQL extensions.
+
+### `build rust`
+Sets up the Rust environment and PGRX for building Rust-based PostgreSQL extensions.
+
+### `build spec`
+Initializes the build specification repository based on the operating system.
+
+### `build get`
+Downloads source code tarballs for PostgreSQL extensions.
+
+### `build ext`
+Builds specified PostgreSQL extensions using the appropriate build environment.
+
+### `build proxy`
+Optional: Sets up a proxy server for accessing external resources.
+
+## Example Usage
+
+```bash
+# Initialize build environment
+pig build repo
+pig build tool
+pig build spec
+
+# For Rust-based extensions
+pig build rust
+
+# Download extensions
+pig build get std
+pig build get citus timescaledb
+
+# Build specific extensions
+pig build ext citus
+```

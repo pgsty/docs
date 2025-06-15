@@ -1,0 +1,63 @@
+---
+title: Pigsty Command Line
+description: Overview of the pig CLI tool for managing PostgreSQL extensions, repositories, and Pigsty installation
+icon: SquareTerminal
+---
+
+## Overview
+
+The `pig` command is a Linux package manager for PostgreSQL and CLI tool for Pigsty. It provides several key functionalities:
+
+### Extension Management
+
+- List and search extensions
+- Get extension information
+- Install, remove, and update extensions
+- Import and link extensions
+
+### Repository Management
+
+- List and manage software repositories
+- Add, remove, and update repositories
+- Create and cache repositories
+
+### Pigsty Management
+
+- Initialize Pigsty installation
+- Configure and install Pigsty
+- Bootstrap Pigsty on the current node
+
+## Basic Usage Examples
+
+### Environment Status
+
+```bash
+pig status                    # show os & pg & pig status
+pig repo status               # show upstream repo status
+pig ext status                # show pg extensions status 
+```
+
+### Extension Management
+
+```bash
+pig ext list    [query]       # list & search extension      
+pig ext info    [ext...]      # get information of a specific extension
+pig ext add     [ext...]      # install extension for current pg version
+pig ext rm      [ext...]      # remove extension for current pg version
+```
+
+### Repository Management
+
+```bash
+pig repo list                 # available repo list
+pig repo info   [repo|module...]  # show repo info
+pig repo add    [repo|module...]  # add repo and modules
+```
+
+### Pigsty Management
+
+```bash
+pig sty init     # install pigsty to ~/pigsty 
+pig sty boot     # install ansible and other pre-deps 
+pig sty conf     # auto-generate pigsty.yml config file
+```
