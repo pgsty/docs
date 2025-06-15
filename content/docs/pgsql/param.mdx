@@ -998,7 +998,7 @@ name: `patroni_username`, type: `username`, level: `C`
 
 patroni restapi username, `postgres` by default, used in pair with [`patroni_password`](#patroni_password)
 
-Patroni unsafe RESTAPI is protected by username/password by default, check [Config Cluster](/docs/pgsql/admin/#config-cluster) and [Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html) for details.
+Patroni unsafe RESTAPI is protected by username/password by default, check [Config Cluster](/docs/pgsql/admin#config-cluster) and [Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html) for details.
 
 ------
 
@@ -1190,7 +1190,7 @@ shared preloaded libraries, `pg_stat_statements,auto_explain` by default.
 
 They are two extensions that come with PostgreSQL, and it is strongly recommended to enable them.
 
-For existing clusters, you can [configure](/docs/pgsql/admin/#config-cluster) the `shared_preload_libraries` parameter of the cluster and apply it.
+For existing clusters, you can [configure](/docs/pgsql/admin#config-cluster) the `shared_preload_libraries` parameter of the cluster and apply it.
 
 If you want to use TimescaleDB or Citus extensions, you need to add `timescaledb` or `citus` to this list. `timescaledb` and `citus` should be placed at the top of this list, for example:
 
@@ -1757,7 +1757,7 @@ name: `pg_weight`, type: `int`, level: `G`
 
 relative load balance weight in service, 100 by default, 0-255
 
-default values: `100`. you have to define it at instance vars, and [reload-service](/docs/pgsql/admin/#reload-service) to take effect.
+default values: `100`. you have to define it at instance vars, and [reload-service](/docs/pgsql/admin#reload-service) to take effect.
 
 ------
 

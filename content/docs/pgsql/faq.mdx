@@ -6,17 +6,11 @@ icon: MessageCircleQuestion
 
 ## ABORT due to postgres exists
 
-> Set `pg_clean` = `true` and `pg_safeguard` = `false` to force clean postgres data during `pgsql.yml`
-
-This happens when you run `pgsql.yml` on a node with postgres running, and [`pg_clean`](/docs/pgsql/param#pg_clean) is set to `false`.
-
-If `pg_clean` is true (and the `pg_safeguard` is `false`, too), the `pgsql.yml` playbook will remove the existing pgsql data and re-init it as a new one, which makes this playbook fully idempotent.
-
-You can still purge the existing PostgreSQL data by using a special task tag `pg_purge`
+This happens when you run `pgsql.yml` on a node with postgres running.
+If there's a running postgres instance, you can explicitly remove it with `pgsql-rm.yml` playbook:
 
 ```bash
-./pgsql.yml -t pg_clean      # honor pg_clean and pg_safeguard
-./pgsql.yml -t pg_purge      # ignore pg_clean and pg_safeguard
+./pgsql-rm.yml -l <cls_to_remove>    # remove the cluster 'cls_to_remove'
 ```
 
 ------
@@ -25,7 +19,7 @@ You can still purge the existing PostgreSQL data by using a special task tag `pg
 
 > Disable `pg_safeguard` to remove the Postgres instance.
 
-If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, you can not remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
+If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, you cannot remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
 
 To disable `pg_safeguard`, you can set `pg_safeguard` to `false` in the inventory or pass `-e pg_safeguard=false` as cli arg to the playbook:
 
@@ -71,15 +65,14 @@ Feel free to submit an issue or seek help from the community.
 
 ------
 
-## Install PostgreSQL 12 - 15
+## Install PostgreSQL 13 - 17
 
-To install PostgreSQL 12 - 15, you have to set `pg_version` to `12`, `13`, `14`, or `15` in the inventory. (usually at cluster level)
+To install PostgreSQL 13 ~ 16, you have to set `pg_version` to  `13`, `14`, `15` or `16` in the inventory. (usually at cluster level)
 
 ```yaml
 pg_version: 16                    # install pg 16 in this template
-pg_libs: 'pg_stat_statements, auto_explain' # remove timescaledb from pg 16 beta
-pg_extensions: []                 # missing pg16 extensions for now
 ```
+
 
 ------
 
@@ -103,7 +96,7 @@ pg restart <cls>                          # restart postgres to use hugepage
 
 ## How to guarantee zero data loss during failover?
 
-> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](/docs/pgsql/admin/#config-cluster) with synchronous mode.
+> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](/docs/pgsql/admin#config-cluster) with synchronous mode.
 
 Consider using [Sync Standby](/docs/pgsql/config/#sync-standby) and [Quorum Comit](/docs/pgsql/config/#quorum-commit) to guarantee 0 data loss during failover.
 

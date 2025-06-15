@@ -37,7 +37,7 @@ Refer to the [**Extensions Without DDL**](/docs/pgsql/ext/config) section for mo
 
 ## Remove Loading
 
-If you’re using an extension that requires [**dynamic loading**](/docs/pgsql/ext/config) (which modifies the `shared_preload_libraries` parameter), you need to first [**re-confnigure**](/docs/pgsql/admin/#config-cluster) the `shared_preload_libraries` parameter.
+If you’re using an extension that requires [**dynamic loading**](/docs/pgsql/ext/config) (which modifies the `shared_preload_libraries` parameter), you need to first [**re-confnigure**](/docs/pgsql/admin#config-cluster) the `shared_preload_libraries` parameter.
 
 Remove the extension name from `shared_preload_libraries` and restart the database cluster for the changes to take effect.
 

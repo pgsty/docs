@@ -19,60 +19,18 @@ Pigsty has a series of playbooks for PostgreSQL:
 
 ### Safeguard
 
-Beware, when using the [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) and [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) playbooks, it can pose a risk of accidentally deleting databases if misused!
+If you are afraid of accidentally deleting your PostgreSQL cluster, you can enable the safeguard feature.
 
-- When using `pgsql.yml`, please check the `--tags|-t` and `--limit|-l` parameters.
-- Adding the -l parameter when executing playbooks is strongly recommended to limit execution hosts.
-- Think thrice before proceeding.
+Setting the [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) parameter to `true` will stop the [`pgsql-rm.yml`](#pgsql-rmyml) from running.
 
-To prevent accidental deletions, the [PGSQL](/docs/pgsql/) module offers a safeguard option controlled by the following two parameters:
+<Callout title="Before Pigsty v3.5, pgsql.yml can nuke your database with fat finger, use with caution!" type="warning">
 
-- [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is set to `false` by default: do not prevent purging by default.
-- [`pg_clean`](/docs/pgsql/param#pg_clean) is set to `true` by default, meaning it will clean existing instances.
+    Pigsty v3.5 remove the pg purge logic from [`pgsql.yml`](#pgsqlyml),
+    So the only way to remove a PostgreSQL now is running [`pgsql-rm.yml`](#pgsql-rmyml).
 
-**Effects on the init playbook**
-
-When meeting a running instance with the same config during the execution of the [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) playbook:
-
-| `pg_safeguard` / `pg_clean` | `pg_clean=true` | `pg_clean=false` |
-| :-------------------------: | :-------------: | :--------------: |
-|    `pg_safeguard=false`     |    **Purge**    |      Abort       |
-|     `pg_safeguard=true`     |      Abort      |      Abort       |
-
-- If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, the playbook will abort to avoid purging the running instance.
-
-- If the safeguard is disabled, it will further decide whether to remove the existing instance according to the value of
+</Callout>
 
 
-
-`pg_clean`
-
-.
-
-  - If `pg_clean` is `true`, the playbook will directly clean up the existing instance to make room for the new instance. This is the default behavior.
-  - If `pg_clean` is `false`, the playbook will abort, which requires explicit configuration.
-
-**Effects on the remove playbook**
-
-When meeting a running instance with the same config during the execution of the [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) playbook:
-
-| `pg_safeguard` / `pg_clean` |   `pg_clean=true`   | `pg_clean=false` |
-| :-------------------------: | :-----------------: | :--------------: |
-|    `pg_safeguard=false`     | **Purge** & rm data |    **Purge**     |
-|     `pg_safeguard=true`     |        Abort        |      Abort       |
-
-- If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, the playbook will abort to avoid purging the running instance.
-
-- If the safeguard is disabled, it purges the running instance and will further decide whether to remove the existing data along with the instance according to the value of
-
-
-
-`pg_clean`
-
-.
-
-  - If `pg_clean` is `true`, the playbook will directly clean up the PostgreSQL data cluster.
-  - If `pg_clean` is `false`, the playbook will skip data purging, which requires explicit configuration.
 
 ------
 
@@ -85,88 +43,105 @@ The [`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml) is used f
 **This playbook contains following subtasks**:
 
 ```yaml
-# pg_clean      : cleanup existing postgres if necessary
-# pg_dbsu       : setup os user sudo for postgres dbsu
-# pg_install    : install postgres packages & extensions
-#   - pg_pkg              : install postgres related packages
-#   - pg_extension        : install postgres extensions only
-#   - pg_path             : link pgsql version bin to /usr/pgsql
-#   - pg_env              : add pgsql bin to system path
-# pg_dir        : create postgres directories and setup fhs
-# pg_util       : copy utils scripts, setup alias and env
-#   - pg_bin              : sync postgres util scripts /pg/bin
-#   - pg_alias            : write /etc/profile.d/pg-alias.sh
-#   - pg_psql             : create psqlrc file for psql
-#   - pg_dummy            : create dummy placeholder file
-# patroni       : bootstrap postgres with patroni
-#   - pg_config           : generate postgres config
-#     - pg_conf           : generate patroni config
-#     - pg_systemd        : generate patroni systemd config
-#     - pgbackrest_config : generate pgbackrest config
-#   -  pg_cert            : issues certificates for postgres
-#   -  pg_launch          : launch postgres primary & replicas
-#     - pg_watchdog       : grant watchdog permission to postgres
-#     - pg_primary        : launch patroni/postgres primary
-#     - pg_init           : init pg cluster with roles/templates
-#     - pg_pass           : write .pgpass file to pg home
-#     - pg_replica        : launch patroni/postgres replicas
-#     - pg_hba            : generate pg HBA rules
-#     - patroni_reload    : reload patroni config
-#     - pg_patroni        : pause or remove patroni if necessary
-# pg_user       : provision postgres business users
-#   - pg_user_config      : render create user sql
-#   - pg_user_create      : create user on postgres
-# pg_db         : provision postgres business databases
-#   - pg_db_config        : render create database sql
-#   - pg_db_create        : create database on postgres
-# pg_backup               : init pgbackrest repo & basebackup
-#   - pgbackrest_init     : init pgbackrest repo
-#   - pgbackrest_backup   : make a initial backup after bootstrap
-# pgbouncer     : deploy a pgbouncer sidecar with postgres
-#   - pgbouncer_clean     : cleanup existing pgbouncer
-#   - pgbouncer_dir       : create pgbouncer directories
-#   - pgbouncer_config    : generate pgbouncer config
-#     -  pgbouncer_svc    : generate pgbouncer systemd config
-#     -  pgbouncer_ini    : generate pgbouncer main config
-#     -  pgbouncer_hba    : generate pgbouncer hba config
-#     -  pgbouncer_db     : generate pgbouncer database config
-#     -  pgbouncer_user   : generate pgbouncer user config
-#   -  pgbouncer_launch   : launch pgbouncer pooling service
-#   -  pgbouncer_reload   : reload pgbouncer config
-# pg_vip        : bind vip to pgsql primary with vip-manager
-#   - pg_vip_config       : generate config for vip-manager
-#   - pg_vip_launch       : launch vip-manager to bind vip
-# pg_dns        : register dns name to infra dnsmasq
-#   - pg_dns_ins          : register pg instance name
-#   - pg_dns_cls          : register pg cluster name
-# pg_service    : expose pgsql service with haproxy
-#   - pg_service_config   : generate local haproxy config for pg services
-#   - pg_service_reload   : expose postgres services with haproxy
-# pg_exporter   : expose pgsql service with haproxy
-#   - pg_exporter_config  : config pg_exporter & pgbouncer_exporter
-#   - pg_exporter_launch  : launch pg_exporter
-#   - pgbouncer_exporter_launch : launch pgbouncer exporter
-# pg_register   : register postgres to pigsty infrastructure
-#   - register_prometheus : register pg as prometheus monitor targets
-#   - register_grafana    : register pg database as grafana datasource
+pg_install              : # install postgres packages & extensions
+  - pg_dbsu             : # setup os user sudo for postgres dbsu
+    - pg_dbsu_create    : # exchange dbsu ssh keys
+    - pg_dbsu_sudo      : # exchange dbsu ssh keys
+    - pg_ssh            : # exchange dbsu ssh keys
+  - pg_pkg              : # install postgres packages
+    - pg_ext            : # install postgres extension packages
+  - pg_link             : # link pgsql version bin to /usr/pgsql
+  - pg_path             : # add pgsql bin to system path
+  - pg_dir              : # create postgres directories and setup fhs
+  - pg_bin              : # sync /pg/bin scripts
+  - pg_alias            : # write pgsql/psql alias
+  - pg_dummy            : # create dummy placeholder file
+```
+```yaml
+pg_bootstrap            : # bootstrap postgres cluster
+  - pg_config           : # generate postgres config
+    - pg_conf           : # generate patroni config
+    - pg_key            : # generate pgsodium key
+    - pg_pitr_conf      : # generate optional pitr config
+  - pg_cert             : # issues certificates for postgres
+    - pg_cert_private   : # check pg private key existence
+    - pg_cert_issue     : # signing pg server certs
+    - pg_cert_copy      : # copy key & certs to pg node
+  - pg_launch           : # launch patroni primary & replicas  (patroni)
+    - pg_watchdog       : # grant watchdog permission to postgres
+    - pg_primary        : # launch patroni/postgres primary
+    - pg_init           : # init pg cluster with roles/templates
+    - pg_pass           : # write .pgpass file to pg home
+    - pg_replica        : # launch patroni/postgres replicas
+    - pg_hba            : # generate pg HBA rules
+    - patroni_reload    : # reload patroni config
+    - pg_patroni        : # pause or remove patroni if necessary
+```
+```yaml
+pg_provision            : # provision postgres business users & databases
+ - pg_user              : # provision postgres business users
+    - pg_user_config    : # render create user sql
+    - pg_user_create    : # create user on postgres
+ - pg_db                : # provision postgres business databases
+    - pg_db_config      : # render create database sql
+    - pg_db_create      : # create database on postgres
+```
+```yaml
+pg_backup               : # init postgres PITR backup
+  - pgbackrest          : # setup pgbackrest for backup
+    - pgbackrest_config : # generate pgbackrest config
+    - pgbackrest_init   : # init pgbackrest repo
+    - pgbackrest_backup : # make a initial backup after bootstrap
+```
+```yaml
+pg_access               : # init postgres service access, pool, dns, vip, svc
+ - pgbouncer            : # deploy a pgbouncer sidecar with postgres
+   - pgbouncer_dir      : # create pgbouncer directories
+   - pgbouncer_config   : # generate pgbouncer config
+     -  pgbouncer_hba   : # generate pgbouncer hba config
+     -  pgbouncer_user  : # generate pgbouncer userlist
+   -  pgbouncer_launch  : # launch pgbouncer pooling service
+   -  pgbouncer_reload  : # reload pgbouncer config
+ - pg_vip               : # bind vip to pgsql primary with vip-manager
+   - pg_vip_config      : # generate config for vip-manager
+   - pg_vip_launch      : # launch vip-manager to bind vip
+ - pg_dns               : # register dns name to infra dnsmasq
+   - pg_dns_ins         : # register pg instance name
+   - pg_dns_cls         : # register pg cluster name
+ - pg_service           : # expose pgsql service with haproxy
+   - pg_service_config  : # generate local haproxy config for pg services
+   - pg_service_reload  : # expose postgres services with haproxy
+```
+```yaml
+pg_monitor              : # setup pgsql monitor and register to infra
+  - pg_exporter         : # config & launch pg_exporter
+  - pgbouncer_exporter  : # config & launch pgbouncer_exporter
+  - pgbackrest_exporter : # config & launch pgbackrest_exporter
+  - register_prometheus : # register pg as prometheus monitor targets
+  - register_grafana    : # register pg database as grafana datasource
 ```
 
 **Administration Tasks that use this playbook**
 
-- [`Create Cluster`](/docs/pgsql/admin/#create-cluster)
-- [`Append Replica`](/docs/pgsql/admin/#append-replica)
-- [`Reload Service`](/docs/pgsql/admin/#reload-service)
-- [`Reload HBARule`](/docs/pgsql/admin/#reload-hbarule)
+- [`Create Cluster`](/docs/pgsql/admin#create-cluster)
+- [`Append Replica`](/docs/pgsql/admin#append-replica)
+- [`Reload Service`](/docs/pgsql/admin#reload-service)
+- [`Reload HBARule`](/docs/pgsql/admin#reload-hbarule)
 
-**Some notes about this playbook**
+<Callout title="Init Primary before Replicas" type="warning">
 
-When running this playbook on a single replica, You should make sure the cluster primary is already initialized.
+    - you may have to run [`Reload HBARule`](/docs/pgsql/admin#reload-hbarule) and [`Append Replica`](/docs/pgsql/admin#append-replica) after replica init.
+    - The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/docs/pgsql/admin#add-instance) for details.
+    - If you run this on the entire cluster, you don’t have to worry about this.
 
-- you may have to run [`Reload HBARule`](/docs/pgsql/admin/#reload-hbarule) and [`Append Replica`](/docs/pgsql/admin/#append-replica) after replica init.
-- The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/docs/pgsql/admin/#add-instance) for details.
+</Callout>
 
 
+<Callout title="Init Upstream cluster before Standby Clusters" type="warning">
 
+    - If you are initializing a [standby cluster](/docs/pgsql/config#standby-cluster), you should make sure the upstream cluster is already initialized.
+
+</Callout>
 
 
 ------
@@ -180,52 +155,74 @@ The playbook [`pgsql-rm.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-rm
 **This playbook contains the following subtasks**:
 
 ```yaml
-# register       : remove registration in prometheus, grafana, nginx
-#   - prometheus : remove monitor target from prometheus
-#   - grafana    : remove datasource from grafana
-# dns            : remove pg dns records
-# vip            : remove pg vip manager
-# pg_service     : remove service definition from haproxy
-# pg_exporter    : remove pg_exporter & pgbouncer_exporter
-# pgbouncer      : remove pgbouncer connection middleware
-# postgres       : remove postgres instances
-#   - pg_replica : remove all replicas
-#   - pg_primary : remove primary instance
-#   - dcs        : remove metadata from dcs
-# pg_data        : remove postgres data (disable with `pg_clean=false`),
-# pgbackrest     : remove postgres backup when removing primary (disable with `pgbackrest_clean=false`),
-# pg_pkg         : remove postgres packages (enable with `pg_uninstall=true`)
+pg_monitor               : # remove registration in prometheus, grafana, nginx
+  - prometheus           : # remove monitor target from prometheus
+  - grafana              : # remove datasource from grafana
+  - pg_exporter          : # remove pg_exporter (postgres monitoring)
+  - pgbouncer_exporter   : # remove pgbouncer_exporter (pgbouncer monitoring)
+  - pgbackrest_exporter  : # remove pgbackrest_exporter (pgbackrest monitoring)
+```
+```yaml
+pg_access                : # remove pg service access
+  - dns                  : # remove pg dns records
+  - vip                  : # remove vip-manager
+  - pg_service           : # remove pg service from haproxy
+  - pgbouncer            : # remove pgbouncer connection middleware
+```
+```yaml
+postgres                 : # remove postgres instances
+  - pg_replica           : # remove all replicas
+  - pg_primary           : # remove primary instance
+  - pg_meta              : # remove metadata from dcs
+```
+```yaml
+pg_backup                : # remove backup repo    (disable with `pg_rm_bkup=false`)
+pg_data                  : # remove postgres data  (disable with `pg_rm_data=false`)
+pg_pkg                   : # uninstall pg packages (disable with `pg_rm_pkg=false`)
+ - pg_ext                : # uninstall postgres extensions alone
 ```
 
 Some arguments can affect the behavior of this playbook:
 
 ```bash
 # remove pgsql cluster `pg-test`
-   pgsql-rm.yml -l pg-test       # remove cluster `pg-test`
-       -e pg_clean=true          # remove postgres data by default
-       -e pgbackrest_clean=true  # remove postgres backup by default (when removing primary)
-       -e pg_uninstall=false     # do not uninstall pg packages by default, explicit override required
-       -e pg_safeguard=false     # purge safeguard is not enabled by default, explicit override required
+./pgsql-rm.yml                          # remove all the postgres clusters (VERY DANGEROUS)
+./pgsql-rm.yml -l pg-test               # remove the cluster `pg-test`
+./pgsql-rm.yml -e pg_safeguard=false    # force disable safeguard, run this playbook anyway
+./pgsql-rm.yml -e pg_rm_bkup=false      # do not purge pgbackrest backup repo by default (keep the backup)
+./pgsql-rm.yml -e pg_rm_data=false      # do not purge postgres data by default (keep the data)
+./pgsql-rm.yml -e pg_rm_pkg=false       # do not uninstall postgres packages by default (keep the packages)
 ```
 
 **Administration Tasks that use this playbook**
 
-- [`Remove Replica`](/docs/pgsql/admin/#remove-replica)
-- [`Remove Cluster`](/docs/pgsql/admin/#remove-cluster)
+- [`Remove Replica`](/docs/pgsql/admin#remove-replica)
+- [`Remove Cluster`](/docs/pgsql/admin#remove-cluster)
 
 **Some notes about this playbook**
 
-Do not run this playbook on single cluster primary directly when there are still replicas.
+<Callout title="Do not run this playbook on single cluster primary directly when there are still replicas" type="warning">
 
-- otherwise the rest replicas will trigger automatic failover.
-- It won’t be a problem if you remove all replicas before removing primary.
-- If you run this on the entire cluster, you don’t have to worry about this.
+    - otherwise, the rest replicas will trigger automatic failover.
+    - It won’t be a problem if you remove all replicas before removing primary.
+    - If you run this on the entire cluster, you don’t have to worry about this.
 
-Reload service after removing replicas from cluster
+</Callout>
+
+<Callout title="Reload service after removing replicas from cluster" type="info">
+
+    - It is a dead server, so it won’t affect the cluster service.
+    - But you should [reload service](/docs/pgsql/admin#reload-service) in time to ensure the consistency between the environment and the config inventory.
+
+</Callout>
+
+
+
+
+
+
 
 - When a replica is removed, it is still in the configuration file of the haproxy load balancer.
-- It is a dead server, so it won’t affect the cluster service.
-- But you should [reload service](/docs/pgsql/admin/#reload-service) in time to ensure the consistency between the environment and the config inventory.
 
 ------
 
@@ -233,7 +230,7 @@ Reload service after removing replicas from cluster
 
 The playbook [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) can add new business user to existing PostgreSQL cluster.
 
-Check admin SOP: [`Create User`](/docs/pgsql/admin/#create-user)
+Check admin SOP: [`Create User`](/docs/pgsql/admin#create-user)
 
 ------
 
@@ -241,7 +238,7 @@ Check admin SOP: [`Create User`](/docs/pgsql/admin/#create-user)
 
 The playbook [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) can add new business database to existing PostgreSQL cluster.
 
-Check admin SOP: [`Create Database`](/docs/pgsql/admin/#create-database)
+Check admin SOP: [`Create Database`](/docs/pgsql/admin#create-database)
 
 ------
 

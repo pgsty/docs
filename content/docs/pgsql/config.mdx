@@ -188,7 +188,7 @@ pg-test:
     pg_cluster: pg-test
 ```
 
-You can [create](/docs/pgsql/admin/#create-cluster) an entire cluster or [append](/docs/pgsql/admin/#append-replica) a replica to the existing cluster:
+You can [create](/docs/pgsql/admin#create-cluster) an entire cluster or [append](/docs/pgsql/admin#append-replica) a replica to the existing cluster:
 
 ```bash
 bin/pgsql-add pg-test               # init entire cluster in one-pass
@@ -238,7 +238,7 @@ pg-test:
     pg_conf: crit.yml   # <--- use crit template
 ```
 
-To enable sync standby on existing clusters, [config](/docs/pgsql/admin/#config-cluster) the cluster and enable `synchronous_mode`:
+To enable sync standby on existing clusters, [config](/docs/pgsql/admin#config-cluster) the cluster and enable `synchronous_mode`:
 
 ```bash
 $ pg edit-config pg-test    # run on admin node with admin user
@@ -267,7 +267,7 @@ synchronous_mode: true          # make sure synchronous mode is enabled
 synchronous_node_count: 2       # at least 2 nodes to confirm a commit
 ```
 
-If you have more replicas and wish to have more sync standby, increase `synchronous_node_count` accordingly. Beware of adjust `synchronous_node_count` accordingly when you [append](/docs/pgsql/admin/#append-replica) or [remove](/docs/pgsql/admin/#remove-replica) replicas.
+If you have more replicas and wish to have more sync standby, increase `synchronous_node_count` accordingly. Beware of adjust `synchronous_node_count` accordingly when you [append](/docs/pgsql/admin#append-replica) or [remove](/docs/pgsql/admin#remove-replica) replicas.
 
 The postgres `synchronous_standby_names` parameter will be managed by patroni:
 
@@ -344,7 +344,7 @@ pg-testdelay:
   vars: { pg_cluster: pg-test2 }
 ```
 
-You can also [configure](/docs/pgsql/admin/#config-cluster) a replication delay on the existing [standby cluster](#standby-cluster).
+You can also [configure](/docs/pgsql/admin#config-cluster) a replication delay on the existing [standby cluster](#standby-cluster).
 
 ```bash
 $ pg edit-config pg-testdelay

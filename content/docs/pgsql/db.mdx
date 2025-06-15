@@ -122,14 +122,14 @@ The Pgbouncer database list will be updated when [create database](#create-datab
 Databases are listed in `/etc/pgbouncer/database.txt`, with extra database-level parameters:
 
 ```ini title="/etc/pgbouncer/database.txt"
-meta                        = host=/var/run/postgresql mode=session
-grafana                     = host=/var/run/postgresql mode=transaction
-bytebase                    = host=/var/run/postgresql auth_user=dbuser_meta
-kong                        = host=/var/run/postgresql pool_size=32 reserve_pool=64
-gitea                       = host=/var/run/postgresql min_pool_size=10
-wiki                        = host=/var/run/postgresql
-noco                        = host=/var/run/postgresql
-mongo                       = host=/var/run/postgresql
+meta     = host=/var/run/postgresql mode=session
+grafana  = host=/var/run/postgresql mode=transaction
+bytebase = host=/var/run/postgresql auth_user=dbuser_meta
+kong     = host=/var/run/postgresql pool_size=32 reserve_pool=64
+gitea    = host=/var/run/postgresql min_pool_size=10
+wiki     = host=/var/run/postgresql
+noco     = host=/var/run/postgresql
+mongo    = host=/var/run/postgresql
 ```
 
 When you [create databases](/docs/pgsql/db#create-database), the Pgbouncer database list definition file will be refreshed and take effect through online configuration reload, without affecting existing connections.
