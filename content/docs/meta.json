@@ -2,20 +2,19 @@
   "root": true,
   "pages": [
     "[Docs](/docs)",
+    "[Extension](/ext)",
 
+    "---Pigsty---",
     "about",
     "value",
     "feat",
     "intro",
-    "ext",
-
-    "--- ---",
     "install",
     "prepare",
     "config",
     "admin",
 
-    "--- ---",
+    "---Module---",
     "pgsql",
     "infra",
     "node",
