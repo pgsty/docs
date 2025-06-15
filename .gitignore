@@ -32,3 +32,5 @@ docs.iml
 tmp/
 
 prompt.md
+
+bin/__pycache__/
