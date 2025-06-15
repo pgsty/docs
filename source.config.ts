@@ -18,6 +18,16 @@ export const docs = defineDocs({
   },
 });
 
+export const ext = defineDocs({
+  dir: 'content/ext',
+  docs: {
+    schema: frontmatterSchema,
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
 export const blog = defineCollections({
   type: 'doc',
   dir: 'content/blog',

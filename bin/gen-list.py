@@ -137,8 +137,8 @@ def format_license_badge(license_name: str) -> str:
         'Apache-2.0': {'name': 'Apache-2.0', 'anchor': 'apache-20', 'variant': 'green-subtle'},
         'MPL-2.0': {'name': 'MPL-2.0', 'anchor': 'mpl-20', 'variant': 'green-subtle'},
         'MPLv2': {'name': 'MPL-2.0', 'anchor': 'mpl-20', 'variant': 'green-subtle'},
-        'GPL-2.0': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'pink-subtle'},
-        'GPLv2': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'pink-subtle'},
+        'GPL-2.0': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'amber-subtle'},
+        'GPLv2': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'amber-subtle'},
         'GPL-3.0': {'name': 'GPL-3.0', 'anchor': 'gpl-30', 'variant': 'amber-subtle'},
         'GPLv3': {'name': 'GPL-3.0', 'anchor': 'gpl-30', 'variant': 'amber-subtle'},
         'LGPL-2.1': {'name': 'LGPL-2.1', 'anchor': 'lgpl-21', 'variant': 'amber-subtle'},
@@ -156,31 +156,21 @@ def format_license_badge(license_name: str) -> str:
         'variant': 'gray-subtle'
     })
     
-    return f'<Badge icon={{<Scale />}} variant="{license_info["variant"]}"><a href="/ext/list/license#{license_info["anchor"]}" className="no-underline">{license_info["name"]}</a></Badge>'
+    return f'<a href="/ext/list/license#{license_info["anchor"]}" className="no-underline"><Badge icon={{<Scale />}} variant="{license_info["variant"]}">{license_info["name"]}</Badge></a>'
 
 def format_language_badge(language: str) -> str:
     """Format programming language as Badge component with appropriate color."""
-    language_colors = {
-        'Python': 'blue-subtle',
-        'Rust': 'amber-subtle', 
-        'SQL': 'green-subtle',
-        'Java': 'pink-subtle',
-        'Data': 'teal-subtle',
-        'C++': 'purple-subtle', 
-        'C': 'blue-subtle',
-        'Go': 'cyan-subtle',
-        'JavaScript': 'yellow-subtle',
-        'TypeScript': 'blue-subtle',
-        'Ruby': 'red-subtle',
-        'Perl': 'purple-subtle',
-        'R': 'blue-subtle',
-        'Shell': 'green-subtle',
-        'Lua': 'indigo-subtle',
-        'TCL': 'teal-subtle',
-        'PRQL': 'orange-subtle'
+    language_dict = {
+        'Python': { "variant": 'blue-subtle'   ,"anchor": "/ext/list/lang#python" },
+        'Rust':   { "variant": 'amber-subtle'  ,"anchor": "/ext/list/lang#rust" },
+        'SQL':    { "variant": 'green-subtle'  ,"anchor": "/ext/list/lang#sql" },
+        'Java':   { "variant": 'pink-subtle'   ,"anchor": "/ext/list/lang#java" },
+        'Data':   { "variant": 'teal-subtle'   ,"anchor": "/ext/list/lang#data" },
+        'C++':    { "variant": 'purple-subtle' ,"anchor": "/ext/list/lang#c-1" },
+        'C':      { "variant": 'blue-subtle'   ,"anchor": "/ext/list/lang#c" },
     }
-    variant = language_colors.get(language, 'gray-subtle')
-    return f'<Badge icon={{<Code />}} variant="{variant}">{language or "N/A"}</Badge>'
+    info = language_dict.get(language, 'gray-subtle')
+    return f'<a href="{info['anchor']}"><Badge icon={{<FileCode2 />}} variant="{info['variant']}">{language or "N/A"}</Badge></a>'
 
 class Package:
     """Represents a PostgreSQL extension package."""
@@ -245,12 +235,7 @@ def generate_simple_extension_table(extensions: List['Extension']) -> str:
     rows = [header_row, separator_row]
     
     for ext in extensions:
-        # Package link logic
-        if ext.pkg != ext.name and ext.pkg in LEADING_MAP:
-            package_cell = f'[`{ext.pkg}`](/ext/{LEADING_MAP[ext.pkg]})'
-        else:
-            package_cell = f'`{ext.pkg}`'
-        
+        package_cell = f'[`{ext.pkg}`](/ext/{LEADING_MAP[ext.pkg]})'
         row_data = [
             str(ext.id),
             f'[`{ext.name}`](/ext/{ext.name})',
@@ -273,12 +258,7 @@ def generate_category_extension_table(extensions: List['Extension']) -> str:
     rows = [header_row, separator_row]
     
     for ext in extensions:
-        # Package link logic
-        if ext.pkg != ext.name and ext.pkg in LEADING_MAP:
-            package_cell = f'[`{ext.pkg}`](/ext/{LEADING_MAP[ext.pkg]})'
-        else:
-            package_cell = f'`{ext.pkg}`'
-        
+        package_cell = f'[`{ext.pkg}`](/ext/{LEADING_MAP[ext.pkg]})'
         row_data = [
             str(ext.id),
             f'[`{ext.name}`](/ext/{ext.name})',
@@ -367,14 +347,31 @@ def gen_category_list(extensions: List['Extension']):
     content = f'''---
 title: By Category
 description: PostgreSQL extensions organized by functionality categories
-icon: Blocks
+icon: Shapes
 full: true
 ---
 
 import {{ Badge }} from '@/components/ui/badge';
 import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck }} from 'lucide-react';
 
-## Categories Overview
+<Badge icon={{<Clock />}}               variant="blue-subtle"><a   href="#time" className="no-underline">TIME</a></Badge>
+<Badge icon={{<Globe />}}               variant="green-subtle"><a  href="#gis" className="no-underline">GIS</a></Badge>
+<Badge icon={{<Brain />}}               variant="purple-subtle"><a href="#rag" className="no-underline">RAG</a></Badge>
+<Badge icon={{<Search />}}              variant="amber-subtle"><a  href="#fts" className="no-underline">FTS</a></Badge>
+<Badge icon={{<ChartNoAxesCombined />}} variant="red-subtle"><a    href="#olap" className="no-underline">OLAP</a></Badge>
+<Badge icon={{<Sparkles />}}            variant="pink-subtle"><a   href="#feat" className="no-underline">FEAT</a></Badge>
+<Badge icon={{<BookA />}}               variant="teal-subtle"><a   href="#lang" className="no-underline">LANG</a></Badge>
+<Badge icon={{<Boxes />}}               variant="gray-subtle"><a   href="#type" className="no-underline">TYPE</a></Badge><br />
+<Badge icon={{<Wrench />}}              variant="amber-subtle"><a  href="#util" className="no-underline">UTIL</a></Badge>
+<Badge icon={{<Variable />}}            variant="pink-subtle"><a   href="#func" className="no-underline">FUNC</a></Badge>
+<Badge icon={{<Landmark />}}            variant="gray-subtle"><a   href="#admin" className="no-underline">ADMIN</a></Badge>
+<Badge icon={{<Activity />}}            variant="green-subtle"><a  href="#stat" className="no-underline">STAT</a></Badge>
+<Badge icon={{<Shield />}}              variant="red-subtle"><a    href="#sec" className="no-underline">SEC</a></Badge>
+<Badge icon={{<FileInput />}}           variant="blue-subtle"><a   href="#fdw" className="no-underline">FDW</a></Badge>
+<Badge icon={{<Shell />}}               variant="teal-subtle"><a   href="#sim" className="no-underline">SIM</a></Badge>
+<Badge icon={{<Truck />}}               variant="purple-subtle"><a href="#etl" className="no-underline">ETL</a></Badge>
+
+## Summary
 
 {category_overview_table}
 
@@ -438,8 +435,8 @@ def gen_linux_distro_list(extensions: List['Extension']):
 
     content = f'''---
 title: By Linux
-description: PostgreSQL extensions organized by Linux distribution support
-icon: Monitor
+description: PostgreSQL extensions availability by Linux distros
+icon: Server
 full: true
 ---
 
@@ -609,9 +606,27 @@ full: true
 import {{ Badge }} from '@/components/ui/badge';
 import {{ Scale, Package }} from 'lucide-react';
 
+<a href="#mit"          className="no-underline"><Badge icon={{<Scale />}} variant="blue-subtle"  >MIT</Badge></a>
+<a href="#isc"          className="no-underline"><Badge icon={{<Scale />}} variant="blue-subtle"  >ISC</Badge></a>
+<a href="#postgresql"   className="no-underline"><Badge icon={{<Scale />}} variant="blue-subtle"  >PostgreSQL</Badge></a>
+<a href="#bsd-0-clause" className="no-underline"><Badge icon={{<Scale />}} variant="blue-subtle"  >BSD 0-Clause</Badge></a>
+<a href="#bsd-2-clause" className="no-underline"><Badge icon={{<Scale />}} variant="blue-subtle"  >BSD 2-Clause</Badge></a>
+<a href="#bsd-3-clause" className="no-underline"><Badge icon={{<Scale />}} variant="blue-subtle"  >BSD 3-Clause</Badge></a>
+<a href="#artistic"     className="no-underline"><Badge icon={{<Scale />}} variant="green-subtle" >Artistic</Badge></a>
+<a href="#apache-20"    className="no-underline"><Badge icon={{<Scale />}} variant="green-subtle" >Apache-2.0</Badge></a>
+<a href="#mpl-20"       className="no-underline"><Badge icon={{<Scale />}} variant="green-subtle" >MPL-2.0</Badge></a><br />
+<a href="#gpl-20"       className="no-underline"><Badge icon={{<Scale />}} variant="amber-subtle" >GPL-2.0</Badge></a>
+<a href="#gpl-30"       className="no-underline"><Badge icon={{<Scale />}} variant="amber-subtle" >GPL-3.0</Badge></a>
+<a href="#lgpl-21"      className="no-underline"><Badge icon={{<Scale />}} variant="amber-subtle" >LGPL-2.1</Badge></a>
+<a href="#lgpl-30"      className="no-underline"><Badge icon={{<Scale />}} variant="amber-subtle" >LGPL-3.0</Badge></a>
+<a href="#agpl-30"      className="no-underline"><Badge icon={{<Scale />}} variant="red-subtle"   >AGPL-3.0</Badge></a>
+<a href="#timescale"    className="no-underline"><Badge icon={{<Scale />}} variant="gray-subtle"  >Timescale</Badge></a>
+
 ## Summary
 
 {summary_table}
+
+---------
 
 {''.join(license_sections)}
 '''
@@ -656,21 +671,13 @@ def gen_language_list(extensions: List['Extension']):
     
     # Language descriptions
     language_descriptions = {
-        'C': 'Extensions written in C, the traditional PostgreSQL extension language',
+        'C': 'The traditional PostgreSQL extension language',
         'C++': 'Extensions leveraging C++ features and libraries',
-        'Rust': 'Modern system programming language extensions using PGRX framework',
-        'Python': 'Extensions using Python for logic and data processing',
+        'Rust': 'Extensions written in Rust with the pgrx framework',
+        'Python': 'Extensions written in Python',
         'SQL': 'Pure SQL extensions and functions',
-        'Java': 'Extensions running on JVM using PL/Java',
-        'JavaScript': 'Extensions using V8 JavaScript engine',
-        'Go': 'Extensions written in Go programming language',
-        'R': 'Statistical computing extensions using R language',
-        'Perl': 'Extensions using Perl scripting language',
-        'Shell': 'Extensions using shell scripts and system commands',
-        'Lua': 'Lightweight scripting language extensions',
-        'TCL': 'Tool Command Language extensions',
-        'Data': 'Data-only extensions (configuration, lookup tables, etc.)',
-        'PRQL': 'Pipelined Relational Query Language extensions'
+        'Java': 'Extensions running on JVM',
+        'Data': 'Data-only extensions',
     }
     
     # Generate summary table
@@ -680,7 +687,7 @@ def gen_language_list(extensions: List['Extension']):
         summary_rows.append(f'| {format_language_badge(lang)} | {count} | {desc} |')
     
     summary_table = f'''| Language | Count | Description |
-|:---------|:-----:|:------------|
+|:-------:|:-----:|:------------|
 {chr(10).join(summary_rows)}'''
     
     # Generate language sections
@@ -694,9 +701,9 @@ def gen_language_list(extensions: List['Extension']):
         section = f'''
 ## {lang}
 
-{desc}
+{format_language_badge(lang)} <Badge icon={{<Package />}} variant="gray-subtle">{count} Extensions</Badge>
 
-{format_language_badge(lang)} <Badge variant="gray-subtle">{count} Extensions</Badge>
+{desc}
 
 {generate_simple_extension_table(lang_extensions)}
 '''
@@ -705,14 +712,22 @@ def gen_language_list(extensions: List['Extension']):
     content = f'''---
 title: By Language
 description: PostgreSQL extensions organized by implementation language
-icon: Code
+icon: FileCode2
 full: true
 ---
 
 import {{ Badge }} from '@/components/ui/badge';
-import {{ Code }} from 'lucide-react';
+import {{ FileCode2, Package }} from 'lucide-react';
 
-## Language Summary
+<a href="/ext/list/lang#c"><Badge      icon={{<FileCode2 />}} variant="blue-subtle">C</Badge></a>
+<a href="/ext/list/lang#c-1"><Badge    icon={{<FileCode2 />}} variant="purple-subtle">C++</Badge></a>
+<a href="/ext/list/lang#rust"><Badge   icon={{<FileCode2 />}} variant="amber-subtle">Rust</Badge></a>
+<a href="/ext/list/lang#java"><Badge   icon={{<FileCode2 />}} variant="pink-subtle">Java</Badge></a>
+<a href="/ext/list/lang#python"><Badge icon={{<FileCode2 />}} variant="blue-subtle">Python</Badge></a>
+<a href="/ext/list/lang#sql"><Badge    icon={{<FileCode2 />}} variant="green-subtle">SQL</Badge></a>
+<a href="/ext/list/lang#data"><Badge   icon={{<FileCode2 />}} variant="teal-subtle">Data</Badge></a>
+
+## Summary
 
 {summary_table}
 
@@ -792,7 +807,7 @@ import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Box
 
 {stats_content}
 
-## Extensions
+## Categories
 
 {extensions_table}
 '''

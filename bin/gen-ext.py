@@ -68,8 +68,8 @@ def format_license_badge(license_name: str) -> str:
         'Apache-2.0': {'name': 'Apache-2.0', 'anchor': 'apache-20', 'variant': 'green-subtle'},
         'MPL-2.0': {'name': 'MPL-2.0', 'anchor': 'mpl-20', 'variant': 'green-subtle'},
         'MPLv2': {'name': 'MPL-2.0', 'anchor': 'mpl-20', 'variant': 'green-subtle'},
-        'GPL-2.0': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'pink-subtle'},
-        'GPLv2': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'pink-subtle'},
+        'GPL-2.0': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'amber-subtle'},
+        'GPLv2': {'name': 'GPL-2.0', 'anchor': 'gpl-20', 'variant': 'amber-subtle'},
         'GPL-3.0': {'name': 'GPL-3.0', 'anchor': 'gpl-30', 'variant': 'amber-subtle'},
         'GPLv3': {'name': 'GPL-3.0', 'anchor': 'gpl-30', 'variant': 'amber-subtle'},
         'LGPL-2.1': {'name': 'LGPL-2.1', 'anchor': 'lgpl-21', 'variant': 'amber-subtle'},
@@ -87,44 +87,22 @@ def format_license_badge(license_name: str) -> str:
         'variant': 'gray-subtle'
     })
     
-    return f'<Badge icon={{<Scale />}} variant="{license_info["variant"]}"><a href="/ext/list/license#{license_info["anchor"]}" className="no-underline">{license_info["name"]}</a></Badge>'
+    return f'<a href="/ext/list/license#{license_info["anchor"]}" className="no-underline"><Badge icon={{<Scale />}} variant="{license_info["variant"]}">{license_info["name"]}</Badge></a>'
 
 def format_language_badge(language: str, extra: str = None) -> str:
     """Format programming language as Badge component with appropriate color."""
-    language_colors = {
-        'Python': 'blue-subtle',
-        'Rust': 'amber-subtle', 
-        'SQL': 'green-subtle',
-        'Java': 'pink-subtle',
-        'Data': 'teal-subtle',
-        'C++': 'purple-subtle', 
-        'C': 'blue-subtle',
-        'Go': 'cyan-subtle',
-        'JavaScript': 'yellow-subtle',
-        'TypeScript': 'blue-subtle',
-        'Ruby': 'red-subtle',
-        'Perl': 'purple-subtle',
-        'R': 'blue-subtle',
-        'Shell': 'green-subtle',
-        'Lua': 'indigo-subtle',
-        'TCL': 'teal-subtle',
-        'PRQL': 'orange-subtle'
+    language_dict = {
+        'Python': { "variant": 'blue-subtle'   ,"anchor": "/ext/list/lang#python" },
+        'Rust':   { "variant": 'amber-subtle'  ,"anchor": "/ext/list/lang#rust" },
+        'SQL':    { "variant": 'green-subtle'  ,"anchor": "/ext/list/lang#sql" },
+        'Java':   { "variant": 'pink-subtle'   ,"anchor": "/ext/list/lang#java" },
+        'Data':   { "variant": 'teal-subtle'   ,"anchor": "/ext/list/lang#data" },
+        'C++':    { "variant": 'purple-subtle' ,"anchor": "/ext/list/lang#c-1" },
+        'C':      { "variant": 'blue-subtle'   ,"anchor": "/ext/list/lang#c" },
     }
-    variant = language_colors.get(language, 'gray-subtle')
-    badge = f'<Badge variant="{variant}">{language or "N/A"}</Badge>'
-    
-    # Add pgrx version badge for Rust extensions
-    if language == 'Rust' and extra:
-        try:
-            import json
-            extra_data = json.loads(extra) if isinstance(extra, str) else extra
-            if isinstance(extra_data, dict) and 'pgrx' in extra_data:
-                pgrx_version = extra_data['pgrx']
-                badge += f' <Badge variant="amber-subtle">PGRX={pgrx_version}</Badge>'
-        except (json.JSONDecodeError, TypeError):
-            pass
-    
-    return badge
+    info = language_dict.get(language, 'gray-subtle')
+    return f'<a href="{info['anchor']}"><Badge icon={{<FileCode2 />}} variant="{info['variant']}">{language or "N/A"}</Badge></a>'
+
 
 def format_category_badge(category: str) -> str:
     """Format category as Badge component with icon and color."""
@@ -148,7 +126,7 @@ def format_category_badge(category: str) -> str:
     }
     meta = category_meta.get(category, {'icon': 'Blocks', 'color': 'gray-subtle'})
     iconstr = '{<%s />}' % meta['icon']
-    return f'<Badge icon={iconstr} variant="{meta["color"]}"><a href="/ext/{category.lower()}" className="no-underline">{category}</a></Badge>'
+    return f'<a href="/ext/{category.lower()}" className="no-underline"><Badge icon={iconstr} variant="{meta["color"]}">{category}</Badge></a>'
 
 def format_pg_badge(pg_version: int, repo: str = '') -> str:
     """Format PostgreSQL version as Badge with appropriate color."""
@@ -181,7 +159,7 @@ import {{ TooltipIconButton }} from '@/components/ui/tooltip-icon-button';
 import {{
     Scale, Clock, Globe, Brain, Search, ChartNoAxesCombined,
     Sparkles, BookA, Boxes, Wrench, Variable, Landmark,
-    Activity, Shield, FileInput, Shell, Truck, Blocks
+    Activity, Shield, FileInput, FileCode2, Shell, Truck, Blocks
 }} from 'lucide-react';
 
 ## Overview
@@ -1022,7 +1000,7 @@ full: true
 
 import {{ Badge }} from '@/components/ui/badge';
 import {{ Callout }} from 'fumadocs-ui/components/callout';
-import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck }} from 'lucide-react';
+import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck, Scale, FileCode2 }} from 'lucide-react';
 
 {category} category contains **{extension_count}** PostgreSQL extension{'s' if extension_count != 1 else ''}.
 

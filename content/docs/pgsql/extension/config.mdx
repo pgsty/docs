@@ -3,3 +3,79 @@ title: Config
 description: Preload extensions and configure extension parameters
 icon: FileBox
 ---
+
+
+While most PostgreSQL extensions written in SQL can be [**directly enabled**](/ext/usage/create/) with `CREATE EXTENSION`, extensions that provide dynamic libraries (`.so`, `.dylib`, `.dll`) have different loading requirements.
+
+Most library-based extensions don’t need explicit loading. However, extensions using PostgreSQL’s Hook mechanism require an additional step — modifying the [`shared_preload_libraries`](https://www.postgresql.org/docs/current/runtime-config-client.html#Rshared_preload_libraries) parameter and restarting the database server.
+
+Attempting to execute `CREATE EXTENSION` without proper preloading will result in an error. And wrongly configured loading may lead to a failure on database restart/start.
+
+------
+
+## Quick Start
+
+For example, in the [`conf/app/supa`](/docs/conf/supa/) config template, we load multiple extensions by setting the [`pg_libs`](/docs/pgsql/param/#pg_libs) parameter:
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_databases:
+          - name: postgres
+            pg_libs: 'timescaledb, plpgsql, plpgsql_check, pg_cron, pg_net, pg_stat_statements, auto_explain, pg_tle, plan_filter'
+```
+
+Not all extensions require dynamic loading via `pg_libs` (e.g., `pgcrypto`, `pgjwt`, `vector`). For extensions requiring dynamic loading, please refer to the [**Extensions that Need Loading**](/ext/usage/load/#extensions-that-need-loading) list below.
+
+------
+
+## Configure
+
+There are several ways to modify PostgreSQL cluster configuration in Pigsty:
+
+For new clusters, configure the [`pg_libs`](/docs/pgsql/param/#pg_libs) parameter to specify the initial value of `shared_preload_libraries`.
+
+Note that [`pg_libs`](/docs/pgsql/param/#pg_libs) only takes effect during [**cluster creation**](/docs/pgsql/admin/#creating-cluster). After creation, it becomes the initial value for the PostgreSQL parameter `shared_preload_libraries`.
+
+To modify loaded extensions in an existing cluster, use the Patroni command line to [**config cluster**](/docs/pgsql/admin/#config-cluster), change `shared_preload_libraries`, and restart to apply changes.
+
+Alternatively, you can modify `shared_preload_libraries` by editing `postgresql.conf`, using the `ALTER SYSTEM` command, or overriding it through [`pg_parameters`](/docs/pgsql/param/#pg_parameters). Ensure configuration remains consistent across the cluster.
+
+------
+
+## Default
+
+Pigsty preloads these two [Contrib extensions](/ext/list/contrib/) by default:
+
+- [**`auto_explain`**](/ext/auto_explain/): Provides automatic logging of slow query execution plans
+- [**`pg_stat_statements`**](/ext/stat/pg_stat_statements/): Tracks planning and execution statistics for grouped SQL statements
+
+These extensions are critical for query performance monitoring, which is why the default value of `pg_libs` is `pg_stat_statements, auto_explain`.
+
+We strongly recommend retaining these extensions when configuring additional loaded modules.
+
+------
+
+## Caveats
+
+In `shared_preload_libraries`, separate multiple extensions with commas:
+
+```ini
+shared_preload_libraries = 'timescaledb, pg_stat_statements, auto_explain'
+```
+
+Loading sequence can be significant. For example, [**`citus`**](/ext/olap/citus/) and [**`timescaledb`**](/ext/time/timescaledb/) must be placed at the beginning of `shared_preload_libraries`. If using both extensions simultaneously (uncommon), place `citus` before `timescaledb`.
+
+The full-text search plugin [**`pg_search`**](/ext/fts/pg_search/) requires explicit loading in current versions, but in PostgreSQL 17, this requirement is removed.
+
+For the MongoDB emulation plugin [**`documentdb`**](/ext/sim/documentdb/), note that the dynamic library names differ from the extension names — use `pg_documentdb` and `pg_documentdb_core` instead.
+
+------
+
+## Extensions that Need Loading
+
+In the [Extension List](/ext/list/), extensions marked with `LOAD` require dynamic loading and a server restart. These include:

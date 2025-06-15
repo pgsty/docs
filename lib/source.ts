@@ -1,4 +1,4 @@
-import { blog as blogPosts, docs } from '@/.source';
+import { blog as blogPosts, docs, ext } from '@/.source';
 import { loader } from 'fumadocs-core/source';
 import { i18n } from './i18n';
 import { icons } from 'lucide-react';
@@ -19,6 +19,18 @@ export const source = loader({
     if (icon in icons) return createElement(icons[icon as keyof typeof icons]);
   },
   
+});
+
+export const extSource = loader({
+  i18n,
+  baseUrl: '/ext',
+  source: ext.toFumadocsSource(),
+  icon(icon) {
+    if (!icon) {
+      return;
+    }
+    if (icon in icons) return createElement(icons[icon as keyof typeof icons]);
+  },
 });
 
 export const blog = loader({

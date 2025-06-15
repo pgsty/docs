@@ -16,6 +16,12 @@ export const linkItems = (lang: string): LinkItemType[] => [
     icon: <LayoutTemplate />,
     active: 'url',
   },
+  {
+    text: 'Extension',
+    url: `/${lang}/ext`,
+    icon: <LayoutTemplate />,
+    active: 'url',
+  },
 ];
 
 export const baseOptions = (lang: string): BaseLayoutProps => {
