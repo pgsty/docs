@@ -1,33 +1,28 @@
 ---
 title: Catalog
 description: List of available PostgreSQL Extensions
-icon: ClipboardList
+icon: BookText
 full: true
 ---
 
 import { Badge } from '@/components/ui/badge';
 import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck } from 'lucide-react';
 
+There are **421** PostgreSQL extensions available in the catalog
 
 ## Statistics
 
-<Badge variant="blue-subtle">Total</Badge> <Badge variant="gray-subtle">421 Extensions</Badge>
+| Distro | All | PGDG | PIGSTY | CONTRIB | OTHER | MISS | PG17 | PG16 | PG15 | PG14 | PG13 |
+| -------------- |:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| EL | 415 | 118 | 226 | 71 | 0 | 6 | 396 | 407 | 409 | 392 | 367 |
+| Debian | 408 | 103 | 234 | 71 | 0 | 13 | 394 | 400 | 402 | 389 | 362 |
 
-<Badge variant="green-subtle">Contrib</Badge> <Badge variant="gray-subtle">71 Extensions</Badge>
-
-<Badge variant="purple-subtle">Third-party</Badge> <Badge variant="gray-subtle">350 Extensions</Badge>
-
-<Badge variant="amber-subtle">Categories</Badge> <Badge variant="gray-subtle">16 Categories</Badge>
-
-<Badge variant="teal-subtle">Licenses</Badge> <Badge variant="gray-subtle">15 Licenses</Badge>
-
-<Badge variant="pink-subtle">Languages</Badge> <Badge variant="gray-subtle">7 Languages</Badge>
-
+-------
 
 ## Categories
 
 | Category | Extensions |
-|:---------|:-----------|
+|:--------:|:-----------|
 | <Badge icon={<Clock />} variant="blue-subtle"><a href="/ext/time" className="no-underline">TIME</a></Badge> | [`emaj`](/ext/emaj) [`periods`](/ext/periods) [`pg_background`](/ext/pg_background) [`pg_cron`](/ext/pg_cron) [`pg_later`](/ext/pg_later) [`pg_task`](/ext/pg_task) [`table_version`](/ext/table_version) [`temporal_tables`](/ext/temporal_tables) [`timescaledb`](/ext/timescaledb) [`timescaledb_toolkit`](/ext/timescaledb_toolkit) [`timeseries`](/ext/timeseries) |
 | <Badge icon={<Globe />} variant="green-subtle"><a href="/ext/gis" className="no-underline">GIS</a></Badge> | [`address_standardizer`](/ext/address_standardizer) [`address_standardizer_data_us`](/ext/address_standardizer_data_us) [`earthdistance`](/ext/earthdistance) [`geoip`](/ext/geoip) [`h3`](/ext/h3) [`h3_postgis`](/ext/h3_postgis) [`mobilitydb`](/ext/mobilitydb) [`ogr_fdw`](/ext/ogr_fdw) [`pg_geohash`](/ext/pg_geohash) [`pg_polyline`](/ext/pg_polyline) [`pgrouting`](/ext/pgrouting) [`pointcloud`](/ext/pointcloud) [`pointcloud_postgis`](/ext/pointcloud_postgis) [`postgis`](/ext/postgis) [`postgis_raster`](/ext/postgis_raster) [`postgis_sfcgal`](/ext/postgis_sfcgal) [`postgis_tiger_geocoder`](/ext/postgis_tiger_geocoder) [`postgis_topology`](/ext/postgis_topology) [`q3c`](/ext/q3c) [`tzf`](/ext/tzf) |
 | <Badge icon={<Brain />} variant="purple-subtle"><a href="/ext/rag" className="no-underline">RAG</a></Badge> | [`pg4ml`](/ext/pg4ml) [`pg_similarity`](/ext/pg_similarity) [`pg_summarize`](/ext/pg_summarize) [`pg_tiktoken`](/ext/pg_tiktoken) [`pgml`](/ext/pgml) [`smlar`](/ext/smlar) [`vchord`](/ext/vchord) [`vector`](/ext/vector) [`vectorize`](/ext/vectorize) [`vectorscale`](/ext/vectorscale) |
@@ -44,3 +39,16 @@ import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxe
 | <Badge icon={<FileInput />} variant="blue-subtle"><a href="/ext/fdw" className="no-underline">FDW</a></Badge> | [`aws_s3`](/ext/aws_s3) [`db2_fdw`](/ext/db2_fdw) [`dblink`](/ext/dblink) [`file_fdw`](/ext/file_fdw) [`firebird_fdw`](/ext/firebird_fdw) [`hdfs_fdw`](/ext/hdfs_fdw) [`jdbc_fdw`](/ext/jdbc_fdw) [`kafka_fdw`](/ext/kafka_fdw) [`log_fdw`](/ext/log_fdw) [`mongo_fdw`](/ext/mongo_fdw) [`multicorn`](/ext/multicorn) [`mysql_fdw`](/ext/mysql_fdw) [`odbc_fdw`](/ext/odbc_fdw) [`oracle_fdw`](/ext/oracle_fdw) [`pgbouncer_fdw`](/ext/pgbouncer_fdw) [`pgspider_ext`](/ext/pgspider_ext) [`postgres_fdw`](/ext/postgres_fdw) [`redis`](/ext/redis) [`redis_fdw`](/ext/redis_fdw) [`sqlite_fdw`](/ext/sqlite_fdw) [`tds_fdw`](/ext/tds_fdw) [`wrappers`](/ext/wrappers) |
 | <Badge icon={<Shell />} variant="teal-subtle"><a href="/ext/sim" className="no-underline">SIM</a></Badge> | [`babelfishpg_common`](/ext/babelfishpg_common) [`babelfishpg_money`](/ext/babelfishpg_money) [`babelfishpg_tds`](/ext/babelfishpg_tds) [`babelfishpg_tsql`](/ext/babelfishpg_tsql) [`documentdb`](/ext/documentdb) [`documentdb_core`](/ext/documentdb_core) [`documentdb_distributed`](/ext/documentdb_distributed) [`orafce`](/ext/orafce) [`pg_dbms_job`](/ext/pg_dbms_job) [`pg_dbms_lock`](/ext/pg_dbms_lock) [`pg_dbms_metadata`](/ext/pg_dbms_metadata) [`pg_statement_rollback`](/ext/pg_statement_rollback) [`pgmemcache`](/ext/pgmemcache) [`pgtt`](/ext/pgtt) [`session_variable`](/ext/session_variable) [`spat`](/ext/spat) |
 | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | [`db_migrator`](/ext/db_migrator) [`decoder_raw`](/ext/decoder_raw) [`decoderbufs`](/ext/decoderbufs) [`mimeo`](/ext/mimeo) [`pg_bulkload`](/ext/pg_bulkload) [`pg_fact_loader`](/ext/pg_fact_loader) [`pg_failover_slots`](/ext/pg_failover_slots) [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) [`pglogical`](/ext/pglogical) [`pglogical_origin`](/ext/pglogical_origin) [`pglogical_ticker`](/ext/pglogical_ticker) [`pgoutput`](/ext/pgoutput) [`repmgr`](/ext/repmgr) [`test_decoding`](/ext/test_decoding) [`wal2json`](/ext/wal2json) [`wal2mongo`](/ext/wal2mongo) |
+
+------
+
+## Source
+
+This catalog is open-sourced under the [Apache License 2.0](https://github.com/pgsty/extension/blob/main/LICENSE) and maintained by the [PGSTY](https://github.com/pgsty) team.
+
+You can find the RAW CSV data files at [github.com/pgsty/extension/data/extension.csv](https://github.com/pgsty/extension/blob/main/data/extension.csv)
+
+- https://github.com/pgsty/extension
+
+
+

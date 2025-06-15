@@ -1,44 +1,93 @@
 ---
 title: PIG CLI
-description: The Package Manager for PostgreSQL Extensions
+description: The Missing Package Manager for PostgreSQL Extensions
 icon: PiggyBank
+full: true
 ---
 
-## Overview
 
-**PIG** (Postgres Install Genius) is an open-source PostgreSQL extension package manager for Linux distributions. It provides a unified command-line interface for managing PostgreSQL extensions, repositories, and Pigsty installations.
+import {
+    Terminal,
+    Package,
+    Puzzle,
+    Hammer,
+    Rocket,
+    HelpCircle,
+    Download,
+    Zap
+} from 'lucide-react';
 
-## Key Features
-
-- **420+ Extensions**: Access to a comprehensive catalog of PostgreSQL extensions
-- **Multi-Platform Support**: Compatible with RHEL, Rocky, CentOS, Debian, and Ubuntu
-- **Multi-Architecture**: Works on both x86_64 and ARM64 systems
-- **PostgreSQL Version Support**: Supports PostgreSQL versions 13-17
-- **Easy Installation**: Simple one-command installation process
-- **Integration**: Works with system package managers (YUM/APT)
-
-## Quick Navigation
-
-- [Get Started](./start) - Quick start guide for PIG
-- [Why PIG?](./why) - Learn about the motivation behind PIG
-- [Installation](./install) - Detailed installation instructions
-- [Command Reference](./pig) - Complete CLI documentation
-- [Repository Management](./repo) - Working with package repositories
-- [Extension Management](./ext) - How to manage PostgreSQL extensions
-- [Pigsty Administration](./sty) - Using PIG with Pigsty
-- [Building Infrastructure](./build) - Setting up build environments
-- [Release Notes](./release) - Version history and changelog
-
-## Main Quote
 
 > "Postgres Install Genius, the missing extension package manager for PostgreSQL ecosystem"
 
-## Installation
+## Quick Start
 
-Get started with PIG in seconds:
+[Get started](/ext/pig/start) with PIG in seconds:
 
-```bash
+```bash tab="default"
 curl -fsSL https://repo.pigsty.io/pig | bash
 ```
+```bash tab="mirror"
+curl -fsSL https://repo.pigsty.cc/pig | bash
+```
 
-This installs the latest PIG package and sets up the necessary repositories for managing PostgreSQL extensions.
+Then it’s ready to use, assume you want to install the [**`pg_duckdb`**](/ext/pg_duckdb/) extension:
+
+```bash
+$ pig repo add pigsty pgdg -u  # add pgdg & pigsty repo, then update repo cache
+$ pig ext install pg17         # install PostgreSQL 17 kernels with native PGDG packages
+$ pig ext install pg_duckdb    # install the pg_duckdb extension (for current pg17)
+```
+
+--------
+
+<Cards>
+    <Card icon={<Zap className="text-green-500"/>} title='Get Started' href={"/ext/pig/start"}>
+        Quick start for PIG CLI
+    </Card>
+    <Card icon={<Download className="text-blue-600"/>} title='Installation' href={"/ext/pig/install"}>
+        Install PostgreSQL extensions
+    </Card>
+    <Card icon={<HelpCircle className="text-purple-600"/>} title='Why Use PIG?' href={"/ext/pig/why"}>
+        Why we need a package manager for postgres?
+    </Card>
+    <Card icon={<Rocket className="text-orange-500"/>} title='Release Note' href={"/ext/pig/release"}>
+        Release notes for PIG CLI
+    </Card>
+</Cards>
+
+
+
+
+--------
+
+## Commands
+
+Check sub-commands documentation with `pig help <command>`:
+
+<Cards>
+    <Card icon={<Terminal className="text-slate-600"/>} title='pig' href={"/ext/pig/pig"}>
+        Main CLI interface for the command line tool
+    </Card>
+    <Card icon={<Package className="text-indigo-600"/>} title='pig repo' href={"/ext/pig/repo"}>
+        Manage repositories for your linux distribution
+    </Card>
+    <Card icon={<Puzzle className="text-emerald-600"/>} title='pig ext' href={"/ext/pig/ext"}>
+        Install, remove, search, scan postgres extensions
+    </Card>
+    <Card icon={<Hammer className="text-amber-600"/>} title='pig build' href={"/ext/pig/build"}>
+        Setup building env for extensions and build them
+    </Card>
+</Cards>
+
+
+--------
+
+## Source
+
+The `pig` CLI is developed by [Vonng](/docs/about/author) and open-sourced under the [Apache License 2.0](https://github.com/pgsty/pig/?tab=Apache-2.0-1-ov-file#readme).
+
+You can also check the [pigsty](/docs/) project, which makes it even smoother to deliver all these [extensions](/docs/pgsql/extension).
+
+- https://github.com/pgsty/pig
+- https://github.com/pgsty/pigsty

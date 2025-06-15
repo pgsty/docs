@@ -172,6 +172,17 @@ def format_language_badge(language: str) -> str:
     info = language_dict.get(language, 'gray-subtle')
     return f'<a href="{info['anchor']}"><Badge icon={{<FileCode2 />}} variant="{info['variant']}">{language or "N/A"}</Badge></a>'
 
+def format_repo_badge(repo: str) -> str:
+    """Format repository as Badge component with appropriate color."""
+    repo_dict = {
+        'PIGSTY': {'variant': 'amber-subtle'},
+        'PGDG': {'variant': 'blue-subtle'},
+        'CONTRIB': {'variant': 'purple-subtle'},
+        'OTHER': {'variant': 'gray-subtle'}
+    }
+    info = repo_dict.get(repo, {'variant': 'gray-subtle'})
+    return f'<Badge variant="{info["variant"]}">{repo}</Badge>'
+
 class Package:
     """Represents a PostgreSQL extension package."""
     
@@ -739,44 +750,76 @@ import {{ FileCode2, Package }} from 'lucide-react';
         f.write(content)
     print(f"Generated: {output_path}")
 
+def normalize_os_arch(arch_in):
+    if arch_in.lower() in ['amd', 'x86_64', 'amd64']:
+        return 'x86_64'
+    elif arch_in.lower() in ['arm','arm64', 'aarch64', 'armv8']:
+        return 'aarch64'
+    else:
+        return arch_in.lower()
+
 def gen_inventory_index(extensions: List['Extension']):
     """Generate overall inventory index (content/ext/list/index.mdx)."""
     print("Generating inventory index...")
     
-    # Generate statistics
-    total_extensions = len(extensions)
-    contrib_count = len([ext for ext in extensions if ext.contrib])
-    third_party_count = total_extensions - contrib_count
+    catalog_summary = f'''There are **{len(extensions)}** PostgreSQL extensions available in the catalog'''
+
+    # Generate platform statistics based on rpm_repo/deb_repo and repo sources
+    el_stats = {'all': 0, 'PGDG': 0, 'PIGSTY': 0, 'CONTRIB': 0, 'OTHER': 0, 'MISS': 0}
+    debian_stats = {'all': 0, 'PGDG': 0, 'PIGSTY': 0, 'CONTRIB': 0, 'OTHER': 0, 'MISS': 0}
+    el_pg_stats = {'PG17': 0, 'PG16': 0, 'PG15': 0, 'PG14': 0, 'PG13': 0}
+    debian_pg_stats = {'PG17': 0, 'PG16': 0, 'PG15': 0, 'PG14': 0, 'PG13': 0}
     
-    # Count by categories
-    category_counts = defaultdict(int)
     for ext in extensions:
-        category_counts[ext.category] += 1
+        # EL platform analysis (rpm_repo exists)
+        if ext.rpm_repo:
+            el_stats['all'] += 1
+            # Categorize by repository source
+            if ext.rpm_repo == 'PGDG':
+                el_stats['PGDG'] += 1
+            elif ext.rpm_repo == 'PIGSTY':
+                el_stats['PIGSTY'] += 1
+            elif ext.rpm_repo == 'CONTRIB':
+                el_stats['CONTRIB'] += 1
+            else:
+                el_stats['OTHER'] += 1
+            
+            # Count PG version availability for EL
+            for pg_ver in ext.rpm_pg:
+                pg_key = f'PG{pg_ver}'
+                if pg_key in el_pg_stats:
+                    el_pg_stats[pg_key] += 1
+        else:
+            el_stats['MISS'] += 1
+        
+        # Debian platform analysis (deb_repo exists)
+        if ext.deb_repo:
+            debian_stats['all'] += 1
+            # Categorize by repository source
+            if ext.deb_repo == 'PGDG':
+                debian_stats['PGDG'] += 1
+            elif ext.deb_repo == 'PIGSTY':
+                debian_stats['PIGSTY'] += 1
+            elif ext.deb_repo == 'CONTRIB':
+                debian_stats['CONTRIB'] += 1
+            else:
+                debian_stats['OTHER'] += 1
+            
+            # Count PG version availability for Debian
+            for pg_ver in ext.deb_pg:
+                pg_key = f'PG{pg_ver}'
+                if pg_key in debian_pg_stats:
+                    debian_pg_stats[pg_key] += 1
+        else:
+            debian_stats['MISS'] += 1
     
-    # Count by licenses
-    license_counts = Counter(ext.license for ext in extensions if ext.license)
-    
-    # Count by languages
-    language_counts = Counter(ext.lang for ext in extensions if ext.lang)
-    
-    # Generate statistics section
-    stats_content = f'''
-## Statistics
+    # Generate statistics table
+    statistics_table = f'''| Distro | All | PGDG | PIGSTY | CONTRIB | OTHER | MISS | PG17 | PG16 | PG15 | PG14 | PG13 |
+| -------------- |:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| EL | {el_stats['all']} | {el_stats['PGDG']} | {el_stats['PIGSTY']} | {el_stats['CONTRIB']} | {el_stats['OTHER']} | {el_stats['MISS']} | {el_pg_stats['PG17']} | {el_pg_stats['PG16']} | {el_pg_stats['PG15']} | {el_pg_stats['PG14']} | {el_pg_stats['PG13']} |
+| Debian | {debian_stats['all']} | {debian_stats['PGDG']} | {debian_stats['PIGSTY']} | {debian_stats['CONTRIB']} | {debian_stats['OTHER']} | {debian_stats['MISS']} | {debian_pg_stats['PG17']} | {debian_pg_stats['PG16']} | {debian_pg_stats['PG15']} | {debian_pg_stats['PG14']} | {debian_pg_stats['PG13']} |'''
 
-<Badge variant="blue-subtle">Total</Badge> <Badge variant="gray-subtle">{total_extensions} Extensions</Badge>
-
-<Badge variant="green-subtle">Contrib</Badge> <Badge variant="gray-subtle">{contrib_count} Extensions</Badge>
-
-<Badge variant="purple-subtle">Third-party</Badge> <Badge variant="gray-subtle">{third_party_count} Extensions</Badge>
-
-<Badge variant="amber-subtle">Categories</Badge> <Badge variant="gray-subtle">{len(category_counts)} Categories</Badge>
-
-<Badge variant="teal-subtle">Licenses</Badge> <Badge variant="gray-subtle">{len(license_counts)} Licenses</Badge>
-
-<Badge variant="pink-subtle">Languages</Badge> <Badge variant="gray-subtle">{len(language_counts)} Languages</Badge>
-'''
-    
-    # Generate extensions by category
+    # Generate extensions by category with badges
     extensions_content = []
     for category in CATEGORY_META.keys():
         cat_extensions = [ext for ext in extensions if ext.category == category]
@@ -785,6 +828,8 @@ def gen_inventory_index(extensions: List['Extension']):
             
         cat_extensions.sort(key=lambda e: e.name)
         extension_badges = []
+        category_variant = CATEGORY_META[category]['color']
+        
         for ext in cat_extensions:
             extension_badges.append(f'[`{ext.name}`](/ext/{ext.name})')
         
@@ -792,27 +837,276 @@ def gen_inventory_index(extensions: List['Extension']):
         extensions_content.append(extensions_row)
     
     extensions_table = f'''| Category | Extensions |
-|:---------|:-----------|
+|:--------:|:-----------|
 {chr(10).join(extensions_content)}'''
     
     content = f'''---
-title: Inventory
-description: Available PostgreSQL Extensions
-icon: ClipboardList
+title: Catalog
+description: List of available PostgreSQL Extensions
+icon: BookText
 full: true
 ---
 
 import {{ Badge }} from '@/components/ui/badge';
 import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck }} from 'lucide-react';
 
-{stats_content}
+{catalog_summary}
+
+## Statistics
+
+{statistics_table}
+
+-------
 
 ## Categories
 
 {extensions_table}
+
+------
+
+## Source
+
+This catalog is open-sourced under the [Apache License 2.0](https://github.com/pgsty/extension/blob/main/LICENSE) and maintained by the [PGSTY](https://github.com/pgsty) team.
+
+You can find the RAW CSV data files at [github.com/pgsty/extension/data/extension.csv](https://github.com/pgsty/extension/blob/main/data/extension.csv)
+
+- https://github.com/pgsty/extension
+
+
+
 '''
     
     output_path = os.path.join(OUTPUT_DIR, 'index.mdx')
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"Generated: {output_path}")
+
+def generate_repo_extension_table(extensions: List['Extension']) -> str:
+    """Generate extension table for repo lists (ID, Name, Category, RPM, DEB, Description)."""
+    if not extensions:
+        return "No extensions found."
+    
+    headers = ['ID', 'Name', 'Category', 'RPM', 'DEB', 'Description']
+    header_row = '| ' + ' | '.join(headers) + ' |'
+    separator_row = '|:---:|:---|:---|:---:|:---:|:---|'
+    
+    rows = [header_row, separator_row]
+    
+    for ext in extensions:
+        rpm_badge = format_repo_badge(ext.rpm_repo) if ext.rpm_repo else '-'
+        deb_badge = format_repo_badge(ext.deb_repo) if ext.deb_repo else '-'
+        category_badge = format_category_badge(ext.category) if ext.category else '-'
+        
+        row_data = [
+            str(ext.id),
+            f'[`{ext.name}`](/ext/{ext.name})',
+            category_badge,
+            rpm_badge,
+            deb_badge,
+            ext.en_desc or 'No description'
+        ]
+        rows.append('| ' + ' | '.join(row_data) + ' |')
+    
+    return '\n'.join(rows)
+
+def gen_repo_list(extensions: List['Extension']):
+    """Generate repository-based extension list (content/ext/list/repo.mdx)."""
+    print("Generating repository list...")
+    
+    # Categorize extensions by availability
+    contrib_extensions = [ext for ext in extensions if ext.contrib]
+    both_extensions = []  # Available in both EL and Debian
+    el_only_extensions = []  # Only available in EL
+    debian_only_extensions = []  # Only available in Debian
+    
+    for ext in extensions:
+        if ext.contrib:
+            continue  # Skip contrib extensions for platform sections
+            
+        has_rpm = bool(ext.rpm_repo)
+        has_deb = bool(ext.deb_repo)
+        
+        if has_rpm and has_deb:
+            both_extensions.append(ext)
+        elif has_rpm and not has_deb:
+            el_only_extensions.append(ext)
+        elif not has_rpm and has_deb:
+            debian_only_extensions.append(ext)
+    
+    # Sort all extension lists by ID
+    contrib_extensions.sort(key=lambda e: e.id)
+    both_extensions.sort(key=lambda e: e.id)
+    el_only_extensions.sort(key=lambda e: e.id)
+    debian_only_extensions.sort(key=lambda e: e.id)
+    
+    # Generate content sections
+    contrib_table = generate_simple_extension_table(contrib_extensions)
+    both_table = generate_repo_extension_table(both_extensions)
+    el_only_table = generate_repo_extension_table(el_only_extensions)
+    debian_only_table = generate_repo_extension_table(debian_only_extensions)
+    
+    # Generate summary
+    total_extensions = len(extensions)
+    summary_text = f'''There are **{total_extensions}** PostgreSQL extensions in total: **{len(contrib_extensions)}** CONTRIB extensions, **{len(both_extensions)}** available on both EL and Debian platforms, **{len(el_only_extensions)}** available only on EL platforms, and **{len(debian_only_extensions)}** available only on Debian platforms.'''
+    
+    # Generate summary table
+    summary_table = f'''| Entry | ALL | [CONTRIB](#contrib) | [Both](#both) | [EL Only](#el) | [Debian Only](#debian) |
+|:-----:|:---:|:-------------------:|:-------------:|:--------------:|:----------------------:|
+| Count | {total_extensions} | {len(contrib_extensions)} | {len(both_extensions)} | {len(el_only_extensions)} | {len(debian_only_extensions)} |'''
+    
+    content = f'''---
+title: By Repository
+description: PostgreSQL Extensions organized by Repository Source
+icon: Warehouse
+full: true
+---
+
+import {{ Badge }} from '@/components/ui/badge';
+import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck }} from 'lucide-react';
+
+{summary_text}
+
+{summary_table}
+
+## CONTRIB
+
+Extensions that come with PostgreSQL core distribution. There are **{len(contrib_extensions)}** contrib extensions.
+
+{contrib_table}
+
+## BOTH
+
+There are **{len(both_extensions)}** non-contrib extensions available in both EL and Debian platforms.
+
+{both_table}
+
+## EL
+
+There are **{len(el_only_extensions)}** non-contrib extensions only available in EL platforms.
+
+{el_only_table}
+
+## Debian
+
+There are **{len(debian_only_extensions)}** non-contrib extensions only available in Debian platforms.
+
+{debian_only_table}
+'''
+    
+    output_path = os.path.join(OUTPUT_DIR, 'repo.mdx')
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"Generated: {output_path}")
+
+def gen_distro_list(extensions: List['Extension']):
+    """Generate Linux distribution-based extension list (content/ext/list/distro.mdx)."""
+    print("Generating distro list...")
+    
+    # Get leading extensions (not contrib)
+    leading_extensions = [ext for ext in extensions if ext.lead and not ext.contrib]
+    leading_extensions.sort(key=lambda e: e.id)
+    
+    # Load all packages
+    all_packages = []
+    with CONN.cursor() as cur:
+        cur.execute('SELECT * FROM ext.pkg ORDER BY os, pg DESC')
+        rows = cur.fetchall()
+    all_packages = [Package(row) for row in rows]
+    
+    # Build package mapping: {os_arch: {pkg: {pg: version}}}
+    package_map = {}
+    for pkg in all_packages:
+        os_key = f"{pkg.os_code}.{normalize_os_arch(pkg.os_arch)}"
+        if os_key not in package_map:
+            package_map[os_key] = {}
+        if pkg.pkg not in package_map[os_key]:
+            package_map[os_key][pkg.pkg] = {}
+        package_map[os_key][pkg.pkg][pkg.pg] = {'version': pkg.ver, 'repo': pkg.repo}
+    
+    # Navigation table
+    nav_table = '''|  OS   |           x86_64            |            aarch64            |
+|:-----:|:---------------------------:|:-----------------------------:|
+| `el8` | [`el8.x86_64`](#el8x86_64) | [`el8.aarch64`](#el8aarch64) |
+| `el9` | [`el9.x86_64`](#el9x86_64) | [`el9.aarch64`](#el9aarch64) |
+| `d12` | [`d12.x86_64`](#d12x86_64) | [`d12.aarch64`](#d12aarch64) |
+| `u22` | [`u22.x86_64`](#u22x86_64) | [`u22.aarch64`](#u22aarch64) |
+| `u24` | [`u24.x86_64`](#u24x86_64) | [`u24.aarch64`](#u24aarch64) |'''
+    
+    # Generate distro sections
+    distro_sections = []
+    distros = ['el8.x86_64', 'el8.aarch64', 'el9.x86_64', 'el9.aarch64', 
+               'd12.x86_64', 'd12.aarch64', 'u22.x86_64', 'u22.aarch64', 
+               'u24.x86_64', 'u24.aarch64']
+    
+    for distro in distros:
+        # Generate version availability table for this distro
+        table_rows = []
+        header_row = '|                        Extension / PG Major                         |                  **PG17**                   |                  **PG16**                   |                  **PG15**                   |                  **PG14**                   |                  **PG13**                   |'
+        separator_row = '|:-------------------------------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|'
+        table_rows.extend([header_row, separator_row])
+        
+        distro_packages = package_map.get(distro, {})
+        
+        for ext in leading_extensions:
+            pkg_name = ext.pkg
+            ext_packages = distro_packages.get(pkg_name, {})
+            
+            row_data = [f'[`{ext.pkg}`](/ext/{ext.name})']
+            
+            for pg_ver in [17, 16, 15, 14, 13]:
+                if pg_ver in ext_packages:
+                    version = ext_packages[pg_ver]['version']
+                    repo = ext_packages[pg_ver]['repo']
+                    
+                    # Extract semantic version (remove dist suffixes)
+                    import re
+                    semantic_version = re.split(r'[-_]\d*[A-Z]', version)[0]
+                    semantic_version = re.split(r'[-_]\d*\w*\.', semantic_version)[0]
+                    semantic_version = re.split(r'[-+]', semantic_version)[0]
+                    
+                    # Determine color based on repo
+                    if 'pigsty' in repo.lower():
+                        color_class = 'text-amber-500'
+                    elif 'pgdg' in repo.lower():
+                        color_class = 'text-blue-500'
+                    else:
+                        color_class = 'text-purple-500'
+                    badge = f'<span className="{color_class}">{semantic_version}</span>'
+                else:
+                    badge = '<span className="text-red-500">×</span>'
+                
+                row_data.append(badge)
+            
+            table_rows.append('| ' + ' | '.join(row_data) + ' |')
+        
+        availability_table = '\n'.join(table_rows)
+        
+        # Clean distro name for anchor
+        anchor_name = distro.replace('.', '')
+        
+        section = f'''## {distro}
+
+Version availability for {distro}:
+
+{availability_table}
+'''
+        distro_sections.append(section)
+    
+    content = f'''---
+title: By Linux Distro
+description: PostgreSQL Extensions organized by Linux Distribution
+icon: Server
+full: true
+---
+
+PostgreSQL extensions availability across different Linux distributions and architectures:
+
+{nav_table}
+
+{"".join(distro_sections)}
+'''
+    
+    output_path = os.path.join(OUTPUT_DIR, 'distro.mdx')
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(content)
     print(f"Generated: {output_path}")
@@ -831,6 +1125,8 @@ def main():
     gen_license_list(extensions)
     gen_language_list(extensions)
     gen_inventory_index(extensions)
+    gen_repo_list(extensions)
+    gen_distro_list(extensions)
     
     print("List generation complete!")
 
