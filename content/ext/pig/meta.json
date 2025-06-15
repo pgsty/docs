@@ -1,8 +1,8 @@
 {
   "pages": [
     "start",
-    "why",
     "install",
+    "why",
     "pig",
     "repo",
     "ext",
