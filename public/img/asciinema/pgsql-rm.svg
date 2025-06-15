@@ -1,0 +1,1244 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1406.69666611" height="1213.33303" font-family="Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols'" font-size="14px">
+  <style>
+    .br { font-weight: bold }
+    .fa { fill-opacity: 0.5 }
+    .it { font-style: italic }
+    .un { text-decoration: underline }
+  </style>
+
+  <rect width="100%" height="100%" style="fill: #002b36" rx="4" ry="4"></rect>
+
+  <svg x="8.42333333" y="9.333331000000001" class="default-text-fill">
+    <g style="shape-rendering: optimizeSpeed">
+
+        <rect x="25.269999990000002" y="1175.999706" width="8.42333333" height="18.666662000000002" style="fill: #eee8d5"></rect>
+
+
+    </g>
+
+    <text style="fill: #839496">
+      <tspan y="37.333324000000005">
+        <tspan dy="1em" x="0.0" class="br" style="fill: #93a1a1">
+          all
+        </tspan><tspan x="25.269999990000002" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="55.99998600000001">
+        <tspan dy="1em" x="16.84666666" class="br" style="fill: #93a1a1">
+          children
+        </tspan><tspan x="84.2333333" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="93.33331000000001">
+        <tspan dy="1em" x="33.69333332" style="fill: #93a1a1">
+          # infra cluster for proxy, monitor, alert, etc..
+        </tspan>
+      </tspan><tspan y="111.99997200000001">
+        <tspan dy="1em" x="33.69333332" class="br" style="fill: #93a1a1">
+          infra
+        </tspan><tspan x="75.80999997" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          hosts
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="185.31333326" class="br" style="fill: #93a1a1">
+          10.10.10.10
+        </tspan><tspan x="277.96999989" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="311.66333321" class="br" style="fill: #93a1a1">
+          infra_seq
+        </tspan><tspan x="387.47333318" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="404.31999984000004" style="fill: #6c71c4">
+          1
+        </tspan><tspan x="421.1666665" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="438.01333316" style="fill: #FFD7D7">
+          }}
+        </tspan>
+      </tspan><tspan y="149.33329600000002">
+        <tspan dy="1em" x="33.69333332" style="fill: #93a1a1">
+          # minio cluster, s3 compatible object storage
+        </tspan>
+      </tspan><tspan y="167.99995800000002">
+        <tspan dy="1em" x="33.69333332" class="br" style="fill: #93a1a1">
+          minio
+        </tspan><tspan x="75.80999997" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          hosts
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="185.31333326" class="br" style="fill: #93a1a1">
+          10.10.10.10
+        </tspan><tspan x="277.96999989" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="311.66333321" class="br" style="fill: #93a1a1">
+          minio_seq
+        </tspan><tspan x="387.47333318" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="404.31999984000004" style="fill: #6c71c4">
+          1
+        </tspan><tspan x="421.1666665" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="438.01333316" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="446.43666649">
+          , 
+        </tspan><tspan x="463.28333315000003" class="br" style="fill: #93a1a1">
+          vars
+        </tspan><tspan x="496.97666647" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="513.82333313" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          minio_cluster
+        </tspan><tspan x="640.17333308" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="657.01999974">
+          minio 
+        </tspan><tspan x="707.5599997200001" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="724.40666638" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="205.33328200000003">
+        <tspan dy="1em" x="33.69333332" style="fill: #93a1a1">
+          # etcd cluster for ha postgres
+        </tspan>
+      </tspan><tspan y="223.99994400000003">
+        <tspan dy="1em" x="33.69333332" class="br" style="fill: #93a1a1">
+          etcd
+        </tspan><tspan x="67.38666664" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="84.2333333" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="101.07999996000001" class="br" style="fill: #93a1a1">
+          hosts
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="176.88999993000002" class="br" style="fill: #93a1a1">
+          10.10.10.10
+        </tspan><tspan x="269.54666656" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="286.39333322" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          etcd_seq
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318" style="fill: #6c71c4">
+          1
+        </tspan><tspan x="404.31999984000004" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="421.1666665" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="429.58999983">
+          , 
+        </tspan><tspan x="446.43666649" class="br" style="fill: #93a1a1">
+          vars
+        </tspan><tspan x="480.12999981" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="496.97666647" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="513.82333313" class="br" style="fill: #93a1a1">
+          etcd_cluster
+        </tspan><tspan x="614.90333309" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="631.74999975">
+          etcd 
+        </tspan><tspan x="673.8666664" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="690.71333306" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="261.33326800000003">
+        <tspan dy="1em" x="33.69333332" style="fill: #93a1a1">
+          # postgres example cluster: pg-meta
+        </tspan>
+      </tspan><tspan y="279.99993">
+        <tspan dy="1em" x="33.69333332" class="br" style="fill: #93a1a1">
+          pg-meta
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="298.66659200000004">
+        <tspan dy="1em" x="50.539999980000005" class="br" style="fill: #93a1a1">
+          hosts
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="109.50333329" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="126.34999995" class="br" style="fill: #93a1a1">
+          10.10.10.10
+        </tspan><tspan x="219.00666658" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="235.85333324" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          pg_seq
+        </tspan><tspan x="303.23999988" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="320.08666654" style="fill: #6c71c4">
+          1
+        </tspan><tspan x="328.50999987">
+          , 
+        </tspan><tspan x="345.35666653" class="br" style="fill: #93a1a1">
+          pg_role
+        </tspan><tspan x="404.31999984000004" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="421.1666665">
+          primary 
+        </tspan><tspan x="488.55333314" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="505.3999998" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="317.333254">
+        <tspan dy="1em" x="50.539999980000005" class="br" style="fill: #93a1a1">
+          vars
+        </tspan><tspan x="84.2333333" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="335.99991600000004">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_cluster
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          pg-meta
+        </tspan>
+      </tspan><tspan y="354.666578">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_users
+        </tspan><tspan x="134.77333328" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="373.33324000000005">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_meta
+        </tspan><tspan x="294.81666655">
+          ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Meta
+        </tspan><tspan x="522.24666646">
+          ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_admin
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          pigsty admin user 
+        </tspan><tspan x="1120.30333289" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="391.999902">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_view
+        </tspan><tspan x="294.81666655">
+          ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Viewer
+        </tspan><tspan x="522.24666646">
+          ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_readonly
+        </tspan><tspan x="867.60333299" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          read-only viewer for meta database 
+        </tspan><tspan x="1263.4999995" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="410.66656400000005">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_grafana
+        </tspan><tspan x="294.81666655">
+          ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Grafana
+        </tspan><tspan x="522.24666646">
+          ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_admin
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          admin user for grafana database
+        </tspan><tspan x="1263.4999995" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="429.333226">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_bytebase ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Bytebase ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_admin
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          admin user for bytebase database
+        </tspan><tspan x="1263.4999995" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="447.99988800000006">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_kong
+        </tspan><tspan x="294.81666655">
+          ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Kong
+        </tspan><tspan x="522.24666646">
+          ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_admin
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          admin user for kong api gateway
+        </tspan><tspan x="1263.4999995" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="466.66655000000003">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_gitea
+        </tspan><tspan x="294.81666655">
+          ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Gitea
+        </tspan><tspan x="522.24666646">
+          ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_admin
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          admin user for gitea service
+        </tspan><tspan x="1263.4999995" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="485.33321200000006">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_wiki
+        </tspan><tspan x="294.81666655">
+          ,
+        </tspan><tspan x="303.23999988" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="370.62666652" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="387.47333318">
+          DBUser.Wiki
+        </tspan><tspan x="522.24666646">
+          ,
+        </tspan><tspan x="530.66999979" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="606.47999976" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="623.32666642" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="665.44333307">
+          ,
+        </tspan><tspan x="673.8666664" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="715.98333305" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="732.82999971" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="741.25333304">
+          dbrole_admin
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="884.44999965">
+          ,
+        </tspan><tspan x="892.87333298" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="951.83666629" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="968.68333295">
+          admin user for wiki.js service
+        </tspan><tspan x="1263.4999995" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="503.99987400000003">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_databases
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="522.6665360000001">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="117.92666662" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          meta ,
+        </tspan><tspan x="219.00666658" class="br" style="fill: #93a1a1">
+          baseline
+        </tspan><tspan x="286.39333322" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="303.23999988">
+          cmdb.sql ,
+        </tspan><tspan x="387.47333318" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="446.43666649" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="463.28333315000003">
+          pigsty meta database ,
+        </tspan><tspan x="648.59666641" class="br" style="fill: #93a1a1">
+          schemas
+        </tspan><tspan x="707.5599997200001" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="724.40666638" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="732.82999971">
+          pigsty
+        </tspan><tspan x="783.36999969" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="800.21666635">
+          ,
+        </tspan><tspan x="808.6399996800001" class="br" style="fill: #93a1a1">
+          extensions
+        </tspan><tspan x="892.87333298" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="909.71999964" style="fill: #FFD7D7">
+          [{
+        </tspan><tspan x="926.5666663000001" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="960.25999962" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="977.10666628">
+          postgis, 
+        </tspan><tspan x="1052.91666625" class="br" style="fill: #93a1a1">
+          schema
+        </tspan><tspan x="1103.45666623" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="1120.30333289">
+          public
+        </tspan><tspan x="1170.84333287" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="1179.2666662">
+          , 
+        </tspan><tspan x="1196.1133328600001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="1204.53666619" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="1238.22999951" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="1255.07666617">
+          timescaledb
+        </tspan><tspan x="1347.7333328" style="fill: #FFD7D7">
+          }]}
+        </tspan>
+      </tspan><tspan y="541.333198">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="117.92666662" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          grafana
+        </tspan><tspan x="244.27666657">
+          ,
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          owner
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="311.66333321">
+          dbuser_grafana
+        </tspan><tspan x="446.43666649">
+          ,
+        </tspan><tspan x="454.85999982" class="br" style="fill: #93a1a1">
+          revokeconn
+        </tspan><tspan x="539.09333312" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="555.93999978" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="598.0566664300001">
+          ,
+        </tspan><tspan x="606.47999976" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="665.44333307" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="682.28999973">
+          grafana primary database 
+        </tspan><tspan x="892.87333298" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="559.99986">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="117.92666662" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          bytebase ,
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          owner
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="311.66333321">
+          dbuser_bytebase ,
+        </tspan><tspan x="454.85999982" class="br" style="fill: #93a1a1">
+          revokeconn
+        </tspan><tspan x="539.09333312" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="555.93999978" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="598.0566664300001">
+          ,
+        </tspan><tspan x="606.47999976" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="665.44333307" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="682.28999973">
+          bytebase primary database 
+        </tspan><tspan x="901.29666631" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="578.6665220000001">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="117.92666662" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          kong
+        </tspan><tspan x="244.27666657">
+          ,
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          owner
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="311.66333321">
+          dbuser_kong
+        </tspan><tspan x="446.43666649">
+          ,
+        </tspan><tspan x="454.85999982" class="br" style="fill: #93a1a1">
+          revokeconn
+        </tspan><tspan x="539.09333312" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="555.93999978" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="598.0566664300001">
+          ,
+        </tspan><tspan x="606.47999976" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="665.44333307" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="682.28999973">
+          kong the api gateway database 
+        </tspan><tspan x="934.98999963" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="597.3331840000001">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="117.92666662" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          gitea
+        </tspan><tspan x="244.27666657">
+          ,
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          owner
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="311.66333321">
+          dbuser_gitea
+        </tspan><tspan x="446.43666649">
+          ,
+        </tspan><tspan x="454.85999982" class="br" style="fill: #93a1a1">
+          revokeconn
+        </tspan><tspan x="539.09333312" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="555.93999978" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="598.0566664300001">
+          ,
+        </tspan><tspan x="606.47999976" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="665.44333307" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="682.28999973">
+          gitea meta database 
+        </tspan><tspan x="850.75666633" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="615.999846">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="117.92666662" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          wiki
+        </tspan><tspan x="244.27666657">
+          ,
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          owner
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="311.66333321">
+          dbuser_wiki
+        </tspan><tspan x="446.43666649">
+          ,
+        </tspan><tspan x="454.85999982" class="br" style="fill: #93a1a1">
+          revokeconn
+        </tspan><tspan x="539.09333312" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="555.93999978" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="598.0566664300001">
+          ,
+        </tspan><tspan x="606.47999976" class="br" style="fill: #93a1a1">
+          comment
+        </tspan><tspan x="665.44333307" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="682.28999973">
+          wiki meta database 
+        </tspan><tspan x="842.333333" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="634.666508">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_hba_rules
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="653.33317">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="109.50333329" class="br" style="fill: #93a1a1">
+          user
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          dbuser_view , 
+        </tspan><tspan x="277.96999989" class="br" style="fill: #93a1a1">
+          db
+        </tspan><tspan x="294.81666655" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="311.66333321">
+          all ,
+        </tspan><tspan x="353.77999986000003" class="br" style="fill: #93a1a1">
+          addr
+        </tspan><tspan x="387.47333318" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="404.31999984000004">
+          infra ,
+        </tspan><tspan x="463.28333315000003" class="br" style="fill: #93a1a1">
+          auth
+        </tspan><tspan x="496.97666647" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="513.82333313">
+          pwd ,
+        </tspan><tspan x="555.93999978" class="br" style="fill: #93a1a1">
+          title
+        </tspan><tspan x="598.0566664300001" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="614.90333309" style="fill: #6c71c4">
+          &#39;allow grafana dashboard access cmdb from infra nodes&#39;
+        </tspan><tspan x="1069.76333291" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="671.9998320000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_vip_enabled
+        </tspan><tspan x="185.31333326" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="202.15999992000002" style="fill: #6c71c4">
+          true
+        </tspan>
+      </tspan><tspan y="690.6664940000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_vip_address
+        </tspan><tspan x="185.31333326" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="202.15999992000002">
+          10.10.10.2/24
+        </tspan>
+      </tspan><tspan y="709.333156">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_vip_interface
+        </tspan><tspan x="202.15999992000002" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="219.00666658">
+          eth1
+        </tspan>
+      </tspan><tspan y="727.999818">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          node_crontab
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="193.73666659" style="fill: #93a1a1">
+          # make a full backup 1 am everyday
+        </tspan>
+      </tspan><tspan y="746.6664800000001">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #6c71c4">
+          &#39;00 01 * * * postgres /pg/bin/pg-backup full&#39;
+        </tspan>
+      </tspan><tspan y="783.999804">
+        <tspan dy="1em" x="33.69333332" style="fill: #93a1a1">
+          # pgsql 3 node ha cluster: pg-test
+        </tspan>
+      </tspan><tspan y="802.666466">
+        <tspan dy="1em" x="33.69333332" class="br" style="fill: #93a1a1">
+          pg-test
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="821.3331280000001">
+        <tspan dy="1em" x="50.539999980000005" class="br" style="fill: #93a1a1">
+          hosts
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="839.9997900000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          10.10.10.11
+        </tspan><tspan x="160.04333327" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="176.88999993000002" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="193.73666659" class="br" style="fill: #93a1a1">
+          pg_seq
+        </tspan><tspan x="244.27666657" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="261.12333323" style="fill: #6c71c4">
+          1
+        </tspan><tspan x="269.54666656">
+          , 
+        </tspan><tspan x="286.39333322" class="br" style="fill: #93a1a1">
+          pg_role
+        </tspan><tspan x="345.35666653" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="362.20333319">
+          primary 
+        </tspan><tspan x="429.58999983" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="463.28333315000003" style="fill: #93a1a1">
+          # primary instance, leader of cluster
+        </tspan>
+      </tspan><tspan y="858.666452">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          10.10.10.12
+        </tspan><tspan x="160.04333327" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="176.88999993000002" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="193.73666659" class="br" style="fill: #93a1a1">
+          pg_seq
+        </tspan><tspan x="244.27666657" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="261.12333323" style="fill: #6c71c4">
+          2
+        </tspan><tspan x="269.54666656">
+          , 
+        </tspan><tspan x="286.39333322" class="br" style="fill: #93a1a1">
+          pg_role
+        </tspan><tspan x="345.35666653" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="362.20333319">
+          replica 
+        </tspan><tspan x="429.58999983" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="463.28333315000003" style="fill: #93a1a1">
+          # replica instance, follower of leader
+        </tspan>
+      </tspan><tspan y="877.333114">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          10.10.10.13
+        </tspan><tspan x="160.04333327" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="176.88999993000002" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="193.73666659" class="br" style="fill: #93a1a1">
+          pg_seq
+        </tspan><tspan x="244.27666657" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="261.12333323" style="fill: #6c71c4">
+          3
+        </tspan><tspan x="269.54666656">
+          , 
+        </tspan><tspan x="286.39333322" class="br" style="fill: #93a1a1">
+          pg_role
+        </tspan><tspan x="345.35666653" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="362.20333319">
+          replica, 
+        </tspan><tspan x="438.01333316" class="br" style="fill: #93a1a1">
+          pg_offline_query
+        </tspan><tspan x="572.78666644" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="589.6333331" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="631.74999975" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="648.59666641" style="fill: #93a1a1">
+          # replica with offline access
+        </tspan>
+      </tspan><tspan y="895.9997760000001">
+        <tspan dy="1em" x="50.539999980000005" class="br" style="fill: #93a1a1">
+          vars
+        </tspan><tspan x="84.2333333" style="fill: #FFD7D7">
+          :
+        </tspan>
+      </tspan><tspan y="914.6664380000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_cluster
+        </tspan><tspan x="151.61999994" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="168.4666666">
+          pg-test
+        </tspan><tspan x="320.08666654" style="fill: #93a1a1">
+          # define pgsql cluster name
+        </tspan>
+      </tspan><tspan y="933.3331000000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_users
+        </tspan><tspan x="134.77333328" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327" style="fill: #FFD7D7">
+          [{
+        </tspan><tspan x="185.31333326" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="219.00666658" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="235.85333324">
+          test , 
+        </tspan><tspan x="294.81666655" class="br" style="fill: #93a1a1">
+          password
+        </tspan><tspan x="362.20333319" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="379.04999985">
+          test , 
+        </tspan><tspan x="438.01333316" class="br" style="fill: #93a1a1">
+          pgbouncer
+        </tspan><tspan x="513.82333313" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="530.66999979" style="fill: #6c71c4">
+          true
+        </tspan><tspan x="572.78666644">
+          , 
+        </tspan><tspan x="589.6333331" class="br" style="fill: #93a1a1">
+          roles
+        </tspan><tspan x="631.74999975" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="648.59666641" style="fill: #FFD7D7">
+          [
+        </tspan><tspan x="665.44333307">
+          dbrole_admin 
+        </tspan><tspan x="774.94666636" style="fill: #FFD7D7">
+          ]
+        </tspan><tspan x="791.79333302" style="fill: #FFD7D7">
+          }]
+        </tspan>
+      </tspan><tspan y="951.999762">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_databases
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="185.31333326" style="fill: #FFD7D7">
+          [{
+        </tspan><tspan x="210.58333325" class="br" style="fill: #93a1a1">
+          name
+        </tspan><tspan x="244.27666657" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="261.12333323">
+          test 
+        </tspan><tspan x="303.23999988" style="fill: #FFD7D7">
+          }]
+        </tspan>
+      </tspan><tspan y="970.6664240000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_vip_enabled
+        </tspan><tspan x="185.31333326" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="202.15999992000002" style="fill: #6c71c4">
+          true
+        </tspan>
+      </tspan><tspan y="989.3330860000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_vip_address
+        </tspan><tspan x="185.31333326" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="202.15999992000002">
+          10.10.10.3/24
+        </tspan>
+      </tspan><tspan y="1007.9997480000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_vip_interface
+        </tspan><tspan x="202.15999992000002" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="219.00666658">
+          eth1
+        </tspan>
+      </tspan><tspan y="1026.66641">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          node_tune
+        </tspan><tspan x="143.19666661" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="160.04333327">
+          tiny
+        </tspan>
+      </tspan><tspan y="1045.3330720000001">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          pg_conf
+        </tspan><tspan x="126.34999995" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="143.19666661">
+          tiny.yml
+        </tspan>
+      </tspan><tspan y="1063.999734">
+        <tspan dy="1em" x="67.38666664" class="br" style="fill: #93a1a1">
+          node_crontab
+        </tspan><tspan x="168.4666666" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="193.73666659" style="fill: #93a1a1">
+          # make a full backup on monday 1am, and an incremental backup during weekdays
+        </tspan>
+      </tspan><tspan y="1082.666396">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #6c71c4">
+          &#39;00 01 * * 1 postgres /pg/bin/pg-backup full&#39;
+        </tspan>
+      </tspan><tspan y="1101.3330580000002">
+        <tspan dy="1em" x="84.2333333" style="fill: #657b83">
+          - 
+        </tspan><tspan x="101.07999996000001" style="fill: #6c71c4">
+          &#39;00 01 * * 2,3,4,5,6,7 postgres /pg/bin/pg-backup&#39;
+        </tspan>
+      </tspan><tspan y="1138.666382">
+        <tspan dy="1em" x="33.69333332" class="br" style="fill: #93a1a1">
+          redis-ms
+        </tspan><tspan x="101.07999996000001" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="117.92666662" style="fill: #93a1a1">
+          # redis classic primary &amp; replica
+        </tspan>
+      </tspan><tspan y="1157.3330440000002">
+        <tspan dy="1em" x="50.539999980000005" class="br" style="fill: #93a1a1">
+          hosts
+        </tspan><tspan x="92.65666663" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="109.50333329" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="126.34999995" class="br" style="fill: #93a1a1">
+          10.10.10.10
+        </tspan><tspan x="219.00666658" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="235.85333324" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="252.6999999" class="br" style="fill: #93a1a1">
+          redis_node
+        </tspan><tspan x="336.9333332" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="353.77999986000003" style="fill: #6c71c4">
+          1
+        </tspan><tspan x="370.62666652">
+          , 
+        </tspan><tspan x="387.47333318" class="br" style="fill: #93a1a1">
+          redis_instances
+        </tspan><tspan x="513.82333313" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="530.66999979" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="547.51666645" class="br" style="fill: #93a1a1">
+          6501
+        </tspan><tspan x="581.20999977" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="598.0566664300001" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="614.90333309" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="623.32666642">
+          , 
+        </tspan><tspan x="640.17333308" class="br" style="fill: #93a1a1">
+          6502
+        </tspan><tspan x="673.8666664" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="690.71333306" style="fill: #FFD7D7">
+          {
+        </tspan><tspan x="707.5599997200001" class="br" style="fill: #93a1a1">
+          replica_of
+        </tspan><tspan x="791.79333302" style="fill: #FFD7D7">
+          :
+        </tspan><tspan x="808.6399996800001" style="fill: #6c71c4">
+          &#39;10.10.10.10 6501&#39;
+        </tspan><tspan x="968.68333295" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="985.52999961" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="1002.37666627" style="fill: #FFD7D7">
+          }
+        </tspan><tspan x="1019.22333293" style="fill: #FFD7D7">
+          }
+        </tspan>
+      </tspan><tspan y="1175.999706">
+        <tspan dy="1em" x="0.0">
+          :q!
+        </tspan>
+      </tspan>
+    </text>
+  </svg>
+
+  <g transform="translate(-40 -40)">
+    <svg x="50%" y="50%" width="80" height="80">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000.0 1000.0" style="filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.4))">
+  <defs>
+    <mask id="small-triangle-mask">
+      <rect width="100%" height="100%" fill="white"></rect>
+      <polygon points="700.0 500.0, 400.00000000000006 326.7949192431122, 399.9999999999999 673.2050807568877" fill="black">
+      </polygon>
+    </mask>
+  </defs>
+  <polygon points="1000.0 500.0, 250.0000000000001 66.98729810778059, 249.99999999999977 933.0127018922192" mask="url(#small-triangle-mask)" fill="white">
+  </polygon>
+  <polyline points="673.2050807568878 400.0, 326.7949192431123 600.0" stroke="white" stroke-width="90">
+  </polyline>
+</svg>
+    </svg>
+  </g>
+</svg>

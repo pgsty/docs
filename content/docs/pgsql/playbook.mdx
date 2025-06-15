@@ -80,7 +80,7 @@ When meeting a running instance with the same config during the execution of the
 
 The [`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml) is used for init HA PostgreSQL clusters or adding new replicas.
 
-[![asciicast](https://asciinema.org/a/566417.svg)](https://asciinema.org/a/566417)
+[![asciicast](/img/asciinema/pgsql.svg)](https://asciinema.org/a/566417)
 
 **This playbook contains following subtasks**:
 
@@ -165,15 +165,19 @@ When running this playbook on a single replica, You should make sure the cluster
 - you may have to run [`Reload HBARule`](/docs/pgsql/admin/#reload-hbarule) and [`Append Replica`](/docs/pgsql/admin/#append-replica) after replica init.
 - The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/docs/pgsql/admin/#add-instance) for details.
 
+
+
+
+
 ------
 
 ## `pgsql-rm.yml`
 
 The playbook [`pgsql-rm.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-rm.yml) can remove PostgreSQL cluster, or specific replicas from cluster.
 
-[![asciicast](https://asciinema.org/a/566418.svg)](https://asciinema.org/a/566418)
+[![asciicast](/img/asciinema/pgsql-rm.svg)](https://asciinema.org/a/566418)
 
-**This playbook contains following subtasks**:
+**This playbook contains the following subtasks**:
 
 ```yaml
 # register       : remove registration in prometheus, grafana, nginx

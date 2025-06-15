@@ -30,7 +30,7 @@ Here are available sub tasks:
 - `etcd_launch` : launch etcd service
 - `etcd_register` : register etcd to prometheus
 
-[![asciicast](https://asciinema.org/a/566414.svg)](https://asciinema.org/a/566414)
+[![asciicast](/img/asciinema/etcd.svg)](https://asciinema.org/a/566414)
 
 There’s no dedicated remove playbook for etcd. If you want to uninstall etcd, you can use `etcd_clean` subtask:
 
@@ -84,8 +84,3 @@ The final brutal way to remove etcd cluster is using the `etcd_purge` subtask, w
 ./etcd.yml -l <cls> -t etcd_purge
 ```
 
-------
-
-## Demo
-
-[![asciicast](https://asciinema.org/a/566415.svg)](https://asciinema.org/a/566415)

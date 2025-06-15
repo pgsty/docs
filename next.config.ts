@@ -13,42 +13,8 @@ const config: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'asciinema.org',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'pigsty.io',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'pigsty.cc',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.shields.io',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.star-history.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'api.star-history.com',
-        port: '',
-        pathname: '/**',
-      },
+      {protocol: 'https',hostname: 'pigsty.io',port: '',pathname: '/**'},
+      {protocol: 'https',hostname: 'pigsty.cc',port: '',pathname: '/**'}
     ],
   },
 };

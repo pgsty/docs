@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1406.69666611" height="1194.6663680000001" font-family="Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols'" font-size="14px">
+  <style>
+    .br { font-weight: bold }
+    .fa { fill-opacity: 0.5 }
+    .it { font-style: italic }
+    .un { text-decoration: underline }
+  </style>
+
+  <rect width="100%" height="100%" style="fill: #002b36" rx="4" ry="4"></rect>
+
+  <svg x="8.42333333" y="9.333331000000001" class="default-text-fill">
+    <g style="shape-rendering: optimizeSpeed">
+
+        <rect x="0.0" y="1157.3330440000002" width="8.42333333" height="18.666662000000002" style="fill: #eee8d5"></rect>
+
+
+    </g>
+
+    <text style="fill: #839496">
+      <tspan y="0.0">
+        <tspan dy="1em" x="0.0">
+          TASK [node_id : set node fact] **************************************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="18.666662000000002">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.10]
+        </tspan>
+      </tspan><tspan y="37.333324000000005">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.11]
+        </tspan>
+      </tspan><tspan y="55.99998600000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.12]
+        </tspan>
+      </tspan><tspan y="74.66664800000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.13]
+        </tspan>
+      </tspan><tspan y="111.99997200000001">
+        <tspan dy="1em" x="0.0">
+          TASK [node_id : fill empty nodename with hostname] ******************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="130.66663400000002">
+        <tspan dy="1em" x="0.0" style="fill: #2aa198">
+          skipping: [10.10.10.10]
+        </tspan>
+      </tspan><tspan y="149.33329600000002">
+        <tspan dy="1em" x="0.0" style="fill: #2aa198">
+          skipping: [10.10.10.11]
+        </tspan>
+      </tspan><tspan y="167.99995800000002">
+        <tspan dy="1em" x="0.0" style="fill: #2aa198">
+          skipping: [10.10.10.12]
+        </tspan>
+      </tspan><tspan y="186.66662000000002">
+        <tspan dy="1em" x="0.0" style="fill: #2aa198">
+          skipping: [10.10.10.13]
+        </tspan>
+      </tspan><tspan y="223.99994400000003">
+        <tspan dy="1em" x="0.0">
+          TASK [node_id : build node identity] ********************************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="242.66660600000003">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.10]
+        </tspan>
+      </tspan><tspan y="261.33326800000003">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.11]
+        </tspan>
+      </tspan><tspan y="279.99993">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.12]
+        </tspan>
+      </tspan><tspan y="298.66659200000004">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.13]
+        </tspan>
+      </tspan><tspan y="335.99991600000004">
+        <tspan dy="1em" x="0.0">
+          TASK [node_id : print node identity] ********************************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="354.666578">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.10] =&gt; {
+        </tspan>
+      </tspan><tspan y="373.33324000000005">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;nodename: pg-meta-1, node_cluster: pg-meta, spec: c2m4, os: el9.x86_64 Rocky Enterprise Software Foundation [ADMIN] [INFRA] [PGSQL: pg-meta] [REDIS: redi
+        </tspan>
+      </tspan><tspan y="391.999902">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          s-ms] [ETCD: etcd] [MINIO: minio] &quot;
+        </tspan>
+      </tspan><tspan y="410.66656400000005">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="429.333226">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.11] =&gt; {
+        </tspan>
+      </tspan><tspan y="447.99988800000006">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;nodename: pg-test-1, node_cluster: pg-test, spec: c1m2, os: el9.x86_64 Rocky Enterprise Software Foundation
+        </tspan><tspan x="1027.64666626" style="fill: #859900">
+          [PGSQL: pg-test] [REDIS: redis-meta]
+        </tspan><tspan x="1356.15666613" style="fill: #859900">
+          &quot;
+        </tspan>
+      </tspan><tspan y="466.66655000000003">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="485.33321200000006">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.12] =&gt; {
+        </tspan>
+      </tspan><tspan y="503.99987400000003">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;nodename: pg-test-2, node_cluster: pg-test, spec: c1m2, os: el9.x86_64 Rocky Enterprise Software Foundation
+        </tspan><tspan x="1027.64666626" style="fill: #859900">
+          [PGSQL: pg-test] [REDIS: redis-test]
+        </tspan><tspan x="1356.15666613" style="fill: #859900">
+          &quot;
+        </tspan>
+      </tspan><tspan y="522.6665360000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="541.333198">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.13] =&gt; {
+        </tspan>
+      </tspan><tspan y="559.99986">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;nodename: pg-test-3, node_cluster: pg-test, spec: c1m2, os: el9.x86_64 Rocky Enterprise Software Foundation
+        </tspan><tspan x="1027.64666626" style="fill: #859900">
+          [PGSQL: pg-test] [REDIS: redis-test]
+        </tspan><tspan x="1356.15666613" style="fill: #859900">
+          &quot;
+        </tspan>
+      </tspan><tspan y="578.6665220000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="615.999846">
+        <tspan dy="1em" x="0.0">
+          TASK [pg_id : get pgsql identity] ***********************************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="634.666508">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.10]
+        </tspan>
+      </tspan><tspan y="653.33317">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.11]
+        </tspan>
+      </tspan><tspan y="671.9998320000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.12]
+        </tspan>
+      </tspan><tspan y="690.6664940000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.13]
+        </tspan>
+      </tspan><tspan y="727.999818">
+        <tspan dy="1em" x="0.0">
+          TASK [pg_id : build pgsql identity] *********************************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="746.6664800000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.10]
+        </tspan>
+      </tspan><tspan y="765.3331420000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.11]
+        </tspan>
+      </tspan><tspan y="783.999804">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.12]
+        </tspan>
+      </tspan><tspan y="802.666466">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.13]
+        </tspan>
+      </tspan><tspan y="839.9997900000001">
+        <tspan dy="1em" x="0.0">
+          TASK [pg_id : print pgsql identity] *********************************************************************************************************************************
+        </tspan>
+      </tspan><tspan y="858.666452">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.10] =&gt; {
+        </tspan>
+      </tspan><tspan y="877.333114">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;
+        </tspan><tspan x="117.92666662" style="fill: #859900">
+          [primary] pg-meta-1 @ 10.10.10.10 , ins = pg-meta-1 , cls = pg-meta ,
+        </tspan><tspan x="715.98333305" style="fill: #859900">
+          CLUSTER LEADER @ pg-meta-1
+        </tspan><tspan x="968.68333295" style="fill: #859900">
+          , postgres://10.10.10.10:5432/postgres&quot;
+        </tspan>
+      </tspan><tspan y="895.9997760000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="914.6664380000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.11] =&gt; {
+        </tspan>
+      </tspan><tspan y="933.3331000000001">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;
+        </tspan><tspan x="117.92666662" style="fill: #859900">
+          [primary] pg-test-1 @ 10.10.10.11 , ins = pg-test-1 , cls = pg-test ,
+        </tspan><tspan x="715.98333305" style="fill: #859900">
+          CLUSTER LEADER @ pg-test-1
+        </tspan><tspan x="968.68333295" style="fill: #859900">
+          , postgres://10.10.10.11:5432/postgres&quot;
+        </tspan>
+      </tspan><tspan y="951.999762">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="970.6664240000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.12] =&gt; {
+        </tspan>
+      </tspan><tspan y="989.3330860000001">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;
+        </tspan><tspan x="117.92666662" style="fill: #859900">
+          [replica] pg-test-2 @ 10.10.10.12 , ins = pg-test-2 , cls = pg-test , REPLICATE PRIMARY pg-test-1 @ 10.10.10.11 -&gt; pg-test-2
+        </tspan><tspan x="1187.68999953" style="fill: #859900">
+          , postgres://10.10.10.12
+        </tspan>
+      </tspan><tspan y="1007.9997480000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          :5432/postgres&quot;
+        </tspan>
+      </tspan><tspan y="1026.66641">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="1045.3330720000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          ok: [10.10.10.13] =&gt; {
+        </tspan>
+      </tspan><tspan y="1063.999734">
+        <tspan dy="1em" x="33.69333332" style="fill: #859900">
+          &quot;msg&quot;: &quot;
+        </tspan><tspan x="117.92666662" style="fill: #859900">
+          [replica] pg-test-3 @ 10.10.10.13 , ins = pg-test-3 , cls = pg-test , REPLICATE PRIMARY pg-test-1 @ 10.10.10.11 -&gt; pg-test-3
+        </tspan><tspan x="1179.2666662" style="fill: #859900">
+          [OFFLINE]
+        </tspan><tspan x="1271.92333283" style="fill: #859900">
+          , postgres://1
+        </tspan>
+      </tspan><tspan y="1082.666396">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          0.10.10.13:5432/postgres&quot;
+        </tspan>
+      </tspan><tspan y="1101.3330580000002">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          }
+        </tspan>
+      </tspan><tspan y="1138.666382">
+        <tspan dy="1em" x="0.0">
+          TASK [pgsql : check postgres exists] ********************************************************************************************************************************
+        </tspan>
+      </tspan>
+    </text>
+  </svg>
+
+  <g transform="translate(-40 -40)">
+    <svg x="50%" y="50%" width="80" height="80">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000.0 1000.0" style="filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.4))">
+  <defs>
+    <mask id="small-triangle-mask">
+      <rect width="100%" height="100%" fill="white"></rect>
+      <polygon points="700.0 500.0, 400.00000000000006 326.7949192431122, 399.9999999999999 673.2050807568877" fill="black">
+      </polygon>
+    </mask>
+  </defs>
+  <polygon points="1000.0 500.0, 250.0000000000001 66.98729810778059, 249.99999999999977 933.0127018922192" mask="url(#small-triangle-mask)" fill="white">
+  </polygon>
+  <polyline points="673.2050807568878 400.0, 326.7949192431123 600.0" stroke="white" stroke-width="90">
+  </polyline>
+</svg>
+    </svg>
+  </g>
+</svg>

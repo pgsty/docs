@@ -39,12 +39,12 @@ The INFRA module playbook [`infra.yml`](https://github.com/pgsty/pigsty/blob/mai
   - Unless [`grafana_clean`](/docs/infra/param#grafana_clean) is set to `false`, Grafana dashboards and configuration changes will be lost
 
 - When the local software repo `/www/pigsty/repo_complete` exists, this playbook skips downloading software from the internet
-  - Complete execution takes approximately 1-3 minutes, depending on machine configuration and network conditions
+  - Complete execution takes approximately 1 ~ 3 minutes, depending on machine configuration and network conditions
   - Downloading software directly from the original upstream sources (without using offline packages) may take 5-10 minutes, depending on your network connection
 
 ### Demo
 
-[![asciicast](https://asciinema.org/a/566412.svg)](https://asciinema.org/a/566412)
+[![asciicast](/img/asciinema/infra.svg)](https://asciinema.org/a/566412)
 
 ### Available Tasks
 
