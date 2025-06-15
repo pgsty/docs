@@ -34,3 +34,4 @@ tmp/
 prompt.md
 
 bin/__pycache__/
+.env.local
