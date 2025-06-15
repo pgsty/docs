@@ -202,7 +202,7 @@ import {{
 
 {install_section}
 
-{stub_content}
+{stub_include}
 '''
 
 
@@ -575,12 +575,11 @@ Extension `{self.name}` [**does not need**](/docs/pgsql/extension/create#list-of
         
         return install_text
     
-    def load_stub_content(self) -> str:
-        """Load additional stub content for the extension."""
+    def generate_stub_include(self) -> str:
+        """Generate include statement for stub content if the file exists."""
         stub_path = os.path.join(STUB_DIR, f"{self.name}.md")
         if os.path.exists(stub_path):
-            with open(stub_path, 'r') as f:
-                return f.read()
+            return f"\n<include>../../../stub/{self.name}.md</include>"
         return ""
     
     def generate_documentation(self) -> str:
@@ -620,7 +619,7 @@ Extension `{self.name}` [**does not need**](/docs/pgsql/extension/create#list-of
             'availability_table': self.generate_availability_table(),
             'download_section': self.generate_download_section(),
             'install_section': self.generate_install_section(),
-            'stub_content': self.load_stub_content()
+            'stub_include': self.generate_stub_include()
         }
         
         return EXTENSION_TEMPLATE.format(**template_vars)
