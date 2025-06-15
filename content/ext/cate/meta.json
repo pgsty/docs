@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "[time](/ext/time)",
+    "[gis](/ext/gis)",
+    "[rag](/ext/rag)",
+    "[fts](/ext/fts)",
+    "[olap](/ext/olap)",
+    "[feat](/ext/feat)",
+    "[lang](/ext/lang)",
+    "[type](/ext/type)",
+    "[util](/ext/util)",
+    "[func](/ext/func)",
+    "[admin](/ext/admin)",
+    "[stat](/ext/stat)",
+    "[sec](/ext/sec)",
+    "[fdw](/ext/fdw)",
+    "[sim](/ext/sim)",
+    "[etl](/ext/etl)"
+  ]
+}

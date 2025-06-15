@@ -1,0 +1,17 @@
+{
+  "title": "Usage",
+  "description": "How to use these Extensions",
+  "icon": "Rocket",
+  "root": false,
+  "defaultOpen": false,
+  "pages": [
+    "repo",
+    "download",
+    "install",
+    "config",
+    "create",
+    "changelog",
+    "category",
+    "..."
+  ]
+}

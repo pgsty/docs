@@ -1,0 +1,146 @@
+---
+title: vector
+description: vector data type and ivfflat and hnsw access methods
+full: true
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+import { CpuIcon, FileCode } from 'lucide-react';
+
+## Overview
+
+|    ID    |   Name   |  Package   |                Category                 |                        License                         |                    Website                     | Lang | Latest Version |
+|:--------:|:--------:|:----------:|:---------------------------------------:|:------------------------------------------------------:|:----------------------------------------------:|:----:|:--------------:|
+| **1800** | `vector` | `pgvector` | [**`RAG`**](https://pigsty.io/ext/rag/) | **[PostgreSQL](https://github.com/pgvector/pgvector)** | [Source](https://github.com/pgvector/pgvector) |  C   |     0.8.0      |
+
+
+### Attributes
+
+| Leading | Has Bin | Has Lib | PreLoad | Need DDL | Relocatable | Trusted | Schemas |
+|:-------:|:-------:|:-------:|:-------:|:--------:|:-----------:|:-------:|:-------:|
+|   Yes   |   Yes   |   No    |   Yes   |   Yes    |     No      |   No    |    -    |
+
+### Packages
+
+|   Distro   |   Repo   |       Package Name       | Max Version | Dependencies |   Avail PG Major   |
+|:----------:|:--------:|:------------------------:|:-----------:|:------------:|:------------------:|
+|   **EL**   | **PGDG** |      `pgvector_$v*`      |   `0.8.0`   |     N/A      | 17, 16, 15, 14, 13 |
+| **Debian** | **PGDG** | `postgresql-$v-pgvector` |   `0.8.0`   |     N/A      | 17, 16, 15, 14, 13 |
+
+
+<Callout title="required by a,bc,def" type="info">
+    <p>this extension is required by <a href="/docs/pgsql/extension/pgvector#ivfflat">ivfflat</a> and <a href="/docs/pgsql/extension/pgvector#hnsw">hnsw</a> access methods.</p>
+</Callout>
+
+<Callout title="depend on abcd,efg" type="warn">
+    `vector` extension require xxx, aaa, zzz
+</Callout>
+
+
+------
+
+## Availability
+
+|  OS   |   Arch    | **PG17** | **PG16** | **PG15** | **PG14** | **PG13** |
+|:-----:|:---------:|:--------:|:--------:|:--------:|:--------:|:--------:|
+| `el8` | `x86_64`  |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `el8` | `aarch64` |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `el9` | `x86_64`  |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `el9` | `aarch64` |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `d12` | `x86_64`  |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `d12` | `aarch64` |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `u22` | `x86_64`  |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `u22` | `aarch64` |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `u24` | `x86_64`  |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+| `u24` | `aarch64` |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |  0.8.0   |
+
+
+
+------
+
+## Download
+
+This extension is from **PGDG** repo, to add the repo:
+
+```bash tab="pig"
+pig repo add pgdg -u     # add pgdg repo and update cache
+```
+```bash tab="pigsty"
+./node.yml -t node_repo -e node_repo_modules=node,pgsql # -l <cluster>
+```
+
+Or doownload the latest packages directly:
+
+<Files>
+    <Folder name="el8.x86_64" defaultOpen>
+        <a href={"https://download.postgresql.org/pub/repos/yum/17/redhat/rhel-8-x86_64/pgvector_17-0.8.0-1PGDG.rhel8.x86_64.rpm"}><File name="pgvector_17-0.8.0-1PGDG.rhel8.x86_64.rpm" icon={<CpuIcon className="text-orange-400" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/16/redhat/rhel-8-x86_64/pgvector_16-0.8.0-1PGDG.rhel8.x86_64.rpm"}><File name="pgvector_16-0.8.0-1PGDG.rhel8.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-8-x86_64/pgvector_15-0.8.0-1PGDG.rhel8.x86_64.rpm"}><File name="pgvector_15-0.8.0-1PGDG.rhel8.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8-x86_64/pgvector_14-0.8.0-1PGDG.rhel8.x86_64.rpm"}><File name="pgvector_14-0.8.0-1PGDG.rhel8.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/pgvector_13-0.8.0-1PGDG.rhel8.x86_64.rpm"}><File name="pgvector_13-0.8.0-1PGDG.rhel8.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+    <Folder name="el8.aarch64">
+        <a href={"https://download.postgresql.org/pub/repos/yum/17/redhat/rhel-8-aarch64/pgvector_17-0.8.0-1PGDG.rhel8.x86_64.rpm"}><File name="pgvector_17-0.8.0-1PGDG.rhel8.aarch64.rpm"  icon={<CpuIcon className="text-orange-400" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/16/redhat/rhel-8-aarch64/pgvector_16-0.8.0-1PGDG.rhel8.aarch64.rpm"}><File name="pgvector_16-0.8.0-1PGDG.rhel8.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-8-aarch64/pgvector_15-0.8.0-1PGDG.rhel8.aarch64.rpm"}><File name="pgvector_15-0.8.0-1PGDG.rhel8.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8-aarch64/pgvector_14-0.8.0-1PGDG.rhel8.aarch64.rpm"}><File name="pgvector_14-0.8.0-1PGDG.rhel8.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-aarch64/pgvector_13-0.8.0-1PGDG.rhel8.aarch64.rpm"}><File name="pgvector_13-0.8.0-1PGDG.rhel8.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+
+    <Folder name="el9.x86_64">
+        <a href={"https://download.postgresql.org/pub/repos/yum/17/redhat/rhel-8-x86_64/pgvector_17-0.8.0-1PGDG.rhel9.x86_64.rpm"}><File name="pgvector_17-0.8.0-1PGDG.rhel9.x86_64.rpm" icon={<CpuIcon className="text-orange-400" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/16/redhat/rhel-8-x86_64/pgvector_16-0.8.0-1PGDG.rhel9.x86_64.rpm"}><File name="pgvector_16-0.8.0-1PGDG.rhel9.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-8-x86_64/pgvector_15-0.8.0-1PGDG.rhel9.x86_64.rpm"}><File name="pgvector_15-0.8.0-1PGDG.rhel9.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8-x86_64/pgvector_14-0.8.0-1PGDG.rhel9.x86_64.rpm"}><File name="pgvector_14-0.8.0-1PGDG.rhel9.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/pgvector_13-0.8.0-1PGDG.rhel9.x86_64.rpm"}><File name="pgvector_13-0.8.0-1PGDG.rhel9.x86_64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+    <Folder name="el9.aarch64">
+        <a href={"https://download.postgresql.org/pub/repos/yum/17/redhat/rhel-8-aarch64/pgvector_17-0.8.0-1PGDG.rhel9.x86_64.rpm"}><File name="pgvector_17-0.8.0-1PGDG.rhel9.aarch64.rpm"  icon={<CpuIcon className="text-orange-400" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/16/redhat/rhel-8-aarch64/pgvector_16-0.8.0-1PGDG.rhel9.aarch64.rpm"}><File name="pgvector_16-0.8.0-1PGDG.rhel9.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-8-aarch64/pgvector_15-0.8.0-1PGDG.rhel9.aarch64.rpm"}><File name="pgvector_15-0.8.0-1PGDG.rhel9.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8-aarch64/pgvector_14-0.8.0-1PGDG.rhel9.aarch64.rpm"}><File name="pgvector_14-0.8.0-1PGDG.rhel9.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-aarch64/pgvector_13-0.8.0-1PGDG.rhel9.aarch64.rpm"}><File name="pgvector_13-0.8.0-1PGDG.rhel9.aarch64.rpm" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+</Files>
+
+
+
+------
+
+## Install
+
+[**Install**](/docs/pgsql/extension/install) this extension with:
+
+```bash tab="pig"
+pig ext install vector; 	    # install by extension name, for the current active PG version
+pig ext install pgvector; 	    # install via package alias, for the active PG version
+pig ext install vector -v 17;   # install for PG 17
+pig ext install vector -v 16;   # install for PG 16
+pig ext install vector -v 15;   # install for PG 15
+pig ext install vector -v 14;   # install for PG 14
+pig ext install vector -v 13;   # install for PG 13
+```
+```bash tab="yum"
+dnf install pgvector_17*;
+dnf install pgvector_16*;
+dnf install pgvector_15*;
+dnf install pgvector_14*;
+dnf install pgvector_13*;
+```
+```bash tab="apt"
+apt install postgresql-17-pgvector;
+apt install postgresql-16-pgvector;
+apt install postgresql-15-pgvector;
+apt install postgresql-14-pgvector;
+apt install postgresql-13-pgvector;
+```
+```bash tab="ansible"
+./pgsql.yml -t pg_ext -e '{"pg_extensions": ["pgvector"]}' # -l <cls>
+```
+
+
+[**Create**](/docs/pgsql/extension/create) this extension on PostgreSQL database with:
+
+```sql
+CREATE EXTENSION vector;
+```
