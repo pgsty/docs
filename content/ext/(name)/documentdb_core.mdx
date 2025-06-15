@@ -134,7 +134,7 @@ Or download the latest packages directly:
 
 ## Install
 
-[**Install**](/docs/pgsql/extension/install) this extension with:
+[**Install**](/docs/pgsql/ext/install) this extension with:
 
 ```bash tab="pig"
 pig ext install documentdb_core; # install by extension name, for the current active PG version
@@ -157,13 +157,13 @@ apt install postgresql-15-documentdb;
 ./pgsql.yml -t pg_ext -e '{"pg_extensions": ["documentdb"]}' # -l <cls>
 ```
 
-[**Preload**](/docs/pgsql/extension/load) this extension with:
+[**Preload**](/docs/pgsql/ext/load) this extension with:
 
 ```bash
 shared_preload_libraries = 'documentdb_core'; # add to pg cluster config
 ```
 
-[**Create**](/docs/pgsql/extension/create) this extension with:
+[**Create**](/docs/pgsql/ext/create) this extension with:
 
 ```sql
 CREATE EXTENSION documentdb_core;

@@ -10,7 +10,7 @@ Pigsty uses standard OS package managers (yum/apt) to install PostgreSQL extensi
 
 ## Quick Start
 
-When installing extensions, Pigsty uses the same [**alias mapping**](https://pigsty.io/ext/usage/download/#alias-mapping) in the [**download**](https://pigsty.io/ext/usage/download/) section.
+When installing extensions, Pigsty uses the same [**alias mapping**](/docs/pgsql/ext/pkg) in the [**download**](/docs/pgsql/ext/download) section.
 
 Install all extensions explicitly specified in the `pg_extensions` parameter, for the cluster `pg-meta`:
 
@@ -58,20 +58,20 @@ all:
     pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
 ```
 
-Install all extensions simultaneously is applicable (except two conflicts in the [`olap`](https://pigsty.io/ext/olap/) category) but not recommended. Just install the extensions you need by explicitly specifying them in the `pg_extensions` parameter.
+Install all extensions simultaneously is applicable (except two conflicts in the [`olap`](/ext/olap/) category) but not recommended. Just install the extensions you need by explicitly specifying them in the `pg_extensions` parameter.
 
 ------
 
 ## Configure
 
-During PGSQL cluster init, Pigsty will automatically install packages (& alias) specified in [**`pg_packages`**](https://pigsty.io/docs/pgsql/param/#pg_packages) and [**`pg_extensions`**](https://pigsty.io/docs/pgsql/param/#pg_extensions).
+During PGSQL cluster init, Pigsty will automatically install packages (& alias) specified in [**`pg_packages`**](/docs/pgsql/param#pg_packages) and [**`pg_extensions`**](/docs/pgsql/param#pg_extensions).
 
-- [**`pg_packages`**](https://pigsty.io/docs/pgsql/param/#pg_packages)
-- [**`pg_extensions`**](https://pigsty.io/docs/pgsql/param/#pg_extensions)
+- [**`pg_packages`**](/docs/pgsql/param#pg_packages)
+- [**`pg_extensions`**](/docs/pgsql/param#pg_extensions)
 
 Both parameters can be used to install PostgreSQL-related packages. Typically, `pg_packages` is used to globally specify packages that should be installed across all PostgreSQL clusters in your environment: such as the PostgreSQL kernel, high-availability agent like Patroni, connection pooling with pgBouncer, monitoring with pgExporter, etc.
 
-By default, Pigsty also specifies 3 important extensions here: [`pgvector`](https://pigsty.io/ext/rag/vector/), [`pg_repack`](https://pigsty.io/ext/admin/pg_repack/), and [`wal2json`](https://pigsty.io/ext/etl/wal2json/) for vector search, bloat management, and CDC change extraction.
+By default, Pigsty also specifies 3 important extensions here: [`pgvector`](/ext/vector), [`pg_repack`](/ext/pg_repack), and [`wal2json`](/ext/wal2json) for vector search, bloat management, and CDC change extraction.
 
 Meanwhile, `pg_extensions` is usually used to specify extension for a specific cluster. The default is an empty list, indicating no other extensions will be installed by default.
 
@@ -95,7 +95,7 @@ Extensions pre-defined in the `pg_extensions` (and `pg_packages`) will be instal
 
 To install new extensions on a provisioned PostgreSQL cluster:
 
-First, add extensions to [**`pg_extensions`**](https://pigsty.io/docs/pgsql/param/#pg_extensions), then execute the playbook subtask:
+First, add extensions to [**`pg_extensions`**](/docs/pgsql/param#pg_extensions), then execute the playbook subtask:
 
 ```bash
 ./pgsql.yml -t pg_extension  # install extensions specified in pg_extensions
@@ -109,10 +109,11 @@ Note that extension plugins specified in the `pg_extension` task will be **upgra
 
 To install extension, you need to ensure one of the following conditions is met:
 
-- **Local Repo**: You have configured using Pigsty’s local repo, and the extensions have already been [**downloaded**](https://pigsty.io/ext/usage/download/) to the local repo.
+- **Local Repo**: You have configured using Pigsty’s local repo, and the extensions have already been [**downloaded**](/docs/pgsql/ext/download/) to the local repo.
 - **Online Repo**: You have directly configured upstream internet repo on the target node, and internet access is available on these nodes.
 
-For production environments, we recommend using Pigsty’s local software repo to manage and install extensions uniformly: First [**download**](https://pigsty.io/ext/usage/download/) extensions to the local repo, then install them from there. This ensures consistent extension versions across your environment and prevents database nodes from directly accessing the internet. You have to do nothing when install from local repo, just make sure they are downloaded to the local repo.
+For production environments, we recommend using Pigsty’s local software repo to manage and install extensions uniformly: First [**download**](/docs/pgsql/ext/download) extensions to the local repo, then install them from there.
+This ensures consistent extension versions across your environment and prevents database nodes from directly accessing the internet. You have to do nothing when installed from local repo, just make sure they are downloaded to the local repo.
 
 For development environments, you may choose to directly use upstream internet repo for convenience. Use the following commands to add Internet repo and install extensions on the target cluster directly:
 
@@ -125,19 +126,18 @@ For development environments, you may choose to directly use upstream internet r
 
 ## Package Alias
 
-When installing extensions, users can use [**extension aliases**](https://pigsty.io/ext/usage/intro/#package-alias) to specify extension.
+When installing extensions, users can use [**extension aliases**](/docs/pgsql/ext/pkg) to specify extension.
 
-The aliases will be [**translated**](https://pigsty.io/ext/usage/download/#alias-mapping) to the current active PG major version and OS environment,
+The aliases will be [**translated**](/docs/pgsql/ext/pkg) to the current active PG major version and OS environment.
 
-and translated to the corresponding RPM/DEB package names by [**alias translation mechanism**](https://pigsty.io/ext/usage/download/#alias-mapping).
+and translated to the corresponding RPM/DEB package names by [**alias translation mechanism**](/docs/pgsql/ext/pkg).
 
 ------
 
 ## Caveats
 
-- Check [bad case](https://pigsty.io/ext/roadmap/badcase/) for known issues.
-- There are two known confliction:
-- [`citus`](https://pigsty.io/ext/olap/citus/) and [`hydra`](https://pigsty.io/ext/olap/hydra) are mutually exclusive, since hydra is a fork of citus columnar without renaming
-- Only install one from [`pg_duckdb`](https://pigsty.io/ext/olap/pg_duckdb/), [`pg_mooncake`](https://pigsty.io/ext/olap/pg_mooncake/), [`duckdb_fdw`](https://pigsty.io/ext/olap/duckdb_fdw/), they all using their own libduckdb
+- There are two known conflictions:
+  - [`citus`](/ext/citus/) and [`hydra`](/ext/hydra) are mutually exclusive, since hydra is a fork of citus columnar without renaming
+  - Only install one from [`pg_duckdb`](/ext/pg_duckdb), [`pg_mooncake`](/ext/pg_mooncake), [`duckdb_fdw`](/ext/duckdb_fdw), they all using their own libduckdb
 - `pgaudit` got a different naming pattern on el for pg 15-: pg16+ = pgaudit, pg15=pgaudit17, pg14=pgaudit16 pg13=pgaudit15 pg12=pgaudit14
 - `postgis` got its own version in el package name: postgis35 by default, and postgis33 for legacy el7

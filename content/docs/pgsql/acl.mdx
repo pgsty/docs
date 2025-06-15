@@ -115,7 +115,7 @@ Pigsty has a battery-included privilege model that works with [default roles](#d
 - Offline user is Read-Only user with limited access on offline instance (`pg_role = 'offline'` or `pg_offline_query = true`)
 - Object created by admin users will have correct privilege.
 - Default privileges are installed on all databases, including template database.
-- Database connect privilege is covered by database [definition](/docs/pgsql/database/#define-database)
+- Database connect privilege is covered by database [definition](/docs/pgsql/db/#define-database)
 - `CREATE` privileges of database & public schema are revoked from `PUBLIC` by default
 
 ------
@@ -207,7 +207,7 @@ You can also `ALTER DEFAULT PRIVILEGE FOR ROLE <some_biz_admin> XXX` to grant de
 
 ## Database Privilege
 
-Database privilege is covered by [database definition](/docs/pgsql/database/#define-database).
+Database privilege is covered by [database definition](/docs/pgsql/db/#define-database).
 
 There are 3 database level privileges: `CONNECT`, `CREATE`, `TEMP`, and a special ‘privilege’: `OWNERSHIP`.
 

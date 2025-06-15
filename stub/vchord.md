@@ -30,28 +30,31 @@ $$);
 ### Query
 
 The query statement is exactly the same as pgvector. VectorChord supports any filter operation and WHERE/JOIN clauses like pgvecto.rs with VBASE.
-```SQL
+
+```sql
 SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;
 ```
+
 Supported distance functions are:
-- <-> - L2 distance
-- <#> - (negative) inner product
-- <=> - cosine distance
 
-<!-- ### Range Query
+- `<->` - L2 distance
+- `<#>` - (negative) inner product
+- `<=>` - cosine distance
 
-> [!NOTE]  
+
 > Due to the limitation of postgresql query planner, we cannot support the range query like `SELECT embedding <-> '[3,1,2]' as distance WHERE distance < 0.1 ORDER BY distance` directly.
 
 To query vectors within a certain distance range, you can use the following syntax.
-```SQL
+
+```sql
 -- Query vectors within a certain distance range
 -- sphere(center, radius) means the vectors within the sphere with the center and radius, aka range query
 -- <<->> is L2 distance, <<#>> is inner product, <<=>> is cosine distance
 SELECT vec FROM t WHERE vec <<->> sphere('[0.24, 0.24, 0.24]'::vector, 0.012) 
-``` -->
+```
 
 ### Query Performance Tuning
+
 You can fine-tune the search performance by adjusting the `probes` and `epsilon` parameters:
 
 ```sql
@@ -74,7 +77,7 @@ ALTER SYSTEM SET vchordrq.prewarm_dim = '64,128,256,384,512,768,1024,1536';
 ```
 
 And for postgres's setting
-```SQL
+```sql
 -- If using SSDs, set `effective_io_concurrency` to 200 for faster disk I/O.
 SET effective_io_concurrency = 200;
 
@@ -92,7 +95,7 @@ ALTER SYSTEM SET shared_buffers = '8GB';
 
 To prewarm the index, you can use the following SQL. It will significantly improve performance when using limited memory.
 
-```SQL
+```sql
 -- vchordrq_prewarm(index_name::regclass) to prewarm the index into the shared buffer
 SELECT vchordrq_prewarm('gist_train_embedding_idx'::regclass)"
 ```
@@ -102,7 +105,7 @@ SELECT vchordrq_prewarm('gist_train_embedding_idx'::regclass)"
 
 Index building can parallelized, and with external centroid precomputation, the total time is primarily limited by disk speed. Optimize parallelism using the following settings:
 
-```SQL
+```sql
 -- Set this to the number of CPU cores available for parallel operations.
 SET max_parallel_maintenance_workers = 8;
 SET max_parallel_workers = 8;
@@ -117,7 +120,7 @@ ALTER SYSTEM SET max_worker_processes = 8;
 
 You can check the indexing progress by querying the `pg_stat_progress_create_index` view.
 
-```SQL
+```sql
 SELECT phase, round(100.0 * blocks_done / nullif(blocks_total, 0), 1) AS "%" FROM pg_stat_progress_create_index;
 ```
 

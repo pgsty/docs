@@ -6,12 +6,13 @@
   "defaultOpen": false,
   "pages": [
     "repo",
+    "pkg",
+    "list",
     "download",
     "install",
     "config",
     "create",
-    "changelog",
-    "category",
-    "..."
+    "update",
+    "remove"
   ]
 }

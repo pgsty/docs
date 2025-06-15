@@ -30,10 +30,10 @@ There are three identity labels: `cls`, `ins`, `ip`, which will be attached to a
 
 PostgreSQL-related logs are collected by promtail and sent to Loki on infra nodes by default.
 
-- [`pg_log_dir`](https://pigsty.io/docs/pgsql/param/#pg_log_dir) : postgres log dir, `/pg/log/postgres` by default
-- [`pgbouncer_log_dir`](https://pigsty.io/docs/pgsql/param/#pgbouncer_log_dir) : pgbouncer log dir, `/pg/log/pgbouncer` by default
-- [`patroni_log_dir`](https://pigsty.io/docs/pgsql/param/#patroni_log_dir) : patroni log dir, `/pg/log/patroni` by default
-- [`pgbackrest_log_dir`](https://pigsty.io/docs/pgsql/param/#pgbackrest_log_dir) : pgbackrest log dir, `/pg/log/pgbackrest` by default
+- [`pg_log_dir`](https://pigsty.io/docs/pgsql/param#pg_log_dir) : postgres log dir, `/pg/log/postgres` by default
+- [`pgbouncer_log_dir`](https://pigsty.io/docs/pgsql/param#pgbouncer_log_dir) : pgbouncer log dir, `/pg/log/pgbouncer` by default
+- [`patroni_log_dir`](https://pigsty.io/docs/pgsql/param#patroni_log_dir) : patroni log dir, `/pg/log/patroni` by default
+- [`pgbackrest_log_dir`](https://pigsty.io/docs/pgsql/param#pgbackrest_log_dir) : pgbackrest log dir, `/pg/log/pgbackrest` by default
 
 ### **Targets**
 
@@ -48,7 +48,7 @@ Prometheus monitoring targets are defined in static files under `/etc/prometheus
     - 10.10.10.10:8008    # <--- patroni metrics
 ```
 
-When the global flag [`patroni_ssl_enabled`](https://pigsty.io/docs/pgsql/param/#patroni_ssl_enabled) is set, the patroni target will be managed as `/etc/prometheus/targets/patroni/<ins>.yml` because it requires a different scrape endpoint (https).
+When the global flag [`patroni_ssl_enabled`](https://pigsty.io/docs/pgsql/param#patroni_ssl_enabled) is set, the patroni target will be managed as `/etc/prometheus/targets/patroni/<ins>.yml` because it requires a different scrape endpoint (https).
 
 Prometheus monitoring target will be removed when a cluster is removed by `bin/pgsql-rm` or `pgsql-rm.yml`. You can use playbook subtasks, or remove them manually:
 
@@ -195,7 +195,7 @@ ALTER USER dbuser_monitor SET log_min_duration_statement = 1000;  -- set this to
 ALTER USER dbuser_monitor SET search_path = monitor,public;       -- set this to avoid pg_stat_statements extension not working
 ```
 
-The monitor user here should have consistent [`pg_monitor_username`](https://pigsty.io/docs/pgsql/param/#pg_monitor_username) and [`pg_monitor_password`](https://pigsty.io/docs/pgsql/param/#pg_monitor_password) with Pigsty config inventory.
+The monitor user here should have consistent [`pg_monitor_username`](https://pigsty.io/docs/pgsql/param#pg_monitor_username) and [`pg_monitor_password`](https://pigsty.io/docs/pgsql/param#pg_monitor_password) with Pigsty config inventory.
 
 ------
 

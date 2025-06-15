@@ -236,7 +236,7 @@ all:
       vars:
         pg_cluster: pg-meta                 # required identity parameter, usually same as group name
 
-        # define business databases here: https://pgsty.com/docs/pgsql/database
+        # define business databases here: https://pgsty.com/docs/pgsql/db
         pg_databases:                       # define business databases on this cluster, array of database definition
           - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
             baseline: cmdb.sql              # optional, database sql baseline path, (relative path among ansible search path, e.g: files/)
@@ -286,7 +286,7 @@ all:
             pool_connlimit: -1              # optional, max database connections at user level, default -1 disable limit
           - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly], comment: read-only viewer for meta database }
 
-        # define pg extensions: https://pgsty.com/docs/pgsql/extension
+        # define pg extensions: https://pgsty.com/docs/pgsql/ext
         pg_libs: 'pg_stat_statements, auto_explain' # add timescaledb to shared_preload_libraries
         pg_extensions: [ pgvector ] # check list for available extension for your pg & os combination: https://pigsty.io/ext/list
 

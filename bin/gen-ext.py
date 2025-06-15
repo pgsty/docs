@@ -493,13 +493,13 @@ Or download the latest packages directly:
         if self.contrib:
             install_text = f"""Extension `{self.name}` is PostgreSQL Built-in [**Contrib**](/ext/list/contrib) Extension which is installed along with the kernel/contrib.
 
-[**Create**](/docs/pgsql/extension/create) this extension on PostgreSQL database with:
+[**Create**](/docs/pgsql/ext/create) this extension on PostgreSQL database with:
 
 ```sql
 CREATE EXTENSION {self.name};
 ```"""
         else:
-            install_text = f"""[**Install**](/docs/pgsql/extension/install) this extension with:
+            install_text = f"""[**Install**](/docs/pgsql/ext/install) this extension with:
 
 ```bash tab="pig"
 pig ext install {self.name}; # install by extension name, for the current active PG version
@@ -552,7 +552,7 @@ apt install {pkg_name};"""
             if self.need_load:
                 install_text += f"""
 
-[**Preload**](/docs/pgsql/extension/load) this extension with:
+[**Preload**](/docs/pgsql/ext/load) this extension with:
 
 ```bash
 shared_preload_libraries = '{self.name}'; # add to pg cluster config
@@ -563,7 +563,7 @@ shared_preload_libraries = '{self.name}'; # add to pg cluster config
                 cascade = ' CASCADE' if self.requires else ''
                 install_text += f"""
 
-[**Create**](/docs/pgsql/extension/create) this extension with:
+[**Create**](/docs/pgsql/ext/create) this extension with:
 
 ```sql
 CREATE EXTENSION {create_cmd}{cascade};
@@ -571,7 +571,7 @@ CREATE EXTENSION {create_cmd}{cascade};
             else:
                 install_text += f"""
 
-Extension `{self.name}` [**does not need**](/docs/pgsql/extension/create#list-of-extensions-without-ddl) `CREATE EXTENSION` command."""
+Extension `{self.name}` [**does not need**](/docs/pgsql/ext/create#list-of-extensions-without-ddl) `CREATE EXTENSION` command."""
         
         return install_text
     
