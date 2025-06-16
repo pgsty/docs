@@ -7,7 +7,7 @@ icon: ClipboardList
 
 | Version                            |    Time    | Summary                                                    | Link                                                                                      |
 |:-----------------------------------|:----------:|------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| [v3.5.0](/docs/about/release#v350) | 2025-05-31 | PG18 beta, 421 ext, monitor refactor (WIP)                 | [v3.5.0](https://github.com/pgsty/pigsty/releases/tag/v3.5.0)                             |
+| [v3.5.0](/docs/about/release#v350) | 2025-06-16 | PG18 beta, 421 ext, monitor & pgsql refactor               | [v3.5.0](https://github.com/pgsty/pigsty/releases/tag/v3.5.0)                             |
 | [v3.4.1](/docs/about/release#v341) | 2025-04-05 | OpenHalo & OrioleDB, MySQL Compatibility pgAdmin 9.2       | [v3.4.1](https://github.com/pgsty/pigsty/releases/tag/v3.4.1)                             |
 | [v3.4.0](/docs/about/release#v340) | 2025-03-30 | Better Backups, Auto Certbot, Locale, Ivory, AGE, APP      | [v3.4.0](https://github.com/pgsty/pigsty/releases/tag/v3.4.0)                             |
 | [v3.3.0](/docs/about/release#v330) | 2025-02-24 | 404 extension, App Playbook, DocumentDB, Extension Catalog | [v3.3.0](https://github.com/pgsty/pigsty/releases/tag/v3.3.2)                             |
@@ -62,16 +62,19 @@ icon: ClipboardList
 
 <Callout title="Release v3.5.0">
 
-## v3.5.0 (Beta)
+## v3.5.0
 
 **Highlights**
 
-- **PostgreSQL 18 (Beta) support** — monitoring via `pg_exporter 1.0.0`, installer alias via `pig 0.4.2`, plus a ready-to-use `pg18` template
+- New website: https://pgsty.com
+- **PostgreSQL 18 (Beta) support**: monitoring via `pg_exporter 1.0.0`, installer alias via `pig 0.4.2`, and a `pg18` template
 - **421 bundled extensions**, now including OrioleDB and OpenHalo kernels on all platforms
 - **`pig do` CLI** replaces legacy `bin/` scripts
 - **Hardening for self-hosted Supabase** (replication lag, key distribution, etc.)
 - **Code & architecture refactor** — slimmer tasks, cleaner defaults for Postgres & PgBouncer
 - **Monitoring stack refresh** — Grafana 12, `pg_exporter 1.0`, new panels & plugins
+- **Run vagrant on Apple Silicon**
+
 
 ```bash
 curl https://repo.pigsty.io/get | bash -s v3.5.0
@@ -191,12 +194,15 @@ curl https://repo.pigsty.io/get | bash -s v3.5.0
 **Checksums**
 
 ```bash
-df30f2599a6416eea11acfd0f05ee14b  pigsty-v3.5.0.tgz
-4c9fabc2d1f0ed733145af2b6aff2f48  pigsty-pkg-v3.5.0.d12.x86_64.tgz
-796d47de12673b2eb9882e527c3b6ba0  pigsty-pkg-v3.5.0.el8.x86_64.tgz
-a53ef2cede1363f11e9faaaa43718fdc  pigsty-pkg-v3.5.0.el9.x86_64.tgz
-36da28f97a845fdc0b7bbde2d3812a67  pigsty-pkg-v3.5.0.u22.x86_64.tgz
-8551b3e04b38af382163e6857778437d  pigsty-pkg-v3.5.0.u24.x86_64.tgz
+da9a3e69bfc34574cd65543889685707  pigsty-v3.5.0.tgz
+ba31f311a16d615c1ee1083dc5a53566  pigsty-pkg-v3.5.0.d12.aarch64.tgz
+3aa5c56c8f0de53303c7100f2b3934f4  pigsty-pkg-v3.5.0.d12.x86_64.tgz
+a098cb33822633357e6880eee51affd6  pigsty-pkg-v3.5.0.el8.x86_64.tgz
+63723b0aeb4d6c02fff0da2c78e4de31  pigsty-pkg-v3.5.0.el9.aarch64.tgz
+eb91c8921d7b8a135d8330c77468bfe7  pigsty-pkg-v3.5.0.el9.x86_64.tgz
+87ff25e14dfb9001fe02f1dfbe70ae9e  pigsty-pkg-v3.5.0.u22.x86_64.tgz
+18be503856f6b39a59efbd1d0a8556b6  pigsty-pkg-v3.5.0.u24.aarch64.tgz
+2bbef6a18cfa99af9cd175ef0adf873c  pigsty-pkg-v3.5.0.u24.x86_64.tgz
 ```
 
 </Callout>

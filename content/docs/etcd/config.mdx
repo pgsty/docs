@@ -27,7 +27,7 @@ Define the group `etcd` in the inventory, It will create a singleton etcd instan
 etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
 ```
 
-This line exists almost in all single-node [config](/docs/conf/) templates, where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
+This line exists almost in all single-node [config template](/docs/config/template), where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
 
 The only necessary parameters are [`etcd_seq`](/docs/etcd/param#etcd_seq) and [`etcd_cluster`](/docs/etcd/param#etcd_cluster), which uniquely identify the cluster and each instance.
 
@@ -37,9 +37,9 @@ The only necessary parameters are [`etcd_seq`](/docs/etcd/param#etcd_seq) and [`
 
 ## Three Nodes
 
-Three-node etcd cluster is quite common, which tolerate one-node failure, suitable for most cases.
+Three-node etcd cluster is quite common, which tolerates one-node failure, suitable for most cases.
 
-The [`trio`](/docs/conf/trio/) and [`safe`](/docs/conf/safe/) config templates use a three-node etcd cluster, as shown below:
+The [`trio`](/docs/config/tempalte) and [`safe`](/docs/config/template) config templates use a three-node etcd cluster, as shown below:
 
 ```yaml
 etcd: # dcs service for postgres/patroni ha consensus
@@ -61,7 +61,7 @@ etcd: # dcs service for postgres/patroni ha consensus
 
 Five nodes etcd cluster can tolerate two node failure, suitable for large prod env.
 
-There’s a five-node etcd cluster example in the [`prod`](/docs/conf/prod) template:
+There’s a five-node etcd cluster example in the [`prod`](/docs/config/template) template:
 
 ```yaml
 etcd:

@@ -121,7 +121,7 @@ Here are checklists for self-hosting
 -  [**Linux OS**](/docs/setup/prepare/#operating-system): Linux x86_64 server with fresh installed Linux, [check compatible distro](/docs/reference/compatibility/)
 -  [**Network**](/docs/setup/prepare/#network): Static IPv4 address which can be used as node identity
 -  [**Admin User**](/docs/setup/prepare/#admin-user): nopass ssh & sudo are recommended for admin user
--  [**Conf Template**](/docs/setup/config/): Use the [`supa`](/docs/conf/supa/) config template, if you don’t know how to manually configure pigsty
+-  [**Conf Template**](/docs/setup/config/): Use the [`supa`](/docs/config/template) config template, if you don’t know how to manually configure pigsty
 
 The built-in [`conf/app/supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml) config template is shown below.
 
@@ -349,6 +349,6 @@ Which involves high availability for these components:
 - [INFRA](/docs/infra/): It’s good to have two or three copies of observability stack.
 - Supabase itself can also have multiple replicas to achieve high availability.
 
-We recommend you to refer to the [trio](/docs/conf/trio/) and [safe](/docs/conf/safe/) config to upgrade your cluster to three nodes or more.
+We recommend you to refer to the [trio](/docs/config/template) and [safe](/docs/config/template) config to upgrade your cluster to three nodes or more.
 
 In this case, you also need to modify the access points for PostgreSQL and MinIO to use the DNS / L2 VIP / HAProxy [HA access points](/docs/concept/svc/).
