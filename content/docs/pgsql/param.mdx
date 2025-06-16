@@ -1,143 +1,196 @@
 ---
 title: Parameter
-description: customize postgres cluster with 115 parameters
+description: customize postgres cluster with 115-parameter
 icon: Variable
 ---
 
-API Reference for [PGSQL](/docs/pgsql/) module:
+There are **115** parameters about the `PGSQL` module.
 
-- [`PG_ID`](#pg_id) : Calculate & Check Postgres Identity
-- [`PG_BUSINESS`](#pg_business) : Postgres Business Object Definition
-- [`PG_INSTALL`](#pg_install) : Install PGSQL Packages & Extensions
-- [`PG_BOOTSTRAP`](#pg_bootstrap) : Init a HA Postgres Cluster with Patroni
-- [`PG_PROVISION`](#pg_provision) : Create users, databases, and in-database objects
-- [`PG_BACKUP`](#pg_backup) : Setup backup repo with pgbackrest
-- [`PG_SERVICE`](#pg_service) : Exposing pg service, bind vip and register DNS
-- [`PG_EXPORTER`](#pg_exporter) : Add Monitor for PGSQL Instance
 
-------
+| Section                         | Count | Description                                                                                                                                        |
+|---------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`PG_ID`](#pg_id)               | 11    | Calculate & Check Postgres Identity - parameters for identifying PGSQL entities like instances and services                                        |
+| [`PG_BUSINESS`](#pg_business)   | 11    | Postgres Business Object Definition - configuration for business users, databases, services, and authentication                                    |
+| [`PG_INSTALL`](#pg_install)     | 10    | Install PGSQL Packages & Extensions - settings for database user setup, version selection, and package installation                                |
+| [`PG_BOOTSTRAP`](#pg_bootstrap) | 32    | Init a HA Postgres Cluster with Patroni - comprehensive cluster initialization including data directories, networking, and high availability setup |
+| [`PG_PROVISION`](#pg_provision) | 9     | Create users, databases, and in-database objects - post-bootstrap provisioning of database objects and default configurations                      |
+| [`PG_BACKUP`](#pg_backup)       | 5     | Setup backup repo with pgbackrest - backup and recovery configuration using pgbackrest                                                             |
+| [`PG_SERVICE`](#pg_service)     | 13    | Exposing pg service, bind vip and register DNS - service exposure, load balancing, VIP management, and DNS registration                            |
+| [`PG_EXPORTER`](#pg_exporter)   | 15    | Add Monitor for PGSQL Instance - monitoring setup with various exporters for metrics collection                                                    |
+| [`PG_REMOVE`](#pg_remove)       | 4     | Remove a Postgres Cluster - safe cluster removal with data cleanup options                                                                         |
+
 
 ## Parameters
 
-There are **115** parameters about the `PGSQL` module.
+[`PG_ID`](#pg_id) : Calculate & Check Postgres Identity
 
-| Name                                                            | Comment                                                                       |
-|-----------------------------------------------------------------|-------------------------------------------------------------------------------|
-| [`pg_mode`](#pg_mode)                                           | pgsql cluster mode: pgsql,citus,mssql,polar,ivory,oracle,gpsql                |
-| [`pg_cluster`](#pg_cluster)                                     | pgsql cluster name, REQUIRED identity parameter                               |
-| [`pg_seq`](#pg_seq)                                             | pgsql instance seq number, REQUIRED identity parameter                        |
-| [`pg_role`](#pg_role)                                           | pgsql role, REQUIRED, could be primary,replica,offline                        |
-| [`pg_instances`](#pg_instances)                                 | define multiple pg instances on node in `{port:ins_vars}` format              |
-| [`pg_upstream`](#pg_upstream)                                   | repl upstream ip addr for standby cluster or cascade replica                  |
-| [`pg_shard`](#pg_shard)                                         | pgsql shard name, optional identity for sharding clusters                     |
-| [`pg_group`](#pg_group)                                         | pgsql shard index number, optional identity for sharding clusters             |
-| [`gp_role`](#gp_role)                                           | greenplum role of this cluster, could be master or segment                    |
-| [`pg_exporters`](#pg_exporters)                                 | additional pg_exporters to monitor remote postgres instances                  |
-| [`pg_offline_query`](#pg_offline_query)                         | set to true to enable offline query on this instance                          |
-| [`pg_users`](#pg_users)                                         | postgres business users                                                       |
-| [`pg_databases`](#pg_databases)                                 | postgres business databases                                                   |
-| [`pg_services`](#pg_services)                                   | postgres business services                                                    |
-| [`pg_hba_rules`](#pg_hba_rules)                                 | business hba rules for postgres                                               |
-| [`pgb_hba_rules`](#pgb_hba_rules)                               | business hba rules for pgbouncer                                              |
-| [`pg_replication_username`](#pg_replication_username)           | postgres replication username, `replicator` by default                        |
-| [`pg_replication_password`](#pg_replication_password)           | postgres replication password, `DBUser.Replicator` by default                 |
-| [`pg_admin_username`](#pg_admin_username)                       | postgres admin username, `dbuser_dba` by default                              |
-| [`pg_admin_password`](#pg_admin_password)                       | postgres admin password in plain text, `DBUser.DBA` by default                |
-| [`pg_monitor_username`](#pg_monitor_username)                   | postgres monitor username, `dbuser_monitor` by default                        |
-| [`pg_monitor_password`](#pg_monitor_password)                   | postgres monitor password, `DBUser.Monitor` by default                        |
-| [`pg_dbsu_password`](#pg_dbsu_password)                         | postgres dbsu password, empty string disable it by default                    |
-| [`pg_dbsu`](#pg_dbsu)                                           | os dbsu name, postgres by default, better not change it                       |
-| [`pg_dbsu_uid`](#pg_dbsu_uid)                                   | os dbsu uid and gid, 26 for default postgres users and groups                 |
-| [`pg_dbsu_sudo`](#pg_dbsu_sudo)                                 | dbsu sudo privilege, none,limit,all,nopass. limit by default                  |
-| [`pg_dbsu_home`](#pg_dbsu_home)                                 | postgresql home directory, `/var/lib/pgsql` by default                        |
-| [`pg_dbsu_ssh_exchange`](#pg_dbsu_ssh_exchange)                 | exchange postgres dbsu ssh key among same pgsql cluster                       |
-| [`pg_version`](#pg_version)                                     | postgres major version to be installed, 16 by default                         |
-| [`pg_bin_dir`](#pg_bin_dir)                                     | postgres binary dir, `/usr/pgsql/bin` by default                              |
-| [`pg_log_dir`](#pg_log_dir)                                     | postgres log dir, `/pg/log/postgres` by default                               |
-| [`pg_packages`](#pg_packages)                                   | pg packages to be installed, `${pg_version}` will be replaced                 |
-| [`pg_extensions`](#pg_extensions)                               | pg extensions to be installed, `${pg_version}` will be replaced               |
-| [`pg_safeguard`](#pg_safeguard)                                 | prevent purging running postgres instance? false by default                   |
-| [`pg_clean`](#pg_clean)                                         | purging existing postgres during pgsql init? true by default                  |
-| [`pg_data`](#pg_data)                                           | postgres data directory, `/pg/data` by default                                |
-| [`pg_fs_main`](#pg_fs_main)                                     | mountpoint/path for postgres main data, `/data` by default                    |
-| [`pg_fs_bkup`](#pg_fs_bkup)                                     | mountpoint/path for pg backup data, `/data/backup` by default                 |
-| [`pg_storage_type`](#pg_storage_type)                           | storage type for pg main data, SSD,HDD, SSD by default                        |
-| [`pg_dummy_filesize`](#pg_dummy_filesize)                       | size of `/pg/dummy`, hold 64MB disk space for emergency use                   |
-| [`pg_listen`](#pg_listen)                                       | postgres/pgbouncer listen addresses, comma separated list                     |
-| [`pg_port`](#pg_port)                                           | postgres listen port, 5432 by default                                         |
-| [`pg_localhost`](#pg_localhost)                                 | postgres unix socket dir for localhost connection                             |
-| [`pg_namespace`](#pg_namespace)                                 | top level key namespace in etcd, used by patroni & vip                        |
-| [`patroni_enabled`](#patroni_enabled)                           | if disabled, no postgres cluster will be created during init                  |
-| [`patroni_mode`](#patroni_mode)                                 | patroni working mode: default,pause,remove                                    |
-| [`patroni_port`](#patroni_port)                                 | patroni listen port, 8008 by default                                          |
-| [`patroni_log_dir`](#patroni_log_dir)                           | patroni log dir, `/pg/log/patroni` by default                                 |
-| [`patroni_ssl_enabled`](#patroni_ssl_enabled)                   | secure patroni RestAPI communications with SSL?                               |
-| [`patroni_watchdog_mode`](#patroni_watchdog_mode)               | patroni watchdog mode: automatic,required,off. off by default                 |
-| [`patroni_username`](#patroni_username)                         | patroni restapi username, `postgres` by default                               |
-| [`patroni_password`](#patroni_password)                         | patroni restapi password, `Patroni.API` by default                            |
-| [`pg_primary_db`](#pg_primary_db)                               | primary database name, used by citus,etc… ,postgres by default                |
-| [`pg_parameters`](#pg_parameters)                               | extra parameters in postgresql.auto.conf                                      |
-| [`pg_files`](#pg_files)                                         | extra files to be copied to postgres data directory (e.g. license)            |
-| [`pg_conf`](#pg_conf)                                           | config template: oltp,olap,crit,tiny. `oltp.yml` by default                   |
-| [`pg_max_conn`](#pg_max_conn)                                   | postgres max connections, `auto` will use recommended value                   |
-| [`pg_shared_buffer_ratio`](#pg_shared_buffer_ratio)             | postgres shared buffer memory ratio, 0.25 by default, 0.1~0.4                 |
-| [`pg_rto`](#pg_rto)                                             | recovery time objective in seconds, `30s` by default                          |
-| [`pg_rpo`](#pg_rpo)                                             | recovery point objective in bytes, `1MiB` at most by default                  |
-| [`pg_libs`](#pg_libs)                                           | preloaded libraries, `timescaledb,pg_stat_statements,auto_explain` by default |
-| [`pg_delay`](#pg_delay)                                         | replication apply delay for standby cluster leader                            |
-| [`pg_checksum`](#pg_checksum)                                   | enable data checksum for postgres cluster?                                    |
-| [`pg_pwd_enc`](#pg_pwd_enc)                                     | passwords encryption algorithm: md5,scram-sha-256                             |
-| [`pg_encoding`](#pg_encoding)                                   | database cluster encoding, `UTF8` by default                                  |
-| [`pg_locale`](#pg_locale)                                       | database cluster local, `C` by default                                        |
-| [`pg_lc_collate`](#pg_lc_collate)                               | database cluster collate, `C` by default                                      |
-| [`pg_lc_ctype`](#pg_lc_ctype)                                   | database character type, `en_US.UTF8` by default                              |
-| [`pgbouncer_enabled`](#pgbouncer_enabled)                       | if disabled, pgbouncer will not be launched on pgsql host                     |
-| [`pgbouncer_port`](#pgbouncer_port)                             | pgbouncer listen port, 6432 by default                                        |
-| [`pgbouncer_log_dir`](#pgbouncer_log_dir)                       | pgbouncer log dir, `/pg/log/pgbouncer` by default                             |
-| [`pgbouncer_auth_query`](#pgbouncer_auth_query)                 | query postgres to retrieve unlisted business users?                           |
-| [`pgbouncer_poolmode`](#pgbouncer_poolmode)                     | pooling mode: transaction,session,statement, transaction by default           |
-| [`pgbouncer_sslmode`](#pgbouncer_sslmode)                       | pgbouncer client ssl mode, disable by default                                 |
-| [`pg_provision`](#pg_provision)                                 | provision postgres cluster after bootstrap                                    |
-| [`pg_init`](#pg_init)                                           | provision init script for cluster template, `pg-init` by default              |
-| [`pg_default_roles`](#pg_default_roles)                         | default roles and users in postgres cluster                                   |
-| [`pg_default_privileges`](#pg_default_privileges)               | default privileges when created by admin user                                 |
-| [`pg_default_schemas`](#pg_default_schemas)                     | default schemas to be created                                                 |
-| [`pg_default_extensions`](#pg_default_extensions)               | default extensions to be created                                              |
-| [`pg_reload`](#pg_reload)                                       | reload postgres after hba changes                                             |
-| [`pg_default_hba_rules`](#pg_default_hba_rules)                 | postgres default host-based authentication rules                              |
-| [`pgb_default_hba_rules`](#pgb_default_hba_rules)               | pgbouncer default host-based authentication rules                             |
-| [`pgbackrest_enabled`](#pgbackrest_enabled)                     | enable pgbackrest on pgsql host?                                              |
-| [`pgbackrest_clean`](#pgbackrest_clean)                         | remove pg backup data during init?                                            |
-| [`pgbackrest_log_dir`](#pgbackrest_log_dir)                     | pgbackrest log dir, `/pg/log/pgbackrest` by default                           |
-| [`pgbackrest_method`](#pgbackrest_method)                       | pgbackrest repo method: local,minio,etc…                                      |
-| [`pgbackrest_repo`](#pgbackrest_repo)                           | pgbackrest repo: https://pgbackrest.org/configuration.html#section-repository |
-| [`pg_weight`](#pg_weight)                                       | relative load balance weight in service, 100 by default, 0-255                |
-| [`pg_service_provider`](#pg_service_provider)                   | dedicate haproxy node group name, or empty string for local nodes by default  |
-| [`pg_default_service_dest`](#pg_default_service_dest)           | default service destination if svc.dest=‘default’                             |
-| [`pg_default_services`](#pg_default_services)                   | postgres default service definitions                                          |
-| [`pg_vip_enabled`](#pg_vip_enabled)                             | enable a l2 vip for pgsql primary? false by default                           |
-| [`pg_vip_address`](#pg_vip_address)                             | vip address in `<ipv4>/<mask>` format, require if vip is enabled              |
-| [`pg_vip_interface`](#pg_vip_interface)                         | vip network interface to listen, eth0 by default                              |
-| [`pg_dns_suffix`](#pg_dns_suffix)                               | pgsql dns suffix, ’’ by default                                               |
-| [`pg_dns_target`](#pg_dns_target)                               | auto, primary, vip, none, or ad hoc ip                                        |
-| [`pg_exporter_enabled`](#pg_exporter_enabled)                   | enable pg_exporter on pgsql hosts?                                            |
-| [`pg_exporter_config`](#pg_exporter_config)                     | pg_exporter configuration file name                                           |
-| [`pg_exporter_cache_ttls`](#pg_exporter_cache_ttls)             | pg_exporter collector ttl stage in seconds, ‘1,10,60,300’ by default          |
-| [`pg_exporter_port`](#pg_exporter_port)                         | pg_exporter listen port, 9630 by default                                      |
-| [`pg_exporter_params`](#pg_exporter_params)                     | extra url parameters for pg_exporter dsn                                      |
-| [`pg_exporter_url`](#pg_exporter_url)                           | overwrite auto-generate pg dsn if specified                                   |
-| [`pg_exporter_auto_discovery`](#pg_exporter_auto_discovery)     | enable auto database discovery? enabled by default                            |
-| [`pg_exporter_exclude_database`](#pg_exporter_exclude_database) | csv of database that WILL NOT be monitored during auto-discovery              |
-| [`pg_exporter_include_database`](#pg_exporter_include_database) | csv of database that WILL BE monitored during auto-discovery                  |
-| [`pg_exporter_connect_timeout`](#pg_exporter_connect_timeout)   | pg_exporter connect timeout in ms, 200 by default                             |
-| [`pg_exporter_options`](#pg_exporter_options)                   | overwrite extra options for pg_exporter                                       |
-| [`pgbouncer_exporter_enabled`](#pgbouncer_exporter_enabled)     | enable pgbouncer_exporter on pgsql hosts?                                     |
-| [`pgbouncer_exporter_port`](#pgbouncer_exporter_port)           | pgbouncer_exporter listen port, 9631 by default                               |
-| [`pgbouncer_exporter_url`](#pgbouncer_exporter_url)             | overwrite auto-generate pgbouncer dsn if specified                            |
-| [`pgbouncer_exporter_options`](#pgbouncer_exporter_options)     | overwrite extra options for pgbouncer_exporter                                |
-| [`pgbackrest_exporter_enabled`](#pgbackrest_exporter_enabled)   | enable pgbackrest_exporter on pgsql hosts?                                    |
-| [`pgbackrest_exporter_port`](#pgbackrest_exporter_port)         | pgbackrest_exporter listen port, 9854 by default                              |
-| [`pgbackrest_exporter_options`](#pgbackrest_exporter_options)   | extra cli args for pgbackrest_exporter                                        |
+| Name                                    | Type     | Level | Comment                                                           |
+|-----------------------------------------|----------|-------|-------------------------------------------------------------------|
+| [`pg_mode`](#pg_mode)                   | `enum`   | C     | pgsql cluster mode: pgsql,citus,mssql,polar,ivory,oracle,gpsql    |
+| [`pg_cluster`](#pg_cluster)             | `string` | C     | pgsql cluster name, REQUIRED identity parameter                   |
+| [`pg_seq`](#pg_seq)                     | `int`    | I     | pgsql instance seq number, REQUIRED identity parameter            |
+| [`pg_role`](#pg_role)                   | `enum`   | I     | pgsql role, REQUIRED, could be primary,replica,offline            |
+| [`pg_instances`](#pg_instances)         | `dict`   | I     | define multiple pg instances on node in `{port:ins_vars}` format  |
+| [`pg_upstream`](#pg_upstream)           | `ip`     | I     | repl upstream ip addr for standby cluster or cascade replica      |
+| [`pg_shard`](#pg_shard)                 | `string` | C     | pgsql shard name, optional identity for sharding clusters         |
+| [`pg_group`](#pg_group)                 | `int`    | C     | pgsql shard index number, optional identity for sharding clusters |
+| [`gp_role`](#gp_role)                   | `enum`   | C     | greenplum role of this cluster, could be master or segment        |
+| [`pg_exporters`](#pg_exporters)         | `dict`   | C     | additional pg_exporters to monitor remote postgres instances      |
+| [`pg_offline_query`](#pg_offline_query) | `bool`   | I     | set to true to enable offline query on this instance              |
+
+[`PG_BUSINESS`](#pg_business) : Postgres Business Object Definition
+
+| Name                                                  | Type         | Level | Comment                                                        |
+|-------------------------------------------------------|--------------|-------|----------------------------------------------------------------|
+| [`pg_users`](#pg_users)                               | `user[]`     | C     | postgres business users                                        |
+| [`pg_databases`](#pg_databases)                       | `database[]` | C     | postgres business databases                                    |
+| [`pg_services`](#pg_services)                         | `service[]`  | C     | postgres business services                                     |
+| [`pg_hba_rules`](#pg_hba_rules)                       | `hba[]`      | C     | business hba rules for postgres                                |
+| [`pgb_hba_rules`](#pgb_hba_rules)                     | `hba[]`      | C     | business hba rules for pgbouncer                               |
+| [`pg_replication_username`](#pg_replication_username) | `username`   | G     | postgres replication username, `replicator` by default         |
+| [`pg_replication_password`](#pg_replication_password) | `password`   | G     | postgres replication password, `DBUser.Replicator` by default  |
+| [`pg_admin_username`](#pg_admin_username)             | `username`   | G     | postgres admin username, `dbuser_dba` by default               |
+| [`pg_admin_password`](#pg_admin_password)             | `password`   | G     | postgres admin password in plain text, `DBUser.DBA` by default |
+| [`pg_monitor_username`](#pg_monitor_username)         | `username`   | G     | postgres monitor username, `dbuser_monitor` by default         |
+| [`pg_monitor_password`](#pg_monitor_password)         | `password`   | G     | postgres monitor password, `DBUser.Monitor` by default         |
+| [`pg_dbsu_password`](#pg_dbsu_password)               | `password`   | G/C   | postgres dbsu password, empty string disable it by default     |
+
+- [`PG_INSTALL`](#pg_install) : Install PGSQL Packages & Extensions
+
+| Name                                            | Type       | Level | Comment                                                         |
+|-------------------------------------------------|------------|-------|-----------------------------------------------------------------|
+| [`pg_dbsu`](#pg_dbsu)                           | `username` | C     | os dbsu name, postgres by default, better not change it         |
+| [`pg_dbsu_uid`](#pg_dbsu_uid)                   | `int`      | C     | os dbsu uid and gid, 26 for default postgres users and groups   |
+| [`pg_dbsu_sudo`](#pg_dbsu_sudo)                 | `enum`     | C     | dbsu sudo privilege, none,limit,all,nopass. limit by default    |
+| [`pg_dbsu_home`](#pg_dbsu_home)                 | `path`     | C     | postgresql home directory, `/var/lib/pgsql` by default          |
+| [`pg_dbsu_ssh_exchange`](#pg_dbsu_ssh_exchange) | `bool`     | C     | exchange postgres dbsu ssh key among same pgsql cluster         |
+| [`pg_version`](#pg_version)                     | `enum`     | C     | postgres major version to be installed, 16 by default           |
+| [`pg_bin_dir`](#pg_bin_dir)                     | `path`     | C     | postgres binary dir, `/usr/pgsql/bin` by default                |
+| [`pg_log_dir`](#pg_log_dir)                     | `path`     | C     | postgres log dir, `/pg/log/postgres` by default                 |
+| [`pg_packages`](#pg_packages)                   | `string[]` | C     | pg packages to be installed, `${pg_version}` will be replaced   |
+| [`pg_extensions`](#pg_extensions)               | `string[]` | C     | pg extensions to be installed, `${pg_version}` will be replaced |
+
+[`PG_BOOTSTRAP`](#pg_bootstrap) : Init a HA Postgres Cluster with Patroni
+
+| Name                                                | Type       | Level | Comment                                                                       |
+|-----------------------------------------------------|------------|-------|-------------------------------------------------------------------------------|
+| [`pg_data`](#pg_data)                               | `path`     | C     | postgres data directory, `/pg/data` by default                                |
+| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C     | mountpoint/path for postgres main data, `/data` by default                    |
+| [`pg_fs_bkup`](#pg_fs_bkup)                         | `path`     | C     | mountpoint/path for pg backup data, `/data/backup` by default                 |
+| [`pg_storage_type`](#pg_storage_type)               | `enum`     | C     | storage type for pg main data, SSD,HDD, SSD by default                        |
+| [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C     | size of `/pg/dummy`, hold 64MB disk space for emergency use                   |
+| [`pg_listen`](#pg_listen)                           | `ip(s)`    | C/I   | postgres/pgbouncer listen addresses, comma separated list                     |
+| [`pg_port`](#pg_port)                               | `port`     | C     | postgres listen port, 5432 by default                                         |
+| [`pg_localhost`](#pg_localhost)                     | `path`     | C     | postgres unix socket dir for localhost connection                             |
+| [`pg_namespace`](#pg_namespace)                     | `path`     | C     | top level key namespace in etcd, used by patroni & vip                        |
+| [`patroni_enabled`](#patroni_enabled)               | `bool`     | C     | if disabled, no postgres cluster will be created during init                  |
+| [`patroni_mode`](#patroni_mode)                     | `enum`     | C     | patroni working mode: default,pause,remove                                    |
+| [`patroni_port`](#patroni_port)                     | `port`     | C     | patroni listen port, 8008 by default                                          |
+| [`patroni_log_dir`](#patroni_log_dir)               | `path`     | C     | patroni log dir, `/pg/log/patroni` by default                                 |
+| [`patroni_ssl_enabled`](#patroni_ssl_enabled)       | `bool`     | G     | secure patroni RestAPI communications with SSL?                               |
+| [`patroni_watchdog_mode`](#patroni_watchdog_mode)   | `enum`     | C     | patroni watchdog mode: automatic,required,off. off by default                 |
+| [`patroni_username`](#patroni_username)             | `username` | C     | patroni restapi username, `postgres` by default                               |
+| [`patroni_password`](#patroni_password)             | `password` | C     | patroni restapi password, `Patroni.API` by default                            |
+| [`pg_primary_db`](#pg_primary_db)                   | `string`   | C     | primary database name, used by citus,etc… ,postgres by default                |
+| [`pg_parameters`](#pg_parameters)                   | `dict`     | C     | extra parameters in postgresql.auto.conf                                      |
+| [`pg_files`](#pg_files)                             | `path[]`   | C     | extra files to be copied to postgres data directory (e.g. license)            |
+| [`pg_conf`](#pg_conf)                               | `enum`     | C     | config template: oltp,olap,crit,tiny. `oltp.yml` by default                   |
+| [`pg_max_conn`](#pg_max_conn)                       | `int`      | C     | postgres max connections, `auto` will use recommended value                   |
+| [`pg_shared_buffer_ratio`](#pg_shared_buffer_ratio) | `float`    | C     | postgres shared buffer memory ratio, 0.25 by default, 0.1~0.4                 |
+| [`pg_rto`](#pg_rto)                                 | `int`      | C     | recovery time objective in seconds, `30s` by default                          |
+| [`pg_rpo`](#pg_rpo)                                 | `int`      | C     | recovery point objective in bytes, `1MiB` at most by default                  |
+| [`pg_libs`](#pg_libs)                               | `string`   | C     | preloaded libraries, `timescaledb,pg_stat_statements,auto_explain` by default |
+| [`pg_delay`](#pg_delay)                             | `interval` | I     | replication apply delay for standby cluster leader                            |
+| [`pg_checksum`](#pg_checksum)                       | `bool`     | C     | enable data checksum for postgres cluster?                                    |
+| [`pg_pwd_enc`](#pg_pwd_enc)                         | `enum`     | C     | passwords encryption algorithm: md5,scram-sha-256                             |
+| [`pg_encoding`](#pg_encoding)                       | `enum`     | C     | database cluster encoding, `UTF8` by default                                  |
+| [`pg_locale`](#pg_locale)                           | `enum`     | C     | database cluster local, `C` by default                                        |
+| [`pg_lc_collate`](#pg_lc_collate)                   | `enum`     | C     | database cluster collate, `C` by default                                      |
+| [`pg_lc_ctype`](#pg_lc_ctype)                       | `enum`     | C     | database character type, `en_US.UTF8` by default                              |
+| [`pgsodium_key`](#pgsodium_key)                     | `string`   | C     | pgsodium key, 64 hex digit, default to sha256(pg_cluster) if not specified    |
+| [`pgsodium_getkey_script`](#pgsodium_getkey_script) | `path`     | C     | pgsodium getkey script path, `pgsodium_getkey` in template by default         |
+
+
+[`PG_PROVISION`](#pg_provision) : Create users, databases, and in-database objects
+
+| Name                                              | Type          | Level | Comment                                                          |
+|---------------------------------------------------|---------------|-------|------------------------------------------------------------------|
+| [`pg_provision`](#pg_provision)                   | `bool`        | C     | provision postgres cluster after bootstrap                       |
+| [`pg_init`](#pg_init)                             | `string`      | G/C   | provision init script for cluster template, `pg-init` by default |
+| [`pg_default_roles`](#pg_default_roles)           | `role[]`      | G/C   | default roles and users in postgres cluster                      |
+| [`pg_default_privileges`](#pg_default_privileges) | `string[]`    | G/C   | default privileges when created by admin user                    |
+| [`pg_default_schemas`](#pg_default_schemas)       | `string[]`    | G/C   | default schemas to be created                                    |
+| [`pg_default_extensions`](#pg_default_extensions) | `extension[]` | G/C   | default extensions to be created                                 |
+| [`pg_reload`](#pg_reload)                         | `bool`        | A     | reload postgres after hba changes                                |
+| [`pg_default_hba_rules`](#pg_default_hba_rules)   | `hba[]`       | G/C   | postgres default host-based authentication rules                 |
+| [`pgb_default_hba_rules`](#pgb_default_hba_rules) | `hba[]`       | G/C   | pgbouncer default host-based authentication rules                |
+
+[`PG_BACKUP`](#pg_backup) : Setup backup repo with pgbackrest
+
+| Name                                        | Type   | Level | Comment                                                                       |
+|---------------------------------------------|--------|-------|-------------------------------------------------------------------------------|
+| [`pgbackrest_enabled`](#pgbackrest_enabled) | `bool` | C     | enable pgbackrest on pgsql host?                                              |
+| [`pgbackrest_clean`](#pgbackrest_clean)     | `bool` | C     | remove pg backup data during init?                                            |
+| [`pgbackrest_log_dir`](#pgbackrest_log_dir) | `path` | C     | pgbackrest log dir, `/pg/log/pgbackrest` by default                           |
+| [`pgbackrest_method`](#pgbackrest_method)   | `enum` | C     | pgbackrest repo method: local,minio,etc…                                      |
+| [`pgbackrest_repo`](#pgbackrest_repo)       | `dict` | G/C   | pgbackrest repo: https://pgbackrest.org/configuration.html#section-repository |
+
+[`PG_SERVICE`](#pg_service) : Exposing pg service, bind vip and register DNS
+
+| Name                                                  | Type        | Level | Comment                                                                      |
+|-------------------------------------------------------|-------------|-------|------------------------------------------------------------------------------|
+| [`pgbouncer_enabled`](#pgbouncer_enabled)             | `bool`      | C     | if disabled, pgbouncer will not be launched on pgsql host                    |
+| [`pgbouncer_port`](#pgbouncer_port)                   | `port`      | C     | pgbouncer listen port, 6432 by default                                       |
+| [`pgbouncer_log_dir`](#pgbouncer_log_dir)             | `path`      | C     | pgbouncer log dir, `/pg/log/pgbouncer` by default                            |
+| [`pgbouncer_auth_query`](#pgbouncer_auth_query)       | `bool`      | C     | query postgres to retrieve unlisted business users?                          |
+| [`pgbouncer_poolmode`](#pgbouncer_poolmode)           | `enum`      | C     | pooling mode: transaction,session,statement, transaction by default          |
+| [`pgbouncer_sslmode`](#pgbouncer_sslmode)             | `enum`      | C     | pgbouncer client ssl mode, disable by default                                |
+| [`pgbouncer_ignore_param`](#pgbouncer_ignore_param)   | `string[]`  | G/C   | ignore these parameters in pgbouncer startup                                 |
+| [`pg_weight`](#pg_weight)                             | `int`       | I     | relative load balance weight in service, 100 by default, 0-255               |
+| [`pg_service_provider`](#pg_service_provider)         | `string`    | G/C   | dedicate haproxy node group name, or empty string for local nodes by default |
+| [`pg_default_service_dest`](#pg_default_service_dest) | `enum`      | G/C   | default service destination if svc.dest=‘default’                            |
+| [`pg_default_services`](#pg_default_services)         | `service[]` | G/C   | postgres default service definitions                                         |
+| [`pg_vip_enabled`](#pg_vip_enabled)                   | `bool`      | C     | enable a l2 vip for pgsql primary? false by default                          |
+| [`pg_vip_address`](#pg_vip_address)                   | `cidr4`     | C     | vip address in `<ipv4>/<mask>` format, require if vip is enabled             |
+| [`pg_vip_interface`](#pg_vip_interface)               | `string`    | C/I   | vip network interface to listen, eth0 by default                             |
+| [`pg_dns_suffix`](#pg_dns_suffix)                     | `string`    | C     | pgsql dns suffix, ’’ by default                                              |
+| [`pg_dns_target`](#pg_dns_target)                     | `enum`      | C     | auto, primary, vip, none, or ad hoc ip                                       |
+
+[`PG_EXPORTER`](#pg_exporter) : Add Monitor for PGSQL Instance
+
+| Name                                                            | Type          | Level | Comment                                                                       |
+|-----------------------------------------------------------------|---------------|-------|-------------------------------------------------------------------------------|
+| [`pg_exporter_enabled`](#pg_exporter_enabled)                   | `bool`        | C     | enable pg_exporter on pgsql hosts?                                            |
+| [`pg_exporter_config`](#pg_exporter_config)                     | `string`      | C     | pg_exporter configuration file name                                           |
+| [`pg_exporter_cache_ttls`](#pg_exporter_cache_ttls)             | `string`      | C     | pg_exporter collector ttl stage in seconds, ‘1,10,60,300’ by default          |
+| [`pg_exporter_port`](#pg_exporter_port)                         | `port`        | C     | pg_exporter listen port, 9630 by default                                      |
+| [`pg_exporter_params`](#pg_exporter_params)                     | `string`      | C     | extra url parameters for pg_exporter dsn                                      |
+| [`pg_exporter_url`](#pg_exporter_url)                           | `pgurl`       | C     | overwrite auto-generate pg dsn if specified                                   |
+| [`pg_exporter_auto_discovery`](#pg_exporter_auto_discovery)     | `bool`        | C     | enable auto database discovery? enabled by default                            |
+| [`pg_exporter_exclude_database`](#pg_exporter_exclude_database) | `string`      | C     | csv of database that WILL NOT be monitored during auto-discovery              |
+| [`pg_exporter_include_database`](#pg_exporter_include_database) | `string`      | C     | csv of database that WILL BE monitored during auto-discovery                  |
+| [`pg_exporter_connect_timeout`](#pg_exporter_connect_timeout)   | `int`         | C     | pg_exporter connect timeout in ms, 200 by default                             |
+| [`pg_exporter_options`](#pg_exporter_options)                   | `arg`         | C     | overwrite extra options for pg_exporter                                       |
+| [`pgbouncer_exporter_enabled`](#pgbouncer_exporter_enabled)     | `bool`        | C     | enable pgbouncer_exporter on pgsql hosts?                                     |
+| [`pgbouncer_exporter_port`](#pgbouncer_exporter_port)           | `port`        | C     | pgbouncer_exporter listen port, 9631 by default                               |
+| [`pgbouncer_exporter_url`](#pgbouncer_exporter_url)             | `pgurl`       | C     | overwrite auto-generate pgbouncer dsn if specified                            |
+| [`pgbouncer_exporter_options`](#pgbouncer_exporter_options)     | `arg`         | C     | overwrite extra options for pgbouncer_exporter                                |
+| [`pgbackrest_exporter_enabled`](#pgbackrest_exporter_enabled)   | `bool`        | C     | enable pgbackrest_exporter on pgsql hosts?                                    |
+| [`pgbackrest_exporter_port`](#pgbackrest_exporter_port)         | `port`        | C     | pgbackrest_exporter listen port, 9854 by default                              |
+| [`pgbackrest_exporter_options`](#pgbackrest_exporter_options)   | `arg`         | C     | extra cli args for pgbackrest_exporter                                        |
+
+
+[`PG_REMOVE`](#pg_remove) : Remove a Postgres Cluster
+
+| Name                            | Type   | Level | Comment                                                             |
+|---------------------------------|--------|-------|---------------------------------------------------------------------|
+| [`pg_safeguard`](#pg_safeguard) | `bool` | G/C/A | stop pg_remove running if pg_safeguard is enabled, false by default |
+| [`pg_rm_data`](#pg_rm_data)     | `bool` | G/C/A | remove postgres data during remove? true by default                 |
+| [`pg_rm_bkup`](#pg_rm_bkup)     | `path` | G/C/A | remove pgbackrest backup during primary remove? true by default     |
+| [`pg_rm_pkg`](#pg_rm_pkg)       | `path` | G/C/A | uninstall postgres packages during remove? true by default          |
+
+
+
 
 ------
 
@@ -183,7 +236,7 @@ name: `pg_seq`, type: `int`, level: `I`
 
 pgsql instance seq number, REQUIRED identity parameter
 
-A serial number of this instance, unique within its **cluster**, starting from 0 or 1.
+A serial number to identify these instances, unique within its **cluster**, starting from 0 or 1.
 
 ------
 
@@ -222,7 +275,8 @@ Upstream ip address for standby cluster or cascade replica
 
 Setting `pg_upstream` is set on `primary` instance indicate that this cluster is a [**Standby Cluster**](/docs/pgsql/config/#standby-cluster), and will receiving changes from upstream instance, thus the `primary` is actually a `standby leader`.
 
-Setting `pg_upstream` for a non-primary instance will explicitly set a replication upstream instance, if it is different from the primary ip addr, this instance will become a **cascade replica**. And it’s user’s responsibility to ensure that the upstream IP addr is another instance in the same cluster.
+Setting `pg_upstream` for a non-primary instance will explicitly set a replication upstream instance, if it is different from the primary IP Address,
+this instance will become a **cascade replica**. And it’s user’s responsibility to ensure that the upstream IP addr is another instance in the same cluster.
 
 ------
 
@@ -254,7 +308,7 @@ name: `pg_group`, type: `int`, level: `C`
 
 pgsql shard index number, required identity for sharding clusters, optional for common pgsql clusters.
 
-Sharding cluster index of sharding group, used in pair with [pg_shard](#pg_shard). You can use any non-negative integer as the index number.
+Sharding cluster index of a sharding group, used in pairs with [pg_shard](#pg_shard). You can use any non-negative integer as the index number.
 
 ------
 
@@ -267,7 +321,7 @@ greenplum/matrixdb role of this cluster, could be `master` or `segment`
 - `master`: mark the postgres cluster as greenplum master, which is the default value
 - `segment` mark the postgres cluster as greenplum segment
 
-This parameter is only used for greenplum/matrixdb database, and is ignored for common pgsql cluster.
+This parameter is only used for greenplum & derived databases, and is ignored for common pgsql cluster.
 
 ------
 
@@ -277,7 +331,7 @@ name: `pg_exporters`, type: `dict`, level: `C`
 
 additional pg_exporters to monitor remote postgres instances, default values: `{}`
 
-If you wish to monitoring remote postgres instances, define them in `pg_exporters` and load them with [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) playbook.
+If you wish to monitor remote postgres instances, define them in `pg_exporters` and load them with [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) playbook.
 
 ```yaml
 pg_exporters: # list all remote instances here, alloc a unique unused local port as k
@@ -295,7 +349,7 @@ Check [PGSQL Monitoring](/docs/pgsql/monitor/) for details.
 
 name: `pg_offline_query`, type: `bool`, level: `I`
 
-set to true to enable offline query on this instance
+set to true to enable offline queries on this instance
 
 default value is `false`
 
@@ -348,21 +402,21 @@ pg_monitor_password: DBUser.Monitor
 
 name: `pg_users`, type: `user[]`, level: `C`
 
-postgres business users, has to be defined at cluster level.
+postgres business users, defined at cluster level.
 
-default values: `[]`, each object in the array defines a [User/Role](/docs/pgsql/user/). Examples:
+default values: `[]`, each object in the array defines a [User/Role](/docs/pgsql/user). Examples:
 
 ```yaml
 - name: dbuser_meta               # REQUIRED, `name` is the only mandatory field of a user definition
-  password: DBUser.Meta           # optional, password, can be a scram-sha-256 hash string or plain text
-  login: true                     # optional, can log in, true by default  (new biz ROLE should be false)
+  password: DBUser.Meta           # optional, the password, can be a scram-sha-256 hash string or plain text
+  login: true                     # optional, can log in, true by default (new biz ROLE should be false)
   superuser: false                # optional, is superuser? false by default
   createdb: false                 # optional, can create database? false by default
   createrole: false               # optional, can create role? false by default
   inherit: true                   # optional, can this role use inherited privileges? true by default
   replication: false              # optional, can this role do replication? false by default
   bypassrls: false                # optional, can this role bypass row level security? false by default
-  pgbouncer: true                 # optional, add this user to pgbouncer user-list? false by default (production user should be true explicitly)
+  pgbouncer: true                 # optional, add this user to pgbouncer userlist? false by default (production user should be true explicitly)
   connlimit: -1                   # optional, user connection limit, default -1 disable limit
   expire_in: 3650                 # optional, now + n days when this role is expired (OVERWRITE expire_at)
   expire_at: '2030-12-31'         # optional, YYYY-MM-DD 'timestamp' when this role is expired  (OVERWRITTEN by expire_in)
@@ -382,9 +436,9 @@ The only mandatory field of a user definition is `name`, and the rest are option
 
 name: `pg_databases`, type: `database[]`, level: `C`
 
-postgres business databases, has to be defined at cluster level.
+postgres business databases, defined at cluster level.
 
-default values: `[]`, each object in the array defines a [Database](/docs/pgsql/db/). Examples:
+default values: `[]`, each object in the array defines a [Database](/docs/pgsql/db). Examples:
 
 ```yaml
 - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
@@ -452,7 +506,7 @@ business hba rules for postgres
 
 default values: `[]`, each object in array is an **HBA Rule** definition:
 
-Which are array of [hba](/docs/pgsql/hba/#define-hba) object, each hba object may look like
+Which are array of [hba](/docs/pgsql/hba#define-hba) object, each hba object may look like
 
 ```yaml
 # RAW HBA RULES
@@ -464,19 +518,12 @@ Which are array of [hba](/docs/pgsql/hba/#define-hba) object, each hba object ma
     - host   all  all  192.168.0.0/16  md5
 ```
 
-- `title`: Rule Title, transform into comment in hba file
-
+- `title`: Rule Title, transform into comment in the hba file
 - `rules`: Array of strings, each string is a raw hba rule record
-
-- ```
-role
-  ```
-
-: Applied roles, where to install these hba rules
-
-- `common`: apply for all instances
-- `primary`, `replica`,`standby`, `offline`: apply on corresponding instances with that [`pg_role`](#pg_role).
-- special case: HBA rule with `role == 'offline'` will be installed on instance with [`pg_offline_query`](#pg_offline_query) flag
+- `role` : Applied roles, where to install these hba rules
+    - `common`: apply for all instances
+    - `primary`, `replica`,`standby`, `offline`: apply on corresponding instances with that [`pg_role`](#pg_role).
+    - special case: HBA rule with `role == 'offline'` will be installed on instance with [`pg_offline_query`](#pg_offline_query) flag
 
 or you can use another alias form
 
@@ -490,6 +537,7 @@ or you can use another alias form
 ```
 
 [`pg_default_hba_rules`](#pg_default_hba_rules) is similar to this, but is used for global HBA rule settings
+
 
 ------
 
@@ -509,7 +557,7 @@ name: `pg_replication_username`, type: `username`, level: `G`
 
 postgres replication username, `replicator` by default
 
-This parameter is globally used, it not wise to change it.
+This parameter is globally used, it is not wise to change it.
 
 ------
 
@@ -569,7 +617,12 @@ name: `pg_dbsu_password`, type: `password`, level: `G/C`
 
 PostgreSQL dbsu password for [`pg_dbsu`](#pg_dbsu), empty string means no dbsu password, which is the default behavior.
 
-> WARNING: It’s not recommend to set a dbsu password for common PGSQL clusters, except for [`pg_mode`](#pg_mode) = `citus`.
+<Callout title="Set this password will allow a well-know dbsu login from remote!" type="warning">
+
+    It's not recommended to set the well-known dbsu (`postgres`) password for common PGSQL clusters, except for a good reason, such as using [`pg_mode`](#pg_mode) = `citus`.
+
+</Callout>
+
 
 ------
 
@@ -577,7 +630,7 @@ PostgreSQL dbsu password for [`pg_dbsu`](#pg_dbsu), empty string means no dbsu p
 
 This section is responsible for installing PostgreSQL & Extensions.
 
-If you wish to install a different major version, just make sure repo packages exists and overwrite [`pg_version`](#pg_version) on cluster level.
+If you wish to install a different major version, make sure repo packages exists and overwrite [`pg_version`](#pg_version) on cluster level.
 
 To install extra extensions, overwrite [`pg_extensions`](#pg_extensions) on cluster level. Beware that not all extensions are available with other major versions.
 
@@ -601,7 +654,7 @@ pg_extensions: []                 # pg extensions to be installed, alias can be 
 
 name: `pg_dbsu`, type: `username`, level: `C`
 
-os dbsu name, `postgres` by default, it’s not wise to change it.
+OS DBSU name, `postgres` by default, it’s not wise to change it.
 
 When installing Greenplum / MatrixDB, set this parameter to the corresponding default value: `gpadmin|mxadmin`.
 
@@ -611,7 +664,7 @@ When installing Greenplum / MatrixDB, set this parameter to the corresponding de
 
 name: `pg_dbsu_uid`, type: `int`, level: `C`
 
-os dbsu uid and gid, `26` for default postgres users and groups, which is consistent with the official pgdg RPM.
+OS DBSU uid and gid, `26` for default postgres users and groups, which is consistent with the official pgdg RPM.
 
 For Ubuntu/Debian, there’s no default postgres UID/GID, consider using another ad hoc value, such as `543` instead.
 
@@ -621,7 +674,7 @@ For Ubuntu/Debian, there’s no default postgres UID/GID, consider using another
 
 name: `pg_dbsu_sudo`, type: `enum`, level: `C`
 
-dbsu sudo privilege, coud be `none`, `limit` ,`all` ,`nopass`. `limit` by default
+OS DBSU sudo privilege, could be `none`, `limit` ,`all` ,`nopass`. `limit` by default
 
 - `none`: No Sudo privilege
 - `limit`: Limited sudo privilege to execute systemctl commands for database-related components, default.
@@ -642,6 +695,7 @@ Available sudo services:
 - vip-manager
 - haproxy (reload only)
 
+
 ------
 
 ### `pg_dbsu_home`
@@ -656,13 +710,17 @@ postgresql home directory, `/var/lib/pgsql` by default, which is consistent with
 
 name: `pg_dbsu_ssh_exchange`, type: `bool`, level: `C`
 
-exchange postgres dbsu ssh key among pgsql instances?
+exchange postgres os dbsu ssh key among pgsql instances?
 
 default value is `true`, means the dbsu can ssh to each other among the playbook execution hosts.
 
 For scenarios where ssh access is strictly limited, you can set it to `false`.
 
-Please note that SSH key exchange occurs between instances that are executing the same playbook. If you run the `pgsql` role for a single PostgreSQL cluster, the key exchange will occur between all instances in that cluster. If you run the `pgsql` role for all PostgreSQL clusters, the key exchange will occur between **all** instances, which can lead to severe combinatorial explosions for large clusters. If any instance involved in the key exchange does not have the [`pg_dbsu`](#pg_dbsu) user, the key exchange will fail for that instance, but will not affect other instances.
+Please note that SSH key exchange occurs between instances that are executing the same playbook. If you run the `pgsql` role for a single PostgreSQL cluster, the key exchange will occur between all instances in that cluster.
+If you run the `pgsql` role for all PostgreSQL clusters, the key exchange will occur between **all** instances, which can lead to severe combinatorial explosions for large clusters.
+If any instance involved in the key exchange does not have the [`pg_dbsu`](#pg_dbsu) user, the key exchange will fail for that instance, but will not affect other instances.
+
+
 
 ------
 
@@ -708,7 +766,7 @@ PostgreSQL packages (rpm/deb) to be installed. This is an array of package names
 
 Default value: `[ pgsql-main pgsql-common ]`
 
-These default values are two aliases that are translated through [**alias mapping**](https://pigsty.io/ext/usage/download/#alias-mapping) into the main RPM/DEB package names for the current PG major version, as well as version-independent common components (such as Patroni, PgBackrest, etc.)
+These default values are two aliases that are translated through [**alias mapping**](/docs/pgsql/ext/pkg) into the main RPM/DEB package names for the current PG major version, as well as version-independent common components (such as Patroni, PgBackrest, etc.)
 
 Since Pigsty v3, you can use the alias lists specified in the system configuration in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) for this parameter.
 
@@ -717,6 +775,8 @@ The advantage of using package aliases is that you don’t need to worry about p
 Packages defined here will first be translated through the `package_map`, then undergo PG major version number substitution, and finally install the actual RPM/DEB packages.
 
 You can also directly specify the final RPM/DEB package names to be installed, where version placeholders like `${pg_version}` or `$v` in the package name will be replaced with the specific major version number [`pg_version`](#pg_version).
+
+
 
 ------
 
@@ -738,17 +798,21 @@ The complete list of extensions can be found in [auto generated](https://github.
 
 The full extension list can be found in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) and listed in [Extension List](https://pigsty.io/ext/list/).
 
+
+
+
+
+
+
 ------
 
 ## `PG_BOOTSTRAP`
 
-Bootstrap a postgres cluster with patroni, and setup pgbouncer connection pool along with it.
+Bootstrap postgres cluster with patroni.
 
 It also init cluster template databases with default roles, schemas & extensions & default privileges specified in [`PG_PROVISION`](#pg_provision)
 
 ```yaml
-pg_safeguard: false               # prevent purging running postgres instance? false by default
-pg_clean: true                    # purging existing postgres during pgsql init? true by default
 pg_data: /pg/data                 # postgres data directory, `/pg/data` by default
 pg_fs_main: /data                 # mountpoint/path for postgres main data, `/data` by default
 pg_fs_bkup: /data/backups         # mountpoint/path for pg backup data, `/data/backup` by default
@@ -763,54 +827,30 @@ pg_namespace: /pg                 # top level key namespace in etcd, used by pat
 patroni_port: 8008                # patroni listen port, 8008 by default
 patroni_log_dir: /pg/log/patroni  # patroni log dir, `/pg/log/patroni` by default
 patroni_ssl_enabled: false        # secure patroni RestAPI communications with SSL?
-patroni_watchdog_mode: off        # patroni watchdog mode: automatic,required,off. off by default
+patroni_watchdog_mode: off        # patroni watchdog mode: automatic, required, off. off by default
 patroni_username: postgres        # patroni restapi username, `postgres` by default
 patroni_password: Patroni.API     # patroni restapi password, `Patroni.API` by default
-pg_primary_db: postgres           # primary database name, used by citus,etc... ,postgres by default
+pg_primary_db: postgres           # primary database name, used by citus,etc... postgres by default
 pg_parameters: {}                 # extra parameters in postgresql.auto.conf
 pg_files: []                      # extra files to be copied to postgres data directory (e.g. license)
 pg_conf: oltp.yml                 # config template: oltp,olap,crit,tiny. `oltp.yml` by default
 pg_max_conn: auto                 # postgres max connections, `auto` will use recommended value
 pg_shared_buffer_ratio: 0.25      # postgres shared buffers ratio, 0.25 by default, 0.1~0.4
-pg_rto: 30                        # recovery time objective in seconds,  `30s` by default
+pg_rto: 30                        # recovery time objective in seconds, `30s` by default
 pg_rpo: 1048576                   # recovery point objective in bytes, `1MiB` at most by default
 pg_libs: 'pg_stat_statements, auto_explain'  # preloaded libraries, `pg_stat_statements,auto_explain` by default
-pg_delay: 0                       # replication apply delay for standby cluster leader
+pg_delay: 0                       # replications apply delay for standby cluster leader
 pg_checksum: true                 # enable data checksum for postgres cluster?
 pg_pwd_enc: scram-sha-256         # passwords encryption algorithm: md5,scram-sha-256
 pg_encoding: UTF8                 # database cluster encoding, `UTF8` by default
 pg_locale: C                      # database cluster local, `C` by default
 pg_lc_collate: C                  # database cluster collate, `C` by default
 pg_lc_ctype: C                    # database character type, `C` by default
-pgbouncer_enabled: true           # if disabled, pgbouncer will not be launched on pgsql host
-pgbouncer_port: 6432              # pgbouncer listen port, 6432 by default
-pgbouncer_log_dir: /pg/log/pgbouncer  # pgbouncer log dir, `/pg/log/pgbouncer` by default
-pgbouncer_auth_query: false       # query postgres to retrieve unlisted business users?
-pgbouncer_poolmode: transaction   # pooling mode: transaction,session,statement, transaction by default
-pgbouncer_sslmode: disable        # pgbouncer client ssl mode, disable by default
+#pgsodium_key: ""                 # pgsodium key, 64 hex digits, default to sha256(pg_cluster)
+#pgsodium_getkey_script: ""       # pgsodium getkey script path, pgsodium_getkey by default
 ```
 
-------
 
-### `pg_safeguard`
-
-name: `pg_safeguard`, type: `bool`, level: `G/C/A`
-
-prevent purging running postgres instance? false by default
-
-If enabled, [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
-
-------
-
-### `pg_clean`
-
-name: `pg_clean`, type: `bool`, level: `G/C/A`
-
-purging existing postgres during pgsql init? true by default
-
-default value is `true`, it will purge existing postgres instance during [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) init. which makes the playbook idempotent.
-
-if set to `false`, [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) will abort if there’s already a running postgres instance. and [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) will NOT remove postgres data (only stop the server).
 
 ------
 
@@ -822,7 +862,7 @@ postgres data directory, `/pg/data` by default
 
 default values: `/pg/data`, DO NOT CHANGE IT.
 
-It’s a soft link that point to underlying data directory.
+It’s a soft link that points to the underlying data directory.
 
 Check [PGSQL File Structure](/docs/reference/fhs/) for details.
 
@@ -848,7 +888,7 @@ mountpoint/path for pg backup data, `/data/backup` by default
 
 If you are using the default [`pgbackrest_method`](#pgbackrest_method) = `local`, it is recommended to have a separate disk for backup storage.
 
-The backup disk should be large enough to hold all your backups, at least enough for 3 basebackups + 2 days WAL archive. This is usually not a problem since you can use cheap & large HDD for that.
+The backup disk should be large enough to hold all your backups, at least enough for 3 base backups + 2-day WAL archive. This is usually not a problem since you can use affordable and large HDD for that.
 
 It’s recommended to use a separate disk for backup storage, otherwise pigsty will fall back to the main data disk.
 
@@ -870,7 +910,7 @@ name: `pg_dummy_filesize`, type: `size`, level: `C`
 
 size of `/pg/dummy`, default values: `64MiB`, which hold 64MB disk space for emergency use
 
-When the disk is full, removing the placeholder file can free up some space for emergency use, it is recommended to use at least `8GiB` for production use.
+When the disk is full, removing the placeholder file can free up some space for emergency use, it is recommended to set at least `8GiB` for production use.
 
 ------
 
@@ -946,9 +986,9 @@ default values: `default`
 
 name: `patroni_port`, type: `port`, level: `C`
 
-patroni listen port, `8008` by default, changing it is not recommended.
+patroni listening port, `8008` by default, changing it is not recommended.
 
-The Patroni API server listens on this port for health checking & API requests.
+The Patroni API server listens to this port for health checking & API requests.
 
 ------
 
@@ -968,7 +1008,7 @@ Secure patroni RestAPI communications with SSL? default value is `false`
 
 This parameter is a global flag that can only be set before deployment.
 
-Since if SSL is enabled for patroni, you’ll have to perform healthcheck, metrics scrape and API call with HTTPS instead of HTTP.
+Since if SSL is enabled for patroni, you’ll have to perform healthcheck, metrics scrape, and API call with HTTPS instead of HTTP.
 
 ------
 
@@ -1044,7 +1084,8 @@ pg-test:
     10.10.10.13: { pg_seq: 3, pg_role: replica , pg_parameters: { shared_buffers: '3GB' } }
 ```
 
-Please note that some important cluster parameters (which have requirements for primary and replica parameter values) are managed directly by Patroni through command-line parameters and have the highest priority. These cannot be overridden by this method. For these parameters, you must use Patroni `edit-config` for management and configuration.
+Please note that some important cluster parameters (which have requirements for primary and replica parameter values) are managed directly by Patroni through command-line parameters and have the highest priority.
+These cannot be overridden by this method. For these parameters, you must use Patroni `edit-config` for management and configuration.
 
 PostgreSQL parameters that [must remain consistent](https://patroni.readthedocs.io/en/latest/patroni_configuration.html#important-rules) across primary and replicas (inconsistency will prevent the replica from starting!):
 
@@ -1094,7 +1135,7 @@ name: `pg_conf`, type: `enum`, level: `C`
 config template: `{oltp,olap,crit,tiny}.yml`, `oltp.yml` by default
 
 - `tiny.yml`: optimize for tiny nodes, virtual machines, small demo, (1~8Core, 1~16GB)
-- `oltp.yml`: optimize for OLTP workloads and latency sensitive applications, (4C8GB+), which is the default template
+- `oltp.yml`: optimize for OLTP workloads and latency-sensitive applications, (4C8GB+), which is the default template
 - `olap.yml`: optimize for OLAP workloads and throughput (4C8G+)
 - `crit.yml`: optimize for data consistency and critical applications (4C8G+)
 
@@ -1145,7 +1186,7 @@ recovery time objective in seconds, This will be used as Patroni TTL value, `30`
 
 If a primary instance is missing for such a long time, a new leader election will be triggered.
 
-Decrease the value can reduce the unavailable time (unable to write) of the cluster during failover, but it will make the cluster more sensitive to network jitter, thus increase the chance of false-positive failover.
+Decreasing the value can reduce the unavailable time (unable to write) of the cluster during failover, but it will make the cluster more sensitive to network jitter, thus increase the chance of false-positive failover.
 
 Config this according to your network condition and expectation to **trade-off between chance and impact**, the default value is 30s, and it will be populated to the following patroni parameters:
 
@@ -1175,7 +1216,7 @@ default values: `1048576`, which will tolerate at most 1MiB data loss during fai
 
 when the primary is down and all replicas are lagged, you have to make a tough choice to **trade off between Availability and Consistency**:
 
-- Promote a replica to be the new primary and bring system back online ASAP, with the price of an acceptable data loss (e.g. less than 1MB).
+- Promote a replica to be the new primary and bring the system back online ASAP, with the price of an acceptable data loss (e.g. less than 1MB).
 - Wait for the primary to come back (which may never be) or human intervention to avoid any data loss.
 
 You can use `crit.yml` [conf](#pg_conf) template to ensure no data loss during failover, but it will sacrifice some performance.
@@ -1208,11 +1249,11 @@ Generally, `citus` and `timescaledb` have the highest priority and should be add
 
 name: `pg_delay`, type: `interval`, level: `I`
 
-replication apply delay for standby cluster leader , default values: `0`.
+replications apply delay for standby cluster leader, default values: `0`.
 
 if this value is set to a positive value, the standby cluster leader will be delayed for this time before apply WAL changes.
 
-Check [delayed standby cluster](/docs/pgsql/config/#delayed-cluster) for details.
+Check [delayed standby cluster](/docs/pgsql/config#delayed-cluster) for details.
 
 ------
 
@@ -1232,9 +1273,16 @@ If [`pg_conf`](#pg_conf) `crit.yml` template is used, data checksum is always en
 
 name: `pg_pwd_enc`, type: `enum`, level: `C`
 
-passwords encryption algorithm: md5,scram-sha-256
+password encryption algorithm: md5, scram-sha-256
 
 default values: `scram-sha-256`, if you have compatibility issues with old clients, you can set it to `md5` instead.
+
+<Callout title="md5 encryption is deprecated!" type="warning">
+
+    The `md5` password encryption is deprecated and dropped, do not use it anymore!
+
+</Callout>
+
 
 ------
 
@@ -1276,7 +1324,7 @@ The parameter behaves like [`pg_locale`](#pg_locale), but for collate.
 
 ### `pg_lc_ctype`
 
-参数名称： `pg_lc_ctype`， 类型： `enum`， 层次：`C`
+name: `pg_lc_ctype`, type: `enum`, level: `C`
 
 The locale set for PostgreSQL, default is `C`.
 
@@ -1290,68 +1338,32 @@ Unless you are very clear about what you are doing, it is strongly recommended t
 
 ------
 
-### `pgbouncer_enabled`
+### `pgsodium_key`
 
-name: `pgbouncer_enabled`, type: `bool`, level: `C`
+name: `pgsodium_key`, type: `string`, level: `C`
 
-default value is `true`, if disabled, pgbouncer will not be launched on pgsql host
+Default value is not defined, which will use the SHA256 hash of the [`pg_cluster`](#pg_cluster) as the key.
 
-------
+You can provide a custom [pgsodium](https://github.com/michelp/pgsodium) key, which should be a 64 hex digit string.
 
-### `pgbouncer_port`
+The key will be written to `/pg/conf/pgsodium.key`.
 
-name: `pgbouncer_port`, type: `port`, level: `C`
 
-pgbouncer listen port, `6432` by default
 
-------
-
-### `pgbouncer_log_dir`
-
-name: `pgbouncer_log_dir`, type: `path`, level: `C`
-
-pgbouncer log dir, `/pg/log/pgbouncer` by default, referenced by promtail the logging agent.
 
 ------
 
-### `pgbouncer_auth_query`
+### `pgsodium_getkey_script`
 
-name: `pgbouncer_auth_query`, type: `bool`, level: `C`
+name: `pgsodium_getkey_script`, type: `path`, level: `C`
 
-query postgres to retrieve unlisted business users? default value is `false`
+default value is `pgsodium_getkey`, which render the [`roles/pgsql/templates/pgsodium_getkey`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pgsodium_getkey) to `/pg/bin/pgsodium_getkey`.
 
-If enabled, pgbouncer user will be authenticated against postgres database with `SELECT username, password FROM monitor.pgbouncer_auth($1)`, otherwise, only the users with `pgbouncer: true` will be allowed to connect to pgbouncer.
+The default getkey script will just read the [`pgsodium_key`](#pgsodium_key) from `/pg/conf/pgsodium.key`, and return it.
+If your key is managed by external system like KMS, IAM, ..., you can implement your own getkey script to fetch the key from there: [examples](https://github.com/michelp/pgsodium/tree/main/getkey_scripts).
 
-------
 
-### `pgbouncer_poolmode`
 
-name: `pgbouncer_poolmode`, type: `enum`, level: `C`
-
-Pgbouncer pooling mode: `transaction`, `session`, `statement`, `transaction` by default
-
-- `session`: Session-level pooling with the best compatibility.
-- `transaction`: Transaction-level pooling with better performance (lots of small conns), could break some session level features such as notify/listen, etc…
-- `statements`: Statement-level pooling which is used for simple read-only queries.
-
-If you application has some compatibility issues with pgbouncer, you can try to change this value to `session` instead.
-
-------
-
-### `pgbouncer_sslmode`
-
-name: `pgbouncer_sslmode`, type: `enum`, level: `C`
-
-pgbouncer client ssl mode, `disable` by default
-
-default values: `disable`, beware that this may have a huge performance impact on your pgbouncer.
-
-- `disable`: Plain TCP. If client requests TLS, it’s ignored. Default.
-- `allow`: If client requests TLS, it is used. If not, plain TCP is used. If the client presents a client certificate, it is not validated.
-- `prefer`: Same as allow.
-- `require`: Client must use TLS. If not, the client connection is rejected. If the client presents a client certificate, it is not validated.
-- `verify-ca`: Client must use TLS with valid client certificate.
-- `verify-full`: Same as verify-ca.
 
 ------
 
@@ -1508,7 +1520,7 @@ pg_default_privileges:            # default privileges when created by admin use
   - GRANT CREATE     ON SCHEMAS   TO dbrole_admin
 ```
 
-Pigsty has a built-in privileges base on default role system, check [PGSQL Privileges](/docs/pgsql/acl#privileges) for details.
+Pigsty has a built-in privileges based on the default role system, check [PGSQL Privileges](/docs/pgsql/acl#privileges) for details.
 
 ------
 
@@ -1717,24 +1729,41 @@ pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/conf
     cipher_type: aes-256-cbc      # enable AES encryption for remote backup repo
     cipher_pass: pgBackRest       # AES encryption password, default is 'pgBackRest'
     retention_full_type: time     # retention full backup by time on minio repo
-    retention_full: 14            # keep full backup for last 14 days
+    retention_full: 14            # keep full backup for the last 14 days
 ```
 
-You can define a new backup repository, for example using AWS S3, GCP or other cloud provider’s S3-compatible storage service.
+You can define a new backup repository, for example, using AWS S3, GCP or another cloud provider’s S3-compatible storage service.
 
-In the backup repository definition parameters, you can use `${pg_cluster}` variable to reference the cluster name, for example as part of the backup path or encryption key. But if you have cross-cluster PITR requirements, you should keep the backup repository path and encryption key the same.
+In the backup repository definition parameters, you can use `${pg_cluster}` variable to reference the cluster name, for example, as part of the backup path or encryption key.
+But if you have cross-cluster PITR requirements, you should keep the backup repository path and encryption key the same.
+
+
+
+
+
+
+
+
 
 ------
 
-## `PG_SERVICE`
+## `PG_ACCESS`
 
-This section is about exposing PostgreSQL service to outside world: including:
+This section is about exposing PostgreSQL service to the outside world: including:
 
+- Connection Pooling with `pgbouncer`
 - Exposing different PostgreSQL services on different ports with `haproxy`
 - Bind an optional L2 VIP to the primary instance with `vip-manager`
 - Register cluster/instance DNS records with to `dnsmasq` on infra nodes
 
 ```yaml
+pgbouncer_enabled: true           # if disabled, pgbouncer will not be launched on pgsql host
+pgbouncer_port: 6432              # pgbouncer listen port, 6432 by default
+pgbouncer_log_dir: /pg/log/pgbouncer  # pgbouncer log dir, `/pg/log/pgbouncer` by default
+pgbouncer_auth_query: false       # query postgres to retrieve unlisted business users?
+pgbouncer_poolmode: transaction   # pooling mode: transaction,session,statement, transaction by default
+pgbouncer_sslmode: disable        # pgbouncer client ssl mode, disable by default
+
 pg_weight: 100          #INSTANCE # relative load balance weight in service, 100 by default, 0-255
 pg_default_service_dest: pgbouncer # default service destination if svc.dest='default'
 pg_default_services:              # postgres default service definitions
@@ -1749,13 +1778,95 @@ pg_dns_suffix: ''                 # pgsql dns suffix, '' by default
 pg_dns_target: auto               # auto, primary, vip, none, or ad hoc ip
 ```
 
+
+
+------
+
+### `pgbouncer_enabled`
+
+name: `pgbouncer_enabled`, type: `bool`, level: `C`
+
+default value is `true`, if disabled, pgbouncer will not be launched on pgsql host
+
+------
+
+### `pgbouncer_port`
+
+name: `pgbouncer_port`, type: `port`, level: `C`
+
+pgbouncer listen port, `6432` by default
+
+------
+
+### `pgbouncer_log_dir`
+
+name: `pgbouncer_log_dir`, type: `path`, level: `C`
+
+pgbouncer log dir, `/pg/log/pgbouncer` by default, referenced by promtail the logging agent.
+
+------
+
+### `pgbouncer_auth_query`
+
+name: `pgbouncer_auth_query`, type: `bool`, level: `C`
+
+query postgres to retrieve unlisted business users? default value is `false`
+
+If enabled, pgbouncer user will be authenticated against postgres databases with `SELECT username, password FROM monitor.pgbouncer_auth($1)`, otherwise, only the users with `pgbouncer: true` will be allowed to connect to pgbouncer.
+
+
+------
+
+### `pgbouncer_poolmode`
+
+name: `pgbouncer_poolmode`, type: `enum`, level: `C`
+
+Pgbouncer pooling mode: `transaction`, `session`, `statement`, `transaction` by default
+
+- `session`: Session-level pooling with the best compatibility.
+- `transaction`: Transaction-level pooling with better performance (lots of small conns), could break some session level features such as notify/listen, etc…
+- `statements`: Statement-level pooling which is used for simple read-only queries.
+
+If your application has some compatibility issues with pgbouncer, you can try to change this value to `session` instead.
+
+
+------
+
+### `pgbouncer_sslmode`
+
+name: `pgbouncer_sslmode`, type: `enum`, level: `C`
+
+pgbouncer client ssl mode, `disable` by default
+
+default values: `disable`, beware that this may have a huge performance impact on your pgbouncer.
+
+- `disable`: Plain TCP. If a client requests TLS, it’s ignored. Default.
+- `allow`: If a client requests TLS, it is used. If not, plain TCP is used. If the client presents a client certificate, it is not validated.
+- `prefer`: Same as allow.
+- `require`: Client must use TLS. If not, the client connection is rejected. If the client presents a client certificate, it is not validated.
+- `verify-ca`: Client must use TLS with valid client certificate.
+- `verify-full`: Same as verify-ca.
+
+------
+
+### `pgbouncer_ignore_param`
+
+name: `pgbouncer_ignore_param`, type: `string[]`, level: `G/C`
+
+default values: `[ extra_float_digits, application_name, TimeZone, DateStyle, IntervalStyle, search_path ]`
+
+This will be used as value of [**`ignore_startup_parameters`**](https://www.pgbouncer.org/config.html#ignore_startup_parameters) in pgbouncer.
+
+
+
+
 ------
 
 ### `pg_weight`
 
 name: `pg_weight`, type: `int`, level: `G`
 
-relative load balance weight in service, 100 by default, 0-255
+relative load balance weight in service, 100 by default, 0~255
 
 default values: `100`. you have to define it at instance vars, and [reload-service](/docs/pgsql/admin#reload-service) to take effect.
 
@@ -1769,9 +1880,9 @@ dedicate haproxy node group name, or empty string for local nodes by default.
 
 If specified, PostgreSQL Services will be registered to the dedicated haproxy node group instead of this pgsql cluster nodes.
 
-Do remember to allocate **unique** ports on dedicate haproxy nodes for each service!
+Do remember to allocate **unique** ports on dedicated haproxy nodes for each service!
 
-For example, if we define following parameters on 3-node `pg-test` cluster:
+For example, if we define the following parameters on 3-node `pg-test` cluster:
 
 ```yaml
 pg_service_provider: infra       # use load balancer on group `infra`
@@ -1786,11 +1897,11 @@ pg_default_services:             # alloc port 10001 and 10002 for pg-test primar
 
 name: `pg_default_service_dest`, type: `enum`, level: `G/C`
 
-When defining a [service](/docs/pgsql/service/#define-service), if svc.dest=‘default’, this parameter will be used as the default value.
+When defining a [service](/docs/pgsql/service/#define-service), if `svc.dest`= `default`, this parameter will be used as the default value.
 
-default values: `pgbouncer`, means 5433 primary service and 5434 replica service will route traffic to pgbouncer by default.
+default values: `pgbouncer`, means 5433 the primary service and 5434 the replicas service will route traffic to pgbouncer by default.
 
-If you don’t want to use pgbouncer, set it to `postgres` instead. traffic will be route to postgres directly.
+If you don’t want to use pgbouncer, set it to `postgres` instead. traffic will be routed to postgres directly.
 
 ------
 
@@ -1800,7 +1911,7 @@ name: `pg_default_services`, type: `service[]`, level: `G/C`
 
 postgres default service definitions
 
-default value is four default services definition, which is explained in [PGSQL Service](/docs/pgsql/service/#define-service)
+default value is four default services definitions, which are explained in [PGSQL Service](/docs/pgsql/service/#define-service)
 
 ```yaml
 pg_default_services:               # postgres default service definitions
@@ -1820,7 +1931,7 @@ enable a l2 vip for pgsql primary?
 
 default value is `false`, means no L2 VIP is created for this cluster.
 
-L2 VIP can only be used in same L2 network, which may incurs extra restrictions on your network topology.
+L2 VIP can only be used in the same L2 network, which may incur extra restrictions on your network topology.
 
 ------
 
@@ -1842,7 +1953,7 @@ vip network interface to listen, `eth0` by default.
 
 It should be the same primary intranet interface of your node, which is the IP address you used in the inventory file.
 
-If your node have different interface, you can override it on instance vars:
+If your nodes have different interface, you can override it on instance vars:
 
 ```yaml
 pg-test:
@@ -1862,7 +1973,7 @@ pg-test:
 
 name: `pg_dns_suffix`, type: `string`, level: `C`
 
-pgsql dns suffix, ’’ by default, cluster DNS name is defined as `{{ pg_cluster }}{{ pg_dns_suffix }}`
+pgsql dns suffix, empty string by default, cluster DNS name is defined as `{{ pg_cluster }}{{ pg_dns_suffix }}`
 
 For example, if you set `pg_dns_suffix` to `.db.vip.company.tld` for cluster `pg-test`, then the cluster DNS name will be `pg-test.db.vip.company.tld`
 
@@ -1894,8 +2005,8 @@ pg_exporter_port: 9630                 # pg_exporter listen port, 9630 by defaul
 pg_exporter_params: 'sslmode=disable'  # extra url parameters for pg_exporter dsn
 pg_exporter_url: ''                    # overwrite auto-generate pg dsn if specified
 pg_exporter_auto_discovery: true       # enable auto database discovery? enabled by default
-pg_exporter_exclude_database: 'template0,template1,postgres' # csv of database that WILL NOT be monitored during auto-discovery
-pg_exporter_include_database: ''       # csv of database that WILL BE monitored during auto-discovery
+pg_exporter_exclude_database: 'template0,template1,postgres' # csv of databases that WILL NOT be monitored during auto-discovery
+pg_exporter_include_database: ''       # csv of databases that WILL BE monitored during auto-discovery
 pg_exporter_connect_timeout: 200       # pg_exporter connect timeout in ms, 200 by default
 pg_exporter_options: ''                # overwrite extra options for pg_exporter
 pgbouncer_exporter_enabled: true       # enable pgbouncer_exporter on pgsql hosts?
@@ -1996,7 +2107,7 @@ default value is `true`, which will auto-discover all databases on the postgres 
 
 name: `pg_exporter_exclude_database`, type: `string`, level: `C`
 
-csv of database that WILL NOT be monitored during auto-discovery
+csv of databases that WILL NOT be monitored during auto-discovery
 
 default values: `template0,template1,postgres`, which will be excluded for database auto discovery.
 
@@ -2006,9 +2117,9 @@ default values: `template0,template1,postgres`, which will be excluded for datab
 
 name: `pg_exporter_include_database`, type: `string`, level: `C`
 
-csv of database that WILL BE monitored during auto-discovery
+csv of databases that WILL BE monitored during auto-discovery
 
-default value is empty string. If this value is set, only the databases in this list will be monitored during auto discovery.
+the default value is empty string. If set, only the databases in this list will be monitored during auto discovery.
 
 ------
 
@@ -2030,7 +2141,7 @@ name: `pg_exporter_options`, type: `arg`, level: `C`
 
 overwrite extra options for pg_exporter
 
-default value is empty string, which will fall back the following default options:
+the default value is empty string, which will fall back the following default options:
 
 ```bash
 --log.level=info
@@ -2066,7 +2177,7 @@ name: `pgbouncer_exporter_url`, type: `pgurl`, level: `C`
 
 overwrite auto-generate pgbouncer dsn if specified
 
-default value is empty string, If specified, it will be used as the pgbouncer_exporter dsn instead of constructing from other parameters:
+the default value is empty string, If specified, it will be used as the pgbouncer_exporter dsn instead of constructing from other parameters:
 
 ```bash
 'postgres://{{ pg_monitor_username }}:{{ pg_monitor_password }}@:{{ pgbouncer_port }}/pgbouncer?host={{ pg_localhost }}&sslmode=disable'
@@ -2086,7 +2197,7 @@ overwrite extra options for pgbouncer_exporter, default value is empty string.
 --log.level=info
 ```
 
-default value is empty string, which will fall back the following default options:
+the default value is empty string, which will fall back the following default options:
 
 If you want to customize logging options or other pgbouncer_exporter options, you can set it here.
 
@@ -2115,3 +2226,67 @@ pgbackrest_exporter listen port, `9854` by default
 name: `pgbackrest_exporter_options`, type: `arg`, level: `C`
 
 extra cli args for pgbackrest_exporter, default value is empty string `""`.
+
+
+
+
+------
+
+## `PG_REMOVE`
+
+These flags control the behavior of [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) playbook, which is used to remove postgres instance or cluster.
+
+```yaml
+pg_safeguard: false               # stop pg_remove running if pg_safeguard is enabled, false by default
+pg_rm_data: true                  # remove postgres data during remove? true by default
+pg_rm_bkup: true                  # remove pgbackrest backup during primary remove? true by default
+pg_rm_pkg: true                   # uninstall postgres packages during remove? true by default
+```
+
+
+------
+
+### `pg_safeguard`
+
+name: `pg_safeguard`, type: `bool`, level: `G/C/A`
+
+prevent purging running postgres instance? false by default
+
+If enabled, [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
+
+------
+
+### `pg_rm_data`
+
+name: `pg_rm_data`, type: `bool`, level: `G/C/A`
+
+purging existing postgres during pgsql init? `true` by default, which remove postgres data directory during remove playbook.
+
+If you want to keep the data directory, set it to `false`, which will leave the data directory there.
+
+
+------
+
+### `pg_rm_bkup`
+
+name: `pg_rm_bkup`, type: `bool`, level: `G/C/A`
+
+remove pgbackrest backup during primary remove? `true` by default， which will remove the pgbackrest backup repo during remove playbook.
+
+It only performs on primary instance, and only when [`pgbackrest_enabled`](#pgbackrest_enabled) is `true`.
+
+If you want to keep the backup, set it to `false`, which will leave the backup repo there.
+
+
+
+------
+
+### `pg_rm_pkg`
+
+name: `pg_rm_pkg`, type: `bool`, level: `G/C/A`
+
+uninstall postgres packages during remove? `true` by default, which will uninstall the postgres / extension packages during remove playbook.
+
+If you want to keep the packages, set it to `false`, which will leave the packages there.
+
+
