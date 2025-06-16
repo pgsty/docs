@@ -320,7 +320,7 @@ function Introduction(): React.ReactElement {
                 <Link href="/docs/install/start"><div className={cn(badgeVariants())}>1</div></Link>
                 <Link href="/docs/install/start"><h3 className="text-xl font-semibold">Install Pigsty</h3></Link>
                 <p className="mb-8 text-fd-muted-foreground">
-                    One command to <Link className="font-bold text-sky-500" href="/docs/install/start">install</Link> PostgreSQL RDS with  <Link className="font-bold text-sky-500" href="https://ext.pigsty.io">420+</Link> extensions.
+                    One command to <Link className="font-bold text-sky-500" href="/ext/list">install</Link> PostgreSQL RDS with  <Link className="font-bold text-sky-500" href="https://ext.pigsty.io">420+</Link> extensions.
                 </p>
                 <CreateAppAnimation />
             </div>

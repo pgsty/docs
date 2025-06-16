@@ -3,3 +3,85 @@ title: PG Distribution
 description: Just use PostgreSQL for Everything! Build data infra with postgres superpowers
 icon: Gift
 ---
+
+[PostgreSQL is eating the database world](https://medium.com/@fengruohang/postgres-is-eating-the-database-world-157c204dcfc4),
+and it is becoming the Linux kernel of the database world.
+
+**But where are the distributions?**
+
+--------
+
+## What is Distribution?
+
+Nowadays, people use OS distributions like Ubuntu, Debian, and RHEL, rather than the raw Linux kernel directly.
+You'll need a lot of components to build a practical operating system, such as systemd, cron, NTP, DNS, logging, ..., to make the raw Linux kernel usable.
+
+The linux kernel is several MB in size, but a full OS DVD can easily take up 10+GB, including all the necessary parts and software packages.
+That's what a PostgreSQL Distribution is all about —— Gives you everything to build a production-grade Database Service.
+
+![](/img/pigsty/kernel-distro.jpg)
+
+
+--------
+
+## Why do we need Distribution?
+
+We have two things to forge a powerful PostgreSQL distribution: [Extensions](#extensions) and [Services](#services).
+
+
+## Extensions
+
+There are [1000+](https://gist.github.com/joelonsql/e5aa27f8cc9bd22b8999b7de8aee9d47) extensions in the PostgreSQL ecosystem.
+But only 100 of them are accessible via the "Official" PGDG Repositories.
+
+![](/img/pigsty/ecosystem.gif)
+
+So we packed the most popular and useful extensions into pre-made RPM/DEB packages for 10 linux distributions and 5 PG Major version.
+Now there are unparalleled [421 extensions](/ext/list) available out-of-the-box, and we will continue to add more extensions in the future.
+
+What's more, we even have support for 8 flavors of PostgreSQL kernels (ext, fork, wrapper, etc.), including:
+
+| Kernel                                   | Key Feature              | Description                                      |
+|------------------------------------------|--------------------------|--------------------------------------------------|
+| [Citus](/docs/feat/kernel#citus)         | **Horizontal Scaling**   | Native Distributive PostgreSQL                   |
+| [WiltonDB](/docs/feat/kernel#babelfish)  | **SQL Server Migration** | SQL Server wire-compatibility                    |
+| [IvorySQL](/docs/feat/kernel#ivorysql)   | **Oracle Migration**     | Oracle Grammar and PL/SQL compatiblek            |
+| [OpenHalo](/docs/feat/kernel#openhalo)   | **MySQL Migration**      | MySQL wire-protocol compatibility                |
+| [FerretDB](/docs/ferret)                 | **MongoDB Migration**    | MongoDB wire-protocol compatibility              |
+| [OrioleDB](/docs/feat/kernel#orioledb)   | **OLTP Optimization**    | Zheap, No bloat, S3 Storage                      |
+| [PolarDB PG](/docs/feat/kernel#polardb)  | **Aurora flavor RAC**    | RAC, China domestic compliance                   |
+| [Supabase](/docs/feat/kernel#supabase)   | **Backend as Service**   | BaaS based on PostgreSQL, Firebase alternative   |
+| [Greenplum](/docs/feat/kernel#greenplum) | **Analytics/DW**         | Massively parallel processing database warehouse |
+
+
+
+--------
+
+## Services
+
+![](/img/pigsty/infra.png)
+
+
+
+
+
+
+
+
+
+
+
+
+You can get started with raw PostgreSQL kernel easily like `systemctl start postgresql`, but it's far away from production grade service.
+That's the main reason why people pay 160 $ / vCPU·Month for a managed PostgreSQL service like AWS RDS.
+
+But what if you can just build an enterprise-grade PostgreSQL service on your own, with a few commands, and no license fees?
+Pigsty enables you to do that. It gives you HA PostgreSQL clusters with PITR, Monitoring & Alerting, Connection Pooling, along with
+
+
+--------
+
+## What kind of Distribution?
+
+For example
+

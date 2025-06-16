@@ -1,9 +1,9 @@
 {
   "name": "docs",
-  "version": "0.0.0",
+  "version": "3.5.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "NODE OPTIONS=--max-old-space-size=6144 next build",
     "dev": "next dev --turbo",
     "start": "next start",
     "postinstall": "fumadocs-mdx"
