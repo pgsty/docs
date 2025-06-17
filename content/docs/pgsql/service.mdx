@@ -4,6 +4,8 @@ description: reliable service access via lb, proxy, pool
 icon: ConciergeBell
 ---
 
+
+
 ## Service Implementation
 
 In Pigsty, services are implemented using [haproxy](/docs/node/param#haproxy) on [nodes](/docs/node/), differentiated by different ports on the host node.
@@ -27,6 +29,8 @@ All services are declared through configuration files. For instance, the default
 ```
 
 You can also define new service in [`pg_services`](/docs/pgsql/param#pg_services). And `pg_default_services` 与 `pg_services` are both array of [Service Definition](/docs/pgsql/service/#define-service).
+
+
 
 ------
 
@@ -77,6 +81,9 @@ listen pg-test-standby
     server pg-test-2 10.10.10.12:6432 check port 8008 weight 100
 ```
 
+
+
+
 ------
 
 ## Reload Service
@@ -92,7 +99,7 @@ bin/pgsql-svc <cls> [ip...]         # reload service for lb cluster or lb instan
 
 ## Override Service
 
-You can override default service configuration with several ways:
+You can override the default service configuration in several ways:
 
 **Bypass Pgbouncer**
 
@@ -114,9 +121,9 @@ pg_default_services:
 
 ## Delegate Service
 
-Pigsty expose PostgreSQL services with haproxy on node. All haproxy instances among the cluster are configured with the same service definition.
+Pigsty exposes PostgreSQL services with haproxy on node. All haproxy instances among the cluster are configured with the same service definition.
 
-However, you can delegate pg service to a specific node group (e.g. dedicate haproxy lb cluster) rather than cluster members.
+However, you can delegate pg service to a specific node group (e.g., dedicate haproxy lb cluster) rather than cluster members.
 
 To do so, you will have to override the default service definition with [`pg_default_services`](/docs/pgsql/param#pg_default_services) and set [`pg_service_provider`](/docs/pgsql/param#pg_service_provider) to the proxy group name.
 

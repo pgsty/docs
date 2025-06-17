@@ -121,9 +121,9 @@ In principle, PostgreSQL extensions typically consist of three parts:
 The `SQL` file is optional, so extensions without an `SQL` file typically don’t require executing the `CREATE EXTENSION` command to enable.
 
 | **[LOAD](/docs/pgsql/ext/config) \ DDL** | Requires `CREATE EXTENSION` | Doesn't require `CREATE EXTENSION` |
-|-------------------------------------------|-----------------------------|------------------------------------|
-| **Requires `LOAD`**                       | Extensions using hooks      | Headless extensions                |
-| **Doesn’t Require `LOAD`**                | Extensions not using hooks  | Logical decoding output plugins    |
+|------------------------------------------|-----------------------------|------------------------------------|
+| **Requires `LOAD`**                      | Extensions using hooks      | Headless extensions                |
+| **Doesn’t Require `LOAD`**               | Extensions not using hooks  | Logical decoding output plugins    |
 
 For example, the `wal2json` extension providing CDC extraction capabilities, the `pg_stat_statements` and `auto_explain` extensions providing slow query statistics.
 They only have shared library files and extension `.control` files, without SQL files, so they don’t need/cannot be enabled through the `CREATE EXTENSION` command.

@@ -1,22 +1,22 @@
 ---
 title: Parameter
-description: customize postgres cluster with 115-parameter
+description: customize postgres cluster with 120-parameter
 icon: Variable
 ---
 
-There are **115** parameters about the `PGSQL` module.
+There are **120** parameters about the `PGSQL` module.
 
 
 | Section                         | Count | Description                                                                                                                                        |
 |---------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | [`PG_ID`](#pg_id)               | 11    | Calculate & Check Postgres Identity - parameters for identifying PGSQL entities like instances and services                                        |
-| [`PG_BUSINESS`](#pg_business)   | 11    | Postgres Business Object Definition - configuration for business users, databases, services, and authentication                                    |
+| [`PG_BUSINESS`](#pg_business)   | 12    | Postgres Business Object Definition - configuration for business users, databases, services, and authentication                                    |
 | [`PG_INSTALL`](#pg_install)     | 10    | Install PGSQL Packages & Extensions - settings for database user setup, version selection, and package installation                                |
-| [`PG_BOOTSTRAP`](#pg_bootstrap) | 32    | Init a HA Postgres Cluster with Patroni - comprehensive cluster initialization including data directories, networking, and high availability setup |
+| [`PG_BOOTSTRAP`](#pg_bootstrap) | 35    | Init a HA Postgres Cluster with Patroni - comprehensive cluster initialization including data directories, networking, and high availability setup |
 | [`PG_PROVISION`](#pg_provision) | 9     | Create users, databases, and in-database objects - post-bootstrap provisioning of database objects and default configurations                      |
 | [`PG_BACKUP`](#pg_backup)       | 5     | Setup backup repo with pgbackrest - backup and recovery configuration using pgbackrest                                                             |
-| [`PG_SERVICE`](#pg_service)     | 13    | Exposing pg service, bind vip and register DNS - service exposure, load balancing, VIP management, and DNS registration                            |
-| [`PG_EXPORTER`](#pg_exporter)   | 15    | Add Monitor for PGSQL Instance - monitoring setup with various exporters for metrics collection                                                    |
+| [`PG_ACCESS`](#pg_access)       | 16    | Exposing pg service, bind vip and register DNS - service exposure, load balancing, VIP management, and DNS registration                            |
+| [`PG_MONITOR`](#pg_exporter)    | 18    | Add Monitor for PGSQL Instance - monitoring setup with various exporters for metrics collection                                                    |
 | [`PG_REMOVE`](#pg_remove)       | 4     | Remove a Postgres Cluster - safe cluster removal with data cleanup options                                                                         |
 
 
@@ -55,7 +55,7 @@ There are **115** parameters about the `PGSQL` module.
 | [`pg_monitor_password`](#pg_monitor_password)         | `password`   | G     | postgres monitor password, `DBUser.Monitor` by default         |
 | [`pg_dbsu_password`](#pg_dbsu_password)               | `password`   | G/C   | postgres dbsu password, empty string disable it by default     |
 
-- [`PG_INSTALL`](#pg_install) : Install PGSQL Packages & Extensions
+[`PG_INSTALL`](#pg_install) : Install PGSQL Packages & Extensions
 
 | Name                                            | Type       | Level | Comment                                                         |
 |-------------------------------------------------|------------|-------|-----------------------------------------------------------------|
@@ -70,7 +70,7 @@ There are **115** parameters about the `PGSQL` module.
 | [`pg_packages`](#pg_packages)                   | `string[]` | C     | pg packages to be installed, `${pg_version}` will be replaced   |
 | [`pg_extensions`](#pg_extensions)               | `string[]` | C     | pg extensions to be installed, `${pg_version}` will be replaced |
 
-[`PG_BOOTSTRAP`](#pg_bootstrap) : Init a HA Postgres Cluster with Patroni
+[`PG_BOOTSTRAP`](#pg_bootstrap) : Launch HA Postgres Cluster with Patroni
 
 | Name                                                | Type       | Level | Comment                                                                       |
 |-----------------------------------------------------|------------|-------|-------------------------------------------------------------------------------|
@@ -135,7 +135,7 @@ There are **115** parameters about the `PGSQL` module.
 | [`pgbackrest_method`](#pgbackrest_method)   | `enum` | C     | pgbackrest repo method: local,minio,etc…                                      |
 | [`pgbackrest_repo`](#pgbackrest_repo)       | `dict` | G/C   | pgbackrest repo: https://pgbackrest.org/configuration.html#section-repository |
 
-[`PG_SERVICE`](#pg_service) : Exposing pg service, bind vip and register DNS
+[`PG_ACCESS`](#pg_access) : Exposing pg service, bind vip and register DNS
 
 | Name                                                  | Type        | Level | Comment                                                                      |
 |-------------------------------------------------------|-------------|-------|------------------------------------------------------------------------------|

@@ -71,7 +71,7 @@ There are four default users in pigsty, too.
 - Monitor user (`dbuser_monitor`), a user used to monitor database and connection pool metrics.
 - Admin user (`dbuser_dba`), the admin user who performs daily operations and database changes.
 
-Default users’ username/password are defined with dedicate parameters (except for dbsu password):
+Default users’ username/password are defined with dedicated parameters (except for dbsu password):
 
 - [`pg_dbsu`](/docs/pgsql/param#pg_dbsu) : os dbsu name, postgres by default, better not change it
 - [`pg_replication_username`](/docs/pgsql/param#pg_replication_username) : postgres replication username, `replicator` by default
@@ -149,7 +149,7 @@ Newly created objects will have corresponding privileges when it is **created by
 The `\ddp+` may looks like:
 
 | Type     | Access privileges    |
-| -------- | -------------------- |
+|----------|----------------------|
 | function | =X                   |
 |          | dbrole_readonly=X    |
 |          | dbrole_offline=X     |
@@ -191,7 +191,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "dbrole_admin" {{ priv }};
 
 Which will be rendered in [`pg-init-template.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-template.sql) alone with `ALTER DEFAULT PRIVILEGES` statement for admin users.
 
-These SQL command will be executed on `postgres` & `template1` during cluster bootstrap, and newly created database will inherit it from `tempalte1` by default.
+These SQL commands will be executed on `postgres` & `template1` during cluster bootstrap, and newly created databases will inherit it from `tempalte1` by default.
 
 That is to say, to maintain the correct object privilege, you have to run DDL with **admin users**, which could be:
 
@@ -199,7 +199,8 @@ That is to say, to maintain the correct object privilege, you have to run DDL wi
 2. [`{{ pg_admin_username }}`](/docs/pgsql/param#pg_admin_username), `dbuser_dba` by default
 3. Business admin user granted with `dbrole_admin`
 
-It’s wise to use `postgres` as global object owner to perform DDL changes. If you wish to create objects with business admin user, YOU MUST USE `SET ROLE dbrole_admin` before running that DDL to maintain the correct privileges.
+It’s wise to use `postgres` as the global object owner to perform DDL changes.
+If you wish to create objects with business admin user, YOU MUST USE `SET ROLE dbrole_admin` before running that DDL to maintain the correct privileges.
 
 You can also `ALTER DEFAULT PRIVILEGE FOR ROLE <some_biz_admin> XXX` to grant default privilege to business admin user, too.
 
@@ -218,12 +219,12 @@ There are 3 database level privileges: `CONNECT`, `CREATE`, `TEMP`, and a specia
   revokeconn: false  # optional, revoke public connection privilege. false by default. (leave connect with grant option to owner)
 ```
 
-- If `owner` exists, it will be used as database owner instead of default [`{{ pg_dbsu }}`](/docs/pgsql/param#pg_dbsu)
+- If `owner` exists, it will be used as the database owner instead of default [`{{ pg_dbsu }}`](/docs/pgsql/param#pg_dbsu)
 - If `revokeconn` is `false`, all users have the `CONNECT` privilege of the database, this is the default behavior.
 - If `recokeconn` is set to `true` explicitly:
 - `CONNECT` privilege of the database will be revoked from `PUBLIC`
 - `CONNECT` privilege will be granted to `{{ pg_replication_username }}`, `{{ pg_monitor_username }}` and `{{ pg_admin_username }}`
-- `CONNECT` privilege will be granted to database owner with `GRANT OPTION`
+- `CONNECT` privilege will be granted to the database owner with `GRANT OPTION`
 
 `revokeconn` flag can be used for database access isolation, you can create different business users as the owners for each database and set the `revokeconn` option for all of them.
 
@@ -234,4 +235,4 @@ There are 3 database level privileges: `CONNECT`, `CREATE`, `TEMP`, and a specia
 
 Pigsty revokes the `CREATE` privilege on database from `PUBLIC` by default, for security consideration. And this is the default behavior since PostgreSQL 15.
 
-The database owner have the full capability to adjust these privileges as they see fit.
+The database owner has the full ability to adjust these privileges as they see fit.

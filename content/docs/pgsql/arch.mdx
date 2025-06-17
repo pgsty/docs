@@ -131,7 +131,7 @@ Meanwhile, the [Infra Node](/docs/node/arch#infra-node) consists of the followin
     - Haproxy port 5436: default service that routes to primary postgres: [default](/docs/pgsql/service/#default-service)
     - Haproxy port 5438: default service that routes to offline postgres: [offline](/docs/pgsql/service/#offline-service)
     - HAProxy will route traffic based on health check information provided by `patroni`.
-- Pgbouncer is a connection pool listens on port 6432
+- Pgbouncer is a connection pool that listens to port 6432
     - 1:1 Deployed with the Postgres server through a local unix socket.
     - Production traffic (Primary/Replica) will go through pgbouncer by default
     - Bypass pgbouncer for `primary`/`replica` services by setting [`pg_default_service_dest`](/docs/pgsql/param#pg_default_service_dest) ) to `postgres`
