@@ -158,11 +158,17 @@ make repo                   # redownload packages
 
 We can add **3** more nodes to this deployment.
 
-
-
 ```yaml
+bin/node-add pg-test
 ```
 
+Or add them one by one:
+
+```bash
+bin/node-add 10.10.10.11
+bin/node-add 10.10.10.12
+bin/node-add 10.10.10.13
+````
 
 
 --------
@@ -198,7 +204,14 @@ There's no support to run multiple postgres instances on a single node.
 
 Pigsty has optional Redis support, which is used as a cache in front of PostgreSQL.
 
-Redis HA setup requires cluster mode, or sential infra, check Redis Config for details.
+```bash
+bin/redis-add redis-ms
+bin/redis-add redis-meta
+bin/redis-add redis-test
+
+```
+
+Redis HA setup requires cluster mode, or sentinel infra, check Redis Config for details.
 
 
 --------
@@ -207,7 +220,9 @@ Redis HA setup requires cluster mode, or sential infra, check Redis Config for d
 
 Pigsty has optional MinIO support, which is used as a backup storage for PostgreSQL.
 
-
+```bash
+./minio.yml -l minio
+```
 
 Serious production MinIO deployment usually requires at least 4 nodes with 4 disks each (4N/16D)
 
@@ -216,15 +231,35 @@ Serious production MinIO deployment usually requires at least 4 nodes with 4 dis
 
 ## Docker Up
 
+Install docker on the `infra` group:
+
+```bash
+./docker.yml -l infra
+```
 
 --------
 
 ## Run PgAdmin
 
+Check the [App: Pgadmin](/docs/app/pgadmin) for details on how to run pgAdmin with Pigsty. Short version:
+
+```bash
+./docker.yml -l infra
+./app.yml    -l infra -e app=pgadmin
+```
 
 --------
 
-## Run
+## Self-Hosting Supabase
+
+Check the [App: Supabase](/docs/app/supabase) for details on how to run Supabase with Pigsty. Short version:
+
+```bash
+./configure -c app/supa
+./install.yml
+./docker.yml
+./app.yml
+```
 
 
 

@@ -363,11 +363,11 @@ function Introduction(): React.ReactElement {
                     <span>Deliver enterprise-grade database service in minutes, </span> without caring about details.
                 </p><br /><br />
                 <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
-                    <Image
+                    <Link href="/docs/feat/ha"><Image
                         src={HaImg}
                         alt="Architecture"
                         className="mx-auto -my-16 w-full max-w-[1200px] lg:max-w-[1400px] xl:max-w-[1600px] lg:mx-0"
-                    />
+                    /></Link>
                 </div>
                 <br />
             </div>

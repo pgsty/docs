@@ -4,9 +4,10 @@
   "icon": "PencilRuler",
   "root": false,
   "pages": [
+    "playbook",
+    "pgadmin",
     "supabase",
     "odoo",
-    "dify",
-    "playbook"
+    "dify"
   ]
 }

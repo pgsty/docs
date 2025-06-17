@@ -1,0 +1,101 @@
+---
+title: pgAdmin
+description: Launch the official GUI Admin Tool for PostgreSQL
+icon: MonitorCheck
+---
+
+[pgAdmin](https://www.pgadmin.org/) is the most popular and feature rich Open Source administration and development platform for PostgreSQL,
+the most advanced Open Source database in the world.
+
+
+--------
+
+## Quick Start
+
+Pigsty has built-in (but optional) support for pgAdmin, it launches pgadmin with [Docker](/docs/docker) Compose:
+
+```bash
+./docker.yml
+./app.yml -e app=pgadmin
+```
+
+The default port for pgadmin is `8885`, and you can access it through IP:Port : `http://10.10.10.10:8885`.
+
+The default credentials are defined in [`.env`](https://github.com/pgsty/pigsty/blob/main/app/pgadmin/.env), username: `admin@pigsty.cc`, password: `pigsty`.
+
+
+
+--------
+
+## Customize
+
+Customize the pgadmin configuration in `/opt/pgadmin/.env` and manage it with `docker compose`.
+
+You can also customize the `apps` parameter and override default `.env` configuration with:
+
+```yaml
+all:
+  children:
+
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+      vars:
+        docker_enabled: true
+        app: pgadmin  # specify app name (pgadmin) to be installed (in the apps)
+        apps:         # define all applications
+          supabase:   # the definition of pgadmin app
+            conf:     # override /opt/supabase/.env
+
+              PGADMIN_DEFAULT_EMAIL: your@email.com
+              PGADMIN_DEFAULT_PASSWORD: yourPassword
+
+              PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+              PGADMIN_PORT: 8885
+              PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+              PGADMIN_REPLACE_SERVERS_ON_STARTUP: true
+```
+
+To launch the application, run:
+
+```bash
+./app.yml -l infra
+```
+
+
+
+--------
+
+## Domain & Cert
+
+To access pgadmin through nginx (rather than access port 8885 directly), configure the [infra portal](/docs/admin/portal) with:
+
+```yaml title="pigsty.yml"
+all:
+  vars:
+    infra_portal:
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+      blackbox     : { endpoint: "${admin_ip}:9115" }
+      loki         : { endpoint: "${admin_ip}:3100" }
+
+      # add pgadmin upstream server definition here
+      pgadmin      : { domain: adm.pigsty  ,endpoint: "127.0.0.1:8885" }
+```
+
+Then run `make nginx` to update nginx config, and configure [local static DNS](/docs/admin/domain#local-static-resolution) record `<your_ip_address> adm.pigsty` in `/etc/hosts` or [local](/docs/admin/domain#internal-dynamic-resolution) / [public](/docs/admin/domain#public-domain-resolution) DNS server.
+
+Pigsty will issue self-signed SSL certs for the domains listed in [`infra_portal`](/docs/infra/param#infra_portal) automatically.
+If you want to use real domain names, define `cerbot` entry and run `make cert`, check [SSL Certs](/docs/admin/cert) for details.
+
+```yaml
+all:
+  vars:        # make sure your domain name (adm.pigsty.cc) is resolved to your public IP
+    certbot_sign: true   # sign real HTTPS certs with certbot (Internet access required!)
+    infra_portal:
+      pgadmin : { domain: adm.pigsty.cc  ,endpoint: "127.0.0.1:8885", certbot: adm.pigsty.cc }
+```
+
+
