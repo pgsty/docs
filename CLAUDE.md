@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the documentation site for **Pigsty** - a PostgreSQL infrastructure management platform. The docs are built with **Next.js 15** and **Fumadocs**, supporting internationalization (English/Chinese) and featuring comprehensive documentation for Pigsty's various modules.
 
+When you are using python, use the ~/.venv/bin/activate to activate the virtual environment.
+
 ## Development Commands
 
 ### Core Development
@@ -119,4 +121,6 @@ The official docs is in http://pigsty.io/docs
 
 The author may ask you to help write docs and summarize pigsty features.
 You can consult the above two sources for official information
+
+
 

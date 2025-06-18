@@ -137,7 +137,7 @@ and translated to the corresponding RPM/DEB package names by [**alias translatio
 ## Caveats
 
 - There are two known conflictions:
-  - [`citus`](/ext/citus/) and [`hydra`](/ext/hydra) are mutually exclusive, since hydra is a fork of citus columnar without renaming
+  - [`citus`](/ext/citus/) and [`hydra`](/ext/columnar) are mutually exclusive, since hydra is a fork of citus columnar without renaming
   - Only install one from [`pg_duckdb`](/ext/pg_duckdb), [`pg_mooncake`](/ext/pg_mooncake), [`duckdb_fdw`](/ext/duckdb_fdw), they all using their own libduckdb
 - `pgaudit` got a different naming pattern on el for pg 15-: pg16+ = pgaudit, pg15=pgaudit17, pg14=pgaudit16 pg13=pgaudit15 pg12=pgaudit14
 - `postgis` got its own version in el package name: postgis35 by default, and postgis33 for legacy el7

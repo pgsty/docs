@@ -39,7 +39,7 @@ There are several ways to modify PostgreSQL cluster configuration in Pigsty:
 
 For new clusters, configure the [`pg_libs`](/docs/pgsql/param#pg_libs) parameter to specify the initial value of `shared_preload_libraries`.
 
-Note that [`pg_libs`](/docs/pgsql/param#pg_libs) only takes effect during [**cluster creation**](/docs/pgsql/admin#creating-cluster). After creation, it becomes the initial value for the PostgreSQL parameter `shared_preload_libraries`.
+Note that [`pg_libs`](/docs/pgsql/param#pg_libs) only takes effect during [**cluster creation**](/docs/pgsql/admin#create-cluster). After creation, it becomes the initial value for the PostgreSQL parameter `shared_preload_libraries`.
 
 To modify loaded extensions in an existing cluster, use the Patroni command line to [**config cluster**](/docs/pgsql/admin#config-cluster), change `shared_preload_libraries`, and restart to apply changes.
 

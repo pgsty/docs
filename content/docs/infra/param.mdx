@@ -1014,8 +1014,8 @@ default value: `none`
 Specify how to install Exporter:
 
 - `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](/docs/node/param#node_default_packages) task)
-- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](/docs/node/param#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) before deploying Exporter)
-- `binary`: Install using a copy binary (copy [`node_exporter`](/docs/node/param#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter) binary directly from the meta node, not recommended)
+- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](/docs/node/param#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter_enabled) before deploying Exporter)
+- `binary`: Install using a copy binary (copy [`node_exporter`](/docs/node/param#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter_enabled) binary directly from local file dir, not recommended)
 
 When installing with `yum`, if `exporter_repo_url` is specified (not empty), the installation will first install the REPO file under that URL into `/etc/yum.repos.d`. This feature allows you to install Exporter directly without initializing the node infrastructure. It is not recommended for regular users to use `binary` installation. This mode is usually used for emergency troubleshooting and temporary problem fixes.
 

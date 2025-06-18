@@ -131,7 +131,7 @@ pg_monitor              : # setup pgsql monitor and register to infra
 <Callout title="Init Primary before Replicas" type="warning">
 
     - you may have to run [`Reload HBARule`](/docs/pgsql/admin#reload-hbarule) and [`Append Replica`](/docs/pgsql/admin#append-replica) after replica init.
-    - The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/docs/pgsql/admin#add-instance) for details.
+    - The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/docs/pgsql/admin#append-replica) for details.
     - If you run this on the entire cluster, you don’t have to worry about this.
 
 </Callout>

@@ -113,43 +113,43 @@ Available parameters vary according to the modules:
 
 ## Reference
 
-Pigsty have 280+ parameters, check module parameters for details.
+Pigsty has **290+** parameters, check module parameters for details.
 
-| Module                         | Section                                             | Description                      | Count |
-|--------------------------------|-----------------------------------------------------|----------------------------------|-------|
-| [`INFRA`](/docs/infra/param)   | [`META`](/docs/infra/param#meta)                   | Pigsty Metadata                  | 4     |
-| [`INFRA`](/docs/infra/param)   | [`CA`](/docs/infra/param#ca)                       | Self-Signed CA                   | 3     |
-| [`INFRA`](/docs/infra/param)   | [`INFRA_ID`](/docs/infra/param#infra_id)           | Infra Portals & Identity         | 2     |
-| [`INFRA`](/docs/infra/param)   | [`REPO`](/docs/infra/param#repo)                   | Local Software Repo              | 9     |
-| [`INFRA`](/docs/infra/param)   | [`INFRA_PACKAGE`](/docs/infra/param#infra_package) | Infra Packages                   | 2     |
-| [`INFRA`](/docs/infra/param)   | [`NGINX`](/docs/infra/param#nginx)                 | Nginx Web Server                 | 7     |
-| [`INFRA`](/docs/infra/param)   | [`DNS`](/docs/infra/param#dns)                     | DNSMASQ Nameserver               | 3     |
-| [`INFRA`](/docs/infra/param)   | [`PROMETHEUS`](/docs/infra/param#prometheus)       | Prometheus Stack                 | 18    |
-| [`INFRA`](/docs/infra/param)   | [`GRAFANA`](/docs/infra/param#grafana)             | Grafana Stack                    | 6     |
-| [`INFRA`](/docs/infra/param)   | [`LOKI`](/docs/infra/param#loki)                   | Loki Logging Service             | 4     |
-| [`NODE`](/docs/node/param)     | [`NODE_ID`](/docs/node/param#node_id)              | Node Identity Parameters         | 5     |
-| [`NODE`](/docs/node/param)     | [`NODE_DNS`](/docs/node/param#node_dns)            | Node domain names & resolver     | 6     |
-| [`NODE`](/docs/node/param)     | [`NODE_PACKAGE`](/docs/node/param#node_package)    | Node Repo & Packages             | 5     |
-| [`NODE`](/docs/node/param)     | [`NODE_TUNE`](/docs/node/param#node_tune)          | Node Tuning & Kernel features    | 10    |
-| [`NODE`](/docs/node/param)     | [`NODE_ADMIN`](/docs/node/param#node_admin)        | Admin User & Credentials         | 7     |
-| [`NODE`](/docs/node/param)     | [`NODE_TIME`](/docs/node/param#node_time)          | Node Timezone, NTP, Crontabs     | 5     |
-| [`NODE`](/docs/node/param)     | [`NODE_VIP`](/docs/node/param#node_vip)            | Node Keepalived L2 VIP           | 8     |
-| [`NODE`](/docs/node/param)     | [`HAPROXY`](/docs/node/param#haproxy)              | HAProxy the load balancer        | 10    |
-| [`NODE`](/docs/node/param)     | [`NODE_EXPORTER`](/docs/node/param#node_exporter)  | Node Monitoring Agent            | 3     |
-| [`NODE`](/docs/node/param)     | [`PROMTAIL`](/docs/node/param#promtail)            | Promtail logging Agent           | 4     |
-| [`DOCKER`](/docs/docker/param) | [`DOCKER`](/docs/docker/param#docker)              | Docker Daemon                    | 4     |
-| [`ETCD`](/docs/etcd/param)     | [`ETCD`](/docs/etcd/param#etcd)                    | ETCD DCS Cluster                 | 10    |
-| [`MINIO`](/docs/minio/param)   | [`MINIO`](/docs/minio/param#minio)                 | MINIO S3 Object Storage          | 15    |
-| [`REDIS`](/docs/redis/param)   | [`REDIS`](/docs/redis/param#redis)                 | Redis the key-value NoSQL cache  | 20    |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_ID`](/docs/pgsql/param#pg_id)                 | PG Identity Parameters           | 11    |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_BUSINESS`](/docs/pgsql/param#pg_business)     | PG Business Object Definition    | 12    |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_INSTALL`](/docs/pgsql/param#pg_install)       | Install PG Packages & Extensions | 10    |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_BOOTSTRAP`](/docs/pgsql/param#pg_bootstrap)   | Init HA PG Cluster with Patroni  | 39    |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_PROVISION`](/docs/pgsql/param#pg_provision)   | Create in-database objects       | 9     |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_BACKUP`](/docs/pgsql/param#pg_backup)         | Set Backup Repo with pgBackRest  | 5     |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_SERVICE`](/docs/pgsql/param#pg_service)       | Exposing service, bind vip, dns  | 9     |
-| [`PGSQL`](/docs/pgsql/param)   | [`PG_EXPORTER`](/docs/pgsql/param#pg_exporter)     | PG Monitor agent for Prometheus  | 15    |
-
+| Module                         | Section                                            | Description                         | Count |
+|--------------------------------|----------------------------------------------------|-------------------------------------|-------|
+| [`INFRA`](/docs/infra/param)   | [`META`](/docs/infra/param#meta)                   | Pigsty Metadata                     | 4     |
+| [`INFRA`](/docs/infra/param)   | [`CA`](/docs/infra/param#ca)                       | Self-Signed CA                      | 3     |
+| [`INFRA`](/docs/infra/param)   | [`INFRA_ID`](/docs/infra/param#infra_id)           | Infra Portals & Identity            | 2     |
+| [`INFRA`](/docs/infra/param)   | [`REPO`](/docs/infra/param#repo)                   | Local Software Repo                 | 9     |
+| [`INFRA`](/docs/infra/param)   | [`INFRA_PACKAGE`](/docs/infra/param#infra_package) | Infra Packages                      | 2     |
+| [`INFRA`](/docs/infra/param)   | [`NGINX`](/docs/infra/param#nginx)                 | Nginx Web Server                    | 7     |
+| [`INFRA`](/docs/infra/param)   | [`DNS`](/docs/infra/param#dns)                     | DNSMASQ Nameserver                  | 3     |
+| [`INFRA`](/docs/infra/param)   | [`PROMETHEUS`](/docs/infra/param#prometheus)       | Prometheus Stack                    | 18    |
+| [`INFRA`](/docs/infra/param)   | [`GRAFANA`](/docs/infra/param#grafana)             | Grafana Stack                       | 6     |
+| [`INFRA`](/docs/infra/param)   | [`LOKI`](/docs/infra/param#loki)                   | Loki Logging Service                | 4     |
+| [`NODE`](/docs/node/param)     | [`NODE_ID`](/docs/node/param#node_id)              | Node Identity Parameters            | 5     |
+| [`NODE`](/docs/node/param)     | [`NODE_DNS`](/docs/node/param#node_dns)            | Node domain names & resolver        | 6     |
+| [`NODE`](/docs/node/param)     | [`NODE_PACKAGE`](/docs/node/param#node_package)    | Node Repo & Packages                | 5     |
+| [`NODE`](/docs/node/param)     | [`NODE_TUNE`](/docs/node/param#node_tune)          | Node Tuning & Kernel features       | 10    |
+| [`NODE`](/docs/node/param)     | [`NODE_ADMIN`](/docs/node/param#node_admin)        | Admin User & Credentials            | 7     |
+| [`NODE`](/docs/node/param)     | [`NODE_TIME`](/docs/node/param#node_time)          | Node Timezone, NTP, Crontabs        | 5     |
+| [`NODE`](/docs/node/param)     | [`NODE_VIP`](/docs/node/param#node_vip)            | Node Keepalived L2 VIP              | 8     |
+| [`NODE`](/docs/node/param)     | [`HAPROXY`](/docs/node/param#haproxy)              | HAProxy the load balancer           | 10    |
+| [`NODE`](/docs/node/param)     | [`NODE_EXPORTER`](/docs/node/param#node_exporter)  | Node Monitoring Agent               | 3     |
+| [`NODE`](/docs/node/param)     | [`PROMTAIL`](/docs/node/param#promtail)            | Promtail logging Agent              | 4     |
+| [`DOCKER`](/docs/docker/param) | [`DOCKER`](/docs/docker/param)                     | Docker Daemon                       | 4     |
+| [`ETCD`](/docs/etcd/param)     | [`ETCD`](/docs/etcd/param#etcd)                    | ETCD DCS Cluster                    | 10    |
+| [`MINIO`](/docs/minio/param)   | [`MINIO`](/docs/minio/param#minio)                 | MINIO S3 Object Storage             | 15    |
+| [`REDIS`](/docs/redis/param)   | [`REDIS`](/docs/redis/param)                       | Redis the key-value NoSQL cache     | 20    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_ID`](/docs/pgsql/param#pg_id)                 | PG Identity Parameters              | 11    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_BUSINESS`](/docs/pgsql/param#pg_business)     | PG Business Object Definition       | 12    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_INSTALL`](/docs/pgsql/param#pg_install)       | Install PG Packages & Extensions    | 10    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_BOOTSTRAP`](/docs/pgsql/param#pg_bootstrap)   | Init HA PG Cluster with Patroni     | 35    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_PROVISION`](/docs/pgsql/param#pg_provision)   | Create in-database objects          | 9     |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_BACKUP`](/docs/pgsql/param#pg_backup)         | Set Backup Repo with pgBackRest     | 5     |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_ACCESS`](/docs/pgsql/param#pg_access)         | Exposing service, bind vip, dns     | 16    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_MONITOR`](/docs/pgsql/param#pg_monitor)       | Collect metrics & logs for Postgres | 18    |
+| [`PGSQL`](/docs/pgsql/param)   | [`PG_EXPORTER`](/docs/pgsql/param#pg_remove)       | Remove a Postgres cluster           | 4     |
 
 
 

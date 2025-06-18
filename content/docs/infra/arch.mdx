@@ -125,7 +125,7 @@ Key features:
 
 AlertManager handles alerts on port 9093 (`IP:9093` or `http://a.pigsty`). While it receives Prometheus alerts, you’ll need extra config (e.g., SMTP) for notifications.
 
-Configs for Prometheus, AlertManager, PushGateway, and BlackboxExporter are in: [Config: INFRA - PROMETHEUS](/docs/infra/#prometheus)
+Configs for Prometheus, AlertManager, PushGateway, and BlackboxExporter are in: [Config: INFRA - PROMETHEUS](/docs/infra/arch#prometheus)
 
 ------
 
@@ -146,7 +146,7 @@ Configs live in: [Config: INFRA - GRAFANA](/docs/infra/param#grafana) and [Confi
 ### Ansible
 
 Ansible is already installed on the [Admin Node](/docs/node/arch#admin-node) during [bootstrap](/docs/install/start#bootstrap).
-So the `ansible` on [infra nodes](/docs/node/arch#infra-nodes) are not actually used.
+So the `ansible` on [infra nodes](/docs/node/arch#infra-node) are not actually used.
 But it gives you a viable backup option in case of your admin node is nuked.
 
 ------

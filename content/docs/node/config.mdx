@@ -19,11 +19,11 @@ Such as running node groups for dedicated purpose (e.g., haproxy groups, node bu
 
 Pigsty uses node's primary IPv4 address (`inventory_hostname`) as its identity.
 
-|                    Name                    |   Type   | Level | Necessity    | Comment               |
-|:------------------------------------------:|:--------:|:-----:|--------------|-----------------------|
-|            `inventory_hostname`            |   `ip`   | **-** | **Required** | **Node IP**           |
-|  [`nodename`](/docs/node/param#nodename)   | `string` | **I** | Optional     | **Node Name**         |
-| [`node_cluster`](/docs/node/#node_cluster) | `string` | **C** | Optional     | **Node cluster name** |
+|                      Name                       |   Type   | Level | Necessity    | Comment               |
+|:-----------------------------------------------:|:--------:|:-----:|--------------|-----------------------|
+|              `inventory_hostname`               |   `ip`   | **-** | **Required** | **Node IP**           |
+|     [`nodename`](/docs/node/param#nodename)     | `string` | **I** | Optional     | **Node Name**         |
+| [`node_cluster`](/docs/node/param#node_cluster) | `string` | **C** | Optional     | **Node cluster name** |
 
 The [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/param#node_cluster) can be used as optional secondary identity for monitoring purpose.
 
@@ -48,15 +48,15 @@ This can be useful when you just want to monitor these nodes rather than running
 Because Pigsty is using a 1:1 mapping between NODE and PG instance (there's only one PG instance per node),
 the node's identity can be borrowed from corresponding PG instances:
 
-|                    Name                    | Label | Level | Borrowed Identity               | Comment              |
-|:------------------------------------------:|:-----:|:-----:|---------------------------------|----------------------|
-|  [`nodename`](/docs/node/param#nodename)   | `ins` | **I** | `{{ pg_cluster }}-{{ pg_seq }}` | **PG Instance Name** |
-| [`node_cluster`](/docs/node/#node_cluster) | `cls` | **C** | `{{ pg_cluster }}`              | **PG Cluster Name**  |
+|                      Name                       | Label | Level | Borrowed Identity               | Comment              |
+|:-----------------------------------------------:|:-----:|:-----:|---------------------------------|----------------------|
+|     [`nodename`](/docs/node/param#nodename)     | `ins` | **I** | `{{ pg_cluster }}-{{ pg_seq }}` | **PG Instance Name** |
+| [`node_cluster`](/docs/node/param#node_cluster) | `cls` | **C** | `{{ pg_cluster }}`              | **PG Cluster Name**  |
 
 This is default behavior, it's convenient to have PG & NODE with the same `cls` / `ins` identity labels in the monitoring system.
 This can be disabled by overwriting the [`node_id_from_pg`](/docs/node/param#node_id_from_pg) param to `false`
 
-If there's no corresponding PG instance defined, and no explicit [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/#node_cluster) defined,
+If there's no corresponding PG instance defined, and no explicit [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/param#node_cluster) defined,
 the node will be labeled with `cls` as `nodes` and `ins` as the current hostname.
 
 

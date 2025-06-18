@@ -60,7 +60,7 @@ Here, the `extensions` in the database object is a list where each element can b
 - `schema`: Specifies the schema for installing the extension, defaults to the first schema in the current dbsu search path, usually the default `public`.
 - `version`: Specifies the extension version, defaults to the latest version, rarely used.
 
-If the database doesn’t exist yet, the extensions defined here will be automatically created when [**creating a cluster**](/docs/pgsql/admin#creating-cluster) or [**creating a database**](/docs/pgsql/admin#creating-database) through Pigsty.
+If the database doesn’t exist yet, the extensions defined here will be automatically created when [**creating a cluster**](/docs/pgsql/admin#create-cluster) or [**creating a database**](/docs/pgsql/admin#create-database) through Pigsty.
 
 If the database is already created, it’s recommended to manage extension through standard schema migration procedure. You can note corresponding changes in the Pigsty inventory to help future migration tasks.
 

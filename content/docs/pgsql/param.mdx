@@ -196,7 +196,7 @@ There are **120** parameters about the `PGSQL` module.
 
 ## `PG_ID`
 
-Here are some common parameters used to identify PGSQL [entities](/docs/pgsql/arch#identity-parameters): instance, service, etc…
+Here are some common parameters used to identify PGSQL [entities](/docs/pgsql/config#identity-parameters): instance, service, etc…
 
 ------
 
@@ -1477,7 +1477,7 @@ name: `pg_default_roles`, type: `role[]`, level: `G/C`
 
 default roles and users in postgres cluster.
 
-Pigsty has a built-in role system, check [PGSQL Access Control](/docs/pgsql/acl#role-system) for details.
+Pigsty has a built-in role system, check [PGSQL Access Control](/docs/pgsql/acl) for details.
 
 ```yaml
 pg_default_roles:                 # default roles and users in postgres cluster
@@ -1995,7 +1995,7 @@ default values: `auto` , which will bind to `pg_vip_address` if `pg_vip_enabled`
 
 ------
 
-## `PG_EXPORTER`
+## `PG_MONITOR`
 
 ```yaml
 pg_exporter_enabled: true              # enable pg_exporter on pgsql hosts?
