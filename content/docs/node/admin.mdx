@@ -18,7 +18,7 @@ Here are some common administration tasks for [`NODE`](/docs/node) module.
 
 ------
 
-### Add Node
+## Add Node
 
 To add a node into Pigsty, you need to have nopass ssh/sudo access to the node
 
@@ -31,7 +31,7 @@ bin/node-add 10.10.10.10              # init node '10.10.10.10'
 
 ------
 
-### Remove Node
+## Remove Node
 
 To remove a node from Pigsty, you can use the following:
 
@@ -44,7 +44,7 @@ bin/node-rm 10.10.10.10              # remove node '10.10.10.10'
 
 ------
 
-### Create Admin
+## Create Admin
 
 If the current user does not have nopass ssh/sudo access to the node, you can use another admin user to bootstrap the node:
 
@@ -54,7 +54,7 @@ node.yml -t node_admin -k -K -e ansible_user=<another admin>   # input ssh/sudo 
 
 ------
 
-### Bind VIP
+## Bind VIP
 
 You can bind an optional L2 VIP on a node cluster with [`vip_enabled`](/docs/node/param#vip_enabled).
 
@@ -75,7 +75,7 @@ proxy:
 
 ------
 
-### Other Tasks
+## Other Tasks
 
 ```bash
 # Play
@@ -109,4 +109,42 @@ proxy:
 ./node.yml -t node_ntp       # setup ntp server/clients
 ./node.yml -t node_crontab   # add/overwrite crontab tasks
 ./node.yml -t node_vip       # setup optional l2 vrrp vip for node cluster
+```
+
+
+------
+
+## Node Tune
+
+Pigsty has four pre-defined tuned profiles for different work loads:
+
+| Profile                                                                                  | Description                      | Scenario                        |
+|------------------------------------------------------------------------------------------|----------------------------------|---------------------------------|
+| [`TINY`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-tiny.conf) | Optimize for running on small VM | spec < 4c8g                     |
+| [`OLTP`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-oltp.conf) | Optimize for latency             | Default, transaction processing |
+| [`OLAP`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-olap.conf) | Optimize for throughput          | analytic workloads              |
+| [`CRIT`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-crit.conf) | Optimize for reliability         | finance, critical               |
+
+You can also manage tuned profiles with `tuned-adm` command on nodes:
+
+```bash
+tuned-adm list             # list available profiles
+tuned-adm active           # show current profile
+tuned-adm profile          # list active profile
+tuned-adm profile <name>   # switch to profile <name>
+tuned-adm verify           # list active profile
+cat /var/log/tuned/tuned.log  # show tuned log
+```
+
+------
+
+## Kernel Modules
+
+You can manage kernel modules with [`node_kernel_modules`](/docs/node/param#node_kernel_modules) in `node.yml`.
+
+To manage kernel modules manually, you can use the following commands on nodes:
+
+```bash
+lsmod                   # list loaded kernel modules
+modprobe <module>       # load kernel module <module>
 ```

@@ -124,7 +124,7 @@ If you can **only access the target database via PGURL** (database connection st
 -------------------            ^------------------^
 ```
 
-The monitoring system will no longer have host/pooler/load balancer metrics. But the PostgreSQL metrics & catalog info are still available. Pigsty has two dedicated dashboards for that: [PGRDS Cluster](https://demo.pigsty.io/d/pgrds-cluster) and [PGRDS Instance](https://demo.pigsty.io/d/pgrds-instance). Overview and Database level dashboards are reused. Since Pigsty cannot manage your RDS, you have to [setup monitor](https://pigsty.io/docs/pgsql/monitor/#monitor-setup) on the target database in advance.
+The monitoring system will no longer have host/pooler/load balancer metrics. But the PostgreSQL metrics & catalog info are still available. Pigsty has two dedicated dashboards for that: [PGRDS Cluster](https://demo.pigsty.cc/d/pgrds-cluster) and [PGRDS Instance](https://demo.pigsty.cc/d/pgrds-instance). Overview and Database level dashboards are reused. Since Pigsty cannot manage your RDS, you have to [setup monitor](https://pigsty.io/docs/pgsql/monitor/#monitor-setup) on the target database in advance.
 
 Below, we use a sandbox environment as an example: now we assume that the `pg-meta` cluster is an RDS instance `pg-foo-1` to be monitored, and the `pg-test` cluster is an RDS cluster `pg-bar` to be monitored:
 
