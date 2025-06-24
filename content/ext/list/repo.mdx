@@ -8,11 +8,11 @@ full: true
 import { Badge } from '@/components/ui/badge';
 import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck } from 'lucide-react';
 
-There are **421** PostgreSQL extensions in total: **71** CONTRIB extensions, **331** available on both EL and Debian platforms, **13** available only on EL platforms, and **6** available only on Debian platforms.
+There are **422** PostgreSQL extensions in total: **71** CONTRIB extensions, **332** available on both EL and Debian platforms, **13** available only on EL platforms, and **6** available only on Debian platforms.
 
 | Entry | ALL | [CONTRIB](#contrib) | [Both](#both) | [EL Only](#el) | [Debian Only](#debian) |
 |:-----:|:---:|:-------------------:|:-------------:|:--------------:|:----------------------:|
-| Count | 421 | 71 | 331 | 13 | 6 |
+| Count | 422 | 71 | 332 | 13 | 6 |
 
 ## CONTRIB
 
@@ -94,7 +94,7 @@ Extensions that come with PostgreSQL core distribution. There are **71** contrib
 
 ## BOTH
 
-There are **331** non-contrib extensions available in both EL and Debian platforms.
+There are **332** non-contrib extensions available in both EL and Debian platforms.
 
 | ID | Name | Category | RPM | DEB | Description |
 |:---:|:---|:---|:---:|:---:|:---|
@@ -421,6 +421,7 @@ There are **331** non-contrib extensions available in both EL and Debian platfor
 | 9520 | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | automated ddl deployment using pglogical |
 | 9530 | [`pg_failover_slots`](/ext/pg_failover_slots) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | PG Failover Slots extension |
 | 9540 | [`db_migrator`](/ext/db_migrator) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Tools to migrate other databases to PostgreSQL |
+| 9550 | [`pgactive`](/ext/pgactive) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Active-Active Replication Extension for PostgreSQL |
 | 9630 | [`wal2json`](/ext/wal2json) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | Changing data capture in JSON format |
 | 9640 | [`wal2mongo`](/ext/wal2mongo) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | PostgreSQL logical decoding output plugin for MongoDB |
 | 9650 | [`decoderbufs`](/ext/decoderbufs) | <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | Logical decoding plugin that delivers WAL stream changes using a Protocol Buffer format |

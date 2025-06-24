@@ -29,7 +29,7 @@ import { Scale, Package } from 'lucide-react';
 | License | Count | Reference |  Description |
 |:--------|:-----:|:-------:|:----------|
 | <a href="/ext/list/license#postgresql" className="no-underline"><Badge icon={<Scale />} variant="blue-subtle">PostgreSQL</Badge></a> | 198 | [License Text](https://opensource.org/licenses/postgresql) | Very liberal license based on the BSD license, allowing almost unlimited freedom. |
-| <a href="/ext/list/license#apache-20" className="no-underline"><Badge icon={<Scale />} variant="green-subtle">Apache-2.0</Badge></a> | 68 | [License Text](https://opensource.org/licenses/Apache-2.0) | Permissive license with patent protection and attribution requirements. |
+| <a href="/ext/list/license#apache-20" className="no-underline"><Badge icon={<Scale />} variant="green-subtle">Apache-2.0</Badge></a> | 69 | [License Text](https://opensource.org/licenses/Apache-2.0) | Permissive license with patent protection and attribution requirements. |
 | <a href="/ext/list/license#mit" className="no-underline"><Badge icon={<Scale />} variant="blue-subtle">MIT</Badge></a> | 59 | [License Text](https://opensource.org/licenses/MIT) | A permissive license that allows commercial use, modification, and private use. |
 | <a href="/ext/list/license#bsd-3-clause" className="no-underline"><Badge icon={<Scale />} variant="blue-subtle">BSD 3-Clause</Badge></a> | 30 | [License Text](https://opensource.org/license/bsd-3-clause) | Permissive license with attribution and endorsement restriction clauses. |
 | <a href="/ext/list/license#bsd-2-clause" className="no-underline"><Badge icon={<Scale />} variant="blue-subtle">BSD 2-Clause</Badge></a> | 14 | [License Text](https://opensource.org/license/bsd-2-clause) | Permissive license requiring attribution but allowing commercial use. |
@@ -189,8 +189,8 @@ import { Scale, Package } from 'lucide-react';
 | 7980 | [`pgcrypto`](/ext/pgcrypto) | [`pgcrypto`](/ext/pgcrypto) | cryptographic functions |
 | 7120 | [`pgcryptokey`](/ext/pgcryptokey) | [`pgcryptokey`](/ext/pgcryptokey) | cryptographic key management |
 | 7180 | [`pgextwlist`](/ext/pgextwlist) | [`pgextwlist`](/ext/pgextwlist) | PostgreSQL Extension Whitelisting |
-| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pglogical) | PostgreSQL Logical Replication |
-| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pglogical) | Dummy extension for compatibility when upgrading from Postgres 9.4 |
+| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pgactive) | PostgreSQL Logical Replication |
+| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pgactive) | Dummy extension for compatibility when upgrading from Postgres 9.4 |
 | 9510 | [`pglogical_ticker`](/ext/pglogical_ticker) | [`pglogical_ticker`](/ext/pglogical_ticker) | Have an accurate view on pglogical replication delay |
 | 2900 | [`pgmq`](/ext/pgmq) | [`pgmq`](/ext/pgmq) | A lightweight message queue. Like AWS SQS and RSMQ but on Postgres. |
 | 9980 | [`pgoutput`](/ext/pgoutput) | [`pgoutput`](/ext/pgoutput) | Logical Replication output plugin |
@@ -256,7 +256,7 @@ import { Scale, Package } from 'lucide-react';
 
 ## Apache-2.0
 
-<a href="/ext/list/license#apache-20" className="no-underline"><Badge icon={<Scale />} variant="green-subtle">Apache-2.0</Badge></a> <Badge icon={<Package />} variant="gray-subtle">68 Extensions</Badge>
+<a href="/ext/list/license#apache-20" className="no-underline"><Badge icon={<Scale />} variant="green-subtle">Apache-2.0</Badge></a> <Badge icon={<Package />} variant="gray-subtle">69 Extensions</Badge>
 
 [Apache-2.0 License Text](https://opensource.org/licenses/Apache-2.0) : Permissive license with patent protection and attribution requirements.
 
@@ -321,6 +321,7 @@ import { Scale, Package } from 'lucide-react';
 | 1870 | [`pg_tiktoken`](/ext/pg_tiktoken) | [`pg_tiktoken`](/ext/pg_tiktoken) | tiktoken tokenizer for use with OpenAI models in postgres |
 | 3000 | [`pg_tle`](/ext/pg_tle) | [`pg_tle`](/ext/pg_tle) | Trusted Language Extensions for PostgreSQL |
 | 2160 | [`pg_tokenizer`](/ext/pg_tokenizer) | [`pg_tokenizer`](/ext/pg_tokenizer) | Tokenizers for full-text search |
+| 9550 | [`pgactive`](/ext/pgactive) | [`pglogical`](/ext/pgactive) | Active-Active Replication Extension for PostgreSQL |
 | 6310 | [`pgnodemx`](/ext/pgnodemx) | [`pgnodemx`](/ext/pgnodemx) | Capture node OS metrics via SQL queries |
 | 3040 | [`plprql`](/ext/plprql) | [`plprql`](/ext/plprql) | Use PRQL in PostgreSQL - Pipelined Relational Query Language |
 | 3570 | [`roaringbitmap`](/ext/roaringbitmap) | [`roaringbitmap`](/ext/roaringbitmap) | support for Roaring Bitmaps |

@@ -1,6 +1,6 @@
 ---
-title: pglogical_origin
-description: Dummy extension for compatibility when upgrading from Postgres 9.4
+title: pgactive
+description: Active-Active Replication Extension for PostgreSQL
 full: true
 ---
 
@@ -19,20 +19,20 @@ import {
 
 | <TooltipIconButton tooltip="Extension unique identifier" side="top">ID</TooltipIconButton> | <TooltipIconButton tooltip="Extension name" side="top">Name</TooltipIconButton> | <TooltipIconButton tooltip="Package name for installation" side="top">Package</TooltipIconButton> | <TooltipIconButton tooltip="Latest available extension version" side="top">Version</TooltipIconButton> | <TooltipIconButton tooltip="Extension category" side="top">Category</TooltipIconButton> | <TooltipIconButton tooltip="Open source license" side="top">License</TooltipIconButton> | <TooltipIconButton tooltip="Programming language" side="top">Lang</TooltipIconButton> |
 |:--------:|:--------:|:----------:|:--------------:|:---------------------------------------:|:------------------------------------------------------:|:----:|
-| **9501** | [`pglogical_origin`](https://github.com/2ndQuadrant/pglogical) | [`pglogical`](/ext/pgactive) | 2.4.5 | <a href="/ext/etl" className="no-underline"><Badge icon={<Truck />} variant="purple-subtle">ETL</Badge></a> | <a href="/ext/list/license#postgresql" className="no-underline"><Badge icon={<Scale />} variant="blue-subtle">PostgreSQL</Badge></a> | <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> |
+| **9550** | [`pgactive`](https://github.com/aws/pgactive) | [`pglogical`](/ext/pgactive) | 2.1.5 | <a href="/ext/etl" className="no-underline"><Badge icon={<Truck />} variant="purple-subtle">ETL</Badge></a> | <a href="/ext/list/license#apache-20" className="no-underline"><Badge icon={<Scale />} variant="green-subtle">Apache-2.0</Badge></a> | <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> |
 
 ### Attributes
 
 | <TooltipIconButton tooltip="The Primary Leading extension in the Package" side="top">Leading</TooltipIconButton> | <TooltipIconButton tooltip="Contains binary utils" side="top">Has Bin</TooltipIconButton> | <TooltipIconButton tooltip="Contains .so shared library files" side="top">Has Lib</TooltipIconButton> | <TooltipIconButton tooltip="Requires preloading via shared_preload_libraries" side="top">PreLoad</TooltipIconButton> | <TooltipIconButton tooltip="Requires CREATE EXTENSION DDL command" side="top">Need DDL</TooltipIconButton> | <TooltipIconButton tooltip="Can be installed in any schema" side="top">Relocatable</TooltipIconButton> | <TooltipIconButton tooltip="Can be created by non-superuser" side="top">Trusted</TooltipIconButton> | <TooltipIconButton tooltip="Schemas used by this extension" side="top">Schemas</TooltipIconButton> |
 |:-------:|:-------:|:-------:|:-------:|:--------:|:-----------:|:-------:|:-------:|
-| No | No | Yes | No | Yes | No | No | `pglogical_origin` |
+| Yes | Yes | Yes | Yes | Yes | No | No | `pg_catalog` |
 
 ### Packages
 
 | <TooltipIconButton tooltip="Linux distribution family, EL or Debian" side="top">Distro</TooltipIconButton> | <TooltipIconButton tooltip="Package repository" side="top">Repo</TooltipIconButton> | <TooltipIconButton tooltip="The RPM/DEB Package Name Pattern (replace $v with real pg major)" side="top">Package Name</TooltipIconButton> | <TooltipIconButton tooltip="Latest package version" side="top">Version</TooltipIconButton> | <TooltipIconButton tooltip="RPM/DEB Package dependencies" side="top">Deps</TooltipIconButton> | <TooltipIconButton tooltip="Available in these PostgreSQL Major Versions" side="top">PG Major</TooltipIconButton> |
 |:----------:|:--------:|:------------------------:|:-----------:|:------------:|:------------------:|
-|   **EL**   | <Badge variant="blue-subtle"><span className="font-bold">PGDG</span></Badge> | `pglogical_$v*` | `2.4.5` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
-| **Debian** | <Badge variant="blue-subtle"><span className="font-bold">PGDG</span></Badge> | `postgresql-$v-pglogical` | `2.4.5` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
+|   **EL**   | <Badge variant="amber-subtle"><span className="font-bold">PIGSTY</span></Badge> | `pgactive_$v*` | `2.1.5` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
+| **Debian** | <Badge variant="amber-subtle"><span className="font-bold">PIGSTY</span></Badge> | `postgresql-$v-pgactive` | `2.1.5` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
 
 
 
@@ -153,36 +153,42 @@ Or download the latest packages directly:
 [**Install**](/docs/pgsql/ext/install) this extension with:
 
 ```bash tab="pig"
-pig ext install pglogical_origin; # install by extension name, for the current active PG version
+pig ext install pgactive; # install by extension name, for the current active PG version
 pig ext install pglogical; # install via package alias, for the active PG version
-pig ext install pglogical_origin -v 17;   # install for PG 17
-pig ext install pglogical_origin -v 16;   # install for PG 16
-pig ext install pglogical_origin -v 15;   # install for PG 15
-pig ext install pglogical_origin -v 14;   # install for PG 14
-pig ext install pglogical_origin -v 13;   # install for PG 13
+pig ext install pgactive -v 17;   # install for PG 17
+pig ext install pgactive -v 16;   # install for PG 16
+pig ext install pgactive -v 15;   # install for PG 15
+pig ext install pgactive -v 14;   # install for PG 14
+pig ext install pgactive -v 13;   # install for PG 13
 ```
 ```bash tab="yum" 
-dnf install pglogical_17*;
-dnf install pglogical_16*;
-dnf install pglogical_15*;
-dnf install pglogical_14*;
-dnf install pglogical_13*;
+dnf install pgactive_17*;
+dnf install pgactive_16*;
+dnf install pgactive_15*;
+dnf install pgactive_14*;
+dnf install pgactive_13*;
 ```
 ```bash tab="apt" 
-apt install postgresql-17-pglogical;
-apt install postgresql-16-pglogical;
-apt install postgresql-15-pglogical;
-apt install postgresql-14-pglogical;
-apt install postgresql-13-pglogical;
+apt install postgresql-17-pgactive;
+apt install postgresql-16-pgactive;
+apt install postgresql-15-pgactive;
+apt install postgresql-14-pgactive;
+apt install postgresql-13-pgactive;
 ```
 ```bash tab="ansible"
 ./pgsql.yml -t pg_ext -e '{"pg_extensions": ["pglogical"]}' # -l <cls>
 ```
 
+[**Preload**](/docs/pgsql/ext/load) this extension with:
+
+```bash
+shared_preload_libraries = 'pgactive'; # add to pg cluster config
+```
+
 [**Create**](/docs/pgsql/ext/create) this extension with:
 
 ```sql
-CREATE EXTENSION pglogical_origin;
+CREATE EXTENSION pgactive;
 ```
 
 

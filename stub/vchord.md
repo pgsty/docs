@@ -164,3 +164,20 @@ To simplify the workflow, we provide end-to-end scripts for external index pre-c
 - Data Type Support: Currently, only the `f32` data type is supported for vectors.
 - Architecture Compatibility: The fast-scan kernel is optimized for x86_64 architectures. While it runs on aarch64, performance may be lower.
 - KMeans Clustering: The built-in KMeans clustering is not yet fully optimized and may require substantial memory. We strongly recommend using external centroid precomputation for efficient index construction.
+
+
+------
+
+## Build
+
+Building this extension requires [clang-17+](https://github.com/tensorchord/VectorChord/issues/188)
+
+Which is available on EL 8/9, Ubuntu 24.04 directly, but require manual installation on Ubuntu 22.04 / Debian 12.
+
+For example, install clang-18 on Ubuntu 22 / Debian 12 and set it as the default clang:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://apt.llvm.org/llvm.sh | bash -s -- 18
+sudo update-alternatives --install /usr/bin/clang clang $(which clang-18) 255
+```
+

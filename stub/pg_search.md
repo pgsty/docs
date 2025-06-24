@@ -1,6 +1,15 @@
 
 --------
 
+## Caveat
+
+pg_search 0.15.19+ RPMs are [broken due to libicu version issue](https://github.com/paradedb/paradedb/issues/2722)
+
+The version is locked to 0.15.18 on EL platforms until the issue is resolved.
+
+
+--------
+
 ## Usage
 
 https://docs.paradedb.com/documentation/getting-started/quickstart

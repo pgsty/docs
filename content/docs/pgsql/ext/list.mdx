@@ -46,7 +46,8 @@ import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxe
 | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | 26 | Auditing Logs, Enforce Passwords, Keep Secrets, TDE, SM Algorithm, Login Hooks, Log Erros, Extension White List |
 | <Badge icon={<FileInput />} variant="blue-subtle"><a href="/ext/fdw" className="no-underline">FDW</a></Badge> | 22 | Wrappers & Multicorn for FDW Development, Access other DBMS: MySQL, Mongo, SQLite, MSSQL, Oracle, HDFS, DB2 |
 | <Badge icon={<Shell />} variant="teal-subtle"><a href="/ext/sim" className="no-underline">SIM</a></Badge> | 16 | Protocol Simulation & heterogeneous DBMS Compatibility: Oracle, MSSQL, DB2, MySQL, Memcached, and Babelfish |
-| <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | 16 | Logical Replication, Decoding, CDC in protobuf/JSON/Mongo format, Copy & Load & Compare Postgres Databases |
+| <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> | 17 | Logical Replication, Decoding, CDC in protobuf/JSON/Mongo format, Copy & Load & Compare Postgres Databases |
+
 
 
 ## TIME
@@ -65,7 +66,7 @@ TimescaleDB, Versioning & Temporal Table, Crontab, Async & Background Job Schedu
 | 1080 | [`pg_task`](/ext/pg_task) | [`pg_task`](/ext/pg_task) | 1.0.0 | execute any sql command at any specific time at background |
 | 1060 | [`table_version`](/ext/table_version) | [`table_version`](/ext/table_version) | 1.11.1 | PostgreSQL table versioning extension |
 | 1040 | [`temporal_tables`](/ext/temporal_tables) | [`temporal_tables`](/ext/temporal_tables) | 1.2.2 | temporal tables |
-| 1000 | [`timescaledb`](/ext/timescaledb) | [`timescaledb`](/ext/timescaledb) | 2.20.0 | Enables scalable inserts and complex queries for time-series data |
+| 1000 | [`timescaledb`](/ext/timescaledb) | [`timescaledb`](/ext/timescaledb) | 2.20.3 | Enables scalable inserts and complex queries for time-series data |
 | 1010 | [`timescaledb_toolkit`](/ext/timescaledb_toolkit) | [`timescaledb_toolkit`](/ext/timescaledb_toolkit) | 1.21.0 | Library of analytical hyperfunctions, time-series pipelining, and other SQL utilities |
 | 1020 | [`timeseries`](/ext/timeseries) | [`pg_timeseries`](/ext/timeseries) | 0.1.6 | Convenience API for time series stack |
 
@@ -112,7 +113,7 @@ Vector Database with IVFFLAT, HNSW, DiskANN Indexes, AI & ML in SQL interface, S
 | 1870 | [`pg_tiktoken`](/ext/pg_tiktoken) | [`pg_tiktoken`](/ext/pg_tiktoken) | 0.0.1 | tiktoken tokenizer for use with OpenAI models in postgres |
 | 1890 | [`pgml`](/ext/pgml) | [`pgml`](/ext/pgml) | 2.10.0 | Run AL/ML workloads with SQL interface |
 | 1850 | [`smlar`](/ext/smlar) | [`smlar`](/ext/smlar) | 1.0 | Effective similarity search |
-| 1810 | [`vchord`](/ext/vchord) | [`vchord`](/ext/vchord) | 0.3.0 | Vector database plugin for Postgres, written in Rust |
+| 1810 | [`vchord`](/ext/vchord) | [`vchord`](/ext/vchord) | 0.4.3 | Vector database plugin for Postgres, written in Rust |
 | 1800 | [`vector`](/ext/vector) | [`pgvector`](/ext/vector) | 0.8.0 | vector data type and ivfflat and hnsw access methods |
 | 1830 | [`vectorize`](/ext/vectorize) | [`pg_vectorize`](/ext/vectorize) | 0.22.2 | The simplest way to do vector search on Postgres |
 | 1820 | [`vectorscale`](/ext/vectorscale) | [`pgvectorscale`](/ext/vectorscale) | 0.7.1 | Advanced indexing for vector data with DiskANN |
@@ -138,7 +139,7 @@ ElasticSearch Alternative with BM25, 2-gram/3-gram Fuzzy Search, Zhparser & Huns
 | 2179 | [`hunspell_ru_ru_aot`](/ext/hunspell_ru_ru_aot) | [`hunspell_ru_ru_aot`](/ext/hunspell_ru_ru_aot) | 1.0 | Russian Hunspell Dictionary (from AOT.ru group) |
 | 2140 | [`pg_bestmatch`](/ext/pg_bestmatch) | [`pg_bestmatch`](/ext/pg_bestmatch) | 0.0.1 | Generate BM25 sparse vector inside PostgreSQL |
 | 2120 | [`pg_bigm`](/ext/pg_bigm) | [`pg_bigm`](/ext/pg_bigm) | 1.2 | create 2-gram (bigram) index for faster full text search. |
-| 2100 | [`pg_search`](/ext/pg_search) | [`pg_search`](/ext/pg_search) | 0.15.20 | Full text search for PostgreSQL using BM25 |
+| 2100 | [`pg_search`](/ext/pg_search) | [`pg_search`](/ext/pg_search) | 0.16.0 | Full text search for PostgreSQL using BM25 |
 | 2160 | [`pg_tokenizer`](/ext/pg_tokenizer) | [`pg_tokenizer`](/ext/pg_tokenizer) | 0.1.0 | Tokenizers for full-text search |
 | 2190 | [`pg_trgm`](/ext/pg_trgm) | [`pg_trgm`](/ext/pg_trgm) | 1.6 | text similarity measurement and index searching based on trigrams |
 | 2110 | [`pgroonga`](/ext/pgroonga) | [`pgroonga`](/ext/pgroonga) | 4.0.0 | Use Groonga as index, fast full text search platform for all languages! |
@@ -154,8 +155,8 @@ DuckDB Integration with FDW & PG Lakehouse, Access Parquet from File/S3, Shardin
 
 | ID | Extension | Package | Version | Description |
 |:---:|:---|:---|:---|:---|
-| 2400 | [`citus`](/ext/citus) | [`citus`](/ext/citus) | 13.0.3 | Distributed PostgreSQL as an extension |
-| 2401 | [`citus_columnar`](/ext/citus_columnar) | [`citus`](/ext/citus) | 13.0.3 | Citus columnar storage engine |
+| 2400 | [`citus`](/ext/citus) | [`citus`](/ext/citus) | 13.1.0 | Distributed PostgreSQL as an extension |
+| 2401 | [`citus_columnar`](/ext/citus_columnar) | [`citus`](/ext/citus) | 13.1.0 | Citus columnar storage engine |
 | 2410 | [`columnar`](/ext/columnar) | [`hydra`](/ext/columnar) | 1.1.2 | Hydra Columnar extension |
 | 2450 | [`duckdb_fdw`](/ext/duckdb_fdw) | [`duckdb_fdw`](/ext/duckdb_fdw) | 1.1.2 | DuckDB Foreign Data Wrapper |
 | 2420 | [`pg_analytics`](/ext/pg_analytics) | [`pg_analytics`](/ext/pg_analytics) | 0.3.7 | Postgres for analytics, powered by DuckDB |
@@ -593,7 +594,7 @@ Protocol Simulation & heterogeneous DBMS Compatibility: Oracle, MSSQL, DB2, MySQ
 
 Logical Replication, Decoding, CDC in protobuf/JSON/Mongo format, Copy & Load & Compare Postgres Databases
 
-<Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> <Badge variant="gray-subtle">16 Extensions</Badge>
+<Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/etl" className="no-underline">ETL</a></Badge> <Badge variant="gray-subtle">17 Extensions</Badge>
 
 | ID | Extension | Package | Version | Description |
 |:---:|:---|:---|:---|:---|
@@ -604,13 +605,13 @@ Logical Replication, Decoding, CDC in protobuf/JSON/Mongo format, Copy & Load & 
 | 9830 | [`pg_bulkload`](/ext/pg_bulkload) | [`pg_bulkload`](/ext/pg_bulkload) | 3.1.22 | pg_bulkload is a high speed data loading utility for PostgreSQL |
 | 9820 | [`pg_fact_loader`](/ext/pg_fact_loader) | [`pg_fact_loader`](/ext/pg_fact_loader) | 2.0.1 | build fact tables with Postgres |
 | 9530 | [`pg_failover_slots`](/ext/pg_failover_slots) | [`pg_failover_slots`](/ext/pg_failover_slots) | 1.1.0 | PG Failover Slots extension |
+| 9550 | [`pgactive`](/ext/pgactive) | [`pglogical`](/ext/pgactive) | 2.1.5 | Active-Active Replication Extension for PostgreSQL |
 | 9520 | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | 2.2.1 | automated ddl deployment using pglogical |
-| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pglogical) | 2.4.5 | PostgreSQL Logical Replication |
-| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pglogical) | 2.4.5 | Dummy extension for compatibility when upgrading from Postgres 9.4 |
+| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pgactive) | 2.4.5 | PostgreSQL Logical Replication |
+| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pgactive) | 2.4.5 | Dummy extension for compatibility when upgrading from Postgres 9.4 |
 | 9510 | [`pglogical_ticker`](/ext/pglogical_ticker) | [`pglogical_ticker`](/ext/pglogical_ticker) | 1.4.1 | Have an accurate view on pglogical replication delay |
 | 9980 | [`pgoutput`](/ext/pgoutput) | [`pgoutput`](/ext/pgoutput) | - | Logical Replication output plugin |
 | 9710 | [`repmgr`](/ext/repmgr) | [`repmgr`](/ext/repmgr) | 5.5.0 | Replication manager for PostgreSQL |
 | 9970 | [`test_decoding`](/ext/test_decoding) | [`test_decoding`](/ext/test_decoding) | - | SQL-based test/example module for WAL logical decoding |
 | 9630 | [`wal2json`](/ext/wal2json) | [`wal2json`](/ext/wal2json) | 2.6 | Changing data capture in JSON format |
 | 9640 | [`wal2mongo`](/ext/wal2mongo) | [`wal2mongo`](/ext/wal2mongo) | 1.0.7 | PostgreSQL logical decoding output plugin for MongoDB |
-

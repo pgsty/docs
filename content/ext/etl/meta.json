@@ -6,6 +6,7 @@
     "[pgl_ddl_deploy](/ext/pgl_ddl_deploy)",
     "[pg_failover_slots](/ext/pg_failover_slots)",
     "[db_migrator](/ext/db_migrator)",
+    "[pgactive](/ext/pgactive)",
     "[wal2json](/ext/wal2json)",
     "[wal2mongo](/ext/wal2mongo)",
     "[decoderbufs](/ext/decoderbufs)",
