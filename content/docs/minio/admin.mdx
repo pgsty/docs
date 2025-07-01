@@ -1,5 +1,5 @@
 ---
-title: Administraion
+title: Administration
 description: Create, remove, expand, shrink, upgrade minio cluster
 icon: Wrench
 ---
@@ -182,7 +182,7 @@ haproxy_services:
       - { name: minio-8 ,ip: 10.10.10.17 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
 ```
 
-Then Tun the `haproxy` subtask of the `node.yml` playbook to update the load balancer configuration:
+Then run the `haproxy` subtask of the `node.yml` playbook to update the load balancer configuration:
 
 ```bash
 ./node.yml -l minio -t haproxy_config,haproxy_reload   # re-configure and reload haproxy service definition
@@ -235,7 +235,7 @@ ansible minio -m package -b -a 'name=minio state=latest'  # upgrade MinIO server
 ansible minio -m package -b -a 'name=mcli state=latest'   # upgrade mcli client
 ```
 
-Finlly, notify the MinIO cluster to restart with the `mc` command line tool:
+Finally, notify the MinIO cluster to restart with the `mc` command line tool:
 
 ```bash
 mc admin service restart sss

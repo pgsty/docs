@@ -4,20 +4,20 @@ description: customize with options
 icon: Variable
 ---
 
-Parameters about pigsty infrastructure components: local yum repo, nginx, dnsmasq, prometheus, grafana, loki, alertmanager, pushgateway, blackbox_exporter, etc…
+Parameters for Pigsty infrastructure components: local YUM repository, Nginx, DNSMasq, Prometheus, Grafana, Loki, AlertManager, PushGateway, Blackbox Exporter, etc.
 
 There are **9** sections in total, and **57** parameters in this module.
 
 - [`META`](#meta): infra meta data
 - [`CA`](#ca): self-signed CA
-- [`INFRA_ID`](#infra_id) : Portals and identity
-- [`REPO`](#repo): local yum/atp repo
-- [`INFRA_PACKAGE`](#infra_package) : packages to be installed
-- [`NGINX`](#nginx) : nginx web server
-- [`DNS`](#dns): dnsmasq nameserver
-- [`PROMETHEUS`](#prometheus) : prometheus, alertmanager, pushgateway & blackbox_exporter
-- [`GRAFANA`](#grafana) : Grafana, the visualization platform
-- [`LOKI`](#loki) : Loki, the logging server
+- [`INFRA_ID`](#infra_id): Portals and identity
+- [`REPO`](#repo): local YUM/APT repository
+- [`INFRA_PACKAGE`](#infra_package): packages to be installed
+- [`NGINX`](#nginx): Nginx web server
+- [`DNS`](#dns): DNSMasq nameserver
+- [`PROMETHEUS`](#prometheus): Prometheus, AlertManager, PushGateway & Blackbox Exporter
+- [`GRAFANA`](#grafana): Grafana, the visualization platform
+- [`LOKI`](#loki): Loki, the logging server
 
 ------
 
@@ -27,10 +27,10 @@ There are **9** sections in total, and **57** parameters in this module.
 |-------------------------------------------------------------|-----------------------------------|--------------|-------|----------------------------------------------------|
 | [`version`](#version)                                       | [`META`](#meta)                   | `string`     | G     | pigsty version string                              |
 | [`admin_ip`](#admin_ip)                                     | [`META`](#meta)                   | `ip`         | G     | admin node ip address                              |
-| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | upstream mirror region: default,china,europe       |
+| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | upstream mirror region: default, china, europe       |
 | [`proxy_env`](#proxy_env)                                   | [`META`](#meta)                   | `dict`       | G     | global proxy env when downloading packages         |
-| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create,recreate,copy, create by default            |
-| [`ca_cn`](#ca_cn)                                           | [`CA`](#ca)                       | `string`     | G     | ca common name, fixed as pigsty-ca                 |
+| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create, recreate, copy; create by default            |
+| [`ca_cn`](#ca_cn)                                           | [`CA`](#ca)                       | `string`     | G     | CA common name, fixed as pigsty-ca                 |
 | [`cert_validity`](#cert_validity)                           | [`CA`](#ca)                       | `interval`   | G     | cert validity, 20 years by default                 |
 | [`infra_seq`](#infra_seq)                                   | [`INFRA_ID`](#infra_id)           | `int`        | I     | infra node identity, REQUIRED                      |
 | [`infra_portal`](#infra_portal)                             | [`INFRA_ID`](#infra_id)           | `dict`       | G     | infra services exposed via portal                  |
@@ -48,7 +48,7 @@ There are **9** sections in total, and **57** parameters in this module.
 | [`infra_packages_pip`](#infra_packages_pip)                 | [`INFRA_PACKAGE`](#infra_package) | `string`     | G     | pip installed packages for infra nodes             |
 | [`nginx_enabled`](#nginx_enabled)                           | [`NGINX`](#nginx)                 | `bool`       | G/I   | enable nginx on this infra node?                   |
 | [`nginx_exporter_enabled`](#nginx_enabled)                  | [`NGINX`](#nginx)                 | `bool`       | G/I   | enable nginx_exporter on this infra node?          |
-| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx ssl mode? disable,enable,enforce             |
+| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx ssl mode? disable, enable, enforce             |
 | [`nginx_home`](#nginx_home)                                 | [`NGINX`](#nginx)                 | `path`       | G     | nginx content dir, `/www` by default               |
 | [`nginx_port`](#nginx_port)                                 | [`NGINX`](#nginx)                 | `port`       | G     | nginx listen port, 80 by default                   |
 | [`nginx_ssl_port`](#nginx_ssl_port)                         | [`NGINX`](#nginx)                 | `port`       | G     | nginx ssl listen port, 443 by default              |
@@ -72,10 +72,10 @@ There are **9** sections in total, and **57** parameters in this module.
 | [`blackbox_enabled`](#blackbox_enabled)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | setup blackbox_exporter on this infra node?        |
 | [`blackbox_options`](#blackbox_options)                     | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | blackbox_exporter extra server options             |
 | [`alertmanager_enabled`](#alertmanager_enabled)             | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | setup alertmanager on this infra node?             |
-| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `arg         | ` G   | alertmanager listen port, `9093` by default        |
+| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager listen port, `9093` by default        |
 | [`alertmanager_options`](#alertmanager_options)             | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | alertmanager extra server options                  |
 | [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter metric path, `/metrics` by default        |
-| [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | how to install exporter? none,yum,binary           |
+| [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | how to install exporter? none, yum, binary           |
 | [`exporter_repo_url`](#exporter_repo_url)                   | [`PROMETHEUS`](#prometheus)       | `url`        | G     | exporter repo file url if install exporter via yum |
 | [`grafana_enabled`](#grafana_enabled)                       | [`GRAFANA`](#grafana)             | `bool`       | G/I   | enable grafana on this infra node?                 |
 | [`grafana_clean`](#grafana_clean)                           | [`GRAFANA`](#grafana)             | `bool`       | G/A   | clean grafana data during init?                    |
@@ -90,10 +90,10 @@ There are **9** sections in total, and **57** parameters in this module.
 
 ## `META`
 
-This section contains some metadata of current pigsty deployments, such as version string, admin node IP address, repo mirror [`region`](#region) and http(s) proxy when downloading pacakges.
+This section contains metadata for current Pigsty deployments, such as version string, admin node IP address, repository mirror [`region`](#region) and HTTP(S) proxy when downloading packages.
 
 ```yaml
-version: v3.4.1                   # pigsty version string
+version: v3.4.1                   # Pigsty version string
 admin_ip: 10.10.10.10             # admin node ip address
 region: default                   # upstream mirror region: default,china,europe
 proxy_env:                        # global proxy env when downloading packages
@@ -129,7 +129,7 @@ default value:`10.10.10.10`
 
 Node with this ip address will be treated as admin node, usually point to the first node that install Pigsty.
 
-The default value `10.10.10.10` is a placeholder which will be replaced during [configure](/docs/config/configure)
+The default value `10.10.10.10` is a placeholder that will be replaced during [configure](/docs/config/configure)
 
 This parameter is referenced by many other parameters, such as:
 
@@ -174,7 +174,7 @@ proxy_env: # global proxy env when downloading packages
   no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.aliyuncs.com,mirrors.tuna.tsinghua.edu.cn,mirrors.zju.edu.cn"
 ```
 
-It’s quite important to use http proxy in restricted production environment, or your Internet access is blocked (e.g. Mainland China)
+It's quite important to use an HTTP proxy in restricted production environments, or when your Internet access is blocked (e.g., Mainland China).
 
 Please note that if the Docker module is used, the proxy server configuration will also be written to the Docker Daemon configuration file.
 
@@ -200,7 +200,7 @@ cert_validity: 7300d              # cert validity, 20 years by default
 
 type: `enum`, level: `G`
 
-available options: create,recreate,copy
+available options: create, recreate, copy
 
 default value: `create`
 
@@ -216,7 +216,7 @@ If you already have a pair of `ca.crt` and `ca.key`, put them under `files/pki/c
 
 type: `string`, level: `G`
 
-ca common name, not recommending to change it.
+CA common name, not recommended to change it.
 
 default value: `pigsty-ca`
 
@@ -228,7 +228,7 @@ you can check that with `openssl x509 -text -in /etc/pki/ca.crt`
 
 type: `interval`, level: `G`
 
-cert validity, 20 years by default, which is enough for most scenarios
+certificate validity, 20 years by default, which is sufficient for most scenarios
 
 default value: `7300d`
 
@@ -324,13 +324,13 @@ Each record consists of a Key and a Value dictionary, where name is the key, rep
 
 ## `REPO`
 
-This section is about local software repo. Pigsty will create a local software repo (APT/YUM) when init an infra node.
+This section is about the local software repository. Pigsty will create a local software repository (APT/YUM) when initializing an infra node.
 
-In the initialization process, Pigsty will download all packages and their dependencies (specified by [`repo_packages`](#repo_packages)) from the Internet upstream repo (specified by [`repo_upstream`](#repo_upstream)) to [`{{ nginx_home }}`](#nginx_home) / [`{{ repo_name }}`](#repo_name) (default is `/www/pigsty`), and the total size of all dependent software is about 1GB or so.
+During the initialization process, Pigsty will download all packages and their dependencies (specified by [`repo_packages`](#repo_packages)) from the Internet upstream repository (specified by [`repo_upstream`](#repo_upstream)) to [`{{ nginx_home }}`](#nginx_home) / [`{{ repo_name }}`](#repo_name) (default is `/www/pigsty`), and the total size of all dependent software is approximately 1GB.
 
-When creating a local repo, Pigsty will skip the software download phase if the directory already exists and if there is a marker file named `repo_complete` in the dir.
+When creating a local repository, Pigsty will skip the software download phase if the directory already exists and there is a marker file named `repo_complete` in the directory.
 
-If the download speed of some packages is too slow, you can set the download proxy to complete the first download by using the [`proxy_env`](#proxy_env) config entry or directly download the pre-packaged [offline package](/docs/install/offline), which is essentially a local software source built on the same operating system.
+If the download speed of some packages is too slow, you can set the download proxy to complete the initial download by using the [`proxy_env`](#proxy_env) configuration entry or directly download the pre-packaged [offline package](/docs/install/offline), which is essentially a local software source built on the same operating system.
 
 ```yaml
 repo_enabled: true                # create a yum repo on this infra node?
@@ -351,9 +351,9 @@ repo_url_packages: []             # extra packages from url
 
 type: `bool`, level: `G/I`
 
-create a yum repo on this infra node? default value: `true`
+create a YUM repository on this infra node? default value: `true`
 
-If you have multiple infra nodes, you can disable yum repo on other standby nodes to reduce Internet traffic.
+If you have multiple infra nodes, you can disable the YUM repository on other standby nodes to reduce Internet traffic.
 
 ------
 
@@ -361,7 +361,7 @@ If you have multiple infra nodes, you can disable yum repo on other standby node
 
 type: `path`, level: `G`
 
-repo home dir, `/www` by default
+repository home directory, `/www` by default
 
 ------
 
@@ -369,7 +369,7 @@ repo home dir, `/www` by default
 
 type: `string`, level: `G`
 
-repo name, `pigsty` by default, it is not wise to change this value
+repository name, `pigsty` by default, it is not recommended to change this value
 
 ------
 
@@ -377,7 +377,7 @@ repo name, `pigsty` by default, it is not wise to change this value
 
 type: `url`, level: `G`
 
-access point to this repo by domain or ip:port, default value: `http://${admin_ip}:80`
+access point to this repository by domain or IP:port, default value: `http://${admin_ip}:80`
 
 If you have changed the [`nginx_port`](#nginx_port) or [`nginx_ssl_port`](#nginx_ssl_port), or use a different infra node from admin node, please adjust this parameter accordingly.
 
@@ -389,9 +389,9 @@ The `${admin_ip}` will be replaced with actual [`admin_ip`](#admin_ip) during ru
 
 type: `bool`, level: `G/A`
 
-remove existing upstream repo, default value: `true`
+remove existing upstream repository, default value: `true`
 
-If you want to keep existing upstream repo, set this value to `false`.
+If you want to keep existing upstream repository, set this value to `false`.
 
 ------
 
@@ -399,7 +399,7 @@ If you want to keep existing upstream repo, set this value to `false`.
 
 type: `string`, level: `G/A`
 
-which repo modules are installed in repo_upstream, default value: `infra,node,pgsql`
+which repository modules are installed in repo_upstream, default value: `infra,node,pgsql`
 
 This is a comma separated value string, it is used to filter entries in [`repo_upstream`](#repo_upstream) with corresponding `module` field.
 
@@ -411,9 +411,9 @@ For Ubuntu / Debian users, you can add redis to the list: `infra,node,pgsql,redi
 
 type: `upstream[]`, level: `G`
 
-This param defines the upstream software repo for Pigsty. It **DOES NOT** have default values, you can specify it explicitly, or leaving it empty if you want to use the default values.
+This parameter defines the upstream software repository for Pigsty. It **DOES NOT** have default values; you can specify it explicitly, or leave it empty if you want to use the default values.
 
-When leaving it empty, Pigsty will use the default values from the `repo_upstream_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+When leaving it empty, Pigsty will use the default values from the `repo_upstream_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to your OS.
 
 For EL (7, 8, 9 ) system, the default values are:
 
@@ -498,11 +498,11 @@ For Debian (11,12) or Ubuntu (22.04, 22.04) systems, the default values are:
 
 type: `string[]`, level: `G`
 
-This param is an array os strings, each string is a list of software packages separated by space, specifying which packages to be included & downloaded.
+This parameter is an array of strings, with each string being a list of software packages separated by spaces, specifying which packages to be included and downloaded.
 
 This param **DOES NOT** have a default value, you can specify it explicitly, or leaving it empty if you want to use the default values.
 
-When leaving it empty, Pigsty will use the default values from the `repo_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+When leaving it empty, Pigsty will use the default values from the `repo_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to your OS.
 
 ```yaml
 [ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-utility, extra-modules ]
@@ -542,7 +542,7 @@ As a convention, `repo_packages` usually includes software packages that are not
 
 type: `string[]`, level: `G/C/I`
 
-This parameter is same as [`repo_packages`](#repo_packages), but it is used for the additional software packages that need to be downloaded. (Usually PG version ad hoc packages)
+This parameter is the same as [`repo_packages`](#repo_packages), but it is used for additional software packages that need to be downloaded (usually PostgreSQL version-specific packages).
 
 The default value is an empty list. You can override it at the cluster & instance level to specify additional software packages that need to be downloaded.
 
@@ -574,11 +574,11 @@ Here `$v` will be replaced with the actual PostgreSQL major version number [`pg_
 
 type: `object[] | string[]`, level: `G`
 
-extra packages from url, default values: `[]`
+extra packages from URL, default values: `[]`
 
 You can use object list or string list in this parameter, in the latter case, Pigsty will use the url basename as the filename.
 
-Beware that if the [`region`](#region) is set to `china`, the `pigsty.io` will be replaced with `pigsty.cc` automatically.
+Note that if the [`region`](#region) is set to `china`, `pigsty.io` will be replaced with `pigsty.cc` automatically.
 
 ------
 
@@ -592,11 +592,11 @@ These packages are installed on infra nodes only, including common rpm/deb/pip p
 
 type: `string[]`, level: `G`
 
-This param is an array os strings, each string is a list of common software packages separated by space, specifying which packages to be installed on INFRA nodes.
+This parameter is an array of strings, with each string being a list of common software packages separated by spaces, specifying which packages to be installed on INFRA nodes.
 
-This param **DOES NOT** have a default value, you can specify it explicitly, or leaving it empty if you want to use the default values.
+This parameter **DOES NOT** have a default value; you can specify it explicitly, or leave it empty if you want to use the default values.
 
-When leaving it empty, Pigsty will use the default values from the `repo_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to you OS.
+When leaving it empty, Pigsty will use the default values from the `repo_packages_default` defined in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) according to your OS.
 
 For EL (7/8/9) system, the default values are:
 
@@ -626,9 +626,9 @@ pip installed packages for infra nodes, default value is empty string
 
 ## `NGINX`
 
-Pigsty exposes all Web services through Nginx: Home Page, Grafana, Prometheus, AlertManager, etc…, and other optional tools such as PGWe, Jupyter Lab, Pgadmin, Bytebase ,and other static resource & report such as `pev`, `schemaspy` & `pgbadger`
+Pigsty exposes all web services through Nginx: Home Page, Grafana, Prometheus, AlertManager, etc., and other optional tools such as PGWeb, Jupyter Lab, pgAdmin, Bytebase, and other static resources & reports such as `pev`, `schemaspy` & `pgbadger`.
 
-This nginx also serves as a local yum/apt repo.
+This Nginx also serves as a local YUM/APT repository.
 
 ```yaml
 nginx_enabled: true               # enable nginx on this infra node?
@@ -664,7 +664,7 @@ type: `bool`, level: `G/I`
 
 enable nginx_exporter on this infra node? default value: `true`.
 
-set to false will disable `/nginx` health check stub too: If your nginx does not support `/nginx` stub, you can set this value to `false` to disable it.
+Setting this to false will also disable the `/nginx` health check stub: If your Nginx does not support the `/nginx` stub, you can set this value to `false` to disable it.
 
 ------
 
@@ -675,25 +675,8 @@ type: `enum`, level: `G`
 nginx ssl mode? which could be: `disable`, `enable`, `enforce`, the default value: `enable`
 
 - `disable`: listen on [`nginx_port`](#nginx_port) and serve plain HTTP only
-
 - `enable`: also listen on [`nginx_ssl_port`](#nginx_ssl_port) and serve HTTPS
-
-- ```
-enforce
-  ```
-
-: all links will be rendered as
-
-
-
-  ```
-  https://
-  ```
-
-
-
-by default
-
+- `enforce`: all links will be rendered as `https://` by default
   - also redirect 80 port to 443 port for all non-default servers in nginx [`infra_portal`](#infra_portal)
 
 ------
@@ -840,7 +823,7 @@ dns_records:                      # dynamic dns records resolved by dnsmasq
 
 ## `PROMETHEUS`
 
-Prometheus is used as time-series database for metrics scrape, storage & analysis.
+Prometheus is used as the time-series database for metrics scrape, storage & analysis.
 
 ```yaml
 prometheus_enabled: true          # enable prometheus on this infra node?
@@ -1126,3 +1109,4 @@ loki data dir, default value: `/data/loki`
 type: `interval`, level: `G`
 
 loki log retention period, `15d` by default
+

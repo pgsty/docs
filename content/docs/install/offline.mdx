@@ -35,7 +35,7 @@ We usually release offline packages for the following [linux distro](/docs/prepa
 | Debian 12.10    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-red-600">aarch64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | `pigsty-pkg-v3.5.0.d12.aarch64.tgz` |
 
 
-<Callout title="Offline Package in made for specific Linux OS Major.Minor Version" type="warn">
+<Callout title="Offline Package is made for specific Linux OS Major.Minor Version" type="warn">
 
     Using offline package on lower minor version may have a chance of success, but it is not guaranteed.
 
@@ -98,9 +98,9 @@ It will also setup the os package manager repo file and install `ansible` and ot
 
 <Callout title="Where are my repo files?" type="warn">
 
-    Bootstrap will **wipe-out** existing repo by default to ensure only the required repo are installed.
+    Bootstrap will **wipe-out** existing repo by default to ensure only the required repos are installed.
 
-    You can find them in `/etc/yum.repos.d/backup` (EL) or `/etc/apt//backup` (debian / ubuntu)
+    You can find them in `/etc/yum.repos.d/backup` (EL) or `/etc/apt/backup` (debian / ubuntu)
 
 </Callout>
 
@@ -149,7 +149,7 @@ We offer [paid service](/docs/about/service) to make offline packages for precis
 
 ------
 
-## Hybride Approach
+## Hybrid Approach
 
 There's a hybrid approach to using the offline package and do online install upon it.
 This could be useful if your OS repo is a local Intranet repo.

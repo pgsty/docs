@@ -87,7 +87,7 @@ For more details, check these tutorials:
 
 ### Local Repo
 
-During installation, Pigsty creates a local software repo on the INFRA node to speed up later software installations.
+During installation, Pigsty creates a local software repository on the INFRA node to speed up subsequent software installations.
 
 Located at `/www/pigsty` and served by Nginx, it’s accessible via `http://h.pigsty/pigsty`.
 
@@ -99,7 +99,7 @@ Repo definition lives in `/www/pigsty.repo`, fetchable via `http://${admin_ip}/p
 curl -L http://h.pigsty/pigsty.repo -o /etc/yum.repos.d/pigsty.repo
 ```
 
-You can also use the file repo directly without Nginx:
+You can also use the file repository directly without Nginx:
 
 ```ini
 [pigsty-local]
@@ -147,7 +147,7 @@ Configs live in: [Config: INFRA - GRAFANA](/docs/infra/param#grafana) and [Confi
 
 Ansible is already installed on the [Admin Node](/docs/node/arch#admin-node) during [bootstrap](/docs/install/start#bootstrap).
 So the `ansible` on [infra nodes](/docs/node/arch#infra-node) are not actually used.
-But it gives you a viable backup option in case of your admin node is nuked.
+But it gives you a viable backup option in case your admin node is compromised.
 
 ------
 
@@ -159,7 +159,7 @@ DNS records live in `/etc/hosts.d/` on all INFRA nodes.
 
 Configs: [Config: INFRA - DNS](/docs/infra/param#dns)
 
-Pigsty setup it just for your convenience, and pigsty is actually NOT using it internally (static DNS records in `/etc/hosts` are used instead).
+Pigsty sets it up just for your convenience, and Pigsty actually does NOT use it internally (static DNS records in `/etc/hosts` are used instead).
 
 
 ------

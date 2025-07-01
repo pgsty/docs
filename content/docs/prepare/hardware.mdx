@@ -49,8 +49,8 @@ A two-node setup enables database replication and semi-HA capabilities:
 
 | ID | [NODE](/docs/node) | [PGSQL](/docs/pgsql)  | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
 |:--:|:------------------:|:---------------------:|:--------------------:|:----------------------:|
-| 1  |      `node-1`      | `pg-meta-2` (replica) |      `infra-1`       |        `etcd-1`        |
-| 2  |      `node-2`      | `pg-meta-1` (primary) |                      |                        |
+| 1  |      `node-1`      | `pg-meta-1` (primary) |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      | `pg-meta-2` (replica) |                      |                        |
 
 While more robust than a single node setup, HA has limitations:
 - No automatic failover if `node-1` fails - manual promotion of `node-2` required

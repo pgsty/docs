@@ -75,33 +75,33 @@ Then use the [`infra.yml`](/docs/infra/playbook/#infrayml) playbook to install I
 
 ## Local Repo
 
-Use these playbook tasks to manage local package repositories (YUM/APT) on Infra nodes (because who doesn’t love a good package party?):
+Use these playbook tasks to manage local package repositories (YUM/APT) on Infra nodes :
 
 ```bash
-./infra.yml -t repo              # Create local repo from internet or offline packages
+./infra.yml -t repo              # Create local repository from internet or offline packages
 
-./infra.yml -t repo_dir          # Create local repo directory
-./infra.yml -t repo_check        # Check if local repo exists
-./infra.yml -t repo_prepare      # Use existing local repo if available
-./infra.yml -t repo_build        # Build local repo from upstream if not exists
-./infra.yml     -t repo_upstream     # Add upstream repo/list files
-./infra.yml     -t repo_remove       # Remove existing repo files if repo_remove=true
-./infra.yml     -t repo_add          # Add upstream repo files to /etc/yum.repos.d (or apt)
+./infra.yml -t repo_dir          # Create local repository directory
+./infra.yml -t repo_check        # Check if local repository exists
+./infra.yml -t repo_prepare      # Use existing local repository if available
+./infra.yml -t repo_build        # Build local repository from upstream if not exists
+./infra.yml     -t repo_upstream     # Add upstream repository/list files
+./infra.yml     -t repo_remove       # Remove existing repository files if repo_remove=true
+./infra.yml     -t repo_add          # Add upstream repository files to /etc/yum.repos.d (or apt)
 ./infra.yml     -t repo_url_pkg      # Download packages defined in repo_url_packages
 ./infra.yml     -t repo_cache        # Create metadata cache with yum makecache / apt update
 ./infra.yml     -t repo_boot_pkg     # Install bootstrap packages (createrepo_c, yum-utils, etc)
 ./infra.yml     -t repo_pkg          # Download packages & deps from upstream
-./infra.yml     -t repo_create       # Create local repo with createrepo_c / dpkg-dev
-./infra.yml     -t repo_use          # Add new repo to /etc/yum.repos.d | apt sources
+./infra.yml     -t repo_create       # Create local repository with createrepo_c / dpkg-dev
+./infra.yml     -t repo_use          # Add new repository to /etc/yum.repos.d | apt sources
 ./infra.yml -t repo_nginx        # Start nginx as file server if not running
 ```
 
-Commonly used commands (the greatest hits):
+Commonly used commands:
 
 ```bash
-./infra.yml     -t repo_upstream     # Add upstream repos defined in repo_upstream
+./infra.yml     -t repo_upstream     # Add upstream repositories defined in repo_upstream
 ./infra.yml     -t repo_pkg          # Download packages and their dependencies
-./infra.yml     -t repo_create       # Create/update local yum/apt repo
+./infra.yml     -t repo_create       # Create/update local YUM/APT repository
 ```
 
 ------
@@ -117,7 +117,7 @@ Commonly used commands (the greatest hits):
 If users specify a cert name in the `certbot` field of `infra_portal`, you can get free HTTPS certs with certbot:
 
 ```bash
-# Get free HTTPS certs for real domains with certbot (SSL all the things!)
+# Get free HTTPS certificates for real domains with certbot
 ./infra.yml -t nginx_certbot,nginx_reload -e certbot_sign=true
 ```
 
@@ -125,7 +125,7 @@ If users specify a cert name in the `certbot` field of `infra_portal`, you can g
 
 ## Manage Infra Components
 
-Use these playbook tasks to manage infrastructure components on Infra nodes (it’s like conducting an orchestra, but with servers):
+Use these playbook tasks to manage infrastructure components on Infra nodes 
 
 ```bash
 ./infra.yml -t infra           # Configure infrastructure
@@ -144,7 +144,7 @@ Use these playbook tasks to manage infrastructure components on Infra nodes (it�
 ./infra.yml -t infra_register  # Register infra components to prometheus
 ```
 
-Other useful tasks (for when you need that extra infrastructure TLC):
+Other useful tasks 
 
 ```bash
 ./infra.yml -t nginx_index                        # Re-render Nginx homepage

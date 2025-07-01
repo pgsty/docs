@@ -108,8 +108,8 @@ infra:
     docker_image_cache: "/tmp/docker/*.tgz"
 ```
 
-The images defined in [`docker_image`](/docs/docker/param#docker_image) will be pulled during the `docker_image` task, one be one.
-And The local docker image cache with `.tgz` suffix matching the [`docker_image_cache`](/docs/docker/param#docker_image_cache) glob list will be loaded into docker with `docker load`
+The images defined in [`docker_image`](/docs/docker/param#docker_image) will be pulled during the `docker_image` task, one by one.
+And the local docker image cache with `.tgz` suffix matching the [`docker_image_cache`](/docs/docker/param#docker_image_cache) glob list will be loaded into docker with `docker load`
 
 
 

@@ -51,7 +51,7 @@ MINIO Playbook cheatsheet and common commands
 ./minio.yml -l <cls>                      # init MINIO module on group <cls>
 ./minio.yml -l minio -e minio_clean=true  # init MINIO, and remove existing MinIO & Data (DANGEROUS!)
 ./minio.yml -l minio -e minio_clean=true -t minio_clean # Remove existing MinIO & Data (DANGEROUS!)
-./minio.yml -l minio -t minio_instal      # install MinIO, setup dirs, without configure & launch
+./minio.yml -l minio -t minio_install     # install MinIO, setup dirs, without configure & launch
 ./minio.yml -l minio -t minio_config      # generate MinIO config & certs
 ./minio.yml -l minio -t minio_launch      # restart MinIO cluster
 ```

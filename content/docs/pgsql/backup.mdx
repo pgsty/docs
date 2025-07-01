@@ -24,7 +24,7 @@ pgbackrest --stanza=${stanza} --type=full|diff|incr backup
 pg-backup       # make a backup, incr, or full backup if necessary
 pg-backup full  # make a full backup
 pg-backup diff  # make a differential backup
-pg-backup incr  # make a incremental backup
+pg-backup incr  # make an incremental backup
 ```
 
 Use the following command to print backup info:
@@ -33,7 +33,7 @@ Use the following command to print backup info:
 pb info  # print backup info
 ```
 
-You can also acquire backup info from the monitoring system: [PGCAT Instance - Backup](https://demo.pigsty.cc/d/pgcat-instance/pgcat-instance?from=now-1h&to=now&var-job=pgsql&var-ds=Prometheus&orgId=1&viewPanel=158) or the dedicate PGSQL PITR dashboard.
+You can also acquire backup info from the monitoring system: [PGCAT Instance - Backup](https://demo.pigsty.cc/d/pgcat-instance/pgcat-instance?from=now-1h&to=now&var-job=pgsql&var-ds=Prometheus&orgId=1&viewPanel=158) or the dedicated PGSQL PITR dashboard.
 
 ```bash
 $ pb info

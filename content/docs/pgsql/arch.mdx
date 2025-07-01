@@ -56,9 +56,9 @@ It defines a [HA](/docs/feat/ha) PostgreSQL cluster looks like the above, and he
 
 ## HA Description
 
-The [PostreSQL](https://www.postgresql.org/) cluster is managed by [Patroni](https://patroni.readthedocs.io/),
+The [PostgreSQL](https://www.postgresql.org/) cluster is managed by [Patroni](https://patroni.readthedocs.io/),
 which is a battle-tested HA solution for PostgreSQL.
-It will setup PG Replication on multiple nodes, and perform automatic failover when the primary node is down.
+It will set up PG Replication on multiple nodes, and perform automatic failover when the primary node is down.
 
 The backup is handled by [pgBackRest](https://pgbackrest.org/), which is a powerful backup tool for PostgreSQL,
 which supports incremental backup/restore, compression, encryption, backup to local disk or S3 / MinIO.
@@ -122,7 +122,7 @@ Meanwhile, the [Infra Node](/docs/node/arch#infra-node) consists of the followin
 
 
 - Cluster DNS is resolved by DNSMASQ on infra nodes
-- Cluster VIP is manged by `vip-manager`, which bind to cluster primary.
+- Cluster VIP is managed by `vip-manager`, which binds to cluster primary.
     - `vip-manager` will acquire cluster leader info written by `patroni` from `etcd` cluster directly
 - Cluster services are exposed by Haproxy on nodes, services are distinguished by node ports (`543x`).
     - Haproxy port 9101: monitoring metrics & stats & admin page

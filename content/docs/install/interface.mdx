@@ -20,12 +20,12 @@ Or use local / public [Domain Names](/docs/admin/domain) to access them via [Ngi
 
 |            Component            |   Port   |   Domain   | Comment                     | Public Demo                                |
 |:-------------------------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
-| [**Nginx**](/docs/admin/portal) | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.io`](https://h.pigsty.cio)   |
+| [**Nginx**](/docs/admin/portal) | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.io`](https://h.pigsty.io)   |
 |     [**Grafana**](#grafana)     |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.cc`](https://demo.pigsty.cc) |
 |           Prometheus            |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
-|          AlertManager           |  `9093`  | `a.pigsty` | Alter Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
+|          AlertManager           |  `9093`  | `a.pigsty` | Alert Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
 
-You can access the default PostgreSQL database (`meta`) @ default port `5342` via the following users and corresponding `PGURL`:
+You can access the default PostgreSQL database (`meta`) @ default port `5432` via the following users and corresponding `PGURL`:
 
 ```bash tab="dbuser_dba"
 psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta
@@ -113,7 +113,7 @@ pg-meta:
 
 ```
 
-Which means your can also access the `meta` database with these two users:
+Which means you can also access the `meta` database with these two users:
 
 ```bash tab="dbuser_meta"
 psql postgres://dbuser_meta:DBUser.Meta@10.10.10.10:5432/meta

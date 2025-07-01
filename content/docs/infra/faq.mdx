@@ -7,17 +7,17 @@ icon: MessageCircleQuestion
 ## Which components are included in INFRA
 
 - Ansible for automation, deployment, and administration;
-- Nginx for exposing any WebUI service and serving the yum/apt repo;
+- Nginx for exposing any WebUI service and serving the YUM/APT repository;
 - Self-Signed CA for SSL/TLS certificates;
 - Prometheus for monitoring metrics
 - Grafana for monitoring/visualization
 - Loki for logging collection
 - AlertManager for alerts aggregation
-- Chronyd for NTP time sync on the admin node.
+- Chronyd for NTP time synchronization on the admin node.
 - DNSMasq for DNS registration and resolution.
-- ETCD as DCS for PGSQL HA; (dedicated module)
-- PostgreSQL on meta nodes as CMDB; (optional)
-- Docker for stateless applications & tools (optional)
+- ETCD as DCS for PostgreSQL HA (dedicated module);
+- PostgreSQL on meta nodes as CMDB (optional);
+- Docker for stateless applications & tools (optional).
 
 ------
 
@@ -63,7 +63,7 @@ If you accidentally deleted the registered haproxy proxy settings in `/etc/nginx
 
 PGSQL cluster/instance domain names are registered to `/etc/hosts.d/<name>` on infra nodes by default.
 
-You can restore them again with the following:
+You can restore them with the following command:
 
 ```bash
 ./pgsql.yml -t pg_dns   # register pg DNS names to dnsmasq on infra nodes
@@ -71,7 +71,7 @@ You can restore them again with the following:
 
 ------
 
-## How to expose new Nginx upstream service
+## How to expose a new Nginx upstream service
 
 If you wish to expose a new WebUI service via the Nginx portal, you can add the service definition to the [`infra_portal`](/docs/infra/param#infra_portal) parameter.
 
@@ -81,7 +81,7 @@ If you wish to access with HTTPS, you must remove `files/pki/csr/pigsty.csr`, `f
 
 ------
 
-## How to expose web service through Nginx?
+## How to expose a web service through Nginx?
 
 While you can directly access services via IP:Port, we still recommend consolidating access points by using domain names and uniformly accessing various web-based services through the Nginx portal. This approach helps centralize access, reduce the number of exposed ports, and facilitates access control and auditing.
 
@@ -95,7 +95,7 @@ infra_portal:
   alertmanager : { domain: a.pigsty.io ,endpoint: "${admin_ip}:9093" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
-  # 新增的 Web 门户
+  # Additional web portals
   minio        : { domain: sss.pigsty  ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
   postgrest    : { domain: api.pigsty.io  ,endpoint: "127.0.0.1:8884"   }
   pgadmin      : { domain: adm.pigsty.io  ,endpoint: "127.0.0.1:8885"   }
@@ -107,7 +107,7 @@ infra_portal:
   supa         : { domain: supa.pigsty.io ,endpoint: "127.0.0.1:8000", websocket: true }
 ```
 
-After completing the Nginx upstream service definition, use the following configuration and command to register the new service with Nginx.
+After completing the Nginx upstream service definition, use the following commands to register the new service with Nginx.
 
 ```bash
 ./infra.yml -t nginx_config           # regenerate Nginx config
@@ -123,7 +123,7 @@ If you wish to access via HTTPS, you must delete `files/pki/csr/pigsty.csr` and 
 
 ## How to manually add upstream repo files
 
-Pigsty has a built-in wrap script `bin/repo-add`, which will invoke ansible playbook `node.yml` to adding repo files to corresponding nodes.
+Pigsty has a built-in wrapper script `bin/repo-add`, which will invoke Ansible playbook `node.yml` to add repository files to corresponding nodes.
 
 ```bash
 bin/repo-add <selector> [modules]

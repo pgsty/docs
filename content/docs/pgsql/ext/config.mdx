@@ -14,13 +14,13 @@ While most PostgreSQL extensions written in SQL can be [**directly enabled**](/d
 ## Preloading
 
 
-Most extension has one or more corresponding dynamic library (`.so`, `.dylib`, `.dll`), some of them require preloading before using.
-Attempting to `CREATE` these EXTENSION without proper preloading will result in an error. 
+Most extensions have one or more corresponding dynamic library (`.so`, `.dylib`, `.dll`), some of them require preloading before using.
+Attempting to `CREATE` these extensions without proper preloading will result in an error. 
 And a wrongly configured preload library may lead to a failure on database restart/start.
 
 Some extensions can partially work without preloading, which means part of the extension features are available directly, and the rest of the features are available after preloading.
 
-To preloading an extension, add it to the [`shared_preload_libraries`](https://www.postgresql.org/docs/current/runtime-config-client.html#Rshared_preload_libraries) and restart the database server.
+To preload an extension, add it to the [`shared_preload_libraries`](https://www.postgresql.org/docs/current/runtime-config-client.html#Rshared_preload_libraries) and restart the database server.
 The [Extension Catalog](/ext/list/attr#need-loading) gives the complete list of extensions that require dynamic preloading.
 
 

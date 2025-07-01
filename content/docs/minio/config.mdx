@@ -23,13 +23,13 @@ When using a multi-node MinIO cluster, you can access the service from any node,
 
 ## Core Param
 
-There’s one and only one core param for MinIO deployment, which is `MINIO_VOLUMES`, which specify the nodes, drivers, pools of a minio cluster
+There’s one and only one core param for MinIO deployment, which is `MINIO_VOLUMES`, which specifies the nodes, drivers, pools of a minio cluster
 
 Pigsty will auto-generate `MINIO_VOLUMES` according to the config inventory for you, but you can always override it directly. If not explicitly specified, Pigsty will generate it according to the following rules:
 
-- SNSD: `MINIO_VOLUMES` is point to any dir on local node, from [`minio_data`](/docs/minio/param#minio_data)
-- SNMD: `MINIO_VOLUMES` is point to a series of real driver on local node, from [`minio_data`](/docs/minio/param#minio_data)
-- MNMD: `MINIO_VOLUMES` is point to multiple node & multiple drivers, according to  `minio_data`  and  `minio_node`
+- SNSD: `MINIO_VOLUMES` points to any dir on local node, from [`minio_data`](/docs/minio/param#minio_data)
+- SNMD: `MINIO_VOLUMES` points to a series of real drivers on local node, from [`minio_data`](/docs/minio/param#minio_data)
+- MNMD: `MINIO_VOLUMES` points to multiple nodes & multiple drivers, according to  `minio_data`  and  `minio_node`
 
 - Use [`minio_data`](/docs/minio/param#minio_data) to specify drivers on each node, such as `/data{1...4}`
 - Use [`minio_node`](/docs/minio/param#minio_node) to specify node name pattern, such as `${minio_cluster}-${minio_seq}.pigsty`

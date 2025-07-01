@@ -12,7 +12,7 @@ There are unparalleled [**420+**](/ext/list) extensions available in Pigsty for 
 
 ## Overview
 
-It takes 4 steps to deliver an extension: [**downloads**](/docs/pgsql/ext/download), [**installs**](/docs/pgsql/ext/install), [**config**](/docs/ext/config), and [**create**](/docs/pgsql/ext/create):
+It takes 4 steps to deliver an extension: [**downloads**](/docs/pgsql/ext/download), [**installs**](/docs/pgsql/ext/install), [**config**](/docs/pgsql/ext/config), and [**create**](/docs/pgsql/ext/create):
 
 <Steps>
     <Step>
@@ -88,7 +88,7 @@ all:
     repo_extra_packages: [ postgis, timescaledb, vector ]           # download  (globally)
 ```
 
-When you init this PG cluster, these extensions will be made available for your in the `pg-meta` cluster.
+When you init this PG cluster, these extensions will be made available for you in the `pg-meta` cluster.
 
 
 Here's a more complicated example: launch Postgres with required extensions for [self-hosting supabase](/docs/app/supabase):
@@ -131,4 +131,4 @@ all:
     pg_extensions:                  [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
 ```
 
-All available extensions for PG 17 are downloaded and installed, and required one are loaded & enabled.
+All available extensions for PG 17 are downloaded and installed, and required ones are loaded & enabled.

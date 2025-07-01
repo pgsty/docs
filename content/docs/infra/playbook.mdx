@@ -54,30 +54,30 @@ Here’s the list of available tasks in the `infra.yml` playbook:
 #--------------------------------------------------------------#
 # Tasks
 #--------------------------------------------------------------#
-# ca            : create self-signed CA on localhost files/pki
+# ca            : create self-signed CA in localhost files/pki
 #   - ca_dir        : create CA directory
-#   - ca_private    : generate ca private key: files/pki/ca/ca.key
-#   - ca_cert       : signing ca cert: files/pki/ca/ca.crt
+#   - ca_private    : generate CA private key: files/pki/ca/ca.key
+#   - ca_cert       : sign CA certificate: files/pki/ca/ca.crt
 #
 # id            : generate node identity
 #
-# repo          : bootstrap a local yum repo from internet or offline packages
-#   - repo_dir      : create repo directory
-#   - repo_check    : check repo exists
-#   - repo_prepare  : use existing repo if exists
-#   - repo_build    : build repo from upstream if not exists
-#     - repo_upstream    : handle upstream repo files in /etc/yum.repos.d
-#       - repo_remove    : remove existing repo file if repo_remove == true
-#       - repo_add       : add upstream repo files to /etc/yum.repos.d
+# repo          : bootstrap a local YUM repository from internet or offline packages
+#   - repo_dir      : create repository directory
+#   - repo_check    : check repository exists
+#   - repo_prepare  : use existing repository if exists
+#   - repo_build    : build repository from upstream if not exists
+#     - repo_upstream    : handle upstream repository files in /etc/yum.repos.d
+#       - repo_remove    : remove existing repository file if repo_remove == true
+#       - repo_add       : add upstream repository files to /etc/yum.repos.d
 #     - repo_url_pkg     : download packages from internet defined by repo_url_packages
-#     - repo_cache       : make upstream yum cache with yum makecache
-#     - repo_boot_pkg    : install bootstrap pkg such as createrepo_c,yum-utils,...
-#     - repo_pkg         : download packages & dependencies from upstream repo
-#     - repo_create      : create a local yum repo with createrepo_c & modifyrepo_c
-#     - repo_use         : add newly built repo into /etc/yum.repos.d
-#   - repo_nginx    : launch a nginx for repo if no nginx is serving
+#     - repo_cache       : make upstream YUM cache with yum makecache
+#     - repo_boot_pkg    : install bootstrap packages such as createrepo_c, yum-utils, etc.
+#     - repo_pkg         : download packages & dependencies from upstream repository
+#     - repo_create      : create a local YUM repository with createrepo_c & modifyrepo_c
+#     - repo_use         : add newly built repository into /etc/yum.repos.d
+#   - repo_nginx    : launch nginx for repository if no nginx is serving
 #
-# node/haproxy/docker/monitor : setup infra node as a common node (check node.yml)
+# node/haproxy/docker/monitor : set up infra node as a common node (check node.yml)
 #   - node_name, node_hosts, node_resolv, node_firewall, node_ca, node_repo, node_pkg
 #   - node_feature, node_kernel, node_tune, node_sysctl, node_profile, node_ulimit
 #   - node_data, node_admin, node_timezone, node_ntp, node_crontab, node_vip
@@ -85,11 +85,11 @@ Here’s the list of available tasks in the `infra.yml` playbook:
 #   - docker_install, docker_admin, docker_config, docker_launch, docker_image
 #   - haproxy_register, node_exporter, node_register, promtail
 #
-# infra         : setup infra components
+# infra         : set up infra components
 #   - infra_env      : env_dir, env_pg, env_pgadmin, env_var
 #   - infra_pkg      : infra_pkg_yum, infra_pkg_pip
-#   - infra_user     : setup infra os user group
-#   - infra_cert     : issue cert for infra components
+#   - infra_user     : set up infra OS user group
+#   - infra_cert     : issue certificate for infra components
 #   - dns            : dns_config, dns_record, dns_launch
 #   - nginx          : nginx_config, nginx_cert, nginx_static, nginx_launch, nginx_certbot, nginx_reload, nginx_exporter
 #   - prometheus     : prometheus_clean, prometheus_dir, prometheus_config, prometheus_launch, prometheus_reload

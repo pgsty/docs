@@ -93,7 +93,7 @@ There are 10 sections, 65 parameters in the `NODE` module.
 
 # `NODE`
 
-Node module are tuning target nodes into desired state and take it into the Pigsty monitor system.
+The Node module tunes target nodes into the desired state and integrates them into the Pigsty monitoring system.
 
 ------
 
@@ -163,7 +163,7 @@ use postgres identity as node identity if applicable?
 
 default value is `true`
 
-Boworrow PostgreSQL cluster & instance identity if application.
+Borrow PostgreSQL cluster & instance identity if applicable.
 
 It’s useful to use same identity for postgres & node if there’s a 1:1 relationship
 
@@ -320,7 +320,7 @@ name: `node_default_packages`, type: `string[]`, level: `G`
 
 default packages to be installed on all nodes, the default values is not defined.
 
-This param is an array os strings, each string is a comma-separated list of package names, which will be installed on all nodes by default.
+This param is an array of strings, each string is a comma-separated list of package names, which will be installed on all nodes by default.
 
 This param **DOES NOT** have a default value, you can specify it explicitly, or leave it empty if you want to use the default values.
 
@@ -407,9 +407,9 @@ disable node swap, use with caution
 
 default value is `false`
 
-But turning off SWAP is not recommended. But SWAP should be disabled when your node is used for a Kubernetes deployment.
+Turning off SWAP is not recommended. However, SWAP should be disabled when your node is used for a Kubernetes deployment.
 
-If there is enough memory and the database is deployed exclusively. it may slightly improve performance
+If there is enough memory and the database is deployed exclusively, it may slightly improve performance
 
 ------
 
@@ -642,7 +642,7 @@ node_aliases:
   d:   docker
 ```
 
-会生成：
+This will generate:
 
 ```bash
 alias g="git"

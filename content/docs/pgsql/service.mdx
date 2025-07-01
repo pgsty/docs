@@ -28,7 +28,7 @@ All services are declared through configuration files. For instance, the default
 - { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
 ```
 
-You can also define new service in [`pg_services`](/docs/pgsql/param#pg_services). And `pg_default_services` 与 `pg_services` are both array of [Service Definition](/docs/pgsql/service/#define-service).
+You can also define new service in [`pg_services`](/docs/pgsql/param#pg_services). And `pg_default_services` and `pg_services` are both arrays of [Service Definition](/docs/pgsql/service/#define-service).
 
 
 

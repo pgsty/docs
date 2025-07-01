@@ -33,13 +33,13 @@ There are **4** **REQUIRED** parameters to describe a PostgreSQL Cluster:
 |    [`pg_role`](/docs/pgsql/param#pg_role)    |  `enum`  | **Instance** | **PG database instance role** |
 
 - [`pg_cluster`](/docs/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
-- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the ins.
+- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the instance.
 - the `primary` role will mark this instance as cluster leader (initially).
-- the `replica` is the default role, which marks this instances as common read-only replica.
+- the `replica` is the default role, which marks this instance as common read-only replica.
 - the `offline` marks this instance as special read-only replica that serves the `offline` service.
-- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the ins within the cluster, a non-negative integer
+- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the instance within the cluster, a non-negative integer
 - Start from 0 or 1, incremental allocation in sequence, never change once assigned,
-- `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the ins, i.e. `pg_instance`.
+- `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the instance, i.e. `pg_instance`.
 - `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
 - [`pg_shard`](/docs/pgsql/param#pg_shard) and [`pg_group`](/docs/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
 
@@ -90,7 +90,7 @@ pg-citus:
 |    Entity    | Naming Examples                                                                               |
 |:------------:|:----------------------------------------------------------------------------------------------|
 | **Cluster**  | `pg-meta`, `pg-test`, ...                                                                     |
-| **Service**  | `pg-meta-primary`, `pg-test-replcia`, `pg-test-offline`, `pg-test-standby`, `pg-meta-default` |
+| **Service**  | `pg-meta-primary`, `pg-test-replica`, `pg-test-offline`, `pg-test-standby`, `pg-meta-default` |
 | **Instance** | `pg-meta-1`, `pg-test-1`, `pg-test-2`, `pg-test-3`,...                                        |
 |   **Node**   | `10.10.10.10`, `10.10.10.11`, `10.10.10.12`, `10.10.10.13`...                                 |
 
@@ -208,12 +208,12 @@ pg-test:
   hosts:
     10.10.10.11: { pg_seq: 1, pg_role: primary }
     10.10.10.12: { pg_seq: 2, pg_role: replica }
-    10.10.10.13: { pg_seq: 2, pg_role: offline } # <--- newly added
+    10.10.10.13: { pg_seq: 3, pg_role: offline } # <--- newly added
   vars:
     pg_cluster: pg-test
 ```
 
-Offline instance works like common replica instances, but it is used as a backup server in `pg-test-replica` service. That is to say, offline and primary instance serves only when all `replica` instances are down.
+Offline instance works like common replica instances, but it is used as a backup server in `pg-test-replica` service. That is to say, offline and primary instances serve only when all `replica` instances are down.
 
 You can have ad hoc access control offline with [`pg_default_hba_rules`](/docs/pgsql/param#pg_default_hba_rules) and [`pg_hba_rules`](/docs/pgsql/param#pg_hba_rules). It will apply to the offline instance and any instances with [`pg_offline_query`](/docs/pgsql/param#pg_offline_query) flag.
 
@@ -221,9 +221,9 @@ You can have ad hoc access control offline with [`pg_default_hba_rules`](/docs/p
 
 ## Sync Standby
 
-Pigsty uses asynchronous stream replication by default. Which may have a small replication lag. (10KB / 10ms). A small window of data loss may occur when the primary fails (can be controlled with [`pg_rpo`](/docs/pgsql/param#pg_rpo).), but it is acceptable for most scenarios.
+Pigsty uses asynchronous stream replication by default, which may have a small replication lag (10KB / 10ms). A small window of data loss may occur when the primary fails (can be controlled with [`pg_rpo`](/docs/pgsql/param#pg_rpo)), but it is acceptable for most scenarios.
 
-But in some critical scenarios (e.g. financial transactions), data loss is totally unacceptable or read-your-write consistency is required. In this case, you can enable synchronous commit to ensure that.
+But in some critical scenarios (e.g., financial transactions), data loss is totally unacceptable or read-your-write consistency is required. In this case, you can enable synchronous commit to ensure that.
 
 To enable sync standby mode, you can simply use `crit.yml` template in [`pg_conf`](/docs/pgsql/param#pg_conf)
 

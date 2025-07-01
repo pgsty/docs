@@ -4,7 +4,7 @@ description: Access Control with default roles and privileges
 icon: Fingerprint
 ---
 
-Pigsty has a default role system consist of four [default roles](#default-roles) and four [default users](#default-users):
+Pigsty has a default role system consisting of four [default roles](#default-roles) and four [default users](#default-users):
 
 | Default User     | User Description   | Default Role       | Role Description                     |
 |:-----------------|--------------------|:-------------------|--------------------------------------|
@@ -51,7 +51,7 @@ There are four default roles in pigsty:
 - Admin (`dbrole_admin`): Role for DDL commands, inherits `dbrole_readwrite`.
 - Offline (`dbrole_offline`): Role for restricted read-only access ([offline](/docs/pgsql/config/#offline) instance)
 
-Default roles are defined in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles), change default roles is not recommended.
+Default roles are defined in [`pg_default_roles`](/docs/pgsql/param#pg_default_roles), changing default roles is not recommended.
 
 ```yaml
 - { name: dbrole_readonly  , login: false , comment: role for global read-only access  }                            # production read-only role
@@ -191,7 +191,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "dbrole_admin" {{ priv }};
 
 Which will be rendered in [`pg-init-template.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-template.sql) alone with `ALTER DEFAULT PRIVILEGES` statement for admin users.
 
-These SQL commands will be executed on `postgres` & `template1` during cluster bootstrap, and newly created databases will inherit it from `tempalte1` by default.
+These SQL commands will be executed on `postgres` & `template1` during cluster bootstrap, and newly created databases will inherit it from `template1` by default.
 
 That is to say, to maintain the correct object privilege, you have to run DDL with **admin users**, which could be:
 
@@ -221,7 +221,7 @@ There are 3 database level privileges: `CONNECT`, `CREATE`, `TEMP`, and a specia
 
 - If `owner` exists, it will be used as the database owner instead of default [`{{ pg_dbsu }}`](/docs/pgsql/param#pg_dbsu)
 - If `revokeconn` is `false`, all users have the `CONNECT` privilege of the database, this is the default behavior.
-- If `recokeconn` is set to `true` explicitly:
+- If `revokeconn` is set to `true` explicitly:
 - `CONNECT` privilege of the database will be revoked from `PUBLIC`
 - `CONNECT` privilege will be granted to `{{ pg_replication_username }}`, `{{ pg_monitor_username }}` and `{{ pg_admin_username }}`
 - `CONNECT` privilege will be granted to the database owner with `GRANT OPTION`

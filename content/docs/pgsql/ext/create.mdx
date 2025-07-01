@@ -84,9 +84,9 @@ Here, the `extensions` in the database object is a list where each element can b
 
 If the database doesn’t exist yet, the extensions defined here will be automatically created when [**creating a cluster**](/docs/pgsql/admin#create-cluster) or [**creating a database**](/docs/pgsql/admin#create-database) through Pigsty.
 
-Re-Creating database with non-trivial baseline schema may be dangerous (if you put some `DROP` there)
+Re-creating database with non-trivial baseline schema may be dangerous (if you put some `DROP` there)
 So for existing clusters / databases, it's advised to use your own schema migration tool to manage extensions. (pgadmin, psql, bytebase, flyway, sqlitch,...)
-But it's helpful to enlist them in the [config inventory](/docs/config/inventory) for bookkeeping purposes. (So if you want to fork this cluster, it include these extensions)
+But it's helpful to enlist them in the [config inventory](/docs/config/inventory) for bookkeeping purposes. (So if you want to fork this cluster, it includes these extensions)
 
 
 
@@ -97,7 +97,7 @@ But it's helpful to enlist them in the [config inventory](/docs/config/inventory
 Some built-in extensions and one special [`pg_repack`](/ext/pg_repack) are created by default in Pigsty.
 
 These extensions are defined by [**`pg_default_extensions`**](/docs/pgsql/param#pg_default_extensions), created in the `template1` database and the `postgres` database by default.
-Newly create databases will inherit these extensions from `template1`, so you don't need to create them again.
+Newly created databases will inherit these extensions from `template1`, so you don't need to create them again.
 
 ```yaml
 pg_default_extensions:
@@ -131,10 +131,10 @@ There are three **3rd-party** extensions that are available by default in Pigsty
 
 The [`pg_repack`](/ext/pg_repack) extension is an important utility for maintaining bloat tables online.
 
-[**`vector`**](/ext/vector) is a very popular extensions for RAG,
+[**`vector`**](/ext/vector) is a very popular extension for RAG,
 It is [**installed**](/docs/pgsql/ext/install) by default (in the `pgsql-main` [alias](/docs/pgsql/ext/pkg)) and created in the placeholder `meta` database in most [config templates](/docs/config/templates).
 
-The [`wal2json`](/ext/wal2json) is another important extension for Chanaging Data Capture (CDC). It is [installed](/docs/pgsql/ext/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
+The [`wal2json`](/ext/wal2json) is another important extension for Changing Data Capture (CDC). It is [installed](/docs/pgsql/ext/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
 So you don't need to `CREATE` it explicitly.
 
 
@@ -145,7 +145,7 @@ So you don't need to `CREATE` it explicitly.
 [Extension without DDL](/ext/list/attr#without-ddl) does not require the `CREATE EXTENSION` command to work
 
 PostgreSQL extensions typically consist of three parts: a required control file, optional SQL files, and optional libraries.
-If extension does not have SQL file, `CREATE EXTENSION` command is not needed.
+If an extension does not have SQL file, `CREATE EXTENSION` command is not needed.
 
 | Component    | Description                                           | Required     |
 |--------------|-------------------------------------------------------|:------------:|

@@ -49,7 +49,7 @@ This "semi-HA" setup can only auto-recover from specific node failures.
 
 
 You can use the [`dual.yml`](https://github.com/pgsty/pigsty/blob/main/conf/dual.yml) config template, and provision required VM with:
-[Vagrant](/docs/prepare/vagrant) [`dual.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/dual.rb) to provion this environment.
+[Vagrant](/docs/prepare/vagrant) [`dual.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/dual.rb) to provision this environment.
 
 
 
@@ -65,12 +65,12 @@ A true HA setup that can automatically recover from any single node failure:
 | ID |  IP Address   | [NODE](/docs/node) | [PGSQL](/docs/pgsql) | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
 |:--:|:-------------:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
 | 1  | `10.10.10.10` |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
-| 2  | `10.10.10.11` |      `node-1`      |     `pg-meta-1`      |      `infra-2`       |        `etcd-2`        |
-| 3  | `10.10.10.12` |      `node-2`      |     `pg-meta-1`      |      `infra-3`       |        `etcd-3`        |
+| 2  | `10.10.10.11` |      `node-2`      |     `pg-meta-2`      |      `infra-2`       |        `etcd-2`        |
+| 3  | `10.10.10.12` |      `node-3`      |     `pg-meta-3`      |      `infra-3`       |        `etcd-3`        |
 
 
 You can use the [`trio.yml`](https://github.com/pgsty/pigsty/blob/main/conf/trio.yml) config template, and provision required VM with:
-[Vagrant](/docs/prepare/vagrant) [`trio.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/trio.rb) to provion this environment.
+[Vagrant](/docs/prepare/vagrant) [`trio.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/trio.rb) to provision this environment.
 
 
 
@@ -88,14 +88,14 @@ This is a [sandbox demo](/docs/prepare/sandbox) environment used in Pigsty, whic
 | 4  | `10.10.10.13` |      `node-3`      |     `pg-test-1`      |                      |                        |                          |
 
 You can use the [`full.yml`](https://github.com/pgsty/pigsty/blob/main/conf/full.yml) config template, and provision required VM with:
-[Vagrant](/docs/prepare/vagrant) [`full.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/full.rb) or [Terraform](/docs/prepare/terraform) [`full.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-full.tf) to provion this environment.
+[Vagrant](/docs/prepare/vagrant) [`full.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/full.rb) or [Terraform](/docs/prepare/terraform) [`full.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-full.tf) to provision this environment.
 
 
 ---------
 
 ## 5-node Building
 
-This [`pro.yml`](https://github.com/pgsty/pigsty/blob/main/conf/build/pro.yml) is a 5-node building enviroinment which contains supported [Linux distros](/docs/prepare/linux).
+This [`pro.yml`](https://github.com/pgsty/pigsty/blob/main/conf/build/pro.yml) is a 5-node building environment which contains supported [Linux distros](/docs/prepare/linux).
 
 | ID |  IP Address   | [NODE](/docs/node) | [PGSQL](/docs/pgsql) | [INFRA](/docs/infra) | [**ETCD**](/docs/etcd) |
 |:--:|:-------------:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
@@ -105,7 +105,7 @@ This [`pro.yml`](https://github.com/pgsty/pigsty/blob/main/conf/build/pro.yml) i
 | 4  | `10.10.10.22` |       `u22`        |       `u22-1`        |      `infra-4`       |                        |
 | 5  | `10.10.10.24` |       `u24`        |       `u24-1`        |      `infra-5`       |                        |
 
-You can use the [Vagrant](/docs/prepare/vagrant) [`pro.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/pro.rb) or [Terraform](/docs/prepare/terraform) [`pro.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-pro.tf) to provion this environment.
+You can use the [Vagrant](/docs/prepare/vagrant) [`pro.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/pro.rb) or [Terraform](/docs/prepare/terraform) [`pro.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-pro.tf) to provision this environment.
 
 
 ---------
@@ -153,14 +153,14 @@ A production simulation environment ([`simu.yml`](https://github.com/pgsty/pigst
 | `10.10.10.59` | 1C2G  |      `node59`      |    `pg-citus4-2`     |                      |                        |                          |                          |
 | `10.10.10.88` | 4C8G  |       `test`       |                      |                      |                        |                          |                          |
 
-You can use the [Vagrant](/docs/prepare/vagrant) [`simu.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/simu.rb) to provion this environment.
-You can run the entre simulation on a real server (72C / 256G) with `libvirt` as VM provider with vagrant.
+You can use the [Vagrant](/docs/prepare/vagrant) [`simu.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/simu.rb) to provision this environment.
+You can run the entire simulation on a real server (72C / 256G) with `libvirt` as VM provider with vagrant.
 
 - 2 infra nodes, monitoring each other
-- 2 dedicate proxy nodes that run haproxy
+- 2 dedicated proxy nodes that run haproxy
 - 5-node etcd cluster which tolerates 2 node failures, and 5-node redis sentinel cluster
 - 5-node minio cluster with 4 disks on each node
 - 10 postgres clusters, `pg13` - `pg15`, `pg-src`, `pg-dst`, `pg-pitr`, `pg-test`
-- 10-node citus cluster with 5 shareds
+- 10-node citus cluster with 5 shards
 - redis standalone cluster `redis-src` and `redis-dst`, and native cluster `redis-test`
 

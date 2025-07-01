@@ -60,10 +60,10 @@ You can pass in ssh and sudo passwords via the `-k|-K` parameter when executing 
 
 ## Create an admin user with the existing admin user.
 
-This will create an admin user specified by [`node_admin_username`](/docs/node/param#node_admin_username) with the existing one on that node.
+This will create an admin user specified by [`node_admin_username`](/docs/node/param#node_admin_username) using the existing admin user on that node.
 
 ```bash
-./node.yml -k -K -e ansible_user=<another_admin> -t node_admin`
+./node.yml -k -K -e ansible_user=<another_admin> -t node_admin
 ```
 
 ------

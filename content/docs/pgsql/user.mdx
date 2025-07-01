@@ -13,7 +13,7 @@ You can manage PostgreSQL users and roles with Pigsty, in an IaC manner.
 
 ## Define User
 
-You can define roles/users with the following param, they all both arrays consist of user objects:
+You can define roles/users with the following parameters, they are both arrays consisting of user objects:
 
 - [`pg_users`](/docs/pgsql/param#pg_users) : Define business users & roles at cluster level (**Cluster Definition**)
 - [`pg_default_roles`](/docs/pgsql/param#pg_default_roles) : Define system-wide roles & global users (**Global Defaults**)
@@ -80,7 +80,7 @@ Pigsty has a battery-included [ACL](/docs/pgsql/acl) system, which can be easily
 - `dbrole_admin` : The role for object creation
 - `dbrole_offline` : The role for restricted read-only access ([offline](/docs/pgsql/config/#offline) instance)
 
-If you wish to re-design your [ACL](/doccs/pgsql/acl) system, check the following parameters and SQL templates.
+If you wish to re-design your [ACL](/docs/pgsql/acl) system, check the following parameters and SQL templates.
 
 - [`pg_default_roles`](/docs/pgsql/param#pg_default_roles) : System-wide roles & global users
 - [`pg_default_privileges`](/docs/pgsql/param#pg_default_privileges) : Default privileges for newly created objects
@@ -122,7 +122,7 @@ Create user is an **idempotent** operation, meaning it can be run multiple times
 
 <Callout title="Create owner user before create database" type="warn">
 
-    In PostgreSQL, users belongs to the database cluster, not a specific database.
+    In PostgreSQL, users belong to the database cluster, not a specific database.
 
     If your user is an **owner** of any databases, make sure the user is created before creating the database.
 
