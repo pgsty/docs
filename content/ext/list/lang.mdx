@@ -20,7 +20,7 @@ import { FileCode2, Package } from 'lucide-react';
 
 | Language | Count | Description |
 |:-------:|:-----:|:------------|
-| <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> | 333 | The traditional PostgreSQL extension language |
+| <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> | 334 | The traditional PostgreSQL extension language |
 | <a href="/ext/list/lang#sql"><Badge icon={<FileCode2 />} variant="green-subtle">SQL</Badge></a> | 37 | Pure SQL extensions and functions |
 | <a href="/ext/list/lang#rust"><Badge icon={<FileCode2 />} variant="amber-subtle">Rust</Badge></a> | 33 | Extensions written in Rust with the pgrx framework |
 | <a href="/ext/list/lang#data"><Badge icon={<FileCode2 />} variant="teal-subtle">Data</Badge></a> | 10 | Data-only extensions |
@@ -31,7 +31,7 @@ import { FileCode2, Package } from 'lucide-react';
 
 ## C
 
-<a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> <Badge icon={<Package />} variant="gray-subtle">333 Extensions</Badge>
+<a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> <Badge icon={<Package />} variant="gray-subtle">334 Extensions</Badge>
 
 The traditional PostgreSQL extension language
 
@@ -186,6 +186,7 @@ The traditional PostgreSQL extension language
 | 4640 | [`omnisketch`](/ext/omnisketch) | [`omnisketch`](/ext/omnisketch) | data structure for on-line agg of data into approximate sketch |
 | 8610 | [`oracle_fdw`](/ext/oracle_fdw) | [`oracle_fdw`](/ext/oracle_fdw) | foreign data wrapper for Oracle access |
 | 9100 | [`orafce`](/ext/orafce) | [`orafce`](/ext/orafce) | Functions and operators that emulate a subset of functions and packages from the Oracle RDBMS |
+| 2920 | [`orioledb`](/ext/orioledb) | [`orioledb`](/ext/orioledb) | OrioleDB, the next generation transactional engine |
 | 6900 | [`pageinspect`](/ext/pageinspect) | [`pageinspect`](/ext/pageinspect) | inspect the contents of database pages at a low level |
 | 7990 | [`passwordcheck`](/ext/passwordcheck) | [`passwordcheck`](/ext/passwordcheck_cracklib) | checks user passwords and reject weak password |
 | 7000 | [`passwordcheck_cracklib`](/ext/passwordcheck_cracklib) | [`passwordcheck`](/ext/passwordcheck_cracklib) | Strengthen PostgreSQL user password checks with cracklib |
@@ -246,7 +247,7 @@ The traditional PostgreSQL extension language
 | 2530 | [`pg_strom`](/ext/pg_strom) | [`pg_strom`](/ext/pg_strom) | PG-Strom - big-data processing acceleration using GPU and NVME |
 | 5990 | [`pg_surgery`](/ext/pg_surgery) | [`pg_surgery`](/ext/pg_surgery) | extension to perform surgery on a damaged relation |
 | 1080 | [`pg_task`](/ext/pg_task) | [`pg_task`](/ext/pg_task) | execute any sql command at any specific time at background |
-| 7060 | [`pg_tde`](/ext/pg_tde) | [`pg_tde`](/ext/pg_tde) | pg_tde access method |
+| 7060 | [`pg_tde`](/ext/pg_tde) | [`pg_tde`](/ext/pg_tde) | Percona pg_tde access method |
 | 3000 | [`pg_tle`](/ext/pg_tle) | [`pg_tle`](/ext/pg_tle) | Trusted Language Extensions for PostgreSQL |
 | 6010 | [`pg_tracing`](/ext/pg_tracing) | [`pg_tracing`](/ext/pg_tracing) | Distributed Tracing for PostgreSQL |
 | 2190 | [`pg_trgm`](/ext/pg_trgm) | [`pg_trgm`](/ext/pg_trgm) | text similarity measurement and index searching based on trigrams |
@@ -254,7 +255,7 @@ The traditional PostgreSQL extension language
 | 6960 | [`pg_visibility`](/ext/pg_visibility) | [`pg_visibility`](/ext/pg_visibility) | examine the visibility map (VM) and page-level visibility info |
 | 6270 | [`pg_wait_sampling`](/ext/pg_wait_sampling) | [`pg_wait_sampling`](/ext/pg_wait_sampling) | sampling based statistics of wait events |
 | 6940 | [`pg_walinspect`](/ext/pg_walinspect) | [`pg_walinspect`](/ext/pg_walinspect) | functions to inspect contents of PostgreSQL Write-Ahead Log |
-| 9550 | [`pgactive`](/ext/pgactive) | [`pglogical`](/ext/pgactive) | Active-Active Replication Extension for PostgreSQL |
+| 9550 | [`pgactive`](/ext/pgactive) | [`pgactive`](/ext/pgactive) | Active-Active Replication Extension for PostgreSQL |
 | 5880 | [`pgagent`](/ext/pgagent) | [`pgagent`](/ext/pgagent) | A PostgreSQL job scheduler |
 | 7080 | [`pgaudit`](/ext/pgaudit) | [`pgaudit`](/ext/pgaudit) | provides auditing functionality |
 | 7090 | [`pgauditlogtofile`](/ext/pgauditlogtofile) | [`pgauditlogtofile`](/ext/pgauditlogtofile) | pgAudit addon to redirect audit log to an independent file |
@@ -265,8 +266,8 @@ The traditional PostgreSQL extension language
 | 5040 | [`pgfincore`](/ext/pgfincore) | [`pgfincore`](/ext/pgfincore) | examine and manage the os buffer cache |
 | 4150 | [`pgjq`](/ext/pgjq) | [`pgjq`](/ext/pgjq) | Use jq in Postgres |
 | 9520 | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | automated ddl deployment using pglogical |
-| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pgactive) | PostgreSQL Logical Replication |
-| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pgactive) | Dummy extension for compatibility when upgrading from Postgres 9.4 |
+| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pglogical) | PostgreSQL Logical Replication |
+| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pglogical) | Dummy extension for compatibility when upgrading from Postgres 9.4 |
 | 9510 | [`pglogical_ticker`](/ext/pglogical_ticker) | [`pglogical_ticker`](/ext/pglogical_ticker) | Have an accurate view on pglogical replication delay |
 | 9410 | [`pgmemcache`](/ext/pgmemcache) | [`pgmemcache`](/ext/pgmemcache) | memcached interface |
 | 6350 | [`pgmeminfo`](/ext/pgmeminfo) | [`pgmeminfo`](/ext/pgmeminfo) | show memory usage |

@@ -44,7 +44,7 @@ import {
 
 ## Availability
 
-| <TooltipIconButton tooltip="Linux Distro Arch / PostgreSQL Major Version" side="top">Linux / PostgreSQL </TooltipIconButton> | **PG17** | **PG16** | **PG15** | **PG14** | <span className="text-red-500">**PG13**</span> |
+| <TooltipIconButton tooltip="Linux Distro Arch / PostgreSQL Major Version" side="top">Linux / PostgreSQL </TooltipIconButton> | **PG17** | **PG16** | **PG15** | <span className="text-red-500">**PG14**</span> | <span className="text-red-500">**PG13**</span> |
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
 | `el8.x86_64` | <Badge variant="amber-subtle">1.21.0</Badge> | <Badge variant="amber-subtle">1.21.0</Badge> | <Badge variant="amber-subtle">1.21.0</Badge> | <Badge variant="amber-subtle">1.19.0</Badge> | <Badge variant="red-subtle">✗</Badge> |
 | `el8.aarch64` | <Badge variant="amber-subtle">1.21.0</Badge> | <Badge variant="amber-subtle">1.21.0</Badge> | <Badge variant="amber-subtle">1.21.0</Badge> | <Badge variant="amber-subtle">1.19.0</Badge> | <Badge variant="red-subtle">✗</Badge> |
@@ -82,61 +82,51 @@ Or download the latest packages directly:
         <a href="https://repo.pigsty.io/yum/pgsql/el8.x86_64/timescaledb-toolkit_17-1.21.0-1PIGSTY.el8.x86_64.rpm"><File name="timescaledb-toolkit_17-1.21.0-1PIGSTY.el8.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el8.x86_64/timescaledb-toolkit_16-1.21.0-1PIGSTY.el8.x86_64.rpm"><File name="timescaledb-toolkit_16-1.21.0-1PIGSTY.el8.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el8.x86_64/timescaledb-toolkit_15-1.21.0-1PIGSTY.el8.x86_64.rpm"><File name="timescaledb-toolkit_15-1.21.0-1PIGSTY.el8.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
-        <a href="https://repo.pigsty.io/yum/pgsql/el8.x86_64/timescaledb-toolkit_14-1.19.0-1PIGSTY.el8.x86_64.rpm"><File name="timescaledb-toolkit_14-1.19.0-1PIGSTY.el8.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="el8.aarch64">
         <a href="https://repo.pigsty.io/yum/pgsql/el8.aarch64/timescaledb-toolkit_17-1.21.0-1PIGSTY.el8.aarch64.rpm"><File name="timescaledb-toolkit_17-1.21.0-1PIGSTY.el8.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el8.aarch64/timescaledb-toolkit_16-1.21.0-1PIGSTY.el8.aarch64.rpm"><File name="timescaledb-toolkit_16-1.21.0-1PIGSTY.el8.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el8.aarch64/timescaledb-toolkit_15-1.21.0-1PIGSTY.el8.aarch64.rpm"><File name="timescaledb-toolkit_15-1.21.0-1PIGSTY.el8.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
-        <a href="https://repo.pigsty.io/yum/pgsql/el8.aarch64/timescaledb-toolkit_14-1.19.0-1PIGSTY.el8.aarch64.rpm"><File name="timescaledb-toolkit_14-1.19.0-1PIGSTY.el8.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="el9.x86_64">
         <a href="https://repo.pigsty.io/yum/pgsql/el9.x86_64/timescaledb-toolkit_17-1.21.0-1PIGSTY.el9.x86_64.rpm"><File name="timescaledb-toolkit_17-1.21.0-1PIGSTY.el9.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el9.x86_64/timescaledb-toolkit_16-1.21.0-1PIGSTY.el9.x86_64.rpm"><File name="timescaledb-toolkit_16-1.21.0-1PIGSTY.el9.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el9.x86_64/timescaledb-toolkit_15-1.21.0-1PIGSTY.el9.x86_64.rpm"><File name="timescaledb-toolkit_15-1.21.0-1PIGSTY.el9.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
-        <a href="https://repo.pigsty.io/yum/pgsql/el9.x86_64/timescaledb-toolkit_14-1.19.0-1PIGSTY.el9.x86_64.rpm"><File name="timescaledb-toolkit_14-1.19.0-1PIGSTY.el9.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="el9.aarch64">
         <a href="https://repo.pigsty.io/yum/pgsql/el9.aarch64/timescaledb-toolkit_17-1.21.0-1PIGSTY.el9.aarch64.rpm"><File name="timescaledb-toolkit_17-1.21.0-1PIGSTY.el9.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el9.aarch64/timescaledb-toolkit_16-1.21.0-1PIGSTY.el9.aarch64.rpm"><File name="timescaledb-toolkit_16-1.21.0-1PIGSTY.el9.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/yum/pgsql/el9.aarch64/timescaledb-toolkit_15-1.21.0-1PIGSTY.el9.aarch64.rpm"><File name="timescaledb-toolkit_15-1.21.0-1PIGSTY.el9.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
-        <a href="https://repo.pigsty.io/yum/pgsql/el9.aarch64/timescaledb-toolkit_14-1.19.0-1PIGSTY.el9.aarch64.rpm"><File name="timescaledb-toolkit_14-1.19.0-1PIGSTY.el9.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="d12.x86_64">
         <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_amd64.deb"><File name="postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_amd64.deb"><File name="postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_amd64.deb"><File name="postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~bookworm_amd64.deb"><File name="postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~bookworm_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="d12.aarch64">
         <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_arm64.deb"><File name="postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_arm64.deb"><File name="postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_arm64.deb"><File name="postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~bookworm_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/t/timescaledb-toolkit/postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~bookworm_arm64.deb"><File name="postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~bookworm_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="u22.x86_64">
         <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_amd64.deb"><File name="postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_amd64.deb"><File name="postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_amd64.deb"><File name="postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~jammy_amd64.deb"><File name="postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~jammy_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="u22.aarch64">
         <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_arm64.deb"><File name="postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_arm64.deb"><File name="postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_arm64.deb"><File name="postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~jammy_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/t/timescaledb-toolkit/postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~jammy_arm64.deb"><File name="postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~jammy_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="u24.x86_64">
         <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~noble_amd64.deb"><File name="postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~noble_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~noble_amd64.deb"><File name="postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~noble_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~noble_amd64.deb"><File name="postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~noble_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~noble_amd64.deb"><File name="postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~noble_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="u24.aarch64">
         <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~noble_arm64.deb"><File name="postgresql-17-timescaledb-toolkit_1.21.0-1PIGSTY~noble_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~noble_arm64.deb"><File name="postgresql-16-timescaledb-toolkit_1.21.0-1PIGSTY~noble_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
         <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~noble_arm64.deb"><File name="postgresql-15-timescaledb-toolkit_1.21.0-1PIGSTY~noble_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/t/timescaledb-toolkit/postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~noble_arm64.deb"><File name="postgresql-14-timescaledb-toolkit_1.19.0-1PIGSTY~noble_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
 </Files>
 
@@ -152,19 +142,16 @@ pig ext install timescaledb_toolkit; # install by extension name, for the curren
 pig ext install timescaledb_toolkit -v 17;   # install for PG 17
 pig ext install timescaledb_toolkit -v 16;   # install for PG 16
 pig ext install timescaledb_toolkit -v 15;   # install for PG 15
-pig ext install timescaledb_toolkit -v 14;   # install for PG 14
 ```
 ```bash tab="yum" 
 dnf install timescaledb-toolkit_17;
 dnf install timescaledb-toolkit_16;
 dnf install timescaledb-toolkit_15;
-dnf install timescaledb-toolkit_14;
 ```
 ```bash tab="apt" 
 apt install postgresql-17-timescaledb-toolkit;
 apt install postgresql-16-timescaledb-toolkit;
 apt install postgresql-15-timescaledb-toolkit;
-apt install postgresql-14-timescaledb-toolkit;
 ```
 ```bash tab="ansible"
 ./pgsql.yml -t pg_ext -e '{"pg_extensions": ["timescaledb_toolkit"]}' # -l <cls>

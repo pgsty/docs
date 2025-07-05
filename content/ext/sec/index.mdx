@@ -19,7 +19,7 @@ SEC category contains **26** PostgreSQL extensions.
 | 7030 | [`supabase_vault`](/ext/supabase_vault) | [`pg_vault`](/ext/supabase_vault) | 0.3.1 | Supabase Vault Extension |
 | 7040 | [`pg_session_jwt`](/ext/pg_session_jwt) | [`pg_session_jwt`](/ext/pg_session_jwt) | 0.3.1 | Manage authentication sessions using JWTs |
 | 7050 | [`anon`](/ext/anon) | [`pg_anon`](/ext/anon) | 2.1.1 | PostgreSQL Anonymizer (anon) extension |
-| 7060 | [`pg_tde`](/ext/pg_tde) | [`pg_tde`](/ext/pg_tde) | 1.0 | pg_tde access method |
+| 7060 | [`pg_tde`](/ext/pg_tde) | [`pg_tde`](/ext/pg_tde) | 1.0 | Percona pg_tde access method |
 | 7070 | [`pgsmcrypto`](/ext/pgsmcrypto) | [`pgsmcrypto`](/ext/pgsmcrypto) | 0.1.0 | PostgreSQL SM Algorithm Extension |
 | 7080 | [`pgaudit`](/ext/pgaudit) | [`pgaudit`](/ext/pgaudit) | 17.1 | provides auditing functionality |
 | 7090 | [`pgauditlogtofile`](/ext/pgauditlogtofile) | [`pgauditlogtofile`](/ext/pgauditlogtofile) | 1.6.4 | pgAudit addon to redirect audit log to an independent file |
@@ -188,24 +188,24 @@ SEC category contains **26** PostgreSQL extensions.
 
 
 <Callout title="pg_tde - 1.0">
-    <p>pg_tde access method</p>
+    <p>Percona pg_tde access method</p>
     <div className="grid grid-cols-2 gap-4"><div className="space-y-2">
             | [Extension](/ext/pg_tde) | [Website](https://github.com/Percona-Lab/pg_tde) | Attributes |
 |:----:|:---------:|:---------:|
 | Package  | [`pg_tde`](/ext/pg_tde) | <Badge variant="red-subtle">LOAD</Badge> |
-| RPM  | `pg_tde_$v*` | <Badge variant="blue-subtle">DDL</Badge> |
-| DEB  | `postgresql-$v-pg-tde` | <Badge variant="green-subtle">LIB</Badge> |
+| RPM  | `percona-postgresql$v` | <Badge variant="blue-subtle">DDL</Badge> |
+| DEB  | `percona-postgresql-$v` | <Badge variant="green-subtle">LIB</Badge> |
 | Language | <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> |  |
 | License | <a href="/ext/list/license#mit" className="no-underline"><Badge icon={<Scale />} variant="blue-subtle">MIT</Badge></a> |  |
         </div>
         <div className="space-y-2">
             | OS/Arch | x86_64 | aarch64 |
 |:-----:|:---:|:---:|
-| el8 | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
-| el9 | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
-| d12 | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
-| u22 | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
-| u24 | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="amber-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+| el8 | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+| el9 | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+| d12 | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+| u22 | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+| u24 | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> | <Badge variant="red-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
         </div>
     </div>
 </Callout>

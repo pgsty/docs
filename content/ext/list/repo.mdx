@@ -8,11 +8,11 @@ full: true
 import { Badge } from '@/components/ui/badge';
 import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck } from 'lucide-react';
 
-There are **422** PostgreSQL extensions in total: **71** CONTRIB extensions, **332** available on both EL and Debian platforms, **13** available only on EL platforms, and **6** available only on Debian platforms.
+There are **423** PostgreSQL extensions in total: **71** CONTRIB extensions, **333** available on both EL and Debian platforms, **13** available only on EL platforms, and **6** available only on Debian platforms.
 
 | Entry | ALL | [CONTRIB](#contrib) | [Both](#both) | [EL Only](#el) | [Debian Only](#debian) |
 |:-----:|:---:|:-------------------:|:-------------:|:--------------:|:----------------------:|
-| Count | 422 | 71 | 332 | 13 | 6 |
+| Count | 423 | 71 | 333 | 13 | 6 |
 
 ## CONTRIB
 
@@ -94,7 +94,7 @@ Extensions that come with PostgreSQL core distribution. There are **71** contrib
 
 ## BOTH
 
-There are **332** non-contrib extensions available in both EL and Debian platforms.
+There are **333** non-contrib extensions available in both EL and Debian platforms.
 
 | ID | Name | Category | RPM | DEB | Description |
 |:---:|:---|:---|:---:|:---:|:---|
@@ -181,6 +181,7 @@ There are **332** non-contrib extensions available in both EL and Debian platfor
 | 2880 | [`pg_incremental`](/ext/pg_incremental) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Incremental Processing by Crunchy Data |
 | 2900 | [`pgmq`](/ext/pgmq) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | A lightweight message queue. Like AWS SQS and RSMQ but on Postgres. |
 | 2910 | [`pgq`](/ext/pgq) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | Generic queue for PostgreSQL |
+| 2920 | [`orioledb`](/ext/orioledb) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | OrioleDB, the next generation transactional engine |
 | 2930 | [`pg_cardano`](/ext/pg_cardano) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | A suite of Cardano-related tools |
 | 2951 | [`omni`](/ext/omni) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Advanced adapter for Postgres extensions |
 | 2952 | [`omni_auth`](/ext/omni_auth) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Basic session management |
@@ -219,7 +220,7 @@ There are **332** non-contrib extensions available in both EL and Debian platfor
 | 2987 | [`omni_worker`](/ext/omni_worker) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Generalized worker pool |
 | 2988 | [`omni_xml`](/ext/omni_xml) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | XML toolkit |
 | 2989 | [`omni_yaml`](/ext/omni_yaml) | <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | YAML toolkit |
-| 3000 | [`pg_tle`](/ext/pg_tle) | <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/lang" className="no-underline">LANG</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Trusted Language Extensions for PostgreSQL |
+| 3000 | [`pg_tle`](/ext/pg_tle) | <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/lang" className="no-underline">LANG</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Trusted Language Extensions for PostgreSQL |
 | 3010 | [`plv8`](/ext/plv8) | <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/lang" className="no-underline">LANG</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | PL/JavaScript (v8) trusted procedural language |
 | 3020 | [`pllua`](/ext/pllua) | <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/lang" className="no-underline">LANG</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | Lua as a procedural language |
 | 3030 | [`plluau`](/ext/plluau) | <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/lang" className="no-underline">LANG</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | Lua as an untrusted procedural language |
@@ -374,7 +375,7 @@ There are **332** non-contrib extensions available in both EL and Debian platfor
 | 7030 | [`supabase_vault`](/ext/supabase_vault) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Supabase Vault Extension |
 | 7040 | [`pg_session_jwt`](/ext/pg_session_jwt) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Manage authentication sessions using JWTs |
 | 7050 | [`anon`](/ext/anon) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | PostgreSQL Anonymizer (anon) extension |
-| 7060 | [`pg_tde`](/ext/pg_tde) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | pg_tde access method |
+| 7060 | [`pg_tde`](/ext/pg_tde) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | Percona pg_tde access method |
 | 7070 | [`pgsmcrypto`](/ext/pgsmcrypto) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | <Badge variant="amber-subtle">PIGSTY</Badge> | PostgreSQL SM Algorithm Extension |
 | 7080 | [`pgaudit`](/ext/pgaudit) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | provides auditing functionality |
 | 7090 | [`pgauditlogtofile`](/ext/pgauditlogtofile) | <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/sec" className="no-underline">SEC</a></Badge> | <Badge variant="blue-subtle">PGDG</Badge> | <Badge variant="blue-subtle">PGDG</Badge> | pgAudit addon to redirect audit log to an independent file |

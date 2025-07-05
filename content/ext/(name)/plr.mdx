@@ -19,7 +19,7 @@ import {
 
 | <TooltipIconButton tooltip="Extension unique identifier" side="top">ID</TooltipIconButton> | <TooltipIconButton tooltip="Extension name" side="top">Name</TooltipIconButton> | <TooltipIconButton tooltip="Package name for installation" side="top">Package</TooltipIconButton> | <TooltipIconButton tooltip="Latest available extension version" side="top">Version</TooltipIconButton> | <TooltipIconButton tooltip="Extension category" side="top">Category</TooltipIconButton> | <TooltipIconButton tooltip="Open source license" side="top">License</TooltipIconButton> | <TooltipIconButton tooltip="Programming language" side="top">Lang</TooltipIconButton> |
 |:--------:|:--------:|:----------:|:--------------:|:---------------------------------------:|:------------------------------------------------------:|:----:|
-| **3100** | [`plr`](https://github.com/postgres-plr/plr) | `plr` | 8.4.7 | <a href="/ext/lang" className="no-underline"><Badge icon={<BookA />} variant="teal-subtle">LANG</Badge></a> | <a href="/ext/list/license#gpl-20" className="no-underline"><Badge icon={<Scale />} variant="amber-subtle">GPL-2.0</Badge></a> | <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> |
+| **3100** | [`plr`](https://github.com/postgres-plr/plr) | `plr` | 8.4.8 | <a href="/ext/lang" className="no-underline"><Badge icon={<BookA />} variant="teal-subtle">LANG</Badge></a> | <a href="/ext/list/license#gpl-20" className="no-underline"><Badge icon={<Scale />} variant="amber-subtle">GPL-2.0</Badge></a> | <a href="/ext/list/lang#c"><Badge icon={<FileCode2 />} variant="blue-subtle">C</Badge></a> |
 
 ### Attributes
 
@@ -31,7 +31,7 @@ import {
 
 | <TooltipIconButton tooltip="Linux distribution family, EL or Debian" side="top">Distro</TooltipIconButton> | <TooltipIconButton tooltip="Package repository" side="top">Repo</TooltipIconButton> | <TooltipIconButton tooltip="The RPM/DEB Package Name Pattern (replace $v with real pg major)" side="top">Package Name</TooltipIconButton> | <TooltipIconButton tooltip="Latest package version" side="top">Version</TooltipIconButton> | <TooltipIconButton tooltip="RPM/DEB Package dependencies" side="top">Deps</TooltipIconButton> | <TooltipIconButton tooltip="Available in these PostgreSQL Major Versions" side="top">PG Major</TooltipIconButton> |
 |:----------:|:--------:|:------------------------:|:-----------:|:------------:|:------------------:|
-|   **EL**   | <Badge variant="blue-subtle"><span className="font-bold">PGDG</span></Badge> | `plr_$v*` | `8.4.7` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
+|   **EL**   | <Badge variant="blue-subtle"><span className="font-bold">PGDG</span></Badge> | `plr_$v*` | `8.4.8` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
 | **Debian** | <Badge variant="blue-subtle"><span className="font-bold">PGDG</span></Badge> | `postgresql-$v-plr` | `8.4.7` | - | <Badge variant="green-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="green-subtle">15</Badge><Badge variant="green-subtle">14</Badge><Badge variant="green-subtle">13</Badge> |
 
 
@@ -46,12 +46,12 @@ import {
 | `el8.aarch64` | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> |
 | `el9.x86_64` | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> |
 | `el9.aarch64` | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.8</Badge> | <Badge variant="blue-subtle">8.4.7</Badge> |
-| `d12.x86_64` | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> |
-| `d12.aarch64` | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> |
-| `u22.x86_64` | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> |
-| `u22.aarch64` | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> |
-| `u24.x86_64` | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> |
-| `u24.aarch64` | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> | <Badge variant="blue-subtle">1:8.4.7</Badge> |
+| `d12.x86_64` | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> |
+| `d12.aarch64` | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> |
+| `u22.x86_64` | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> |
+| `u22.aarch64` | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> |
+| `u24.x86_64` | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> |
+| `u24.aarch64` | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> | <Badge variant="blue-subtle">1:8.4.8</Badge> |
 
 <Badge variant="green-subtle"><span className="font-black">CONTRIB</span></Badge> <Badge variant="blue-subtle"><span className="font-black">PGDG</span></Badge> <Badge variant="amber-subtle"><span className="font-black">PIGSTY</span></Badge>
 
@@ -103,46 +103,46 @@ Or download the latest packages directly:
         <a href="https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-9-aarch64/plr_13-8.4.7-1PGDG.rhel9.aarch64.rpm"><File name="plr_13-8.4.7-1PGDG.rhel9.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="d12.x86_64">
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.7-3.pgdg120+1_arm64.deb"><File name="postgresql-17-plr_8.4.7-3.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.7-3.pgdg120+1_arm64.deb"><File name="postgresql-16-plr_8.4.7-3.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.7-3.pgdg120+1_arm64.deb"><File name="postgresql-15-plr_8.4.7-3.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.7-3.pgdg120+1_arm64.deb"><File name="postgresql-14-plr_8.4.7-3.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.7-3.pgdg120+1_arm64.deb"><File name="postgresql-13-plr_8.4.7-3.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.8-1.pgdg120+1_arm64.deb"><File name="postgresql-17-plr_8.4.8-1.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.8-1.pgdg120+1_arm64.deb"><File name="postgresql-16-plr_8.4.8-1.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.8-1.pgdg120+1_arm64.deb"><File name="postgresql-15-plr_8.4.8-1.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.8-1.pgdg120+1_arm64.deb"><File name="postgresql-14-plr_8.4.8-1.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.8-1.pgdg120+1_arm64.deb"><File name="postgresql-13-plr_8.4.8-1.pgdg120+1_arm64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="d12.aarch64">
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.7-3.pgdg120+1_amd64.deb"><File name="postgresql-17-plr_8.4.7-3.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.7-3.pgdg120+1_amd64.deb"><File name="postgresql-16-plr_8.4.7-3.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.7-3.pgdg120+1_amd64.deb"><File name="postgresql-15-plr_8.4.7-3.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.7-3.pgdg120+1_amd64.deb"><File name="postgresql-14-plr_8.4.7-3.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.7-3.pgdg120+1_amd64.deb"><File name="postgresql-13-plr_8.4.7-3.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.8-1.pgdg120+1_amd64.deb"><File name="postgresql-17-plr_8.4.8-1.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.8-1.pgdg120+1_amd64.deb"><File name="postgresql-16-plr_8.4.8-1.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.8-1.pgdg120+1_amd64.deb"><File name="postgresql-15-plr_8.4.8-1.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.8-1.pgdg120+1_amd64.deb"><File name="postgresql-14-plr_8.4.8-1.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.8-1.pgdg120+1_amd64.deb"><File name="postgresql-13-plr_8.4.8-1.pgdg120+1_amd64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="u22.x86_64">
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.7-3.pgdg22.04+1_amd64.deb"><File name="postgresql-17-plr_8.4.7-3.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.7-3.pgdg22.04+1_amd64.deb"><File name="postgresql-16-plr_8.4.7-3.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.7-3.pgdg22.04+1_amd64.deb"><File name="postgresql-15-plr_8.4.7-3.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.7-3.pgdg22.04+1_amd64.deb"><File name="postgresql-14-plr_8.4.7-3.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.7-3.pgdg22.04+1_amd64.deb"><File name="postgresql-13-plr_8.4.7-3.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.8-1.pgdg22.04+1_amd64.deb"><File name="postgresql-17-plr_8.4.8-1.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.8-1.pgdg22.04+1_amd64.deb"><File name="postgresql-16-plr_8.4.8-1.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.8-1.pgdg22.04+1_amd64.deb"><File name="postgresql-15-plr_8.4.8-1.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.8-1.pgdg22.04+1_amd64.deb"><File name="postgresql-14-plr_8.4.8-1.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.8-1.pgdg22.04+1_amd64.deb"><File name="postgresql-13-plr_8.4.8-1.pgdg22.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="u22.aarch64">
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.7-3.pgdg22.04+1_arm64.deb"><File name="postgresql-17-plr_8.4.7-3.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.7-3.pgdg22.04+1_arm64.deb"><File name="postgresql-16-plr_8.4.7-3.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.7-3.pgdg22.04+1_arm64.deb"><File name="postgresql-15-plr_8.4.7-3.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.7-3.pgdg22.04+1_arm64.deb"><File name="postgresql-14-plr_8.4.7-3.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.7-3.pgdg22.04+1_arm64.deb"><File name="postgresql-13-plr_8.4.7-3.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.8-1.pgdg22.04+1_arm64.deb"><File name="postgresql-17-plr_8.4.8-1.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.8-1.pgdg22.04+1_arm64.deb"><File name="postgresql-16-plr_8.4.8-1.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.8-1.pgdg22.04+1_arm64.deb"><File name="postgresql-15-plr_8.4.8-1.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.8-1.pgdg22.04+1_arm64.deb"><File name="postgresql-14-plr_8.4.8-1.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.8-1.pgdg22.04+1_arm64.deb"><File name="postgresql-13-plr_8.4.8-1.pgdg22.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="u24.x86_64">
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.7-3.pgdg24.04+1_amd64.deb"><File name="postgresql-17-plr_8.4.7-3.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.7-3.pgdg24.04+1_amd64.deb"><File name="postgresql-16-plr_8.4.7-3.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.7-3.pgdg24.04+1_amd64.deb"><File name="postgresql-15-plr_8.4.7-3.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.7-3.pgdg24.04+1_amd64.deb"><File name="postgresql-14-plr_8.4.7-3.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.7-3.pgdg24.04+1_amd64.deb"><File name="postgresql-13-plr_8.4.7-3.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.8-1.pgdg24.04+1_amd64.deb"><File name="postgresql-17-plr_8.4.8-1.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.8-1.pgdg24.04+1_amd64.deb"><File name="postgresql-16-plr_8.4.8-1.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.8-1.pgdg24.04+1_amd64.deb"><File name="postgresql-15-plr_8.4.8-1.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.8-1.pgdg24.04+1_amd64.deb"><File name="postgresql-14-plr_8.4.8-1.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.8-1.pgdg24.04+1_amd64.deb"><File name="postgresql-13-plr_8.4.8-1.pgdg24.04+1_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="u24.aarch64">
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.7-3.pgdg24.04+1_arm64.deb"><File name="postgresql-17-plr_8.4.7-3.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.7-3.pgdg24.04+1_arm64.deb"><File name="postgresql-16-plr_8.4.7-3.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.7-3.pgdg24.04+1_arm64.deb"><File name="postgresql-15-plr_8.4.7-3.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.7-3.pgdg24.04+1_arm64.deb"><File name="postgresql-14-plr_8.4.7-3.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
-        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.7-3.pgdg24.04+1_arm64.deb"><File name="postgresql-13-plr_8.4.7-3.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-17-plr_8.4.8-1.pgdg24.04+1_arm64.deb"><File name="postgresql-17-plr_8.4.8-1.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-16-plr_8.4.8-1.pgdg24.04+1_arm64.deb"><File name="postgresql-16-plr_8.4.8-1.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-15-plr_8.4.8-1.pgdg24.04+1_arm64.deb"><File name="postgresql-15-plr_8.4.8-1.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-14-plr_8.4.8-1.pgdg24.04+1_arm64.deb"><File name="postgresql-14-plr_8.4.8-1.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
+        <a href="https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/postgresql-13-plr_8.4.8-1.pgdg24.04+1_arm64.deb"><File name="postgresql-13-plr_8.4.8-1.pgdg24.04+1_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
 </Files>
 

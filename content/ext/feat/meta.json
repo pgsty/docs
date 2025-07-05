@@ -15,6 +15,7 @@
     "[pg_incremental](/ext/pg_incremental)",
     "[pgmq](/ext/pgmq)",
     "[pgq](/ext/pgq)",
+    "[orioledb](/ext/orioledb)",
     "[pg_cardano](/ext/pg_cardano)",
     "[rdkit](/ext/rdkit)",
     "[omni](/ext/omni)",

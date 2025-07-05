@@ -34,7 +34,7 @@ import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxe
 | <Badge icon={<Brain />} variant="purple-subtle"><a href="/ext/rag" className="no-underline">RAG</a></Badge> | 10 | Vector Database with IVFFLAT, HNSW, DiskANN Indexes, AI & ML in SQL interface, Similarity Funcs |
 | <Badge icon={<Search />} variant="amber-subtle"><a href="/ext/fts" className="no-underline">FTS</a></Badge> | 20 | ElasticSearch Alternative with BM25, 2-gram/3-gram Fuzzy Search, Zhparser & Hunspell Segregation Dicts |
 | <Badge icon={<ChartNoAxesCombined />} variant="red-subtle"><a href="/ext/olap" className="no-underline">OLAP</a></Badge> | 13 | DuckDB Integration with FDW & PG Lakehouse, Access Parquet from File/S3, Sharding with Citus/Partman/PlProxy |
-| <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | 55 | OpenCypher with AGE, GraphQL, JsonSchema, Hints & Hypo Index, HLL, Rum, IVM, ChemRDKit, and Message Queues |
+| <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> | 56 | OpenCypher with AGE, GraphQL, JsonSchema, Hints & Hypo Index, HLL, Rum, IVM, ChemRDKit, and Message Queues |
 | <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/lang" className="no-underline">LANG</a></Badge> | 31 | Develop, Test, Package, and Deliver Stored Procedures written in various PL/Languages: Java, Js, Lua, R, Sh, PRQL |
 | <Badge icon={<Boxes />} variant="gray-subtle"><a href="/ext/type" className="no-underline">TYPE</a></Badge> | 37 | Dedicate New Data Types Like: prefix, sember, uint, SIUnit, RoaringBitmap, Rational, Sphere, Hash, RRule |
 | <Badge icon={<Wrench />} variant="amber-subtle"><a href="/ext/util" className="no-underline">UTIL</a></Badge> | 31 | Utilities such as send http request, perform gzip/zstd compress, send mails, Regex, ICU, encoding, docs, Encryption |
@@ -136,7 +136,7 @@ ElasticSearch Alternative with BM25, 2-gram/3-gram Fuzzy Search, Zhparser & Huns
 | 2179 | [`hunspell_ru_ru_aot`](/ext/hunspell_ru_ru_aot) | [`hunspell_ru_ru_aot`](/ext/hunspell_ru_ru_aot) | 1.0 | Russian Hunspell Dictionary (from AOT.ru group) |
 | 2140 | [`pg_bestmatch`](/ext/pg_bestmatch) | [`pg_bestmatch`](/ext/pg_bestmatch) | 0.0.1 | Generate BM25 sparse vector inside PostgreSQL |
 | 2120 | [`pg_bigm`](/ext/pg_bigm) | [`pg_bigm`](/ext/pg_bigm) | 1.2 | create 2-gram (bigram) index for faster full text search. |
-| 2100 | [`pg_search`](/ext/pg_search) | [`pg_search`](/ext/pg_search) | 0.16.0 | Full text search for PostgreSQL using BM25 |
+| 2100 | [`pg_search`](/ext/pg_search) | [`pg_search`](/ext/pg_search) | 0.16.2 | Full text search for PostgreSQL using BM25 |
 | 2160 | [`pg_tokenizer`](/ext/pg_tokenizer) | [`pg_tokenizer`](/ext/pg_tokenizer) | 0.1.0 | Tokenizers for full-text search |
 | 2190 | [`pg_trgm`](/ext/pg_trgm) | [`pg_trgm`](/ext/pg_trgm) | 1.6 | text similarity measurement and index searching based on trigrams |
 | 2110 | [`pgroonga`](/ext/pgroonga) | [`pgroonga`](/ext/pgroonga) | 4.0.0 | Use Groonga as index, fast full text search platform for all languages! |
@@ -170,7 +170,7 @@ DuckDB Integration with FDW & PG Lakehouse, Access Parquet from File/S3, Shardin
 
 OpenCypher with AGE, GraphQL, JsonSchema, Hints & Hypo Index, HLL, Rum, IVM, ChemRDKit, and Message Queues
 
-<Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> <Badge variant="gray-subtle">55 Extensions</Badge>
+<Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/feat" className="no-underline">FEAT</a></Badge> <Badge variant="gray-subtle">56 Extensions</Badge>
 
 | ID | Extension | Package | Version | Description |
 |:---:|:---|:---|:---|:---|
@@ -218,6 +218,7 @@ OpenCypher with AGE, GraphQL, JsonSchema, Hints & Hypo Index, HLL, Rum, IVM, Che
 | 2987 | [`omni_worker`](/ext/omni_worker) | [`omnigres`](/ext/omni) | 0.1.0 | Generalized worker pool |
 | 2988 | [`omni_xml`](/ext/omni_xml) | [`omnigres`](/ext/omni) | 0.1.2 | XML toolkit |
 | 2989 | [`omni_yaml`](/ext/omni_yaml) | [`omnigres`](/ext/omni) | 0.1.0 | YAML toolkit |
+| 2920 | [`orioledb`](/ext/orioledb) | [`orioledb`](/ext/orioledb) | 1.4 | OrioleDB, the next generation transactional engine |
 | 2930 | [`pg_cardano`](/ext/pg_cardano) | [`pg_cardano`](/ext/pg_cardano) | 1.0.5 | A suite of Cardano-related tools |
 | 2790 | [`pg_graphql`](/ext/pg_graphql) | [`pg_graphql`](/ext/pg_graphql) | 1.5.11 | Add in-database GraphQL support |
 | 2820 | [`pg_hint_plan`](/ext/pg_hint_plan) | [`pg_hint_plan`](/ext/pg_hint_plan) | 1.7.0 | Give PostgreSQL ability to manually force some decisions in execution plans. |
@@ -227,7 +228,7 @@ OpenCypher with AGE, GraphQL, JsonSchema, Hints & Hypo Index, HLL, Rum, IVM, Che
 | 2900 | [`pgmq`](/ext/pgmq) | [`pgmq`](/ext/pgmq) | 1.5.1 | A lightweight message queue. Like AWS SQS and RSMQ but on Postgres. |
 | 2910 | [`pgq`](/ext/pgq) | [`pgq`](/ext/pgq) | 3.5.1 | Generic queue for PostgreSQL |
 | 2850 | [`plan_filter`](/ext/plan_filter) | [`pg_plan_filter`](/ext/plan_filter) | 0.0.1 | filter statements by their execution plans. |
-| 2940 | [`rdkit`](/ext/rdkit) | [`rdkit`](/ext/rdkit) | 202409.4 | Cheminformatics functionality for PostgreSQL. |
+| 2940 | [`rdkit`](/ext/rdkit) | [`rdkit`](/ext/rdkit) | 202503.1 | Cheminformatics functionality for PostgreSQL. |
 | 2780 | [`rum`](/ext/rum) | [`rum`](/ext/rum) | 1.3.14 | RUM index access method |
 
 ## LANG
@@ -251,7 +252,7 @@ Develop, Test, Package, and Deliver Stored Procedures written in various PL/Lang
 | 3272 | [`jsonb_plperlu`](/ext/jsonb_plperlu) | [`plperlu`](/ext/plperlu) | 1.0 | transform between jsonb and plperlu |
 | 3291 | [`jsonb_plpython3u`](/ext/jsonb_plpython3u) | [`plpython3u`](/ext/plpython3u) | 1.0 | transform between jsonb and plpython3u |
 | 3292 | [`ltree_plpython3u`](/ext/ltree_plpython3u) | [`plpython3u`](/ext/plpython3u) | 1.0 | transform between ltree and plpython3u |
-| 3000 | [`pg_tle`](/ext/pg_tle) | [`pg_tle`](/ext/pg_tle) | 1.5.0 | Trusted Language Extensions for PostgreSQL |
+| 3000 | [`pg_tle`](/ext/pg_tle) | [`pg_tle`](/ext/pg_tle) | 1.5.1 | Trusted Language Extensions for PostgreSQL |
 | 3200 | [`pgtap`](/ext/pgtap) | [`pgtap`](/ext/pgtap) | 1.3.3 | Unit testing for PostgreSQL |
 | 3050 | [`pldbgapi`](/ext/pldbgapi) | [`pldebugger`](/ext/pldbgapi) | 1.8 | server-side support for debugging PL/pgSQL functions |
 | 3090 | [`pljava`](/ext/pljava) | [`pljava`](/ext/pljava) | 1.6.9 | PL/Java procedural language |
@@ -264,7 +265,7 @@ Develop, Test, Package, and Deliver Stored Procedures written in various PL/Lang
 | 3070 | [`plprofiler`](/ext/plprofiler) | [`plprofiler`](/ext/plprofiler) | 4.2.5 | server-side support for profiling PL/pgSQL functions |
 | 3040 | [`plprql`](/ext/plprql) | [`plprql`](/ext/plprql) | 1.0.0 | Use PRQL in PostgreSQL - Pipelined Relational Query Language |
 | 3290 | [`plpython3u`](/ext/plpython3u) | [`plpython3u`](/ext/plpython3u) | 1.0 | PL/Python3U untrusted procedural language |
-| 3100 | [`plr`](/ext/plr) | [`plr`](/ext/plr) | 8.4.7 | load R interpreter and execute R script from within a database |
+| 3100 | [`plr`](/ext/plr) | [`plr`](/ext/plr) | 8.4.8 | load R interpreter and execute R script from within a database |
 | 3080 | [`plsh`](/ext/plsh) | [`plsh`](/ext/plsh) | 1.20220917 | PL/sh procedural language |
 | 3240 | [`pltcl`](/ext/pltcl) | [`pltcl`](/ext/pltcl) | 1.0 | PL/Tcl procedural language |
 | 3250 | [`pltclu`](/ext/pltclu) | [`pltcl`](/ext/pltcl) | 1.0 | PL/TclU untrusted procedural language |
@@ -347,7 +348,7 @@ Utilities such as send http request, perform gzip/zstd compress, send mails, Reg
 | 4160 | [`pgjwt`](/ext/pgjwt) | [`pgjwt`](/ext/pgjwt) | 0.2.0 | JSON Web Token API for Postgresql |
 | 4230 | [`pgpcre`](/ext/pgpcre) | [`pgpcre`](/ext/pgpcre) | 1 | Perl Compatible Regular Expression functions |
 | 4250 | [`pgqr`](/ext/pgqr) | [`pgqr`](/ext/pgqr) | 1.0 | QR Code generator from PostgreSQL |
-| 4200 | [`pgsql_tweaks`](/ext/pgsql_tweaks) | [`pgsql_tweaks`](/ext/pgsql_tweaks) | 0.11.1 | Some functions and views for daily usage |
+| 4200 | [`pgsql_tweaks`](/ext/pgsql_tweaks) | [`pgsql_tweaks`](/ext/pgsql_tweaks) | 0.11.3 | Some functions and views for daily usage |
 | 4460 | [`pguecc`](/ext/pguecc) | [`pg_ecdsa`](/ext/pguecc) | 1.0 | uECC bindings for Postgres |
 | 4330 | [`schedoc`](/ext/schedoc) | [`pg_schedoc`](/ext/schedoc) | 0.0.1 | Cross documentation between Django and DBT projects |
 | 4440 | [`shacrypt`](/ext/shacrypt) | [`shacrypt`](/ext/shacrypt) | 1.1 | Implements SHA256-CRYPT and SHA512-CRYPT password encryption schemes |
@@ -517,7 +518,7 @@ Auditing Logs, Enforce Passwords, Keep Secrets, TDE, SM Algorithm, Login Hooks, 
 | 7130 | [`pg_jobmon`](/ext/pg_jobmon) | [`pg_jobmon`](/ext/pg_jobmon) | 1.4.1 | Extension for logging and monitoring functions in PostgreSQL |
 | 7040 | [`pg_session_jwt`](/ext/pg_session_jwt) | [`pg_session_jwt`](/ext/pg_session_jwt) | 0.3.1 | Manage authentication sessions using JWTs |
 | 7170 | [`pg_snakeoil`](/ext/pg_snakeoil) | [`pg_snakeoil`](/ext/pg_snakeoil) | 1.4 | The PostgreSQL Antivirus |
-| 7060 | [`pg_tde`](/ext/pg_tde) | [`pg_tde`](/ext/pg_tde) | 1.0 | pg_tde access method |
+| 7060 | [`pg_tde`](/ext/pg_tde) | [`pg_tde`](/ext/pg_tde) | 1.0 | Percona pg_tde access method |
 | 7080 | [`pgaudit`](/ext/pgaudit) | [`pgaudit`](/ext/pgaudit) | 17.1 | provides auditing functionality |
 | 7090 | [`pgauditlogtofile`](/ext/pgauditlogtofile) | [`pgauditlogtofile`](/ext/pgauditlogtofile) | 1.6.4 | pgAudit addon to redirect audit log to an independent file |
 | 7980 | [`pgcrypto`](/ext/pgcrypto) | [`pgcrypto`](/ext/pgcrypto) | 1.3 | cryptographic functions |
@@ -540,7 +541,7 @@ Wrappers & Multicorn for FDW Development, Access other DBMS: MySQL, Mongo, SQLit
 | ID | Extension | Package | Version | Description |
 |:---:|:---|:---|:---|:---|
 | 8800 | [`aws_s3`](/ext/aws_s3) | [`aws_s3`](/ext/aws_s3) | 0.0.1 | aws_s3 postgres extension to import/export data from/to s3 |
-| 8630 | [`db2_fdw`](/ext/db2_fdw) | [`db2_fdw`](/ext/db2_fdw) | 6.0.1 | foreign data wrapper for DB2 access |
+| 8630 | [`db2_fdw`](/ext/db2_fdw) | [`db2_fdw`](/ext/db2_fdw) | 7.0.0 | foreign data wrapper for DB2 access |
 | 8970 | [`dblink`](/ext/dblink) | [`dblink`](/ext/dblink) | 1.2 | connect to other PostgreSQL databases from within a database |
 | 8980 | [`file_fdw`](/ext/file_fdw) | [`file_fdw`](/ext/file_fdw) | 1.0 | foreign-data wrapper for flat file access |
 | 8750 | [`firebird_fdw`](/ext/firebird_fdw) | [`firebird_fdw`](/ext/firebird_fdw) | 1.4.0 | Foreign data wrapper for Firebird |
@@ -552,13 +553,13 @@ Wrappers & Multicorn for FDW Development, Access other DBMS: MySQL, Mongo, SQLit
 | 8510 | [`multicorn`](/ext/multicorn) | [`multicorn`](/ext/multicorn) | 3.0 | Fetch foreign data in Python in your PostgreSQL server. |
 | 8600 | [`mysql_fdw`](/ext/mysql_fdw) | [`mysql_fdw`](/ext/mysql_fdw) | 2.9.2 | Foreign data wrapper for querying a MySQL server |
 | 8520 | [`odbc_fdw`](/ext/odbc_fdw) | [`odbc_fdw`](/ext/odbc_fdw) | 0.5.1 | Foreign data wrapper for accessing remote databases using ODBC |
-| 8610 | [`oracle_fdw`](/ext/oracle_fdw) | [`oracle_fdw`](/ext/oracle_fdw) | 2.7.0 | foreign data wrapper for Oracle access |
-| 8650 | [`pgbouncer_fdw`](/ext/pgbouncer_fdw) | [`pgbouncer_fdw`](/ext/pgbouncer_fdw) | 1.3.0 | Extension for querying PgBouncer stats from normal SQL views & running pgbouncer commands from normal SQL functions |
+| 8610 | [`oracle_fdw`](/ext/oracle_fdw) | [`oracle_fdw`](/ext/oracle_fdw) | 2.8.0 | foreign data wrapper for Oracle access |
+| 8650 | [`pgbouncer_fdw`](/ext/pgbouncer_fdw) | [`pgbouncer_fdw`](/ext/pgbouncer_fdw) | 1.4.0 | Extension for querying PgBouncer stats from normal SQL views & running pgbouncer commands from normal SQL functions |
 | 8540 | [`pgspider_ext`](/ext/pgspider_ext) | [`pgspider_ext`](/ext/pgspider_ext) | 1.3.0 | foreign-data wrapper for remote PGSpider servers |
 | 8990 | [`postgres_fdw`](/ext/postgres_fdw) | [`postgres_fdw`](/ext/postgres_fdw) | 1.1 | foreign-data wrapper for remote PostgreSQL servers |
 | 8720 | [`redis`](/ext/redis) | [`pg_redis_pubsub`](/ext/redis) | 0.0.1 | Send redis pub/sub messages to Redis from PostgreSQL Directly |
 | 8710 | [`redis_fdw`](/ext/redis_fdw) | [`redis_fdw`](/ext/redis_fdw) | 1.0 | Foreign data wrapper for querying a Redis server |
-| 8640 | [`sqlite_fdw`](/ext/sqlite_fdw) | [`sqlite_fdw`](/ext/sqlite_fdw) | 2.5.0 | SQLite Foreign Data Wrapper |
+| 8640 | [`sqlite_fdw`](/ext/sqlite_fdw) | [`sqlite_fdw`](/ext/sqlite_fdw) | 2.4.0 | SQLite Foreign Data Wrapper |
 | 8620 | [`tds_fdw`](/ext/tds_fdw) | [`tds_fdw`](/ext/tds_fdw) | 2.0.4 | Foreign data wrapper for querying a TDS database (Sybase or Microsoft SQL Server) |
 | 8500 | [`wrappers`](/ext/wrappers) | [`wrappers`](/ext/wrappers) | 0.5.0 | Foreign data wrappers developed by Supabase |
 
@@ -577,13 +578,13 @@ Protocol Simulation & heterogeneous DBMS Compatibility: Oracle, MSSQL, DB2, MySQ
 | 9000 | [`documentdb`](/ext/documentdb) | [`documentdb`](/ext/documentdb) | 0.103 | API surface for DocumentDB for PostgreSQL |
 | 9010 | [`documentdb_core`](/ext/documentdb_core) | [`documentdb`](/ext/documentdb) | 0.103 | Core API surface for DocumentDB for PostgreSQL |
 | 9020 | [`documentdb_distributed`](/ext/documentdb_distributed) | [`documentdb`](/ext/documentdb) | 0.103 | Multi-Node API surface for DocumentDB |
-| 9100 | [`orafce`](/ext/orafce) | [`orafce`](/ext/orafce) | 4.14.3 | Functions and operators that emulate a subset of functions and packages from the Oracle RDBMS |
+| 9100 | [`orafce`](/ext/orafce) | [`orafce`](/ext/orafce) | 4.14.4 | Functions and operators that emulate a subset of functions and packages from the Oracle RDBMS |
 | 9260 | [`pg_dbms_job`](/ext/pg_dbms_job) | [`pg_dbms_job`](/ext/pg_dbms_job) | 1.5 | Extension to add Oracle DBMS_JOB full compatibility to PostgreSQL |
 | 9250 | [`pg_dbms_lock`](/ext/pg_dbms_lock) | [`pg_dbms_lock`](/ext/pg_dbms_lock) | 1.0 | Extension to add Oracle DBMS_LOCK full compatibility to PostgreSQL |
 | 9240 | [`pg_dbms_metadata`](/ext/pg_dbms_metadata) | [`pg_dbms_metadata`](/ext/pg_dbms_metadata) | 1.0.0 | Extension to add Oracle DBMS_METADATA compatibility to PostgreSQL |
 | 9130 | [`pg_statement_rollback`](/ext/pg_statement_rollback) | [`pg_statement_rollback`](/ext/pg_statement_rollback) | 1.4 | Server side rollback at statement level for PostgreSQL like Oracle or DB2 |
 | 9410 | [`pgmemcache`](/ext/pgmemcache) | [`pgmemcache`](/ext/pgmemcache) | 2.3.0 | memcached interface |
-| 9110 | [`pgtt`](/ext/pgtt) | [`pgtt`](/ext/pgtt) | 4.1 | Extension to add Global Temporary Tables feature to PostgreSQL |
+| 9110 | [`pgtt`](/ext/pgtt) | [`pgtt`](/ext/pgtt) | 4.3 | Extension to add Global Temporary Tables feature to PostgreSQL |
 | 9120 | [`session_variable`](/ext/session_variable) | [`session_variable`](/ext/session_variable) | 3.4 | Registration and manipulation of session variables and constants |
 | 9400 | [`spat`](/ext/spat) | [`spat`](/ext/spat) | 0.1.0a4 | Redis-like In-Memory DB Embedded in Postgres |
 
@@ -597,15 +598,15 @@ Logical Replication, Decoding, CDC in protobuf/JSON/Mongo format, Copy & Load & 
 |:---:|:---|:---|:---|:---|
 | 9540 | [`db_migrator`](/ext/db_migrator) | [`db_migrator`](/ext/db_migrator) | 1.0.0 | Tools to migrate other databases to PostgreSQL |
 | 9660 | [`decoder_raw`](/ext/decoder_raw) | [`decoder_raw`](/ext/decoder_raw) | 1.0 | Output plugin for logical replication in Raw SQL format |
-| 9650 | [`decoderbufs`](/ext/decoderbufs) | [`decoderbufs`](/ext/decoderbufs) | 3.0.7 | Logical decoding plugin that delivers WAL stream changes using a Protocol Buffer format |
+| 9650 | [`decoderbufs`](/ext/decoderbufs) | [`decoderbufs`](/ext/decoderbufs) | 3.1.1 | Logical decoding plugin that delivers WAL stream changes using a Protocol Buffer format |
 | 9700 | [`mimeo`](/ext/mimeo) | [`mimeo`](/ext/mimeo) | 1.5.1 | Extension for specialized, per-table replication between PostgreSQL instances |
 | 9830 | [`pg_bulkload`](/ext/pg_bulkload) | [`pg_bulkload`](/ext/pg_bulkload) | 3.1.22 | pg_bulkload is a high speed data loading utility for PostgreSQL |
 | 9820 | [`pg_fact_loader`](/ext/pg_fact_loader) | [`pg_fact_loader`](/ext/pg_fact_loader) | 2.0.1 | build fact tables with Postgres |
 | 9530 | [`pg_failover_slots`](/ext/pg_failover_slots) | [`pg_failover_slots`](/ext/pg_failover_slots) | 1.1.0 | PG Failover Slots extension |
-| 9550 | [`pgactive`](/ext/pgactive) | [`pglogical`](/ext/pgactive) | 2.1.5 | Active-Active Replication Extension for PostgreSQL |
+| 9550 | [`pgactive`](/ext/pgactive) | [`pgactive`](/ext/pgactive) | 2.1.5 | Active-Active Replication Extension for PostgreSQL |
 | 9520 | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | [`pgl_ddl_deploy`](/ext/pgl_ddl_deploy) | 2.2.1 | automated ddl deployment using pglogical |
-| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pgactive) | 2.4.5 | PostgreSQL Logical Replication |
-| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pgactive) | 2.4.5 | Dummy extension for compatibility when upgrading from Postgres 9.4 |
+| 9500 | [`pglogical`](/ext/pglogical) | [`pglogical`](/ext/pglogical) | 2.4.5 | PostgreSQL Logical Replication |
+| 9501 | [`pglogical_origin`](/ext/pglogical_origin) | [`pglogical`](/ext/pglogical) | 2.4.5 | Dummy extension for compatibility when upgrading from Postgres 9.4 |
 | 9510 | [`pglogical_ticker`](/ext/pglogical_ticker) | [`pglogical_ticker`](/ext/pglogical_ticker) | 1.4.1 | Have an accurate view on pglogical replication delay |
 | 9980 | [`pgoutput`](/ext/pgoutput) | [`pgoutput`](/ext/pgoutput) | - | Logical Replication output plugin |
 | 9710 | [`repmgr`](/ext/repmgr) | [`repmgr`](/ext/repmgr) | 5.5.0 | Replication manager for PostgreSQL |

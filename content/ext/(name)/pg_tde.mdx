@@ -1,6 +1,6 @@
 ---
 title: pg_tde
-description: pg_tde access method
+description: Percona pg_tde access method
 full: true
 ---
 
@@ -31,27 +31,31 @@ import {
 
 | <TooltipIconButton tooltip="Linux distribution family, EL or Debian" side="top">Distro</TooltipIconButton> | <TooltipIconButton tooltip="Package repository" side="top">Repo</TooltipIconButton> | <TooltipIconButton tooltip="The RPM/DEB Package Name Pattern (replace $v with real pg major)" side="top">Package Name</TooltipIconButton> | <TooltipIconButton tooltip="Latest package version" side="top">Version</TooltipIconButton> | <TooltipIconButton tooltip="RPM/DEB Package dependencies" side="top">Deps</TooltipIconButton> | <TooltipIconButton tooltip="Available in these PostgreSQL Major Versions" side="top">PG Major</TooltipIconButton> |
 |:----------:|:--------:|:------------------------:|:-----------:|:------------:|:------------------:|
-|   **EL**   | <Badge variant="amber-subtle"><span className="font-bold">PIGSTY</span></Badge> | `pg_tde_$v*` | `1.0` | - | <Badge variant="red-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
-| **Debian** | <Badge variant="amber-subtle"><span className="font-bold">PIGSTY</span></Badge> | `postgresql-$v-pg-tde` | `1.0` | - | <Badge variant="red-subtle">17</Badge><Badge variant="green-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+|   **EL**   | <Badge variant="amber-subtle"><span className="font-bold">PIGSTY</span></Badge> | `percona-postgresql$v` | `1.0` | - | <Badge variant="green-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
+| **Debian** | <Badge variant="amber-subtle"><span className="font-bold">PIGSTY</span></Badge> | `percona-postgresql-$v` | `1.0` | - | <Badge variant="green-subtle">17</Badge><Badge variant="red-subtle">16</Badge><Badge variant="red-subtle">15</Badge><Badge variant="red-subtle">14</Badge><Badge variant="red-subtle">13</Badge> |
 
+
+<Callout title="Comments" type="info">
+    works on percona postgres fork
+</Callout>
 
 
 ------
 
 ## Availability
 
-| <TooltipIconButton tooltip="Linux Distro Arch / PostgreSQL Major Version" side="top">Linux / PostgreSQL </TooltipIconButton> | <span className="text-red-500">**PG17**</span> | **PG16** | <span className="text-red-500">**PG15**</span> | <span className="text-red-500">**PG14**</span> | <span className="text-red-500">**PG13**</span> |
+| <TooltipIconButton tooltip="Linux Distro Arch / PostgreSQL Major Version" side="top">Linux / PostgreSQL </TooltipIconButton> | **PG17** | <span className="text-red-500">**PG16**</span> | <span className="text-red-500">**PG15**</span> | <span className="text-red-500">**PG14**</span> | <span className="text-red-500">**PG13**</span> |
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| `el8.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `el8.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `el9.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `el9.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `d12.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `d12.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `u22.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `u22.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `u24.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
-| `u24.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="amber-subtle">1.0.0</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `el8.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `el8.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `el9.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `el9.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `d12.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `d12.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `u22.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `u22.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `u24.x86_64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
+| `u24.aarch64` | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> | <Badge variant="red-subtle">✗</Badge> |
 
 <Badge variant="green-subtle"><span className="font-black">CONTRIB</span></Badge> <Badge variant="blue-subtle"><span className="font-black">PGDG</span></Badge> <Badge variant="amber-subtle"><span className="font-black">PIGSTY</span></Badge>
 
@@ -75,34 +79,24 @@ Or download the latest packages directly:
 
 <Files>
     <Folder name="el8.x86_64">
-        <a href="https://repo.pigsty.io/yum/pgsql/el8.x86_64/pg_tde_16-1.0.0-1PIGSTY.el8.x86_64.rpm"><File name="pg_tde_16-1.0.0-1PIGSTY.el8.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="el8.aarch64">
-        <a href="https://repo.pigsty.io/yum/pgsql/el8.aarch64/pg_tde_16-1.0.0-1PIGSTY.el8.aarch64.rpm"><File name="pg_tde_16-1.0.0-1PIGSTY.el8.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="el9.x86_64">
-        <a href="https://repo.pigsty.io/yum/pgsql/el9.x86_64/pg_tde_16-1.0.0-1PIGSTY.el9.x86_64.rpm"><File name="pg_tde_16-1.0.0-1PIGSTY.el9.x86_64.rpm" icon={<Package className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="el9.aarch64">
-        <a href="https://repo.pigsty.io/yum/pgsql/el9.aarch64/pg_tde_16-1.0.0-1PIGSTY.el9.aarch64.rpm"><File name="pg_tde_16-1.0.0-1PIGSTY.el9.aarch64.rpm" icon={<Package className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="d12.x86_64">
-        <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/p/pg-tde/postgresql-16-pg-tde_1.0.0-1bPIGSTY~bookworm_amd64.deb"><File name="postgresql-16-pg-tde_1.0.0-1bPIGSTY~bookworm_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="d12.aarch64">
-        <a href="https://repo.pigsty.io/apt/pgsql/bookworm/pool/main/p/pg-tde/postgresql-16-pg-tde_1.0.0-1bPIGSTY~bookworm_arm64.deb"><File name="postgresql-16-pg-tde_1.0.0-1bPIGSTY~bookworm_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="u22.x86_64">
-        <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/p/pg-tde/postgresql-16-pg-tde_1.0.0-1bPIGSTY~jammy_amd64.deb"><File name="postgresql-16-pg-tde_1.0.0-1bPIGSTY~jammy_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="u22.aarch64">
-        <a href="https://repo.pigsty.io/apt/pgsql/jammy/pool/main/p/pg-tde/postgresql-16-pg-tde_1.0.0-1bPIGSTY~jammy_arm64.deb"><File name="postgresql-16-pg-tde_1.0.0-1bPIGSTY~jammy_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
     <Folder name="u24.x86_64">
-        <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/p/pg-tde/postgresql-16-pg-tde_1.0.0-1bPIGSTY~noble_amd64.deb"><File name="postgresql-16-pg-tde_1.0.0-1bPIGSTY~noble_amd64.deb" icon={<Box className="text-emerald-500" />} /></a>
     </Folder>
     <Folder name="u24.aarch64">
-        <a href="https://repo.pigsty.io/apt/pgsql/noble/pool/main/p/pg-tde/postgresql-16-pg-tde_1.0.0-1bPIGSTY~noble_arm64.deb"><File name="postgresql-16-pg-tde_1.0.0-1bPIGSTY~noble_arm64.deb" icon={<Box className="text-orange-500" />} /></a>
     </Folder>
 </Files>
 
@@ -115,13 +109,13 @@ Or download the latest packages directly:
 ```bash tab="pig"
 pig ext install pg_tde; # install by extension name, for the current active PG version
 
-pig ext install pg_tde -v 16;   # install for PG 16
+pig ext install pg_tde -v 17;   # install for PG 17
 ```
 ```bash tab="yum" 
-dnf install pg_tde_16*;
+dnf install percona-postgresql17;
 ```
 ```bash tab="apt" 
-apt install postgresql-16-pg-tde;
+apt install percona-postgresql-17;
 ```
 ```bash tab="ansible"
 ./pgsql.yml -t pg_ext -e '{"pg_extensions": ["pg_tde"]}' # -l <cls>
