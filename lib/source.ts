@@ -33,7 +33,3 @@ export const extSource = loader({
   },
 });
 
-export const blog = loader({
-  baseUrl: '/blog',
-  source: createMDXSource(blogPosts),
-});

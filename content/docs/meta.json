@@ -2,15 +2,13 @@
   "root": true,
   "pages": [
     "[Docs](/docs)",
-    "[Extension](/ext)",
+    "[Extension](ext)",
 
     "---Pigsty---",
     "about",
     "value",
     "feat",
     "intro",
-
-    "--- ---",
     "install",
     "prepare",
     "config",

@@ -43,7 +43,7 @@ class Config:
         
         if self.OUTPUT_DIR is None:
             script_dir = os.path.dirname(os.path.abspath(__file__))
-            self.OUTPUT_DIR = os.path.abspath(os.path.join(script_dir, '..', 'content', 'ext', 'list'))
+            self.OUTPUT_DIR = os.path.abspath(os.path.join(script_dir, '..', 'content', 'docs', 'ext', 'list'))
 
 
 # OS and Language mappings
@@ -110,13 +110,13 @@ LICENSE_NORMALIZATION = {
 }
 
 LANGUAGE_CONFIG = {
-    'Python': {"variant": 'blue-subtle', "anchor": "/ext/list/lang#python"},
-    'Rust': {"variant": 'amber-subtle', "anchor": "/ext/list/lang#rust"},
-    'SQL': {"variant": 'green-subtle', "anchor": "/ext/list/lang#sql"},
-    'Java': {"variant": 'pink-subtle', "anchor": "/ext/list/lang#java"},
-    'Data': {"variant": 'teal-subtle', "anchor": "/ext/list/lang#data"},
-    'C++': {"variant": 'purple-subtle', "anchor": "/ext/list/lang#c-1"},
-    'C': {"variant": 'blue-subtle', "anchor": "/ext/list/lang#c"},
+    'Python': {"variant": 'blue-subtle', "anchor": "/list/lang#python"},
+    'Rust': {"variant": 'amber-subtle', "anchor": "/list/lang#rust"},
+    'SQL': {"variant": 'green-subtle', "anchor": "/list/lang#sql"},
+    'Java': {"variant": 'pink-subtle', "anchor": "/list/lang#java"},
+    'Data': {"variant": 'teal-subtle', "anchor": "/list/lang#data"},
+    'C++': {"variant": 'purple-subtle', "anchor": "/list/lang#c-1"},
+    'C': {"variant": 'blue-subtle', "anchor": "/list/lang#c"},
 }
 
 REPO_CONFIG = {
@@ -174,7 +174,7 @@ class BadgeFormatter:
         """Format category as Badge component with icon and color."""
         meta = CATEGORY_META.get(category, {'icon': 'Blocks', 'color': 'gray-subtle'})
         iconstr = '{<%s />}' % meta['icon']
-        return f'<Badge icon={iconstr} variant="{meta["color"]}"><a href="/ext/{category.lower()}" className="no-underline">{category}</a></Badge>'
+        return f'<Badge icon={iconstr} variant="{meta["color"]}"><a href="/ext/cate/{category.lower()}" className="no-underline">{category}</a></Badge>'
     
     @staticmethod
     def format_license(license_name: str) -> str:
@@ -334,10 +334,10 @@ class TableGenerator:
         rows = [self._format_table_header(headers, [':---:',':---',':---',':---'])]
         
         for ext in extensions:
-            package_cell = f'[`{ext.pkg}`](/ext/{self.leading_map.get(ext.pkg, ext.name)})'
+            package_cell = f'[`{ext.pkg}`](/e/{self.leading_map.get(ext.pkg, ext.name)})'
             row_data = [
                 str(ext.id),
-                f'[`{ext.name}`](/ext/{ext.name})',
+                f'[`{ext.name}`](/e/{ext.name})',
                 package_cell,
                 ext.en_desc or 'No description'
             ]
@@ -354,10 +354,10 @@ class TableGenerator:
         rows = [self._format_table_header(headers, [':---:',':---',':---',':---',':---'])]
         
         for ext in extensions:
-            package_cell = f'[`{ext.pkg}`](/ext/{self.leading_map.get(ext.pkg, ext.name)})'
+            package_cell = f'[`{ext.pkg}`](/e/{self.leading_map.get(ext.pkg, ext.name)})'
             row_data = [
                 str(ext.id),
-                f'[`{ext.name}`](/ext/{ext.name})',
+                f'[`{ext.name}`](/e/{ext.name})',
                 package_cell,
                 ext.version or 'N/A',
                 ext.en_desc or 'No description'
@@ -381,7 +381,7 @@ class TableGenerator:
             
             row_data = [
                 str(ext.id),
-                f'[`{ext.name}`](/ext/{ext.name})',
+                f'[`{ext.name}`](/e/{ext.name})',
                 category_badge,
                 rpm_badge,
                 deb_badge,
@@ -761,13 +761,13 @@ full: true
 import {{ Badge }} from '@/components/ui/badge';
 import {{ FileCode2, Package }} from 'lucide-react';
 
-<a href="/ext/list/lang#c"><Badge      icon={{<FileCode2 />}} variant="blue-subtle">C</Badge></a>
-<a href="/ext/list/lang#c-1"><Badge    icon={{<FileCode2 />}} variant="purple-subtle">C++</Badge></a>
-<a href="/ext/list/lang#rust"><Badge   icon={{<FileCode2 />}} variant="amber-subtle">Rust</Badge></a>
-<a href="/ext/list/lang#java"><Badge   icon={{<FileCode2 />}} variant="pink-subtle">Java</Badge></a>
-<a href="/ext/list/lang#python"><Badge icon={{<FileCode2 />}} variant="blue-subtle">Python</Badge></a>
-<a href="/ext/list/lang#sql"><Badge    icon={{<FileCode2 />}} variant="green-subtle">SQL</Badge></a>
-<a href="/ext/list/lang#data"><Badge   icon={{<FileCode2 />}} variant="teal-subtle">Data</Badge></a>
+<a href="/list/lang#c"><Badge      icon={{<FileCode2 />}} variant="blue-subtle">C</Badge></a>
+<a href="/list/lang#c-1"><Badge    icon={{<FileCode2 />}} variant="purple-subtle">C++</Badge></a>
+<a href="/list/lang#rust"><Badge   icon={{<FileCode2 />}} variant="amber-subtle">Rust</Badge></a>
+<a href="/list/lang#java"><Badge   icon={{<FileCode2 />}} variant="pink-subtle">Java</Badge></a>
+<a href="/list/lang#python"><Badge icon={{<FileCode2 />}} variant="blue-subtle">Python</Badge></a>
+<a href="/list/lang#sql"><Badge    icon={{<FileCode2 />}} variant="green-subtle">SQL</Badge></a>
+<a href="/list/lang#data"><Badge   icon={{<FileCode2 />}} variant="teal-subtle">Data</Badge></a>
 
 ## Summary
 
@@ -812,7 +812,7 @@ class InventoryIndexGenerator(ContentGenerator):
                 continue
                 
             cat_extensions.sort(key=lambda e: e.name)
-            extension_badges = [f'[`{ext.name}`](/ext/{ext.name})' for ext in cat_extensions]
+            extension_badges = [f'[`{ext.name}`](/e/{ext.name})' for ext in cat_extensions]
             extensions_row = f'''| {BadgeFormatter.format_category(category)} | {' '.join(extension_badges)} |'''
             extensions_content.append(extensions_row)
         
@@ -846,9 +846,9 @@ import {{ Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Box
 
 ## Source
 
-This catalog is open-sourced under the [Apache License 2.0](https://github.com/pgsty/extension/blob/main/LICENSE) and maintained by the [PGSTY](https://github.com/pgsty) team.
+This catalog is open-sourced under the [Apache License 2.0](https://github.com/pgsty/ext/blob/main/LICENSE) and maintained by the [PGSTY](https://github.com/pgsty) team.
 
-You can find the RAW CSV data files at [github.com/pgsty/extension/data/extension.csv](https://github.com/pgsty/extension/blob/main/data/extension.csv)
+You can find the RAW CSV data files at [github.com/pgsty/extension/data/extension.csv](https://github.com/pgsty/ext/blob/main/data/extension.csv)
 
 - https://github.com/pgsty/extension
 
@@ -1042,7 +1042,7 @@ PostgreSQL extensions availability across different Linux distributions and arch
             pkg_name = ext.pkg
             ext_packages = distro_packages.get(pkg_name, {})
             
-            row_data = [f'[`{ext.pkg}`](/ext/{ext.name})']
+            row_data = [f'[`{ext.pkg}`](/e/{ext.name})']
             
             for pg_ver in self.config.PG_VERSIONS:
                 if pg_ver in ext_packages:
@@ -1161,13 +1161,13 @@ No extensions with dependencies found.'''
                 # Try to find the dependency extension to create proper links
                 dep_ext = next((e for e in self.extensions if e.name == dep), None)
                 if dep_ext:
-                    dependency_links.append(f'[`{dep}`](/ext/{dep})')
+                    dependency_links.append(f'[`{dep}`](/e/{dep})')
                 else:
                     dependency_links.append(f'`{dep}`')
             
             dependencies_cell = ', '.join(dependency_links)
             row_data = [
-                f'[`{ext.name}`](/ext/{ext.name})',
+                f'[`{ext.name}`](/e/{ext.name})',
                 dependencies_cell
             ]
             rows.append('| ' + ' | '.join(row_data) + ' |')
@@ -1215,13 +1215,13 @@ No packages with multiple extensions found.'''
         for pkg, exts in sorted_packages:
             extension_links = []
             for ext in exts:
-                extension_links.append(f'[`{ext.name}`](/ext/{ext.name})')
+                extension_links.append(f'[`{ext.name}`](/e/{ext.name})')
             
             extensions_cell = ', '.join(extension_links)
             leading_ext = next((e for e in exts if e.lead), exts[0])
             
             row_data = [
-                f'[`{pkg}`](/ext/{leading_ext.name})',
+                f'[`{pkg}`](/e/{leading_ext.name})',
                 extensions_cell
             ]
             rows.append('| ' + ' | '.join(row_data) + ' |')

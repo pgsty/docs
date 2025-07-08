@@ -1,0 +1,17 @@
+{
+  "root": true,
+  "pages": [
+    "[Home](/)",
+    "[Docs](/docs)",
+
+    "list",
+    "repo",
+    "pig",
+    "usage",
+    "build",
+    "about",
+
+    "--- ---",
+    "cate"
+  ]
+}
