@@ -1,0 +1,17 @@
+{
+    "title": "About",
+    "description": "About Pigsty",
+    "defaultOpen": true,
+    "icon": "Info",
+    "pages": [
+        "author",
+        "history",
+        "license",
+        "service",
+        "community",
+        "release",
+        "event",
+        "issue",
+        "..."
+    ]
+}

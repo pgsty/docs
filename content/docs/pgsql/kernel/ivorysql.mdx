@@ -1,0 +1,73 @@
+---
+title: IvorySQL
+description: PostgreSQL fork with oracle (grammar) compatibility
+icon: Target
+---
+
+
+[IvorySQL](https://www.ivorysql.org/) is an open-source “Oracle-compatible” PostgreSQL kernel, developed by [**HighGo**](https://www.highgo.com/), licensed under Apache 2.0.
+
+The Oracle compatibility here refers to compatibility at the PL/SQL, syntax, built-in functions, data types, system views, MERGE, and GUC parameter levels. It’s not a wire protocol compatibility like [**Babelfish**](/pgsql/kernel/babelfish), [**openHalo**](/pgsql/kernel/openhalo/), or [**FerretDB**](/ferret/) that allows using the original client drivers. Users still need to use PostgreSQL client tools to access IvorySQL, but can use Oracle-compatible syntax.
+
+
+Currently, IvorySQL’s latest version **4.4** maintains compatibility with PostgreSQL’s latest minor version 17.4, and provides binary RPM/DEB packages for mainstream Linux distributions. Pigsty offers the option to replace the native PostgreSQL with the IvorySQL kernel in PG RDS.
+
+------
+
+## Quick Start
+
+Use the standard procedure to [**install**](/docs/install/start) Pigsty with the [`ivory`](https://github.com/pgsty/pigsty/blob/main/conf/ivory.yml) configuration template:
+
+```bash
+./configure -c ivory     # Use IvorySQL configuration template
+./install.yml            # Run installation playbook
+```
+
+For production deployments, you should edit the auto-generated `pigsty.yml` configuration file to modify parameters like passwords before executing `./install.yml` for deployment.
+
+![ivorysql](https://pigsty.io/img/pigsty/ivory.jpg)
+
+The latest IvorySQL 4.5 is equivalent to PostgreSQL 17.5 Any client tool compatible with PostgreSQL’s wire protocol can access IvorySQL clusters.
+
+By default, you can use a PostgreSQL client to access through the alternative `1521` port, which enables Oracle compatibility mode by default.
+
+
+------
+
+## Configuration Instructions
+
+To use the IvorySQL kernel in Pigsty, modify the following four configuration parameters:
+
+- [`pg_mode`](/pgsql/param/#pg_mode): Use `ivory` compatibility mode
+- [`repo_extra_packages`](/pgsql/param/#pg_mode): Download `ivorysql` packages
+- [`pg_packages`](/pgsql/param/#pg_mode): Install `ivorysql` packages
+- [`pg_libs`](/pgsql/param/#pg_mode): Load Oracle syntax compatibility extensions
+
+It's that simple — just add these four lines to the global variables in the configuration file, and Pigsty will replace the native PostgreSQL kernel with IvorySQL:
+
+```yaml
+pg_mode: ivory                           # IvorySQL compatibility mode, uses IvorySQL binaries
+pg_packages: [ ivorysql, pgsql-common ]  # Install ivorysql, replacing pgsql-main kernel
+pg_libs: 'liboracle_parser, pg_stat_statements, auto_explain'  # Load Oracle compatibility extensions
+repo_extra_packages: [ ivorysql ]        # Download ivorysql packages
+```
+
+IvorySQL also provides a series of [new GUC parameters](https://docs.ivorysql.org/cn/ivorysql-doc/v4.4/v4.4/15#新增变量目前) that can be specified in [`pg_parameters`](/pgsql/param/#pg_parameters).
+
+------
+
+## Extensions
+
+Most of the **PGSQL** modules’ [**extension**](/ext/list/) (non-SQL classes) cannot be used directly on the IvorySQL kernel.
+If you need to use them, you need to recompile and install from source code for the new kernel.
+
+
+------
+
+## Caveats
+
+- The IvorySQL software package is located in the `pigsty-infra` repository, not in `pigsty-pgsql` or `pigsty-ivory` repositories.
+- The default FHS of IvorySQL 4.4 has changed, please pay attention to users upgrading from older versions.
+- IvorySQL 4.4 requires gibc version >= 2.17, which is currently supported by Pigsty.
+- The last IvorySQL version supporting EL7 is 3.3, corresponding to PostgreSQL 16.3, and IvorySQL 4.x no longer supports EL7.
+- Pigsty does not assume any warranty for using the IvorySQL kernel, and any issues or requests should be addressed to the manufacturer.

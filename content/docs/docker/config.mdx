@@ -12,7 +12,7 @@ Pigsty includes built-in [**Docker**](https://www.docker.com/) support, allowing
 
 ## Quick Start
 
-To install docker on nodes, set the [`docker_enabled`](/docs/docker/param#docker_enabled) parameter to `true`.
+To install docker on nodes, set the [`docker_enabled`](/docker/param#docker_enabled) parameter to `true`.
 
 ```yaml
 all:
@@ -26,7 +26,7 @@ all:
         docker_enabled: true  # Install Docker on this group
 ```
 
-Then run the [`docker.yml`](/docs/docker/playbook) playbook (on target hosts/groups):
+Then run the [`docker.yml`](/docker/playbook) playbook (on target hosts/groups):
 
 ```bash title="~/pigsty"
 ./docker.yml -l infra
@@ -39,7 +39,7 @@ Docker will be installed on that `infra` group.
 
 ## Registry
 
-You can specify docker registry mirrors with [`docker_registry_mirrors`](/docs/docker/param#docker_registry_mirrors):
+You can specify docker registry mirrors with [`docker_registry_mirrors`](/docker/param#docker_registry_mirrors):
 
 ```yaml
 all:
@@ -61,7 +61,7 @@ You can specify multiple registry mirrors as an array, remember to quote the URL
 
 ## Proxy
 
-Docker will use the [`proxy_env`](/docs/infra/param#proxy_env) parameter if specified.
+Docker will use the [`proxy_env`](/infra/param#proxy_env) parameter if specified.
 
 You can define it on global parameters `all.vars` or dedicate groups (such as `infra` ):
 
@@ -95,7 +95,7 @@ This is useful if direct network access is blocked due to various reasons.
 
 ## Images
 
-You can provision docker images with [`docker_image`](/docs/docker/param#docker_image) and [`docker_image_cache`](/docs/docker/param#docker_image_cache):
+You can provision docker images with [`docker_image`](/docker/param#docker_image) and [`docker_image_cache`](/docker/param#docker_image_cache):
 
 ```yaml
 infra:
@@ -108,8 +108,8 @@ infra:
     docker_image_cache: "/tmp/docker/*.tgz"
 ```
 
-The images defined in [`docker_image`](/docs/docker/param#docker_image) will be pulled during the `docker_image` task, one by one.
-And the local docker image cache with `.tgz` suffix matching the [`docker_image_cache`](/docs/docker/param#docker_image_cache) glob list will be loaded into docker with `docker load`
+The images defined in [`docker_image`](/docker/param#docker_image) will be pulled during the `docker_image` task, one by one.
+And the local docker image cache with `.tgz` suffix matching the [`docker_image_cache`](/docker/param#docker_image_cache) glob list will be loaded into docker with `docker load`
 
 
 

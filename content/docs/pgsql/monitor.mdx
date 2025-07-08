@@ -11,7 +11,7 @@ Pigsty uses the modern observability stack for PostgreSQL monitoring:
 - Grafana for metrics visualization and PostgreSQL datasource.
 - Prometheus for PostgreSQL / Pgbouncer / Patroni / HAProxy / Node metrics
 - Loki for PostgreSQL / Pgbouncer / Patroni / pgBackRest logs
-- Battery-Include [dashboards](https://pigsty.io/docs/pgsql/dashboard/) for PostgreSQL and everything else
+- Battery-Include [dashboards](/pgsql/dashboard/) for PostgreSQL and everything else
 
 ### **Metrics**
 
@@ -30,10 +30,10 @@ There are three identity labels: `cls`, `ins`, `ip`, which will be attached to a
 
 PostgreSQL-related logs are collected by promtail and sent to Loki on infra nodes by default.
 
-- [`pg_log_dir`](https://pigsty.io/docs/pgsql/param#pg_log_dir) : postgres log dir, `/pg/log/postgres` by default
-- [`pgbouncer_log_dir`](https://pigsty.io/docs/pgsql/param#pgbouncer_log_dir) : pgbouncer log dir, `/pg/log/pgbouncer` by default
-- [`patroni_log_dir`](https://pigsty.io/docs/pgsql/param#patroni_log_dir) : patroni log dir, `/pg/log/patroni` by default
-- [`pgbackrest_log_dir`](https://pigsty.io/docs/pgsql/param#pgbackrest_log_dir) : pgbackrest log dir, `/pg/log/pgbackrest` by default
+- [`pg_log_dir`](/pgsql/param#pg_log_dir) : postgres log dir, `/pg/log/postgres` by default
+- [`pgbouncer_log_dir`](/pgsql/param#pgbouncer_log_dir) : pgbouncer log dir, `/pg/log/pgbouncer` by default
+- [`patroni_log_dir`](/pgsql/param#patroni_log_dir) : patroni log dir, `/pg/log/patroni` by default
+- [`pgbackrest_log_dir`](/pgsql/param#pgbackrest_log_dir) : pgbackrest log dir, `/pg/log/pgbackrest` by default
 
 ### **Targets**
 
@@ -48,7 +48,7 @@ Prometheus monitoring targets are defined in static files under `/etc/prometheus
     - 10.10.10.10:8008    # <--- patroni metrics
 ```
 
-When the global flag [`patroni_ssl_enabled`](https://pigsty.io/docs/pgsql/param#patroni_ssl_enabled) is set, the patroni target will be managed as `/etc/prometheus/targets/patroni/<ins>.yml` because it requires a different scrape endpoint (https).
+When the global flag [`patroni_ssl_enabled`](/pgsql/param#patroni_ssl_enabled) is set, the patroni target will be managed as `/etc/prometheus/targets/patroni/<ins>.yml` because it requires a different scrape endpoint (https).
 
 Prometheus monitoring target will be removed when a cluster is removed by `bin/pgsql-rm` or `pgsql-rm.yml`. You can use playbook subtasks, or remove them manually:
 
@@ -56,7 +56,7 @@ Prometheus monitoring target will be removed when a cluster is removed by `bin/p
 bin/pgmon-rm <ins>      # remove prometheus targets from all infra nodes
 ```
 
-Remote RDS targets are managed as `/etc/prometheus/targets/pgrds/<cls>.yml`. It will be created by the [`pgsql-monitor.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsql-monitor) playbook or `bin/pgmon-add` script.
+Remote RDS targets are managed as `/etc/prometheus/targets/pgrds/<cls>.yml`. It will be created by the [`pgsql-monitor.yml`](/pgsql/playbook/#pgsql-monitoryml) playbook or `bin/pgmon-add` script.
 
 ------
 
@@ -66,7 +66,7 @@ There are three ways to monitor PostgreSQL instances in Pigsty:
 
 |        Item \ Level        |                              L1                              |                              L2                              |               L3                |
 | :------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :-----------------------------: |
-|            Name            | [Remote Database Service](https://pigsty.io/docs/pgsql/monitor/#monitor-rds) | [Existing Deployment](https://pigsty.io/docs/pgsql/monitor/#monitor-existing-cluster) |    Fully Managed Deployment     |
+|            Name            | [Remote Database Service](/pgsql/monitor/#monitor-rds) | [Existing Deployment](/pgsql/monitor/#monitor-existing-cluster) |    Fully Managed Deployment     |
 |            Abbr            |                           **RDS**                            |                         **MANAGED**                          |            **FULL**             |
 |           Scenes           |                   connect string URL only                    |                        ssh-sudo-able                         |   Instances created by Pigsty   |
 |    PGCAT Functionality     |                     ✅ Full Availability                      |                     ✅ Full Availability                      |       ✅ Full Availability       |
@@ -87,9 +87,9 @@ There are three ways to monitor PostgreSQL instances in Pigsty:
 
 ## Monitor Existing Cluster
 
-Suppose the target DB node can be managed by Pigsty (accessible via ssh and sudo is available). In that case, you can use the `pg_exporter` task in the [`pgsql.yml`](https://pigsty.io/docs/pgsql/playbook/#pgsqlyml) playbook to deploy the monitoring component PG Exporter on the target node in the same manner as a standard deployment.
+Suppose the target DB node can be managed by Pigsty (accessible via ssh and sudo is available). In that case, you can use the `pg_exporter` task in the [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) playbook to deploy the monitoring component PG Exporter on the target node in the same manner as a standard deployment.
 
-You can also deploy the connection pool and its monitoring on existing instance nodes using the `pgbouncer` and `pgbouncer_exporter` tasks from the same playbook. Additionally, you can deploy host monitoring, load balancing, and log collection components using the `node_exporter`, `haproxy`, and `promtail` tasks from the [`node.yml`](https://pigsty.io/docs/node/playbook/#nodeyml) playbook, achieving a similar user experience with the native Pigsty cluster.
+You can also deploy the connection pool and its monitoring on existing instance nodes using the `pgbouncer` and `pgbouncer_exporter` tasks from the same playbook. Additionally, you can deploy host monitoring, load balancing, and log collection components using the `node_exporter`, `haproxy`, and `promtail` tasks from the [`node.yml`](/node/playbook/#nodeyml) playbook, achieving a similar user experience with the native Pigsty cluster.
 
 The definition method for existing clusters is very similar to the normal clusters managed by Pigsty. Selectively run certain tasks from the `pgsql.yml` playbook instead of running the entire playbook.
 
@@ -100,13 +100,13 @@ The definition method for existing clusters is very similar to the normal cluste
 ./pgsql.yml -l <cls> -t pg_exporter,pg_register      # Configure PostgreSQL monitoring and register with Prometheus/Grafana.
 ```
 
-Since the target database cluster already exists, you must manually [setup monitoring users, schemas, and extensions](https://pigsty.io/docs/pgsql/monitor/#monitor-setup) on the target database cluster.
+Since the target database cluster already exists, you must manually [setup monitoring users, schemas, and extensions](/pgsql/monitor/#monitor-setup) on the target database cluster.
 
 ------
 
 ## Monitor RDS
 
-If you can **only access the target database via PGURL** (database connection string), you can refer to the instructions here for configuration. In this mode, Pigsty deploys the corresponding PG Exporter on the [INFRA node](https://pigsty.io/docs/node/concept/#infra-node) to fetch metrics from the remote database, as shown below:
+If you can **only access the target database via PGURL** (database connection string), you can refer to the instructions here for configuration. In this mode, Pigsty deploys the corresponding PG Exporter on the [INFRA node](/node/arch/#infra-node) to fetch metrics from the remote database, as shown below:
 
 ```
 ------ infra ------
@@ -124,11 +124,11 @@ If you can **only access the target database via PGURL** (database connection st
 -------------------            ^------------------^
 ```
 
-The monitoring system will no longer have host/pooler/load balancer metrics. But the PostgreSQL metrics & catalog info are still available. Pigsty has two dedicated dashboards for that: [PGRDS Cluster](https://demo.pigsty.cc/d/pgrds-cluster) and [PGRDS Instance](https://demo.pigsty.cc/d/pgrds-instance). Overview and Database level dashboards are reused. Since Pigsty cannot manage your RDS, you have to [setup monitor](https://pigsty.io/docs/pgsql/monitor/#monitor-setup) on the target database in advance.
+The monitoring system will no longer have host/pooler/load balancer metrics. But the PostgreSQL metrics & catalog info are still available. Pigsty has two dedicated dashboards for that: [PGRDS Cluster](https://demo.pigsty.cc/d/pgrds-cluster) and [PGRDS Instance](https://demo.pigsty.cc/d/pgrds-instance). Overview and Database level dashboards are reused. Since Pigsty cannot manage your RDS, you have to [setup monitor](/pgsql/monitor/#monitor-setup) on the target database in advance.
 
 Below, we use a sandbox environment as an example: now we assume that the `pg-meta` cluster is an RDS instance `pg-foo-1` to be monitored, and the `pg-test` cluster is an RDS cluster `pg-bar` to be monitored:
 
-1. Create monitoring schemas, users, and permissions on the target. Refer to [Monitor Setup](https://pigsty.io/docs/pgsql/monitor/#monitor-setup) for details.
+1. Create monitoring schemas, users, and permissions on the target. Refer to [Monitor Setup](/pgsql/monitor/#monitor-setup) for details.
 
 2. Declare the cluster in the configuration list. For example, suppose we want to monitor the “remote” `pg-meta` & `pg-test` clusters:
 
@@ -173,11 +173,11 @@ When you want to monitor existing instances, whether it’s RDS or a self-built 
 
 To bring an external existing PostgreSQL instance into monitoring, you need a connection string that can access that instance/cluster. Any accessible connection string (business user, superuser) can be used, but we recommend using a dedicated monitoring user to avoid permission leaks.
 
--  [Monitor User](https://pigsty.io/docs/pgsql/monitor/#monitor-user): The default username used is `dbuser_monitor`. This user belongs to the `pg_monitor` group, or ensure it has the necessary view permissions.
--  [Monitor HBA](https://pigsty.io/docs/pgsql/monitor/#monitor-hba): Default password is `DBUser.Monitor`. You need to ensure that the HBA policy allows the monitoring user to access the database from the infra nodes.
--  [Monitor Schema](https://pigsty.io/docs/pgsql/monitor/#monitor-schema): It’s optional but recommended to create a dedicate schema `monitor` for monitoring views and extensions.
--  [Monitor Extension](https://pigsty.io/docs/pgsql/monitor/#monitor-extension): It is strongly recommended to enable the built-in extension `pg_stat_statements`.
--  [Monitor View](https://pigsty.io/docs/pgsql/monitor/#monitor-view): Monitoring views are optional but can provide additional metrics. Which is recommended.
+-  [Monitor User](/pgsql/monitor/#monitor-user): The default username used is `dbuser_monitor`. This user belongs to the `pg_monitor` group, or ensure it has the necessary view permissions.
+-  [Monitor HBA](/pgsql/monitor/#monitor-hba): Default password is `DBUser.Monitor`. You need to ensure that the HBA policy allows the monitoring user to access the database from the infra nodes.
+-  [Monitor Schema](/pgsql/monitor/#monitor-schema): It’s optional but recommended to create a dedicate schema `monitor` for monitoring views and extensions.
+-  [Monitor Extension](/pgsql/monitor/#monitor-extension): It is strongly recommended to enable the built-in extension `pg_stat_statements`.
+-  [Monitor View](/pgsql/monitor/#monitor-view): Monitoring views are optional but can provide additional metrics. Which is recommended.
 
 ------
 
@@ -195,7 +195,7 @@ ALTER USER dbuser_monitor SET log_min_duration_statement = 1000;  -- set this to
 ALTER USER dbuser_monitor SET search_path = monitor,public;       -- set this to avoid pg_stat_statements extension not working
 ```
 
-The monitor user here should have consistent [`pg_monitor_username`](/docs/pgsql/param#pg_monitor_username) and [`pg_monitor_password`](/docs/pgsql/param#pg_monitor_password) with Pigsty config inventory.
+The monitor user here should have consistent [`pg_monitor_username`](/pgsql/param#pg_monitor_username) and [`pg_monitor_password`](/pgsql/param#pg_monitor_password) with Pigsty config inventory.
 
 ------
 

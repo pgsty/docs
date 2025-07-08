@@ -12,7 +12,7 @@ the most advanced Open Source database in the world.
 
 ## Quick Start
 
-Pigsty has built-in (but optional) support for pgAdmin, it launches pgadmin with [Docker](/docs/docker) Compose:
+Pigsty has built-in (but optional) support for pgAdmin, it launches pgadmin with [Docker](/docker) Compose:
 
 ```bash
 ./docker.yml
@@ -87,7 +87,7 @@ all:
 
 Then run `make nginx` to update nginx config, and configure [local static DNS](/docs/admin/domain#local-static-resolution) record `<your_ip_address> adm.pigsty` in `/etc/hosts` or [local](/docs/admin/domain#internal-dynamic-resolution) / [public](/docs/admin/domain#public-domain-resolution) DNS server.
 
-Pigsty will issue self-signed SSL certs for the domains listed in [`infra_portal`](/docs/infra/param#infra_portal) automatically.
+Pigsty will issue self-signed SSL certs for the domains listed in [`infra_portal`](/infra/param#infra_portal) automatically.
 If you want to use real domain names, define `cerbot` entry and run `make cert`, check [SSL Certs](/docs/admin/cert) for details.
 
 ```yaml

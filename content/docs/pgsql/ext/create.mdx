@@ -16,7 +16,7 @@ CREATE EXTENSION vector; -- no explicit loading required
 CREATE EXTENSION timescaledb; -- explicit loading required
 ```
 
-Extensions need to be [**installed**](/docs/pgsql/ext/install) first, some extension also require [**preloading**](/docs/pgsql/ext/config) before using.
+Extensions need to be [**installed**](/pgsql/ext/install) first, some extension also require [**preloading**](/pgsql/ext/config) before using.
 
 Some extensions have dependencies on other extensions.
 In such cases, you can either install the dependencies first
@@ -33,8 +33,8 @@ You can also provision extension with Pigsty, which will automatically create th
 
 ## Configure
 
-Extensions (database logical objects) are logically part of [**PostgreSQL databases**](/docs/pgsql/db).
-In Pigsty, you can specify which extensions to be created in a database with [**`pg_databases`**](/docs/pgsql/param#pg_databases) parameter.
+Extensions (database logical objects) are logically part of [**PostgreSQL databases**](/pgsql/db).
+In Pigsty, you can specify which extensions to be created in a database with [**`pg_databases`**](/pgsql/param#pg_databases) parameter.
 
 ```yaml
 pg_databases:
@@ -42,7 +42,7 @@ pg_databases:
 ```
 
 But you can explicitly specify extension details with the `object` format, like create them in a specific schema.
-Or install a specific version. Here's a complete example ([self-hosting supabase](/docs/app/supabase)):
+Or install a specific version. Here's a complete example ([self-hosting supabase](/app/supabase)):
 
 ```yaml
 pg_databases:
@@ -78,11 +78,11 @@ Here, the `extensions` in the database object is a list where each element can b
 
 - A simple string representing the extension name, such as `vector`
 - Alternatively, A dictionary that may contain the following fields can be used:
-  - `name`: Extension name, **REQUIRED**, beware it may differ from the [**extension package name**](/docs/pgsql/ext/pkg).
+  - `name`: Extension name, **REQUIRED**, beware it may differ from the [**extension package name**](/pgsql/ext/pkg).
   - `schema`: Schema for installing the extension, **OPTIONAL**, defaults to the first schema in the current dbsu search path, usually the default `public`.
   - `version`: Specifies the extension version, **OPTIONAL**, defaults to the latest version, rarely used.
 
-If the database doesn’t exist yet, the extensions defined here will be automatically created when [**creating a cluster**](/docs/pgsql/admin#create-cluster) or [**creating a database**](/docs/pgsql/admin#create-database) through Pigsty.
+If the database doesn’t exist yet, the extensions defined here will be automatically created when [**creating a cluster**](/pgsql/admin#create-cluster) or [**creating a database**](/pgsql/admin#create-database) through Pigsty.
 
 Re-creating database with non-trivial baseline schema may be dangerous (if you put some `DROP` there)
 So for existing clusters / databases, it's advised to use your own schema migration tool to manage extensions. (pgadmin, psql, bytebase, flyway, sqlitch,...)
@@ -94,9 +94,9 @@ But it's helpful to enlist them in the [config inventory](/docs/config/inventory
 
 ## Default Extension
 
-Some built-in extensions and one special [`pg_repack`](/ext/pg_repack) are created by default in Pigsty.
+Some built-in extensions and one special [`pg_repack`](/e/pg_repack) are created by default in Pigsty.
 
-These extensions are defined by [**`pg_default_extensions`**](/docs/pgsql/param#pg_default_extensions), created in the `template1` database and the `postgres` database by default.
+These extensions are defined by [**`pg_default_extensions`**](/pgsql/param#pg_default_extensions), created in the `template1` database and the `postgres` database by default.
 Newly created databases will inherit these extensions from `template1`, so you don't need to create them again.
 
 ```yaml
@@ -118,23 +118,23 @@ pg_default_extensions:
   - { name: pg_repack } # <-- The only 3rd-party extension created by default
 ```
 
-One extra default schema `monitor` is defined by [`pg_default_schemas`](/docs/pgsql/param#pg_default_schemas) is also created by default.
+One extra default schema `monitor` is defined by [`pg_default_schemas`](/pgsql/param#pg_default_schemas) is also created by default.
 Which is used to contain monitoring related extensions, tables, functions and views.
 
 There are three **3rd-party** extensions that are available by default in Pigsty:
 
 |           Extension           | What                          | Where                                                                                                   |
 |:-----------------------------:|-------------------------------|---------------------------------------------------------------------------------------------------------|
-| [`pg_repack`](/ext/pg_repack) | Online Bloat Control  Tools   | in the [`pg_default_extensions`](/docs/pgsql/param#pg_default_extensions)                               |
-|  [`wal2json`](/ext/wal2json)  | Changing data capture in JSON | extension [without DDL](/ext/list/attr#without-ddl), [install](/docs/pgsql/ext/install) means available |
-|    [`vector`](/ext/vector)    | vector data type & indexes    | in [`pg_databases`](/docs/pgsql/param#pg_databases)  as an example                                      |
+| [`pg_repack`](/e/pg_repack) | Online Bloat Control  Tools   | in the [`pg_default_extensions`](/pgsql/param#pg_default_extensions)                               |
+|  [`wal2json`](/e/wal2json)  | Changing data capture in JSON | extension [without DDL](/ext/list/attr#without-ddl), [install](/pgsql/ext/install) means available |
+|    [`vector`](/e/vector)    | vector data type & indexes    | in [`pg_databases`](/pgsql/param#pg_databases)  as an example                                      |
 
-The [`pg_repack`](/ext/pg_repack) extension is an important utility for maintaining bloat tables online.
+The [`pg_repack`](/e/pg_repack) extension is an important utility for maintaining bloat tables online.
 
-[**`vector`**](/ext/vector) is a very popular extension for RAG,
-It is [**installed**](/docs/pgsql/ext/install) by default (in the `pgsql-main` [alias](/docs/pgsql/ext/pkg)) and created in the placeholder `meta` database in most [config templates](/docs/config/templates).
+[**`vector`**](/e/vector) is a very popular extension for RAG,
+It is [**installed**](/pgsql/ext/install) by default (in the `pgsql-main` [alias](/pgsql/ext/pkg)) and created in the placeholder `meta` database in most [config template](/docs/config/template).
 
-The [`wal2json`](/ext/wal2json) is another important extension for Changing Data Capture (CDC). It is [installed](/docs/pgsql/ext/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
+The [`wal2json`](/e/wal2json) is another important extension for Changing Data Capture (CDC). It is [installed](/pgsql/ext/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
 So you don't need to `CREATE` it explicitly.
 
 
@@ -155,7 +155,7 @@ If an extension does not have SQL file, `CREATE EXTENSION` command is not needed
 
 Since SQL / LIB files are optional, there are four possible combinations of extension types:
 
-| **[LOAD](/docs/pgsql/ext/config) / DDL** | Requires `CREATE EXTENSION` | Doesn't require `CREATE EXTENSION` |
+| **[LOAD](/pgsql/ext/config) / DDL** | Requires `CREATE EXTENSION` | Doesn't require `CREATE EXTENSION` |
 |------------------------------------------|-----------------------------|------------------------------------|
 | **Requires `LOAD`**                      | Extensions using hooks      | Headless extensions                |
 | **Doesn't Require `LOAD`**               | Extensions not using hooks  | Logical decoding output plugins    |

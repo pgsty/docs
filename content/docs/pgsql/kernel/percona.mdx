@@ -1,0 +1,54 @@
+---
+title: Percona
+description: Percona Postgres Distribution with TDE support
+icon: Pyramid
+---
+
+
+[Percona Postgres](https://www.percona.com/postgresql/software/postgresql-distribution) is a patched Postgres kernel with [`pg_tde`](https://docs.percona.com/pg-tde/index.html) (Transparent Data Encryption) extension.
+
+It is compatible with PostgreSQL 17.5, and available on all supported platforms.
+
+
+------
+
+## Get Started
+
+[**install**](/docs/install/start) Pigsty’s with the [`pgtde`](https://github.com/pgsty/pigsty/blob/main/conf/pgtde.yml) config template.
+
+```bash
+./configure -c pgtde     # use percona postgres kernel
+./install.yml            # setup everything with pigsty
+```
+
+
+
+------
+
+## Configure
+
+The following parameters need to be tuned to deploy a PolarDB cluster:
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_users:
+      - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+      - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
+    pg_databases:
+      - name: meta
+        baseline: cmdb.sql
+        comment: pigsty tde database
+        schemas: [pigsty]
+        extensions: [ vector, postgis, pg_tde ,pgaudit, { name: pg_stat_monitor, schema: monitor } ]
+    pg_hba_rules:
+      - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+    node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
+
+    # Percona PostgreSQL TDE Ad Hoc Settings
+    pg_packages: [ percona-main, pgsql-common ]  # install percona postgres packages
+    pg_libs: 'pg_tde, pgaudit, pg_stat_statements, pg_stat_monitor, auto_explain'
+```

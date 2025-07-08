@@ -84,7 +84,7 @@ name: `etcd_safeguard`, type: `bool`, level: `G/C/A`
 
 prevent purging running etcd instance? default value is `false`
 
-If enabled, running etcd instance will not be purged by [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook.
+If enabled, running etcd instance will not be purged by [`etcd.yml`](/etcd/playbook/#etcdyml) playbook.
 
 ------
 
@@ -94,7 +94,7 @@ name: `etcd_clean`, type: `bool`, level: `G/C/A`
 
 purging existing etcd during initialization? default value is `true`
 
-If enabled, running etcd instance will be purged by [`etcd.yml`](/docs/etcd/playbook/#etcdyml) playbook, which makes the playbook fully idempotent.
+If enabled, running etcd instance will be purged by [`etcd.yml`](/etcd/playbook/#etcdyml) playbook, which makes the playbook fully idempotent.
 
 But if [`etcd_safeguard`](#etcd_safeguard) is enabled, it will still abort on any running etcd instance.
 
@@ -132,7 +132,7 @@ etcd initial cluster state, `new` or `existing`
 
 default values: `new`, which will create a standalone new etcd cluster.
 
-The value `existing` is used when trying to [**add new member**](/docs/etcd/admin/#add-member) to existing etcd cluster.
+The value `existing` is used when trying to [**add new member**](/etcd/admin/#add-member) to existing etcd cluster.
 
 ------
 

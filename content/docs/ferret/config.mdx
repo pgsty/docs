@@ -37,7 +37,7 @@ Note that FerretDB’s [authentication](https://docs.ferretdb.io/security/authen
 
 ## PostgreSQL Cluster
 
-FerretDB 2.0+ requires an extension: [DocumentDB](/ext/documentdb), which depends on several other extensions. Here’s a template for creating a PostgreSQL cluster for FerretDB:
+FerretDB 2.0+ requires an extension: [DocumentDB](/e/documentdb), which depends on several other extensions. Here’s a template for creating a PostgreSQL cluster for FerretDB:
 
 ```yaml
 all:
@@ -71,7 +71,7 @@ all:
 
 ## High Availability
 
-You can use [Services](https://pigsty.io/docs/concept/svc/) to connect to a highly available PostgreSQL cluster and deploy multiple FerretDB instance replicas with L2 VIP binding for FerretDB layer high availability.
+You can use [Services](/pgsql/service/) to connect to a highly available PostgreSQL cluster and deploy multiple FerretDB instance replicas with L2 VIP binding for FerretDB layer high availability.
 
 ```yaml
 ferret:

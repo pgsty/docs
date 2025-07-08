@@ -19,7 +19,7 @@ If there's a running postgres instance, you can explicitly remove it with `pgsql
 
 > Disable `pg_safeguard` to remove the Postgres instance.
 
-If [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) is enabled, you cannot remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
+If [`pg_safeguard`](/pgsql/param#pg_safeguard) is enabled, you cannot remove the running pgsql instance with `bin/pgsql-rm` and `pgsql-rm.yml` playbook.
 
 To disable `pg_safeguard`, you can set `pg_safeguard` to `false` in the inventory or pass `-e pg_safeguard=false` as cli arg to the playbook:
 
@@ -96,9 +96,9 @@ pg restart <cls>                          # restart postgres to use hugepage
 
 ## How to guarantee zero data loss during failover?
 
-> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](/docs/pgsql/admin#config-cluster) with synchronous mode.
+> Use `crit.yml` template, or setting `pg_rpo` to `0`, or [config cluster](/pgsql/admin#config-cluster) with synchronous mode.
 
-Consider using [Sync Standby](/docs/pgsql/config/#sync-standby) and [Quorum Comit](/docs/pgsql/config/#quorum-commit) to guarantee 0 data loss during failover.
+Consider using [Sync Standby](/pgsql/config/#sync-standby) and [Quorum Comit](/pgsql/config/#quorum-commit) to guarantee 0 data loss during failover.
 
 ------
 
@@ -106,7 +106,7 @@ Consider using [Sync Standby](/docs/pgsql/config/#sync-standby) and [Quorum Comi
 
 > `rm -rf /pg/dummy` will free some emergency space.
 
-The [`pg_dummy_filesize`](/docs/pgsql/param#pg_dummy_filesize) is set to `64MB` by default. Consider increasing it to `8GB` or larger in the production environment.
+The [`pg_dummy_filesize`](/pgsql/param#pg_dummy_filesize) is set to `64MB` by default. Consider increasing it to `8GB` or larger in the production environment.
 
 It will be placed on `/pg/dummy` same disk as the PGSQL main data disk. You can remove that file to free some emergency space. At least you can run some shell scripts on that node.
 
@@ -172,7 +172,7 @@ The default scrape interval for prometheus is 10s in pigsty, make sure the expor
 
 ## How to monitor an existing PostgreSQL instance?
 
-Check [PGSQL Monitor](/docs/pgsql/monitor/) for details.
+Check [PGSQL Monitor](/pgsql/monitor/) for details.
 
 ------
 

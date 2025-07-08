@@ -7,14 +7,14 @@ icon: Wrench
 
 Node admin SOP, add & remove node, setup admin, bind vip and miscellany
 
-Here are some common administration tasks for [`NODE`](/docs/node) module.
+Here are some common administration tasks for [`NODE`](/node) module.
 
 - [Add Node](#add-node)
 - [Remove Node](#remove-node)
 - [Create Admin](#create-admin)
 - [Bind VIP](#bind-vip)
 - [Other Tasks](#other-tasks)
-- [FAQ: NODE](/docs/node/faq)
+- [FAQ: NODE](/node/faq)
 
 ------
 
@@ -56,7 +56,7 @@ node.yml -t node_admin -k -K -e ansible_user=<another admin>   # input ssh/sudo 
 
 ## Bind VIP
 
-You can bind an optional L2 VIP on a node cluster with [`vip_enabled`](/docs/node/param#vip_enabled).
+You can bind an optional L2 VIP on a node cluster with [`vip_enabled`](/node/param#vip_enabled).
 
 ```bash
 proxy:
@@ -140,7 +140,7 @@ cat /var/log/tuned/tuned.log  # show tuned log
 
 ## Kernel Modules
 
-You can manage kernel modules with [`node_kernel_modules`](/docs/node/param#node_kernel_modules) in `node.yml`.
+You can manage kernel modules with [`node_kernel_modules`](/node/param#node_kernel_modules) in `node.yml`.
 
 To manage kernel modules manually, you can use the following commands on nodes:
 

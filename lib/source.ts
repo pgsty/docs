@@ -1,15 +1,14 @@
-import { blog as blogPosts, docs, ext } from '@/.source';
+import { docs, ext } from '@/.source';
 import { loader } from 'fumadocs-core/source';
 import { i18n } from './i18n';
 import { icons } from 'lucide-react';
 import { createElement } from 'react';
-import { createMDXSource } from 'fumadocs-mdx';
 
 // See https://fumadocs.vercel.app/docs/headless/source-api for more info
 export const source = loader({
   // it assigns a URL to your pages
   i18n,
-  baseUrl: '/docs',
+  baseUrl: '/',
   source: docs.toFumadocsSource(),
   icon(icon) {
     if (!icon) {

@@ -1,16 +1,16 @@
 {
   "title": "INFRA",
   "description": "Portal & Monitoring Service",
-  "root": false,
+  "root": true,
   "icon": "Landmark",
   "pages": [
+    "index",
     "arch",
     "config",
     "param",
     "admin",
     "playbook",
     "monitor",
-    "faq",
-    "..."
+    "faq"
   ]
 }

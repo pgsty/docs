@@ -1,0 +1,221 @@
+---
+title: Admin
+description: User, Locale, Sudo, SSH, accessibility...
+icon: Landmark
+---
+
+
+------
+
+## User
+
+Pigsty requires an OS **user** with passwordless [`ssh`](#ssh) and [`sudo`](#sudo-privileges) on all managed nodes.
+
+
+------
+
+### Naming Convention
+
+Usually we'll choose a name such as `dba` or `admin` for this purpose,
+but avoid using `root` or `postgres`:
+
+<Callout title="Avoid using root user" type="warn">
+
+    While possible, using `root` as admin user is not recommended for security reasons.
+
+</Callout>
+
+<Callout title="Don't use postgres dbsu as admin user" type="error">
+
+    DBSU (`postgres` by default)  should **NOT** be used as admin user.
+    It will cause unexpected security issues.
+
+    If you are using a different dbsu user, avoid using it as admin user as well.
+
+</Callout>
+
+
+------
+
+### Provide Password
+
+The nopass requirement is optional if you can accept the password prompt for every `ssh` and `sudo` command.
+
+<Callout title="Run playbook with password prompt" type="info">
+
+    You can use the `-k|--ask-pass` when running [playbook](/docs/admin/playbook) to prompt for the **ssh** password.
+
+    And use `-K|--ask-become-pass` to prompt for the **sudo** password.
+
+    ```bash
+    ./install.yml -k -K
+    ```
+</Callout>
+
+
+------
+
+### Create Admin User
+
+It's user/vendor's responsibility to create & deliver such an admin user during server provisioning stage.
+But if you don't have such an admin user, or that user is restricted, you can create one with pigsty itself:
+
+<Callout title="Create admin user with pigsty" type="info">
+
+    Assuming you have a root or existing admin user on the node, you can create an admin user with pigsty itself.
+
+    ```bash
+    ./node.yml -k -K -t node_admin -e ansible_user=[existing_admin_user]
+    ```
+
+    It will leverage the existing admin to create a new admin user.
+    It will create a dedicated `dba` (uid=88) user described by the following parameters,
+    with sudo / ssh properly configured.
+
+    | Name | Description | Default |
+    |------|-------------|---------|
+    | [`node_admin_enabled`](/node/param#node_admin_enabled) | enable node admin user | `true` |
+    | [`node_admin_uid`](/node/param#node_admin_uid) | uid of node admin user | `88` |
+    | [`node_admin_username`](/node/param#node_admin_username) | name of node admin user | `dba` |
+
+
+</Callout>
+
+
+------
+
+### Sudo Privileges
+
+All the [admin user](#user) should have passwordless `sudo` privileges on all managed nodes.
+
+In case you want to configure an admin user with passwordless `sudo` privileges from scratch:
+
+<Callout title="Allow sudo without password" type="info">
+
+    To manually allow a user to execute `sudo` commands without password:
+
+    Create a sudoers file for your admin user (assume `vagrant`, replace with your name choice):
+
+    ```bash
+    echo '%vagrant ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/vagrant
+    ```
+
+    Assume your admin user name choice is `dba`, then `/etc/sudoers.d/dba` content would be
+
+    ```bash
+    %dba ALL=(ALL) NOPASSWD: ALL
+    ```
+
+</Callout>
+
+Ansible relies on `sudo` to execute commands with root privileges on managed nodes.
+So on environments where `sudo` is not available (like inside a slim container), you may have to install `sudo` first.
+
+
+
+
+
+------
+
+## SSH
+
+Your current user should have nopass ssh access to all managed nodes as corresponding admin user.
+
+Your current user can be the admin user itself, but not required as long as you can ssh as the admin user.
+
+SSH configuration is Linux 101, but we will cover the basics here in case you are not familiar with it:
+
+
+------
+
+### Generate SSH Key
+
+Generate an SSH key pair if you don't have one
+
+<Callout title="Generate SSH Key" type="info">
+
+    ```bash
+    ssh-keygen -t rsa -b 2048 -N '' -f ~/.ssh/id_rsa -q
+    ```
+
+    Pigsty will do that for you if you don't have a key pair, during the [`bootstrap`](/docs/install/offline#bootstrap) stage.
+
+</Callout>
+
+------
+
+### Copy SSH Key
+
+You'll need to distribute your generated public key remote (and local) servers, and put
+it into the `~/.ssh/authorized_keys` file of the admin user on all nodes.
+The `ssh-copy-id` util can be used.
+
+
+<Callout title="Distribute your ssh key to other nodes" type="info">
+
+    Copy the public key to all managed nodes, `ssh-copy-id` or add to `~/.ssh/authorized_keys` manually.
+
+```bash
+ssh-copy-id <ip>                        # Interactive password entry
+```
+
+    You can use `sshpass` tool to pass the password directly without prompting, but it's dangerous:
+
+```bash
+sshpass -p <password> ssh-copy-id <ip>  # Non-interactive (use with caution)
+```
+
+</Callout>
+
+
+------
+
+### Using Alias
+
+When direct ssh access is not available (due to jumpserver, other port, credentials, etc...), consider:
+
+<Callout title="Using SSH aliases" type="info">
+
+    Configure SSH aliases in `~/.ssh/config`, and put custom parameters for the alias there.
+
+    ```bash
+    Host meta
+        HostName 10.10.10.10
+        User dba                      # <--- not the same user on remote
+        IdentityFile /etc/dba/id_rsa  # <--- not the ordinary key
+        Port 24                       # <--- not the well-known port
+    ```
+
+    And reference the alias in the inventory, use `ansible_host` to specify the real ssh alias.
+
+    ```yaml
+    nodes:
+      hosts:          # if node `10.10.10.10` requires an SSH alias `meta`
+        10.10.10.10: { ansible_host: meta }  # <---- access via `ssh meta`
+    ```
+
+    SSH parameters can be used directly in ansible, Check [Ansible Inventory Guide](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) for details.
+
+</Callout>
+
+
+------
+
+### Check Accessibility
+
+Your should be able to access all managed nodes with nopass `ssh` via your current user from admin node.
+And the remote user (admin user) should have the privilege to run nopass `sudo` commands.
+
+<Callout title="Verify nopass ssh sudo is working" type="info">
+
+    Run this command on admin node to all managed nodes:
+
+    ```bash
+    ssh <ip|alias> 'sudo ls'
+    ```
+
+    if there's no password prompt or error raised, nopass ssh/sudo is working as expected.
+
+</Callout>
+
+

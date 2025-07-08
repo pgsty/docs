@@ -123,7 +123,7 @@ It will increase the etcd default quota from 2 GiB to 16 GiB, and ensure that on
 
 ## Where does the PostgreSQL HA data stored in etcd?
 
-Patroni will use the [**`pg_namespace`**](/docs/pgsql/param#pg_namespace) (default is `/pg`) as the prefix for all metadata keys in etcd, followed by the PostgreSQL cluster name.
+Patroni will use the [**`pg_namespace`**](/pgsql/param#pg_namespace) (default is `/pg`) as the prefix for all metadata keys in etcd, followed by the PostgreSQL cluster name.
 
 For example, a PG cluster named `pg-meta`, its metadata keys will be stored under `/pg/pg-meta`, which may look like this:
 
@@ -161,7 +161,7 @@ To use an existing external etcd cluster, define them as usual and make sure you
 
 ## How to add a new member to the existing etcd cluster?
 
-Check [Add a member to etcd cluster](/docs/etcd/admin/#add-member)
+Check [Add a member to etcd cluster](/etcd/admin/#add-member)
 
 ```bash
 etcdctl member add <etcd-?> --learner=true --peer-urls=https://<new_ins_ip>:2380 # on admin node
@@ -175,7 +175,7 @@ etcdctl member promote <new_ins_server_id>                                      
 
 ## How to remove a member from an existing etcd cluster?
 
-Check [Remove member from etcd cluster](/docs/etcd/admin/#remove-member)
+Check [Remove member from etcd cluster](/etcd/admin/#remove-member)
 
 ```bash
 etcdctl member remove <etcd_server_id>   # kick member out of the cluster (on admin node)

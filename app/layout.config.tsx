@@ -5,20 +5,8 @@ import { LayoutTemplate } from 'lucide-react';
 
 export const linkItems = (lang: string): LinkItemType[] => [
   {
-    icon: <AlbumIcon />,
-    text: 'Docs',
-    url: `/${lang}/docs`,
-    active: 'nested-url',
-  },
-  {
-    text: 'Case',
-    url: `/${lang}/showcase`,
-    icon: <LayoutTemplate />,
-    active: 'url',
-  },
-  {
     text: 'Extension',
-    url: `/${lang}/ext`,
+    url: `/${lang}/`,
     icon: <LayoutTemplate />,
     active: 'url',
   },

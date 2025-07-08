@@ -4,7 +4,7 @@ description: Get started with MinIO and MCli, how to access the MinIO service?
 icon: Rocket
 ---
 
-After MinIO cluster is [configured](/docs/minio/config/) and deployed with the [playbook](/docs/minio/playbook/), you can start using and accessing the MinIO cluster by following the instructions here.
+After MinIO cluster is [configured](/minio/config/) and deployed with the [playbook](/minio/playbook/), you can start using and accessing the MinIO cluster by following the instructions here.
 
 ------
 
@@ -24,7 +24,7 @@ Define it in the [config inventory](/docs/config/inventory), then run the playbo
 
 The [`install.yml`](/docs/admin/playbook#deployment) playbook will automatically create the MinIO cluster defined in the inventory, so you don’t need to run the `minio.yml` playbook manually, if you choose the default one-pass installation.
 
-If you plan to deploy a production-grade large-scale multi-node MinIO cluster, we **strongly** recommend you to read the Pigsty MinIO [configuration document](/docs/minio/config) and the MinIO [document](https://min.io/docs/minio/linux/operations/concepts.html) before proceeding.
+If you plan to deploy a production-grade large-scale multi-node MinIO cluster, we **strongly** recommend you to read the Pigsty MinIO [configuration document](/minio/config) and the MinIO [document](https://min.io/docs/minio/linux/operations/concepts.html) before proceeding.
 
 ------
 
@@ -32,15 +32,15 @@ If you plan to deploy a production-grade large-scale multi-node MinIO cluster, w
 
 You have to access MinIO via HTTPS, so make sure the default minio service domain (`sss.pigsty`) point to the right place:
 
-1. You can add static resolution records in [`node_etc_hosts`](/docs/node/param#node_etc_hosts) or manually modify the `/etc/hosts` file
+1. You can add static resolution records in [`node_etc_hosts`](/node/param#node_etc_hosts) or manually modify the `/etc/hosts` file
 2. You can add a record on the internal DNS server if you are using DNS service
-3. You can add a record in [`dns_records`](/docs/infra/param#dns_records) if you are using the DNSMASQ on infra nodes
+3. You can add a record in [`dns_records`](/infra/param#dns_records) if you are using the DNSMASQ on infra nodes
 
 It is recommended to use the first method: static DNS resolution records to avoid MinIO’s additional dependency on DNS in production environments.
 
 You have to point the MinIO service domain to the IP address and service port of the MinIO server node, or the IP address and service port of the load balancer. Pigsty will use the default domain name `sss.pigsty` and default port `9000`.
 
-For example, if you are using haproxy to expose MinIO service [like this](/docs/minio/config#expose-service), the port may be `9002`.
+For example, if you are using haproxy to expose MinIO service [like this](/minio/config#expose-service), the port may be `9002`.
 
 ------
 
@@ -128,7 +128,7 @@ rclone ls sss:/
 
 ## Backup Repo
 
-The MinIO is used as a backup repository for pgBackRest by default in Pigsty. When you modify the [`pgbackrest_method`](/docs/pgsql/param#pgbackrest_method) to `minio`, the PGSQL module will automatically switch the backup repository to MinIO.
+The MinIO is used as a backup repository for pgBackRest by default in Pigsty. When you modify the [`pgbackrest_method`](/pgsql/param#pgbackrest_method) to `minio`, the PGSQL module will automatically switch the backup repository to MinIO.
 
 ```yaml
 pgbackrest_method: local          # pgbackrest repo method: local,minio,[user-defined...]

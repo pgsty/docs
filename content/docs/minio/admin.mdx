@@ -14,7 +14,7 @@ Here are some administration SOP for MinIO:
 - [Node Failure Recovery](#node-failure-recovery)
 - [Disk failure Recovery](#disk-failure-recovery)
 
-Check [ETCD: FAQ](/docs/minio/faq/) for more questions.
+Check [ETCD: FAQ](/minio/faq/) for more questions.
 
 
 
@@ -28,7 +28,7 @@ To create a MinIO cluster, define the `minio` cluster in [inventory](/docs/confi
 minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 ```
 
-The [`minio_cluster`](/docs/minio/param#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
+The [`minio_cluster`](/minio/param#minio_cluster) param mark this cluster as a MinIO cluster, and the `minio_seq` is the sequence number of the MinIO node, which is used to generate MinIO node name like `minio-1`, `minio-2`, etc.
 
 This snippet defines a single-node MinIO cluster, using the following command to create the MinIO cluster:
 
@@ -42,7 +42,7 @@ This snippet defines a single-node MinIO cluster, using the following command to
 
 ## Remove Cluster
 
-To destroy an existing MinIO cluster, use the `minio_clean` subtask of [`minio.yml`](/docs/minio/playbook/#minioyml), DO THINK before you type.
+To destroy an existing MinIO cluster, use the `minio_clean` subtask of [`minio.yml`](/minio/playbook/#minioyml), DO THINK before you type.
 
 ```bash
 ./minio.yml -l minio -t minio_clean -e minio_clean=true   # Stop MinIO and Remove Data Dir
@@ -106,7 +106,7 @@ minio:
 ```
 
 Step 1, add 4 node definitions in the group, allocate sequence number 5 to 8.
-The key step is to modify the [`minio_volumes`](/docs/minio/param#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
+The key step is to modify the [`minio_volumes`](/minio/param#minio_volumes) param, assign the new 4 nodes to a new **storage pool**.
 
 
 ```yaml

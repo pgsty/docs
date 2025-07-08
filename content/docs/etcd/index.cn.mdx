@@ -1,0 +1,42 @@
+---
+title: Etcd
+description: 分布式元数据存储
+icon: HandCoins
+---
+
+ETCD is a distributed, reliable key-value store for the most critical data of a distributed system.
+[**etcd**](https://etcd.io/) is used as [**DCS**](https://patroni.readthedocs.io/en/latest/dcs_failsafe_mode.html) (Distributed configuration storage) for patroni, the PostgreSQL HA Agent for config management and leader election.
+
+In short, [`PGSQL`](/pgsql) depends on a global [`ETCD`](/etcd) module, and ETCD depends on [`NODE`](/node) module to work properly (use the node CA).
+
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/etcd/config"}>
+        Define etcd cluster at different size
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/etcd/param"}>
+        Customize etcd components with 10 parameters
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/etcd/admin"}>
+        Adding / Removing etcd members, refresh endpoints...
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/etcd/playbook"}>
+        Ansible playbooks that can be used in etcd module
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/etcd/monitor"}>
+        Dashboards, metrics, record & alerting rules.
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/etcd/faq"}>
+        Frequently Asked Questions about etcd module
+    </Card>
+</Cards>

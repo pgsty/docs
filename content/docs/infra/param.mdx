@@ -136,9 +136,9 @@ This parameter is referenced by many other parameters, such as:
 - [`infra_portal`](#infra_portal)
 - [`repo_endpoint`](#repo_endpoint)
 - [`dns_records`](#dns_records)
-- [`node_default_etc_hosts`](/docs/node/param#node_default_etc_hosts)
-- [`node_etc_hosts`](/docs/node/param#node_etc_hosts)
-- [`node_repo_modules`](/docs/node/param#node_repo_modules)
+- [`node_default_etc_hosts`](/node/param#node_default_etc_hosts)
+- [`node_etc_hosts`](/node/param#node_etc_hosts)
+- [`node_repo_modules`](/node/param#node_repo_modules)
 
 The exact string `${admin_ip}` will be replaced with the actual `admin_ip` for above parameters.
 
@@ -291,7 +291,7 @@ Each record consists of a Key and a Value dictionary, where name is the key, rep
     - In Pigsty self-signed Nginx HTTPS certificate, the domain name will be added to the SAN field of the Nginx SSL certificate
     - Pigsty web page cross-references will use the default domain name here
 - endpoint: Usually used as an alternative to path, specifies the upstream server address. Setting endpoint indicates this is a reverse proxy server
-    - In the configuration, `${admin_ip}` can be used as a placeholder, and will be dynamically replaced with [admin_ip](/docs/infra/param#admin_ip) during deployment
+    - In the configuration, `${admin_ip}` can be used as a placeholder, and will be dynamically replaced with [admin_ip](/infra/param#admin_ip) during deployment
     - The default reverse proxy server uses [endpoint.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/endpoint.conf) as the configuration template
     - The reverse proxy server can also configure the websocket and schema parameters
 - path: Usually used as an alternative to endpoint, specifies the local file server path. Setting path means this is a local web server
@@ -566,7 +566,7 @@ And on Debian/Ubuntu systems, it will be translated into:
 postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector
 ```
 
-Here `$v` will be replaced with the actual PostgreSQL major version number [`pg_version`](/docs/pgsql/param#pg_version), So you can add any PG version related packages here, and Pigsty will download them for you.
+Here `$v` will be replaced with the actual PostgreSQL major version number [`pg_version`](/pgsql/param#pg_version), So you can add any PG version related packages here, and Pigsty will download them for you.
 
 ------
 
@@ -777,7 +777,7 @@ Pigsty will launch a default DNSMASQ server on infra nodes to serve DNS inquiry.
 
 All records will be added to infra node’s `/etc/hosts.d/*`.
 
-You have to add `nameserver {{ admin_ip }}` to your `/etc/resolv` to use this dns server, and [`node_dns_servers`](/docs/node/param#node_dns_servers) will do the trick.
+You have to add `nameserver {{ admin_ip }}` to your `/etc/resolv` to use this dns server, and [`node_dns_servers`](/node/param#node_dns_servers) will do the trick.
 
 ```yaml
 dns_enabled: true                 # setup dnsmasq on this infra node?
@@ -795,7 +795,7 @@ type: `bool`, level: `G/I`
 
 setup dnsmasq on this infra node? default value: `true`
 
-If you don’t want to use the default DNS server, you can set this value to `false` to disable it. And use [`node_default_etc_hosts`](/docs/node/param#node_default_etc_hosts) and [`node_etc_hosts`](/docs/node/param#node_etc_hosts) instead.
+If you don’t want to use the default DNS server, you can set this value to `false` to disable it. And use [`node_default_etc_hosts`](/node/param#node_default_etc_hosts) and [`node_etc_hosts`](/node/param#node_etc_hosts) instead.
 
 ------
 
@@ -996,9 +996,9 @@ default value: `none`
 
 Specify how to install Exporter:
 
-- `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](/docs/node/param#node_default_packages) task)
-- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](/docs/node/param#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter_enabled) before deploying Exporter)
-- `binary`: Install using a copy binary (copy [`node_exporter`](/docs/node/param#node_exporter) and [`pg_exporter`](/docs/pgsql/param#pg_exporter_enabled) binary directly from local file dir, not recommended)
+- `none`: No installation, (by default, the Exporter has been previously installed by the [`node_pkg`](/node/param#node_default_packages) task)
+- `yum`: Install using yum (if yum installation is enabled, run yum to install [`node_exporter`](/node/param#node_exporter) and [`pg_exporter`](/pgsql/param#pg_exporter_enabled) before deploying Exporter)
+- `binary`: Install using a copy binary (copy [`node_exporter`](/node/param#node_exporter) and [`pg_exporter`](/pgsql/param#pg_exporter_enabled) binary directly from local file dir, not recommended)
 
 When installing with `yum`, if `exporter_repo_url` is specified (not empty), the installation will first install the REPO file under that URL into `/etc/yum.repos.d`. This feature allows you to install Exporter directly without initializing the node infrastructure. It is not recommended for regular users to use `binary` installation. This mode is usually used for emergency troubleshooting and temporary problem fixes.
 

@@ -1,0 +1,180 @@
+---
+title: PIGSTY
+description: Pigsty v3.5 Documentation
+icon: PiggyBank
+full: true
+---
+
+<span className="text-sky-700 font-black">P</span>ostgres <span className="text-blue-400 font-black">I</span>n <span className="text-orange-500 font-black">G</span>reat <span className="text-gray-500 font-black">S</span><span className="text-red-700 font-black">T</span><span className="text-green-600 font-black">Y</span>le ——
+<span className="text-sky-700 font-black">P</span>ostgres
+<span className="text-blue-400 font-black">I</span>nfra
+<span className="text-orange-500 font-black">G</span>raphic
+<span className="text-gray-500 font-black">S</span>ervice
+<span className="text-red-700 font-black">T</span>oolbox, 
+<span className="text-green-600 font-black">Y</span>ours
+
+import {Database,CpuIcon,Landmark,Settings,Container,Leaf,Box,Layers,Rocket,SquareStack,Code} from 'lucide-react';
+
+
+## Introduction
+
+<span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
+is a Battery-Included, FOSS <a href="/docs/intro/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
+as a Local-First <a href="/docs/intro/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
+
+<Cards>
+
+    <Card icon={<Rocket className="text-blue-300" />} title='Values' href={"/docs/value"}>
+        Why use Pigsty?
+        The 8 core value propositions of Pigsty
+    </Card>
+
+    <Card icon={<SquareStack className={"text-red-500"} />} title='Features' href={"/docs/feat"}>
+        Key features, Highlights and Technical details
+    </Card>
+
+    <Card icon={<Code className="text-green-600" />} title='References' href={"/docs/intro"}>
+        Architecture, Use Cases, Comparisons, and other references
+    </Card>
+    <Card icon={<Landmark className={"text-orange-400"} />} title='About' href={"/docs/about"}>
+        License, Release, Community, News, Author, Service, etc...
+    </Card>
+
+</Cards>
+
+Pigsty assembles all the superpowers from the PostgreSQL and Database world, provides everything you'll need to build your own Data Infra.
+
+> **Just use Postgres for Everything! and Self-Hosting it like a Pro!**
+
+
+
+--------
+
+## Installation
+
+[**Quick Start**](/docs/install/start): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
+run as [user](/docs/prepare/admin#user) with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) privileges:
+
+```bash title="install"
+curl -fsSL https://repo.pigsty.io/get | bash;
+cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
+```
+
+[**Download**](/docs/prepare/software#pigsty), [Bootstrap](/docs/install/offline#bootstrap), [**Configure**](/docs/config/configure) and [**Install**](/docs/install). Pigsty [**Installed**](/docs/install)! You can [**add more**](/docs/install/multinode) nodes and database clusters later.
+
+Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
+
+<Cards>
+
+    <Card icon={<Rocket className="text-blue-300" />} title='Installation' href={"/docs/install"}>
+        Install Pigsty on Linux Servers
+    </Card>
+
+    <Card icon={<SquareStack className={"text-red-500"} />} title='Preparation' href={"/docs/prepare"}>
+        Prepare Environment for Serious Deployment
+    </Card>
+
+    <Card icon={<Code className="text-green-600" />} title='Configuration' href={"/docs/config"}>
+        Customize database clusters with Config Inventory
+    </Card>
+    <Card icon={<Landmark className={"text-orange-400"} />} title='Administration' href={"/docs/admin"}>
+        Manage your environment with Ansible Playbook
+    </Card>
+
+</Cards>
+
+--------
+
+## Modules
+
+Pigsty consists of multiple [**Modules**](/docs/intro/module). The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">REQUIRED</span> for self-hosting Postgres RDS service.
+
+<Cards>
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/docs/pgsql"}>
+        HA PG Cluster with HA, PITR, IaC, ACL, Monitor, and 420+ extensions
+    </Card>
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/docs/infra"}>
+        Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/docs/node"}>
+        Enroll nodes into the desired state and monitor it, and VIP, HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/docs/etcd"}>
+        Reliable distributive consensus storage (DCS), empowering PGSQL HA
+    </Card>
+</Cards>
+
+Pigsty also has some <span className="text-emerald-500 font-black">OPTIONAL</span> "Bonus" modules, which work well with PostgreSQL, and bring extra value to your data infrastructure.
+
+<Cards>
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/docs/minio"}>
+        S3 compatible object storage compatible, optional backup storage
+    </Card>
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/docs/redis"}>
+        High-performance in-memory cache, optional data structure server
+    </Card>
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/docs/docker"}>
+        Container runtime, optional for running stateless app and tools
+    </Card>
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/docs/ferret"}>
+        MongoDB wire-protocol compatible on PostgreSQL, optional middleware
+    </Card>
+</Cards>
+
+--------
+
+## FAQ
+
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+<Accordions type="single" orientation={"horizontal"}>
+    <Accordion title="What is Pigsty?">
+        Pigsty is a PostgreSQL distribution—an open-source, local-first alternative to managed database services like AWS RDS. It's not a database itself, but rather a comprehensive management solution and collection of battle-tested best practices. Think of it this way: if a database is a car and a DBA is the driver, then RDS is like Uber, and Pigsty is your personal autopilot system.
+    </Accordion>
+    
+    <Accordion title="What problem does Pigsty solve?">
+        Database expertise is expensive and hard to find—you either hire costly DBAs or pay premium prices for cloud RDS. Pigsty offers a third option: run enterprise-grade databases without dedicated DBAs at less than 10% of typical RDS costs, while achieving better performance and flexibility in your own infrastructure.
+    </Accordion>
+    
+    <Accordion title="Why choose Pigsty over RDS?">
+        Pigsty delivers features that most RDS providers can't match: <span className={"text-red-800 font-bold"}>420+</span> PostgreSQL extensions, support for 8+ Postgres variants, world-class monitoring, and battle-tested architecture proven at scale by companies like Apple, Alibaba, and others. It's built with genuine passion and reaches a depth of functionality that typical RDS platforms simply don't offer.
+    </Accordion>
+    
+    <Accordion title="How much can I save with Pigsty?">
+        Dramatically. What costs $100-200/vCPU/month on RDS can run on bare metal for as little as $2/vCPU/month with Pigsty—plus you save on DBA salaries. At scale, total cost of ownership can drop by 90% or more, freeing up budget for what really matters to your business.
+    </Accordion>
+    
+    <Accordion title="How does Pigsty help developers?">
+        With <span className={"text-red-800 font-bold"}>420+</span> built-in PostgreSQL extensions, Pigsty enables a "Postgres for everything" approach. Replace Redis, Kafka, MySQL, Elasticsearch, vector databases, and even some OLAP workloads with a single, unified stack. This reduces complexity, increases developer velocity, and enables true self-service DevOps.
+    </Accordion>
+    
+    <Accordion title="What about operations and reliability?">
+        Pigsty's self-healing high availability means no more 3 AM wake-up calls when hardware fails. Advanced monitoring helps with troubleshooting and performance optimization. Infrastructure-as-Code automates cluster management at scale. Your ops team can handle DBA tasks, and your DBAs can focus on high-value work instead of firefighting.
+    </Accordion>
+    
+    <Accordion title="Who's behind Pigsty?">
+        Pigsty is primarily developed by Feng Ruohang (@Vonng), a PostgreSQL veteran with over a decade of open-source contributions and production experience at Alibaba, Tantan, and Apple. He's also the top database influencer on WeChat with 60K+ followers and now runs a consultancy focused on PostgreSQL excellence.
+    </Accordion>
+    
+    <Accordion title="What scale does Pigsty support?">
+        Pigsty scales from single-developer setups to massive enterprise deployments. The largest known production deployment handles 25K vCPUs at 4.5 million QPS over six years. The smallest? A simple 1-core demo VM. It's designed for enterprise scale but optimized for simplicity.
+    </Accordion>
+    
+    <Accordion title="Is Pigsty really free?">
+        Yes, Pigsty is 100% free software under the AGPLv3 license. You can use it commercially as long as you comply with the license terms. We believe in software freedom—for most use cases, we apply an Apache 2.0-like approach. Commercial subscriptions are available for those who want professional support and additional licensing options.
+    </Accordion>
+    
+    <Accordion title="Can I build a DBaaS with Pigsty?">
+        Yes, under the AGPLv3 license—which means any derivative work must be open-sourced. We actively protect against license violations by cloud providers. If you prefer not to open-source your derivative work, Pigsty Enterprise subscriptions provide explicit licensing and AGPLv3 exemptions for this scenario.
+    </Accordion>
+</Accordions>
+
+
+------
+
+## Source
+
+This catalog is open-sourced under the [Apache License 2.0](https://github.com/pgsty/extension/blob/main/LICENSE) and maintained by the [PGSTY](https://github.com/pgsty) team.
+
+You can find the RAW CSV data files at [github.com/pgsty/extension/data/extension.csv](https://github.com/pgsty/extension/blob/main/data/extension.csv)
+

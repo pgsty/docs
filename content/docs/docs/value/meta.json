@@ -1,0 +1,16 @@
+{
+    "title": "Values",
+    "description": "8 Core Value Propositions",
+    "icon": "HandCoins",
+    "defaultOpen": true,
+    "pages": [
+        "extensibility",
+        "reliability",
+        "observability",
+        "scalability",
+        "maintainability",
+        "composability",
+        "controllability",
+        "affordability"
+    ]
+}

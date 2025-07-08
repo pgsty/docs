@@ -12,7 +12,7 @@ There are three different types of nodes in Pigsty, In a [one-node deployment](/
 | Node Type                   | Description                                                      |
 |-----------------------------|------------------------------------------------------------------|
 | [Admin node](#admin-node)   | The node where Pigsty is installed and admin commands are issued |
-| [Infra node](#infra-node)   | The node where the [`INFRA`](/docs/infra/) module is installed   |
+| [Infra node](#infra-node)   | The node where the [`INFRA`](/infra/) module is installed   |
 | [Common node](#common-node) | Any nodes managed by Pigsty, including admin & infra nodes       |
 
 ------
@@ -66,7 +66,7 @@ These components are optional, can be enabled with parameters.
 
 [Admin](/docs/prepare/admin) Node is the first node where Pigsty is installed, all control commands are issued from it.
 
-There is one and only one admin node in a pigsty deployment, which is specified by [`admin_ip`](/docs/infra/param/#admin_ip).
+There is one and only one admin node in a pigsty deployment, which is specified by [`admin_ip`](/infra/param/#admin_ip).
 This parameter will be set during the [configure](/docs/config/configure) procedure, to the value of primary IP address.
 
 <Callout title="Secure admin node access" type="warn">
@@ -96,7 +96,7 @@ This parameter will be set during the [configure](/docs/config/configure) proced
 A pigsty deployment may have one or more infra nodes, at least 1, 2 or more for production deployment.
 
 The `infra` group specifies infra nodes in the inventory.
-And infra nodes will have [INFRA](/docs/infra/) module installed (DNS, Nginx, Prometheus, Grafana, etc…).
+And infra nodes will have [INFRA](/infra/) module installed (DNS, Nginx, Prometheus, Grafana, etc…).
 
 |      Component      |  Port  |   Domain   | Description                       |
 |:-------------------:|:------:|:----------:|-----------------------------------|
@@ -117,8 +117,8 @@ And infra nodes will have [INFRA](/docs/infra/) module installed (DNS, Nginx, Pr
 
 ## PGSQL Node
 
-The node with [PGSQL](/docs/pgsql/) module installed is called a PGSQL node. The node and PG instance are 1:1 deployed.
-And node identities can be borrowed from pg instances with [`node_id_from_pg`](/docs/node/param#node_id_from_pg) option.
+The node with [PGSQL](/pgsql/) module installed is called a PGSQL node. The node and PG instance are 1:1 deployed.
+And node identities can be borrowed from pg instances with [`node_id_from_pg`](/node/param#node_id_from_pg) option.
 
 Here are additional components & service port on PGSQL nodes:
 

@@ -1,0 +1,92 @@
+---
+title: FerretDB
+description: Mongo Wire Compatible PostgreSQL
+icon: Citrus
+---
+
+[OpenHalo](https://www.openhalo.org/) is an open-source PostgreSQL kernel that provides MySQL wire protocol compatibility.
+
+OpenHalo is based on PostgreSQL 14.10 kernel version and provides wire protocol compatibility with MySQL 5.7.32-log / 8.0 version.
+
+Pigsty provides deployment support for OpenHalo on all supported Linux platforms.
+
+
+
+------
+
+## Get Started
+
+Use Pigsty’s [**standard installation process**](/docs/install/start/) with the [`mongo`](https://github.com/pgsty/pigsty/blob/main/conf/mongo.yml) configuration template.
+
+```bash
+./configure -c mongo    # Use FerretDB / DocumentDB config template
+./install.yml           # Install, for production deployment please modify passwords in pigsty.yml first
+```
+
+For production deployment, please ensure to modify the password parameters in the `pigsty.yml` configuration file before running the installation playbook.
+
+
+------
+
+## Configuration
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_users:
+      - {name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
+      - {name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
+    pg_databases:
+      - {name: postgres, extensions: [aux_mysql]} # the mysql compatible database
+      - {name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty]}
+    pg_hba_rules:
+      - {user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes'}
+    node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
+
+    # OpenHalo Ad Hoc Setting
+    pg_mode: mysql                    # MySQL Compatible Mode by HaloDB
+    pg_version: 14                    # The current HaloDB is compatible with PG Major Version 14
+    pg_packages: [ openhalodb, pgsql-common ]  # install openhalodb instead of postgresql kernel
+```
+
+
+------
+
+## Usage
+
+When accessing MySQL, the actual connection uses the `postgres` database. Please note that the concept of “database” in MySQL actually corresponds to “Schema” in PostgreSQL. Therefore, `use mysql` actually uses the `mysql` Schema within the `postgres` database.
+
+The usernames and passwords used for MySQL are the same as those in PostgreSQL. You can manage users and permissions using the standard PostgreSQL approach.
+
+### Client Access
+
+OpenHalo provides MySQL wire protocol compatibility, listening on port 3306 by default, allowing direct connections from MySQL clients and drivers.
+
+Pigsty’s [`conf/mysql`](https://github.com/pgsty/pigsty/blob/main/conf/mysql.yml) configuration installs the `mysql` client tool by default.
+
+You can access MySQL using the following command:
+
+```bash
+mysql -h 127.0.0.1 -u dbuser_dba
+```
+
+Currently, OpenHalo officially ensures that Navicat can access this MySQL port normally, but Intellij IDEA’s DataGrip access will result in errors.
+
+
+
+
+------
+
+## Modification
+
+The [OpenHalo](https://github.com/pgsty/openHalo) kernel installed by Pigsty is based on the [HaloTech-Co-Ltd/openHalo](https://github.com/HaloTech-Co-Ltd/openHalo) kernel with minor modifications:
+
+- Changed the default database name from `halo0root` back to `postgres`
+- Removed the `1.0.` prefix from the default version number, reverting to `14.10`
+- Modified the default configuration file to enable MySQL compatibility and listen on port `3306` by default
+
+Please note that Pigsty does not provide any warranty for using the OpenHalo kernel. Any issues or requirements encountered while using this kernel should be addressed with the original vendor.
+

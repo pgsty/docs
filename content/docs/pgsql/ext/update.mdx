@@ -22,7 +22,7 @@ apt upgrade extname...
 ./pgsql.yml -t pg_ext   # -l cls
 ```
 
-All extensions listed in [`pg_extensions`](/docs/pgsql/param#pg_extensions) will be upgraded using during the [`pgsql.yml`](/docs/pgsql/playbook#pgsqlyml) playbook execution.
+All extensions listed in [`pg_extensions`](/pgsql/param#pg_extensions) will be upgraded using during the [`pgsql.yml`](/pgsql/playbook#pgsqlyml) playbook execution.
 
 
 
@@ -30,7 +30,7 @@ All extensions listed in [`pg_extensions`](/docs/pgsql/param#pg_extensions) will
 
 ## Upgrade Packages
 
-Extensions ([Package Alias](/docs/pgsql/ext/pkg)) listed in [`pg_extensions`](/docs/pgsql/param#pg_extensions) will be upgraded with [`pgsql.yml`](/docs/pgsql/admin/)'s `pg_ext` subtask:
+Extensions ([Package Alias](/pgsql/ext/pkg)) listed in [`pg_extensions`](/pgsql/param#pg_extensions) will be upgraded with [`pgsql.yml`](/pgsql/admin/)'s `pg_ext` subtask:
 
 ```bash title="~/pigsty"
 ./pgsql.yml -t pg_ext

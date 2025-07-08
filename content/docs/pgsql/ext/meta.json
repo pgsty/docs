@@ -3,7 +3,7 @@
   "description": "PostgreSQL Extensions",
   "icon": "Blocks",
   "root": false,
-  "defaultOpen": false,
+  "defaultOpen": true,
   "pages": [
     "repo",
     "pkg",

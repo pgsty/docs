@@ -1,0 +1,19 @@
+{
+  "title": "Kernel",
+  "description": "PostgreSQL Kernel Forks",
+  "icon": "Cpu",
+  "root": false,
+  "defaultOpen": true,
+  "pages": [
+    "postgres",
+    "citus",
+    "babelfish",
+    "ivorysql",
+    "percona",
+    "polardb",
+    "orioledb",
+    "openhalo",
+    "cloudberry",
+    "supabase"
+  ]
+}

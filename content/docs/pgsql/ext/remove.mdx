@@ -30,18 +30,18 @@ import { Trash2 } from 'lucide-react';
 
 Some extensions don't have `DDL`, these extensions do not require the `DROP EXTENSION` statement to uninstall.
 Instead, you can simply remove the extension from the `shared_preload_libraries` (if configured) and uninstall the package.
-Refer to the [**Extensions Without DDL**](/docs/pgsql/ext/config) section for more details.
+Refer to the [**Extensions Without DDL**](/pgsql/ext/config) section for more details.
 
 
 ------
 
 ## Remove Loading
 
-If you’re using an extension that requires [**dynamic loading**](/docs/pgsql/ext/config) (which modifies the `shared_preload_libraries` parameter), you need to first [**re-confnigure**](/docs/pgsql/admin#config-cluster) the `shared_preload_libraries` parameter.
+If you’re using an extension that requires [**dynamic loading**](/pgsql/ext/config) (which modifies the `shared_preload_libraries` parameter), you need to first [**re-confnigure**](/pgsql/admin#config-cluster) the `shared_preload_libraries` parameter.
 
 Remove the extension name from `shared_preload_libraries` and restart the database cluster for the changes to take effect.
 
-For extensions that need dynamic loading, refer to the [**Extensions that Need Loading**](/docs/pgsql/ext/config#extensions-that-need-loading) list.
+For extensions that need dynamic loading, refer to the [**Extensions that Need Loading**](/ext/list/attr#need-loading) list.
 
 
 

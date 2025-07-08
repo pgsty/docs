@@ -5,7 +5,7 @@ icon: Play
 ---
 
 
-[**Install**](/pig/install/) the `pig` package via the install script (or [other approaches](/pig/install/)):
+[**Install**](/ext/pig/install/) the `pig` package via the install script (or [other approaches](/ext/pig/install/)):
 
 ```bash tab="default"
 curl -fsSL https://repo.pigsty.io/pig | bash
@@ -14,7 +14,7 @@ curl -fsSL https://repo.pigsty.io/pig | bash
 curl -fsSL https://repo.pigsty.cc/pig | bash
 ```
 
-Then it’s ready to use, assume you want to install the [**`pg_duckdb`**](/ext/pg_duckdb/) extension:
+Then it’s ready to use, assume you want to install the [**`pg_duckdb`**](/e/pg_duckdb/) extension:
 
 ```bash
 $ pig repo add pigsty pgdg -u  # add pgdg & pigsty repo, then update repo cache
@@ -22,9 +22,9 @@ $ pig ext install pg17         # install PostgreSQL 17 kernels with native PGDG 
 $ pig ext install pg_duckdb    # install the pg_duckdb extension (for current pg17)
 ```
 
-Check details about [**repo**](/pig/repo/) and [**ext**](/pig/ext/) sub command.
+Check details about [**repo**](/ext/pig/repo/) and [**ext**](/ext/pig/ext/) sub command.
 
-[![pig.svg](/img/pig.svg)](https://asciinema.org/a/695902)
+[![pig.svg](/img/asciinema/pig.svg)](https://asciinema.org/a/695902)
 
 
 
@@ -38,7 +38,7 @@ Now let's get started with some real examples.
 
 ### Overwrite Repo
 
-The default `pig repo add pigsty pgdg` will add the [`PGDG`](https://www.postgresql.org/download/linux/) repo and [`PIGSTY`](/repo) repo to your system.
+The default `pig repo add pigsty pgdg` will add the [`PGDG`](https://www.postgresql.org/download/linux/) repo and [`PIGSTY`](/ext/repo) repo to your system.
 While the following command will backup & wipe your existing repo and add all require repo to your system.
 
 ```bash
@@ -47,7 +47,7 @@ pig repo add all --ru        # This will OVERWRITE all existing repo with node,p
 
 <Callout title="Where are my existing repo files?" type="warn">
 
-There’s a brutal version of [`repo add`](/pig/repo#repo-add): `repo set`, which will overwrite you existing repo (`-r`) by default.
+There’s a brutal version of [`repo add`](/ext/pig/repo#repo-add): `repo set`, which will overwrite you existing repo (`-r`) by default.
 And you can recover you old repos at `/etc/apt/backup` or `/etc/yum.repos.d/backup`.
 
 </Callout>

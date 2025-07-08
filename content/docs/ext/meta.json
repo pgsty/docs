@@ -1,16 +1,19 @@
 {
   "root": true,
+  "description": "Postgres Extension Manager",
   "pages": [
-    "[Home](/)",
-    "[Docs](/docs)",
-
+    "index",
     "list",
+    "--- ---",
     "repo",
+    "--- ---",
     "pig",
+    "--- ---",
     "usage",
+    "--- ---",
     "build",
+    "--- ---",
     "about",
-
     "--- ---",
     "cate"
   ]

@@ -1,0 +1,79 @@
+---
+title: Configuration
+description: Describe your environment with config
+icon: Landmark
+---
+
+import {
+    Database,
+    CpuIcon,
+    Landmark,
+    FileCode,
+    Settings,
+    FileJson,
+    Shield,
+    GraduationCap,
+    Box,
+    Layers,
+    Container,
+    Leaf,
+} from 'lucide-react';
+
+**Pigsty treats Infra & Database as Code.** You can describe everything with declarative config [**Inventory**](/docs/config/inventory).
+Which is usually an [**Ansible Inventory**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html) in YAML format: `pigsty.yml`.
+But [CMDB](/docs/config/cmdb) can also be used as dynamic inventory.
+
+The [`configure`](/docs/config/configure) procedure will generate a config according to your environment and input.
+But it's **OPTIONAL**: you can always edit the `pigsty.yml` file directly as [**tutorial**](/docs/config/tutorial) shows.
+And there are plenty of [**templates**](/docs/config/template) for your reference.
+
+
+<Cards>
+    <Card icon={<FileJson className="text-orange-600"/>} title='Inventory' href={"/docs/config/inventory"}>
+        The main config file of Pigsty, Describe your entire deployment
+    </Card>
+    <Card icon={<CpuIcon className="text-green-700"/>} title='Configure' href={"/docs/config/configure"}>
+        Generate config file according to your input & environment
+    </Card>
+    <Card icon={<GraduationCap className={"text-yellow-600"}/>} title='Tutorial' href={"/docs/config/tutorial"}>
+        Planning your deployment according to business requirements
+    </Card>
+    <Card icon={<FileCode className="text-blue-500"/>} title='Template' href={"/docs/config/template"}>
+        Available configuration templates and examples
+    </Card>
+    <Card icon={<Shield className="text-red-500"/>} title='Security' href={"/docs/config/security"}>
+        Security considerations and best practices for prod deployment
+    </Card>
+    <Card icon={<Database className="text-sky-600"/>} title='CMDB' href={"/docs/config/cmdb"}>
+        Use PostgreSQL as CMDB instead of local YAML config file
+    </Card>
+</Cards>
+
+
+
+--------
+
+<Cards>
+    <Card icon={<Database className="text-sky-600"/>} title='PGSQL' href={"/pgsql/config"}>
+        PostgreSQL Cluster with HA, PITR, IaC, ACL, Monitoring, Pooling
+    </Card>
+    <Card icon={<Landmark className="text-green-700"/>} title='INFRA' href={"/infra/config"}>
+        Nginx, Repo, DNS, NTP, Prometheus and Grafana stack for Observability
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"}/>} title='NODE' href={"/node/config"}>
+        Enroll nodes into the desired state and monitor it, and VIP, HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"}/>} title='ETCD' href={"/etcd/config"}>
+        Reliable distributed consensus storage (DCS), empowering PGSQL HA
+    </Card>
+    <Card icon={<Box className="text-red-800"/>} title='MINIO' href={"/minio/config"}>
+        S3 compatible object storage, optional backup storage
+    </Card>
+    <Card icon={<Layers className="text-red-400"/>} title='REDIS' href={"/redis/config"}>
+        High-performance in-memory cache, optional data structure server
+    </Card>
+</Cards>
+
+| [<span className={"text-sky-600 font-bold"}>PGSQL</span>](/pgsql/param) | [<span className={"text-green-700 font-bold"}>INFRA</span>](/infra/param) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/node/param)   |   [<span className={"text-sky-400 font-bold"}>ETCD</span>](/etcd/param)    |
+|:----------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
+| [<span className={"text-red-800 font-bold"}>MINIO</span>](/minio/param) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/redis/param)  | [<span className={"text-blue-500 font-bold"}>DOCKER</span>](/docker/param) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/ferret/param) |

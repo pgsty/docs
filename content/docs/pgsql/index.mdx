@@ -13,75 +13,74 @@ icon: Database
 
 > Overview of PostgreSQL in Pigsty
 
-- [Architecture](/docs/pgsql/arch/)
-- [Configuration](/docs/pgsql/config/)
-- [Extensions](/docs/pgsql/ext/)
-- [Databases](/docs/pgsql/db/)
-- [Users](/docs/pgsql/user/)
-- [Services](/docs/pgsql/service/)
-- [HBA Rules](/docs/pgsql/hba/)
-- [Access Control](/docs/pgsql/acl)
-- [Administration](/docs/pgsql/admin/)
-- [Backup & PITR](/docs/pgsql/backup/)
-- [Monitor](/docs/pgsql/monitor/)
-- [Migration](/docs/pgsql/migration/)
+- [Architecture](/pgsql/arch/)
+- [Configuration](/pgsql/config/)
+- [Extensions](/pgsql/ext/)
+- [Databases](/pgsql/db/)
+- [Users](/pgsql/user/)
+- [Services](/pgsql/service/)
+- [HBA Rules](/pgsql/hba/)
+- [Access Control](/pgsql/acl)
+- [Administration](/pgsql/admin/)
+- [Backup & PITR](/pgsql/backup/)
+- [Monitor](/pgsql/monitor/)
+- [Migration](/pgsql/migration/)
 
 ------
 
 ## Configuration
 
-> [Describe](/docs/pgsql/config/) the cluster you want
+> [Describe](/pgsql/config/) the cluster you want
 
-- [Identity](/docs/pgsql/config/#identity): Parameters used for describing a PostgreSQL cluster
-- [Primary](/docs/pgsql/config/#primary): Define a single instance cluster
-- [Replica](/docs/pgsql/config/#replica): Define a basic HA cluster with one primary & one replica
-- [Offline](/docs/pgsql/config/#offline): Define a dedicated instance for OLAP/ETL/Interactive queries.
-- [Sync Standby](/docs/pgsql/config/#sync-standby): Enable synchronous commit to ensure no data loss
-- [Quorum Commit](/docs/pgsql/config/#quorum-commit): Use quorum sync commit for an even higher consistency level
-- [Standby Cluster](/docs/pgsql/config/#standby-cluster): Clone an existing cluster and follow it
-- [Delayed Cluster](/docs/pgsql/config/#delayed-cluster): Clone an existing cluster for emergency data recovery
-- [Citus Cluster](/docs/pgsql/config/#citus-cluster): Define a Citus distributed database cluster
-- [Major Version](/docs/pgsql/config/#major-version): Define a PostgreSQL cluster with specific major version
+- [Identity](/pgsql/config/#identity-parameters): Parameters used for describing a PostgreSQL cluster
+- [Primary](/pgsql/config/#primary): Define a single instance cluster
+- [Replica](/pgsql/config/#replica): Define a basic HA cluster with one primary & one replica
+- [Offline](/pgsql/config/#offline): Define a dedicated instance for OLAP/ETL/Interactive queries.
+- [Sync Standby](/pgsql/config/#sync-standby): Enable synchronous commit to ensure no data loss
+- [Quorum Commit](/pgsql/config/#quorum-commit): Use quorum sync commit for an even higher consistency level
+- [Standby Cluster](/pgsql/config/#standby-cluster): Clone an existing cluster and follow it
+- [Delayed Cluster](/pgsql/config/#delayed-cluster): Clone an existing cluster for emergency data recovery
+- [Citus Cluster](/pgsql/config/#citus-cluster): Define a Citus distributed database cluster
 
 ------
 
 ## Administration
 
-> [Admin](/docs/pgsql/admin/) your existing clusters
+> [Admin](/pgsql/admin/) your existing clusters
 
-- [`Admin Cheatsheet`](/docs/pgsql/admin#cheatsheet)
-- [`Create Cluster`](/docs/pgsql/admin#create-cluster)
-- [`Create User`](/docs/pgsql/admin#create-user)
-- [`Create Database`](/docs/pgsql/admin#create-database)
-- [`Reload Service`](/docs/pgsql/admin#reload-service)
-- [`Reload HBARule`](/docs/pgsql/admin#reload-hbarule)
-- [`Config Cluster`](/docs/pgsql/admin#config-cluster)
-- [`Append Replica`](/docs/pgsql/admin#append-replica)
-- [`Remove Replica`](/docs/pgsql/admin#remove-replica)
-- [`Remove Cluster`](/docs/pgsql/admin#remove-cluster)
-- [`Switchover Cluster`](/docs/pgsql/admin#switchover)
-- [`Backup Cluster`](/docs/pgsql/admin#backup-cluster)
-- [`Restore Cluster`](/docs/pgsql/admin#restore-cluster)
+- [`Admin Cheatsheet`](/pgsql/admin#cheatsheet)
+- [`Create Cluster`](/pgsql/admin#create-cluster)
+- [`Create User`](/pgsql/admin#create-user)
+- [`Create Database`](/pgsql/admin#create-database)
+- [`Reload Service`](/pgsql/admin#reload-service)
+- [`Reload HBARule`](/pgsql/admin#reload-hbarule)
+- [`Config Cluster`](/pgsql/admin#config-cluster)
+- [`Append Replica`](/pgsql/admin#append-replica)
+- [`Remove Replica`](/pgsql/admin#remove-replica)
+- [`Remove Cluster`](/pgsql/admin#remove-cluster)
+- [`Switchover Cluster`](/pgsql/admin#switchover)
+- [`Backup Cluster`](/pgsql/admin#backup-cluster)
+- [`Restore Cluster`](/pgsql/admin#restore-cluster)
 
 ------
 
 ## Playbook
 
-> Materialize the cluster with idempotent [playbooks](/docs/pgsql/playbook/)
+> Materialize the cluster with idempotent [playbooks](/pgsql/playbook/)
 
-- [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
-- [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
-- [`pgsql-user.yml`](/docs/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
-- [`pgsql-db.yml`](/docs/pgsql/playbook/#pgsql-dbyml) : Add new business database to existing PostgreSQL cluster
-- [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
-- [`pgsql-migration.yml`](/docs/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
+- [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
+- [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
+- [`pgsql-user.yml`](/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
+- [`pgsql-db.yml`](/pgsql/playbook/#pgsql-dbyml) : Add new business database to existing PostgreSQL cluster
+- [`pgsql-monitor.yml`](/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
+- [`pgsql-migration.yml`](/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
 
 
 ------
 
 ## Dashboard
 
-There are 26 default grafana dashboards about PostgreSQL and categorized into 4 levels. Check [Dashboards](/docs/pgsql/dashboard/) for details.
+There are 26 default grafana dashboards about PostgreSQL and categorized into 4 levels. Check [Dashboards](/pgsql/dashboard/) for details.
 
 |                         Overview                          |                             Cluster                             |                          Instance                           |                         Database                          |
 |:---------------------------------------------------------:|:---------------------------------------------------------------:|:-----------------------------------------------------------:|:---------------------------------------------------------:|

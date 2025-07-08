@@ -11,7 +11,7 @@ Unless you have manually configured dependencies on DNS/NTP services from INFRA 
 
 In most cases, a single INFRA node is sufficient for typical scenarios. For production environments with higher requirements, we recommend using **2-3** INFRA nodes for high availability.
 
-To improve resource utilization, PostgreSQL high availability typically relies on the [**`ETCD`**](/docs/etcd/) module, which can share nodes with the INFRA module.
+To improve resource utilization, PostgreSQL high availability typically relies on the [**`ETCD`**](/etcd/) module, which can share nodes with the INFRA module.
 
 Using more than 3 INFRA nodes provides limited benefits, but you can use more ETCD nodes (e.g., 5) to enhance the availability and reliability of DCS services.
 
@@ -21,7 +21,7 @@ Using more than 3 INFRA nodes provides limited benefits, but you can use more ET
 
 ## Examples
 
-To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/docs/config/inventory) and assign them an Infra instance number [`infra_seq`](/docs/infra/param#infra_seq).
+To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/docs/config/inventory) and assign them an Infra instance number [`infra_seq`](/infra/param#infra_seq).
 
 By default, a single INFRA node configuration meets most requirements. All configuration templates include a default `infra` group definition:
 
@@ -31,9 +31,9 @@ all:
     infra: { hosts: { 10.10.10.10: { infra_seq: 1 } }}
 ```
 
-The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](/docs/prepare/hardware/network) during [**configuration**](/docs/config/configure), meaning the INFRA module will be installed on the current node.
+The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](/docs/prepare/hardware#network) during [**configuration**](/docs/config/configure), meaning the INFRA module will be installed on the current node.
 
-Then use the [`infra.yml`](/docs/infra/playbook/#infrayml) playbook to initialize the INFRA module on the node.
+Then use the [`infra.yml`](/infra/playbook/#infrayml) playbook to initialize the INFRA module on the node.
 
 ### More Nodes
 
@@ -98,4 +98,4 @@ infra:
       loki         : { endpoint: "10.10.10.8:3100" }
 ```
 
-In addition to configuring VIP-related parameters like [`vip_address`](/docs/node/param#vip_address), you need to modify endpoints for Infra services in [`infra_portal`](/docs/infra/param#infra_portal).
+In addition to configuring VIP-related parameters like [`vip_address`](/node/param#vip_address), you need to modify endpoints for Infra services in [`infra_portal`](/infra/param#infra_portal).

@@ -1,17 +1,17 @@
 {
   "pages": [
-    "[citus](/ext/citus)",
-    "[citus_columnar](/ext/citus_columnar)",
-    "[columnar](/ext/columnar)",
-    "[pg_analytics](/ext/pg_analytics)",
-    "[pg_duckdb](/ext/pg_duckdb)",
-    "[pg_mooncake](/ext/pg_mooncake)",
-    "[duckdb_fdw](/ext/duckdb_fdw)",
-    "[pg_parquet](/ext/pg_parquet)",
-    "[pg_fkpart](/ext/pg_fkpart)",
-    "[pg_partman](/ext/pg_partman)",
-    "[plproxy](/ext/plproxy)",
-    "[pg_strom](/ext/pg_strom)",
-    "[tablefunc](/ext/tablefunc)"
+    "[citus](/e/citus)",
+    "[citus_columnar](/e/citus_columnar)",
+    "[columnar](/e/columnar)",
+    "[pg_analytics](/e/pg_analytics)",
+    "[pg_duckdb](/e/pg_duckdb)",
+    "[pg_mooncake](/e/pg_mooncake)",
+    "[duckdb_fdw](/e/duckdb_fdw)",
+    "[pg_parquet](/e/pg_parquet)",
+    "[pg_fkpart](/e/pg_fkpart)",
+    "[pg_partman](/e/pg_partman)",
+    "[plproxy](/e/plproxy)",
+    "[pg_strom](/e/pg_strom)",
+    "[tablefunc](/e/tablefunc)"
   ]
 }

@@ -8,8 +8,8 @@ icon: Box
 [Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html): S3-Compatible Open-Source Multi-Cloud Object Storage designed to be scalable, secure, and handy.
 It has native multi-node multi-driver HA support and can store documents, pictures, videos, and backups. It's an [optional module](/docs/intro/module) in Pigsty.
 
-You can use MinIO as an optional PostgreSQL [backup](/docs/pgsql/backup) storage repo, in addition to the default local posix FS repo. If the MinIO repo is used,
-the `MINIO` module should be installed before any [`PGSQL`](/docs/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it after [`NODE`](/docs/node/).
+You can use MinIO as an optional PostgreSQL [backup](/pgsql/backup) storage repo, in addition to the default local posix FS repo. If the MinIO repo is used,
+the `MINIO` module should be installed before any [`PGSQL`](/pgsql/) modules. MinIO requires a trusted CA to work, so you have to install it after [`NODE`](/node/).
 
 --------
 
@@ -24,22 +24,22 @@ import {
 
 
 <Cards>
-    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/docs/minio/config"}>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/minio/config"}>
         Configure minio module, and use multiple minio nodes.
     </Card>
-    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/docs/minio/param"}>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/minio/param"}>
         Customize minio components with 15 parameters
     </Card>
-    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/docs/minio/admin"}>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/minio/admin"}>
         Create, remove, expand, shrink, upgrade minio cluster 
     </Card>
-    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/docs/minio/playbook"}>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/minio/playbook"}>
         Ansible playbooks that can be used in this module
     </Card>
-    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/docs/minio/monitor"}>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/minio/monitor"}>
         Dashboards, metrics, record & alerting rules.
     </Card>
-    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='Usage' href={"/docs/minio/usage"}>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='Usage' href={"/minio/usage"}>
         How to use the mcli and configure backup repo
     </Card>
 </Cards>

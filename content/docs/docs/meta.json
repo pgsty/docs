@@ -1,0 +1,22 @@
+{
+  "root": true,
+  "description": "Pigsty v3.5 Documentation",
+  "icon": "PiggyBank",
+  "pages": [
+    "install",
+    "--- ---",
+    "prepare",
+    "--- ---",
+    "config",
+    "--- ---",
+    "admin",
+    "--- ---",
+    "about",
+    "--- ---",
+    "value",
+    "--- ---",
+    "feat",
+    "--- ---",
+    "intro"
+  ]
+}

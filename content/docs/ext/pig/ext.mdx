@@ -69,7 +69,7 @@ Use "pig ext [command] --help" for more information about a command.
 
 ## Examples
 
-To install postgres extensions, you’ll have to add the [**repo**](https://pigsty.io/ext/pig/repo/) first:
+To install postgres extensions, you’ll have to add the [**repo**](/ext/pig/repo/) first:
 
 ```bash
 pig repo add pgdg pigsty -u    # gental way to add pgdg and pigsty repo
@@ -87,7 +87,7 @@ pig ext install pg_stat_statements
 pig ext install pg_stat_kcache
 ```
 
-Check [**extension list**](https://pigsty.io/ext/list/) for available extensions and their names.
+Check [**extension list**](/ext/list/) for available extensions and their names.
 
 1. When no PostgreSQL version is specified, the tool will try to detect the active PostgreSQL installation from `pg_config` in your `PATH`
 2. PostgreSQL can be specified either by major version number (`-v`) or by pg_config path (`-p`). if `-v` is given, pig will use the well-known default path of PGDG kernel packages for the given version. - On EL distros, it’s `/usr/pgsql-$v/bin/pg_config` for PG$v, - On DEB distros, it’s `/usr/lib/postgresql/$v/bin/pg_config` for PG$v, etc. if `-p` is given, pig will use the `pg_config` path to find the PostgreSQL installation.

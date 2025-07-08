@@ -29,7 +29,7 @@ etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
 
 This line exists almost in all single-node [config template](/docs/config/template), where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
 
-The only necessary parameters are [`etcd_seq`](/docs/etcd/param#etcd_seq) and [`etcd_cluster`](/docs/etcd/param#etcd_cluster), which uniquely identify the cluster and each instance.
+The only necessary parameters are [`etcd_seq`](/etcd/param#etcd_seq) and [`etcd_cluster`](/etcd/param#etcd_cluster), which uniquely identify the cluster and each instance.
 
 
 
@@ -39,7 +39,7 @@ The only necessary parameters are [`etcd_seq`](/docs/etcd/param#etcd_seq) and [`
 
 Three-node etcd cluster is quite common, which tolerates one-node failure, suitable for most cases.
 
-The [`trio`](/docs/config/tempalte) and [`safe`](/docs/config/template) config templates use a three-node etcd cluster, as shown below:
+The `trio` and `safe` config templates use a three-node etcd cluster, as shown below:
 
 ```yaml
 etcd: # dcs service for postgres/patroni ha consensus
@@ -92,7 +92,7 @@ These are the services that currently use Etcd:
 - patroni: Use etcd as a consensus backend for PostgreSQL HA
 - vip-manager: Read leader info from Etcd to bind an optional L2 VIP on the PostgreSQL cluster
 
-You’ll have to [**reload**](/docs/etcd/admin/#reload-config) etcd config after any permanent change to the etcd cluster members.
+You’ll have to [**reload**](/etcd/admin/#reload-config) etcd config after any permanent change to the etcd cluster members.
 
 e.g, update patroni reference to etcd endpoints:
 

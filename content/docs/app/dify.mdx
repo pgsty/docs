@@ -8,13 +8,13 @@ icon: Bot
 
 Pigsty provides support for self-hosting Dify, allowing you to deploy Dify with a single command while storing critical state in externally managed PostgreSQL. You can use pgvector in the same PostgreSQL instance as a vector database, further simplifying deployment.
 
-- [Quick Start](https://pigsty.io/docs/app/dify/#quick-start)
-- [Why Self-Host](https://pigsty.io/docs/app/dify/#why-self-host)
-- [Installation](https://pigsty.io/docs/app/dify/#installation)
-- [Configuration](https://pigsty.io/docs/app/dify/#configuration)
-- [Checklist](https://pigsty.io/docs/app/dify/#checklist)
-- [Domain & SSL](https://pigsty.io/docs/app/dify/#domain--ssl)
-- [File Backup](https://pigsty.io/docs/app/dify/#file-backup)
+- [Quick Start](#quick-start)
+- [Why Self-Host](#why-self-host)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Checklist](#checklist)
+- [Domain & SSL](#domain--ssl)
+- [File Backup](#file-backup)
 
 > Current Pigsty v3.4 supports Dify version: v1.1.3
 
@@ -22,7 +22,7 @@ Pigsty provides support for self-hosting Dify, allowing you to deploy Dify with 
 
 ## Quick Start
 
-On a fresh Linux x86 / ARM server running a [**compatible distribution**](https://pigsty.io/docs/reference/compatibility/), execute:
+On a fresh Linux x86 / ARM server running a [**compatible distribution**](/docs/prepare/linux), execute:
 
 ```bash
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
@@ -55,7 +55,7 @@ Pigsty ensures all Dify state is stored in externally managed services, includin
 
 Let’s start with single-node Dify deployment. We’ll cover production high-availability deployment methods later.
 
-First, use Pigsty’s [standard installation process](https://pigsty.io/docs/setup/install/) to install the PostgreSQL instance required by Dify:
+First, use Pigsty’s [standard installation process](/docs/install) to install the PostgreSQL instance required by Dify:
 
 ```bash
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
@@ -204,19 +204,19 @@ all:
 
 Here’s a checklist of configuration items you need to focus on:
 
--  Hardware/Software: [Prepare required machine resources](https://pigsty.io/docs/setup/prepare/): Linux `x86_64/arm64` server, fresh installation of [mainstream Linux operating systems](https://pigsty.io/docs/reference/compatibility/)
--  Network/Permissions: [SSH](https://pigsty.io/docs/setup/prepar/#management-user-preparation) passwordless login access, user has [passwordless sudo privileges](https://pigsty.io/docs/setup/prepare/#management-user-preparation)
+-  Hardware/Software: [Prepare required machine resources](/docs/prepare): Linux `x86_64/arm64` server, fresh installation of [mainstream Linux operating systems](/docs/prepare/linux)
+-  Network/Permissions: [SSH](https://pigsty.io/docs/setup/prepar/#management-user-preparation) passwordless login access, user has [passwordless sudo privileges](/docs/prepare/admin#user)
 -  Ensure machine has static IPv4 network address in internal network and can access internet
 -  If accessing via public network, ensure you have an available domain name pointing to the current node’s **public IP address**
 - Ensure using `app/dify` config template and modify parameters as needed
   - `configure -c app/dify`, and enter node’s internal primary IP address, or specify via `-i <primary_ip>` command line parameter
 - Have you modified all password-related configuration parameters?【Optional】
-  -  [`grafana_admin_password`](https://pigsty.io/docs/infra/param/#grafana_admin_password): `pigsty`, Grafana admin password
-  -  [`pg_admin_password`](https://pigsty.io/docs/pgsql/param/#pg_admin_password): `DBUser.DBA`, PG superuser password
-  -  [`pg_monitor_password`](https://pigsty.io/docs/pgsql/param/#pg_monitor_password): `DBUser.Monitor`, PG monitoring user password
-  -  [`pg_replication_password`](https://pigsty.io/docs/pgsql/param/#pg_replication_password): `DBUser.Replicator`, PG replication user password
-  -  [`patroni_password`](https://pigsty.io/docs/pgsql/param/#patroni_password): `Patroni.API`, Patroni HA component password
-  -  [`haproxy_admin_password`](https://pigsty.io/docs/node/param/#haproxy_admin_password): `pigsty`, Load balancer management password
+  -  [`grafana_admin_password`](/infra/param/#grafana_admin_password): `pigsty`, Grafana admin password
+  -  [`pg_admin_password`](/pgsql/param/#pg_admin_password): `DBUser.DBA`, PG superuser password
+  -  [`pg_monitor_password`](/pgsql/param/#pg_monitor_password): `DBUser.Monitor`, PG monitoring user password
+  -  [`pg_replication_password`](/pgsql/param/#pg_replication_password): `DBUser.Replicator`, PG replication user password
+  -  [`patroni_password`](/pgsql/param/#patroni_password): `Patroni.API`, Patroni HA component password
+  -  [`haproxy_admin_password`](/node/param/#haproxy_admin_password): `pigsty`, Load balancer management password
 - Have you modified PostgreSQL cluster business user passwords and app configurations using these passwords?
   - Default username `dify` and password `difyai123456` are generated by Pigsty for Dify, please modify according to actual situation
   - In Dify’s configuration block, please modify `DB_USERNAME`, `DB_PASSWORD`, `PGVECTOR_USER`, `PGVECTOR_PASSWORD` and other parameters accordingly
@@ -236,8 +236,8 @@ Here’s a checklist of configuration items you need to focus on:
 
 If you want to use a real domain with HTTPS certificates, you need to modify in the `pigsty.yml` configuration file:
 
-- [`infra_portal`](https://pigsty.io/docs/infra/param/#infra_portal) parameter’s `dify` domain
-- Best to specify an email address [`certbot_email`](https://pigsty.io/docs/infra/param/#certbot_email) for receiving certificate expiration notifications
+- [`infra_portal`](/infra/param/#infra_portal) parameter’s `dify` domain
+- Best to specify an email address [`certbot_email`](/infra/param/#certbot_email) for receiving certificate expiration notifications
 - Configure Dify’s `NGINX_SERVER_NAME` parameter to specify your actual domain
 
 ```yaml

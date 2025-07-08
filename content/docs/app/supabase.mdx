@@ -48,21 +48,21 @@ Supabase’s slogan is: “**Build in a weekend, Scale to millions**”. It has 
 
 That’s where Pigsty comes in. Pigsty provides a complete one-click self-hosting solution for Supabase. Self-hosted Supabase can enjoy full PostgreSQL monitoring, IaC, PITR, and high availability capability.
 
-You can run the latest PostgreSQL 17(,16,15) kernels, (supabase is using the 15 currently), alone with [404](/ext/list/) PostgreSQL extensions out-of-the-box. Run on [mainstream](/docs/prepare/linux/) Linus OS distros
-with production grade [HA](/docs/concept/ha/) [PostgreSQL](/docs/pgsql/), [MinIO](/docs/minio/), Prometheus & Grafana Stack for observability, and Nginx for reverse proxy.
+You can run the latest PostgreSQL 17(,16,15) kernels, (supabase is using the 15 currently), alone with [423](/ext/list/) PostgreSQL extensions out-of-the-box. Run on [mainstream](/docs/prepare/linux/) Linus OS distros
+with production grade [HA](/docs/feat/ha/) [PostgreSQL](/pgsql/), [MinIO](/minio/), Prometheus & Grafana Stack for observability, and Nginx for reverse proxy.
 
 Since most of the supabase maintained extensions are not available in the official PGDG repo, we have compiled all the RPM/DEBs for these extensions and put them in the [Pigsty repo](/ext/list/):
 
-- [pg_graphql](/ext/feat/pg_graphql/): GraphQL support in PostgreSQL (Rust extension via PIGSTY)
-- [pg_jsonschema](/ext/feat/pg_jsonschema/): JSON Schema validation (Rust extension via PIGSTY)
-- [wrappers](/ext/fdw/wrappers/): Supabase’s foreign data source wrappers bundle (Rust extension via PIGSTY)
-- [index_advisor](/ext/feat/index_advisor/): Query index advisor (SQL extension via PIGSTY)
-- [pg_net](/ext/util/pg_net/): Async non-blocking HTTP/HTTPS requests in SQL (C extension via PIGSTY)
-- [vault](/ext/sec/supabase_vault/): Store encrypted credentials in Vault (C extension via PIGSTY)
-- [pgjwt](/ext/util/pgjwt/): PostgreSQL implementation of JSON Web Token API (SQL extension via PIGSTY)
-- [pgsodium](/ext/sec/pgsodium/): Table data encryption storage TDE (C extension via PIGSTY)
-- [supautils](/ext/sec/supautils/): Secure database clusters in cloud environments (C extension via PIGSTY)
-- [pg_plan_filter](/ext/feat/plan_filter/): Block specific queries using execution plan cost filtering (C extension via PIGSTY)
+- [pg_graphql](/e/pg_graphql): GraphQL support in PostgreSQL (Rust extension via PIGSTY)
+- [pg_jsonschema](/e/pg_jsonschema): JSON Schema validation (Rust extension via PIGSTY)
+- [wrappers](/e/wrappers): Supabase’s foreign data source wrappers bundle (Rust extension via PIGSTY)
+- [index_advisor](/e/index_advisor): Query index advisor (SQL extension via PIGSTY)
+- [pg_net](/e/pg_net): Async non-blocking HTTP/HTTPS requests in SQL (C extension via PIGSTY)
+- [vault](/e/supabase_vault): Store encrypted credentials in Vault (C extension via PIGSTY)
+- [pgjwt](/e/pgjwt): PostgreSQL implementation of JSON Web Token API (SQL extension via PIGSTY)
+- [pgsodium](/e/pgsodium): Table data encryption storage TDE (C extension via PIGSTY)
+- [supautils](/e/supautils): Secure database clusters in cloud environments (C extension via PIGSTY)
+- [pg_plan_filter](/e/plan_filter): Block specific queries using execution plan cost filtering (C extension via PIGSTY)
 
 Everything is under your control, you have the ability and freedom to scale PGSQL, MinIO, and Supabase itself. And take full advantage of the performance and cost advantages of modern hardware like Gen5 NVMe SSD.
 
@@ -72,7 +72,7 @@ All you need is prepare a VM with several commands and wait for 10 minutes….
 
 ## Get Started
 
-First, download & [install](/docs/setup/install/) pigsty as usual, with the `supa` config template:
+First, download & [install](/docs/install/start) pigsty as usual, with the `supa` config template:
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
@@ -103,13 +103,13 @@ with configured DNS, or a local `/etc/hosts` entry, you can also use the default
 
 ## Architecture
 
-Pigsty’s supabase is based on the [Supabase Docker Compose Template](https://supabase.com/docs/guides/self-hosting/docker), with some slight modifications to fit-in Pigsty’s default [ACL](/docs/pgsql/acl/) model.
+Pigsty’s supabase is based on the [Supabase Docker Compose Template](https://supabase.com/docs/guides/self-hosting/docker), with some slight modifications to fit-in Pigsty’s default [ACL](/pgsql/acl/) model.
 
 The stateful part of this template is replaced by Pigsty’s managed PostgreSQL cluster and MinIO cluster. The container part are stateless, so you can launch / destroy / run multiple supabase containers on the same stateful PGSQL / MINIO cluster simultaneously to scale out.
 
 ![img](/img/pigsty/supa-arch.svg)
 
-The built-in [`supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml) [config](/docs/config/supa) template will create a single-node supabase, with a [singleton PostgreSQL](/docs/pgsql/) and SNSD [MinIO](/docs/minio/) server. You can use [Multinode PostgreSQL Clusters](/docs/pgsql/config/#replica) and [MNMD MinIO Clusters](/docs/minio/config/#multi-node-multi-drive) / external S3 service instead in production, we will cover that later.
+The built-in [`supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml) [config](/app/supabase) template will create a single-node supabase, with a [singleton PostgreSQL](/pgsql/) and SNSD [MinIO](/minio/) server. You can use [Multinode PostgreSQL Clusters](/pgsql/config/#replica) and [MNMD MinIO Clusters](/minio/config/#multi-node-multi-drive) / external S3 service instead in production, we will cover that later.
 
 ------
 
@@ -117,22 +117,22 @@ The built-in [`supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/supa.ym
 
 Here are checklists for self-hosting
 
--  [**Hardware**](/docs/setup/prepare/#node): necessary VM/BM resources, one node at least, 3-4 are recommended for HA.
--  [**Linux OS**](/docs/setup/prepare/#operating-system): Linux x86_64 server with fresh installed Linux, [check compatible distro](/docs/reference/compatibility/)
--  [**Network**](/docs/setup/prepare/#network): Static IPv4 address which can be used as node identity
--  [**Admin User**](/docs/setup/prepare/#admin-user): nopass ssh & sudo are recommended for admin user
--  [**Conf Template**](/docs/setup/config/): Use the [`supa`](/docs/config/template) config template, if you don’t know how to manually configure pigsty
+-  [**Hardware**](/docs/prepare/hardware): necessary VM/BM resources, one node at least, 3-4 are recommended for HA.
+-  [**Linux OS**](/docs/prepare/linux): Linux x86_64 server with fresh installed Linux, [check compatible distro](/docs/prepare/linux)
+-  [**Network**](/docs/prepare/admin): Static IPv4 address which can be used as node identity
+-  [**Admin User**](/docs/prepare/admin): nopass ssh & sudo are recommended for admin user
+-  [**Conf Template**](/docs/config/): Use the [`supa`](/docs/config/template) config template, if you don’t know how to manually configure pigsty
 
 The built-in [`conf/app/supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml) config template is shown below.
 
 
 For advanced topics, we may need to modify the configuration file to fit our needs.
 
-- [Security Enhancement](/docs/app/supabase/#security-enhancement)
-- [Domain Name and HTTPS](/docs/app/supabase/#domain-name-and-https)
-- [Sending Mail with SMTP](/docs/app/supabase/#sending-mail-with-smtp)
-- [MinIO or External S3](/docs/app/supabase/#minio-or-external-s3)
-- [True High Availability](/docs/app/supabase/#true-high-availability)
+- [Security Enhancement](/app/supabase/#security-enhancement)
+- [Domain Name and HTTPS](/app/supabase/#domain-name-and-https)
+- [Sending Mail with SMTP](/app/supabase/#sending-mail-with-smtp)
+- [MinIO or External S3](/app/supabase/#minio-or-external-s3)
+- [True High Availability](/app/supabase/#true-high-availability)
 
 ------
 
@@ -140,23 +140,23 @@ For advanced topics, we may need to modify the configuration file to fit our nee
 
 For security reasons, you should change the default passwords in the `pigsty.yml` config file.
 
-- [`grafana_admin_password`](/docs/infra/param/#grafana_admin_password): `pigsty`, Grafana admin password
-- [`pg_admin_password`](/docs/pgsql/param/#pg_admin_password): `DBUser.DBA`, PGSQL superuser password
-- [`pg_monitor_password`](/docs/pgsql/param/#pg_monitor_password): `DBUser.Monitor`, PGSQL monitor user password
-- [`pg_replication_password`](/docs/pgsql/param/#pg_replication_password): `DBUser.Replicator`, PGSQL replication user password
-- [`patroni_password`](/docs/pgsql/param/#patroni_password): `Patroni.API`, Patroni HA Agent Password
-- [`haproxy_admin_password`](/docs/node/param/#haproxy_admin_password): `pigsty`, Load balancer admin password
-- [`minio_access_key`](/docs/minio/param/#grafana_admin_password): `minioadmin`, MinIO root username
-- [`minio_secret_key`](/docs/minio/param/#minio_secret_key): `minioadmin`, MinIO root password
+- [`grafana_admin_password`](/infra/param/#grafana_admin_password): `pigsty`, Grafana admin password
+- [`pg_admin_password`](/pgsql/param/#pg_admin_password): `DBUser.DBA`, PGSQL superuser password
+- [`pg_monitor_password`](/pgsql/param/#pg_monitor_password): `DBUser.Monitor`, PGSQL monitor user password
+- [`pg_replication_password`](/pgsql/param/#pg_replication_password): `DBUser.Replicator`, PGSQL replication user password
+- [`patroni_password`](/pgsql/param/#patroni_password): `Patroni.API`, Patroni HA Agent Password
+- [`haproxy_admin_password`](/node/param/#haproxy_admin_password): `pigsty`, Load balancer admin password
+- [`minio_access_key`](/minio/param/#minio_access_key): `minioadmin`, MinIO root username
+- [`minio_secret_key`](/minio/param/#minio_secret_key): `minioadmin`, MinIO root password
 
 Supabase will use PostgreSQL & MinIO as its backend, so also change the following passwords for supabase business users:
 
 - [`pg_users`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L49): password for supabase business users in postgres
-- [`minio_users`](/docs/minio/param/#minio_secret_key): `minioadmin`, MinIO business user’s password
+- [`minio_users`](/minio/param/#minio_secret_key): `minioadmin`, MinIO business user’s password
 
 The pgbackrest will take backups and WALs to MinIO, so also change the following passwords reference
 
-- [`pgbackrest_repo`](/docs/minio/param/#pgbackrest_repo): refer to the
+- [`pgbackrest_repo`](/pgsql/param/#pgbackrest_repo): refer to the
 
 PLEASE check the [Supabase Self-Hosting: Generate API Keys](https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys) to generate supabase credentials:
 
@@ -168,8 +168,8 @@ PLEASE check the [Supabase Self-Hosting: Generate API Keys](https://supabase.com
 
 If you have chanaged the default password for PostgreSQL and MinIO, you have to update the following parameters as well:
 
-- [`postgres_password`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L126), according to [`pg_users`](/docs/pgsql/user/)
-- [`s3_access_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#136) and [`s3_secret_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#137), according to [`minio_users`](/docs/minio/param/#minio_users)
+- [`postgres_password`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L126), according to [`pg_users`](/pgsql/user/)
+- [`s3_access_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#136) and [`s3_secret_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#137), according to [`minio_users`](/minio/param/#minio_users)
 
 ------
 
@@ -183,7 +183,7 @@ You can use a locally resolved domain name, but for serious production deploymen
 - Purchase a domain name, use the DNS resolution services provided by cloud/DNS/CDN providers to point it to your installation node’s public IP (lower alternative: local `/etc/hosts`)
 - Apply for a certificate, using free HTTPS certificates issued by certificate authorities like Let’s Encrypt for encrypted communication (lower alternative: default self-signed certificates, manually trusted)
 
-You can [refer to the certbot tutorial](/docs/tasks/cerbot) to apply for a free HTTPS certificate. Here we assume your custom domain name is: `supa.pigsty.cc`, then you should modify the `supa` domain in [`infra_portal`](/docs/infra/param/#infra_portal) like this:
+You can [refer to the certbot tutorial](/docs/admin/cert) to apply for a free HTTPS certificate. Here we assume your custom domain name is: `supa.pigsty.cc`, then you should modify the `supa` domain in [`infra_portal`](/infra/param/#infra_portal) like this:
 
 ```yaml
 all:
@@ -220,7 +220,7 @@ As a lower alternative, you can use a local domain name to access Supabase. When
 
 ## MinIO or External S3
 
-Pigsty’s self-hosting supabase will use a local [SNSD MinIO](/docs/minio/config/#single-node-single-drive) server, which is used by Supabase itself for object storage, and by PostgreSQL for backups. For production use, you should consider using a HA [MNMD MinIO](/docs/minio/config/#multi-node-multi-drive) cluster or an external S3 compatible service instead.
+Pigsty’s self-hosting supabase will use a local [SNSD MinIO](/minio/config/#single-node-single-drive) server, which is used by Supabase itself for object storage, and by PostgreSQL for backups. For production use, you should consider using a HA [MNMD MinIO](/minio/config/#multi-node-multi-drive) cluster or an external S3 compatible service instead.
 
 We recommend using an external S3 when:
 
@@ -314,7 +314,7 @@ And don’t forget to reload the supabase service with `./app.yml -t app_config,
 
 ## Backup Strategy
 
-In the supabase template, Pigsty has already used a daily full backup at 01:00 AM, you can refer to the [backup/restore](/docs/pgsql/pitr/) to modify the backup strategy.
+In the supabase template, Pigsty has already used a daily full backup at 01:00 AM, you can refer to the [backup/restore](/pgsql/backup/) to modify the backup strategy.
 
 ```yaml
 all:
@@ -332,7 +332,7 @@ Then, apply the Crontab configuration to the nodes with the following command:
 ./node.yml -t node_crontab
 ```
 
-More about backup strategy, please refer to [**Backup Strategy**](/docs/pgsql/pitr/)
+More about backup strategy, please refer to [**Backup Strategy**](/pgsql/backup/)
 
 ------
 
@@ -344,11 +344,11 @@ To achieve RTO < 30s and zero data loss, you need a multi-node high availability
 
 Which involves high availability for these components:
 
-- [ETCD](/docs/etcd/): DCS requires at least three nodes to tolerate one node failure.
-- [PGSQL](/docs/pgsql/): PGSQL synchronous commit mode recommends at least three nodes.
-- [INFRA](/docs/infra/): It’s good to have two or three copies of observability stack.
+- [ETCD](/etcd/): DCS requires at least three nodes to tolerate one node failure.
+- [PGSQL](/pgsql/): PGSQL synchronous commit mode recommends at least three nodes.
+- [INFRA](/infra/): It’s good to have two or three copies of observability stack.
 - Supabase itself can also have multiple replicas to achieve high availability.
 
 We recommend you to refer to the [trio](/docs/config/template) and [safe](/docs/config/template) config to upgrade your cluster to three nodes or more.
 
-In this case, you also need to modify the access points for PostgreSQL and MinIO to use the DNS / L2 VIP / HAProxy [HA access points](/docs/concept/svc/).
+In this case, you also need to modify the access points for PostgreSQL and MinIO to use the DNS / L2 VIP / HAProxy [HA access points](/pgsql/service/).

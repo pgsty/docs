@@ -196,7 +196,7 @@ There are **120** parameters about the `PGSQL` module.
 
 ## `PG_ID`
 
-Here are some common parameters used to identify PGSQL [entities](/docs/pgsql/config#identity-parameters): instance, service, etc…
+Here are some common parameters used to identify PGSQL [entities](/pgsql/config#identity-parameters): instance, service, etc…
 
 ------
 
@@ -273,7 +273,7 @@ name: `pg_upstream`, type: `ip`, level: `I`
 
 Upstream ip address for standby cluster or cascade replica
 
-Setting `pg_upstream` is set on `primary` instance indicate that this cluster is a [**Standby Cluster**](/docs/pgsql/config/#standby-cluster), and will receiving changes from upstream instance, thus the `primary` is actually a `standby leader`.
+Setting `pg_upstream` is set on `primary` instance indicate that this cluster is a [**Standby Cluster**](/pgsql/config/#standby-cluster), and will receiving changes from upstream instance, thus the `primary` is actually a `standby leader`.
 
 Setting `pg_upstream` for a non-primary instance will explicitly set a replication upstream instance, if it is different from the primary IP Address,
 this instance will become a **cascade replica**. And it’s user’s responsibility to ensure that the upstream IP addr is another instance in the same cluster.
@@ -331,7 +331,7 @@ name: `pg_exporters`, type: `dict`, level: `C`
 
 additional pg_exporters to monitor remote postgres instances, default values: `{}`
 
-If you wish to monitor remote postgres instances, define them in `pg_exporters` and load them with [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) playbook.
+If you wish to monitor remote postgres instances, define them in `pg_exporters` and load them with [`pgsql-monitor.yml`](/pgsql/playbook/#pgsql-monitoryml) playbook.
 
 ```yaml
 pg_exporters: # list all remote instances here, alloc a unique unused local port as k
@@ -341,7 +341,7 @@ pg_exporters: # list all remote instances here, alloc a unique unused local port
     20003: { pg_cluster: pg-bar, pg_seq: 1, pg_host: 10.10.10.13 }
 ```
 
-Check [PGSQL Monitoring](/docs/pgsql/monitor/) for details.
+Check [PGSQL Monitoring](/pgsql/monitor/) for details.
 
 ------
 
@@ -371,7 +371,7 @@ Database credentials, In-Database Objects that need to be taken care of by Users
 - Ad-Hoc PostgreSQL HBA Rules: [`pg_default_services`](#pg_default_services)
 - Ad-Hoc Pgbouncer HBA Rules: [`pgb_hba_rules`](#pgb_hba_rules)
 
-[Default Database Users](/docs/pgsql/acl#default-users):
+[Default Database Users](/pgsql/acl#default-users):
 
 - Administrator: [`pg_admin_username`](#pg_admin_username) / [`pg_admin_password`](#pg_admin_password)
 - Replication User: [`pg_replication_username`](#pg_replication_username) / [`pg_replication_password`](#pg_replication_password)
@@ -404,7 +404,7 @@ name: `pg_users`, type: `user[]`, level: `C`
 
 postgres business users, defined at cluster level.
 
-default values: `[]`, each object in the array defines a [User/Role](/docs/pgsql/user). Examples:
+default values: `[]`, each object in the array defines a [User/Role](/pgsql/user). Examples:
 
 ```yaml
 - name: dbuser_meta               # REQUIRED, `name` is the only mandatory field of a user definition
@@ -438,7 +438,7 @@ name: `pg_databases`, type: `database[]`, level: `C`
 
 postgres business databases, defined at cluster level.
 
-default values: `[]`, each object in the array defines a [Database](/docs/pgsql/db). Examples:
+default values: `[]`, each object in the array defines a [Database](/pgsql/db). Examples:
 
 ```yaml
 - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
@@ -481,7 +481,7 @@ postgres business services exposed via haproxy, has to be defined at cluster lev
 
 You can define ad hoc services with [`pg_services`](#pg_services) in additional to default [`pg_default_services`](#pg_default_services)
 
-default values: `[]`, each object in the array defines a [**Service**](/docs/pgsql/service/#define-service). Examples:
+default values: `[]`, each object in the array defines a [**Service**](/pgsql/service/#define-service). Examples:
 
 ```yaml
 - name: standby                   # required, service name, the actual svc name will be prefixed with `pg_cluster`, e.g: pg-meta-standby
@@ -506,7 +506,7 @@ business hba rules for postgres
 
 default values: `[]`, each object in array is an **HBA Rule** definition:
 
-Which are array of [hba](/docs/pgsql/hba#define-hba) object, each hba object may look like
+Which are array of [hba](/pgsql/hba#define-hba) object, each hba object may look like
 
 ```yaml
 # RAW HBA RULES
@@ -547,7 +547,7 @@ name: `pgb_hba_rules`, type: `hba[]`, level: `C`
 
 business hba rules for pgbouncer, default values: `[]`
 
-Similar to [`pg_hba_rules`](#pg_hba_rules), array of [hba](/docs/pgsql/hba/#define-hba) rule object, except this is for pgbouncer.
+Similar to [`pg_hba_rules`](#pg_hba_rules), array of [hba](/pgsql/hba/#define-hba) rule object, except this is for pgbouncer.
 
 ------
 
@@ -744,7 +744,7 @@ postgres binary dir, `/usr/pgsql/bin` by default
 
 The default value is a soft link created manually during the installation process, pointing to the specific Postgres version dir installed.
 
-For example `/usr/pgsql -> /usr/pgsql-17`. For more details, check [PGSQL File Structure](/docs/pgsql) for details.
+For example `/usr/pgsql -> /usr/pgsql-17`. For more details, check [PGSQL File Structure](/pgsql) for details.
 
 ------
 
@@ -766,7 +766,7 @@ PostgreSQL packages (rpm/deb) to be installed. This is an array of package names
 
 Default value: `[ pgsql-main pgsql-common ]`
 
-These default values are two aliases that are translated through [**alias mapping**](/docs/pgsql/ext/pkg) into the main RPM/DEB package names for the current PG major version, as well as version-independent common components (such as Patroni, PgBackrest, etc.)
+These default values are two aliases that are translated through [**alias mapping**](/pgsql/ext/pkg) into the main RPM/DEB package names for the current PG major version, as well as version-independent common components (such as Patroni, PgBackrest, etc.)
 
 Since Pigsty v3, you can use the alias lists specified in the system configuration in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) for this parameter.
 
@@ -864,7 +864,7 @@ default values: `/pg/data`, DO NOT CHANGE IT.
 
 It’s a soft link that points to the underlying data directory.
 
-Check [PGSQL File Structure](/docs/reference/fhs/) for details.
+
 
 ------
 
@@ -996,7 +996,7 @@ The Patroni API server listens to this port for health checking & API requests.
 
 name: `patroni_log_dir`, type: `path`, level: `C`
 
-patroni log dir, `/pg/log/patroni` by default, which will be collected by [`promtail`](/docs/node/param#promtail).
+patroni log dir, `/pg/log/patroni` by default, which will be collected by [`promtail`](/node/param#promtail).
 
 ------
 
@@ -1028,7 +1028,7 @@ default value is `off`, you should not enable watchdog on infra nodes to avoid f
 
 For those critical systems where data consistency prevails over availability, it is recommended to enable watchdog.
 
-Beware that if all your traffic is [accessed](/docs/pgsql/service/#access-service) via haproxy, there is no risk of brain split at all.
+Beware that if all your traffic is [accessed](/pgsql/service/#access-service) via haproxy, there is no risk of brain split at all.
 
 ------
 
@@ -1038,7 +1038,7 @@ name: `patroni_username`, type: `username`, level: `C`
 
 patroni restapi username, `postgres` by default, used in pair with [`patroni_password`](#patroni_password)
 
-Patroni unsafe RESTAPI is protected by username/password by default, check [Config Cluster](/docs/pgsql/admin#config-cluster) and [Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html) for details.
+Patroni unsafe RESTAPI is protected by username/password by default, check [Config Cluster](/pgsql/admin#config-cluster) and [Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html) for details.
 
 ------
 
@@ -1231,7 +1231,7 @@ shared preloaded libraries, `pg_stat_statements,auto_explain` by default.
 
 They are two extensions that come with PostgreSQL, and it is strongly recommended to enable them.
 
-For existing clusters, you can [configure](/docs/pgsql/admin#config-cluster) the `shared_preload_libraries` parameter of the cluster and apply it.
+For existing clusters, you can [configure](/pgsql/admin#config-cluster) the `shared_preload_libraries` parameter of the cluster and apply it.
 
 If you want to use TimescaleDB or Citus extensions, you need to add `timescaledb` or `citus` to this list. `timescaledb` and `citus` should be placed at the top of this list, for example:
 
@@ -1253,7 +1253,7 @@ replications apply delay for standby cluster leader, default values: `0`.
 
 if this value is set to a positive value, the standby cluster leader will be delayed for this time before apply WAL changes.
 
-Check [delayed standby cluster](/docs/pgsql/config#delayed-cluster) for details.
+Check [delayed standby cluster](/pgsql/config#delayed-cluster) for details.
 
 ------
 
@@ -1371,10 +1371,10 @@ If your key is managed by external system like KMS, IAM, ..., you can implement 
 
 PG_BOOTSTRAP will bootstrap a new postgres cluster with patroni, while PG_PROVISION will create default objects in the cluster, including:
 
-- [Default Roles](/docs/pgsql/acl#default-roles)
-- [Default Users](/docs/pgsql/acl#default-users)
-- [Default Privileges](/docs/pgsql/acl#privileges)
-- [Default HBA Rules](/docs/pgsql/hba/#default-hba)
+- [Default Roles](/pgsql/acl#default-roles)
+- [Default Users](/pgsql/acl#default-users)
+- [Default Privileges](/pgsql/acl#privileges)
+- [Default HBA Rules](/pgsql/hba/#default-hba)
 - Default Schemas
 - Default Extensions
 
@@ -1477,7 +1477,7 @@ name: `pg_default_roles`, type: `role[]`, level: `G/C`
 
 default roles and users in postgres cluster.
 
-Pigsty has a built-in role system, check [PGSQL Access Control](/docs/pgsql/acl) for details.
+Pigsty has a built-in role system, check [PGSQL Access Control](/pgsql/acl) for details.
 
 ```yaml
 pg_default_roles:                 # default roles and users in postgres cluster
@@ -1520,7 +1520,7 @@ pg_default_privileges:            # default privileges when created by admin use
   - GRANT CREATE     ON SCHEMAS   TO dbrole_admin
 ```
 
-Pigsty has a built-in privileges based on the default role system, check [PGSQL Privileges](/docs/pgsql/acl#privileges) for details.
+Pigsty has a built-in privileges based on the default role system, check [PGSQL Privileges](/pgsql/acl#privileges) for details.
 
 ------
 
@@ -1577,9 +1577,9 @@ This is useful when you want to check before applying HBA changes, set it to `fa
 
 name: `pg_default_hba_rules`, type: `hba[]`, level: `G/C`
 
-postgres default host-based authentication rules, array of [hba](/docs/pgsql/hba/#define-hba) rule object.
+postgres default host-based authentication rules, array of [hba](/pgsql/hba/#define-hba) rule object.
 
-default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](/docs/pgsql/hba/) for details.
+default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](/pgsql/hba/) for details.
 
 ```yaml
 pg_default_hba_rules:             # postgres default host-based authentication rules
@@ -1603,9 +1603,9 @@ pg_default_hba_rules:             # postgres default host-based authentication r
 
 name: `pgb_default_hba_rules`, type: `hba[]`, level: `G/C`
 
-pgbouncer default host-based authentication rules, array or [hba](/docs/pgsql/hba/#define-hba) rule object.
+pgbouncer default host-based authentication rules, array or [hba](/pgsql/hba/#define-hba) rule object.
 
-default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](/docs/pgsql/hba/) for details.
+default value provides a fair enough security level for common scenarios, check [PGSQL Authentication](/pgsql/hba/) for details.
 
 ```yaml
 pgb_default_hba_rules:            # pgbouncer default host-based authentication rules
@@ -1624,7 +1624,7 @@ pgb_default_hba_rules:            # pgbouncer default host-based authentication 
 
 This section defines variables for [pgBackRest](https://pgbackrest.org/), which is used for PGSQL PITR (Point-In-Time-Recovery).
 
-Check [PGSQL Backup & PITR](/docs/pgsql/pitr/) for details.
+Check [PGSQL Backup & PITR](/pgsql/backup/) for details.
 
 ```yaml
 pgbackrest_enabled: true          # enable pgbackrest on pgsql host?
@@ -1681,7 +1681,7 @@ remove pg backup data during init? default value is `true`
 
 name: `pgbackrest_log_dir`, type: `path`, level: `C`
 
-pgBackRest log dir, `/pg/log/pgbackrest` by default, which is referenced by [`promtail`](/docs/node/param#promtail) the logging agent.
+pgBackRest log dir, `/pg/log/pgbackrest` by default, which is referenced by [`promtail`](/node/param#promtail) the logging agent.
 
 ------
 
@@ -1868,7 +1868,7 @@ name: `pg_weight`, type: `int`, level: `G`
 
 relative load balance weight in service, 100 by default, 0~255
 
-default values: `100`. you have to define it at instance vars, and [reload-service](/docs/pgsql/admin#reload-service) to take effect.
+default values: `100`. you have to define it at instance vars, and [reload-service](/pgsql/admin#reload-service) to take effect.
 
 ------
 
@@ -1897,7 +1897,7 @@ pg_default_services:             # alloc port 10001 and 10002 for pg-test primar
 
 name: `pg_default_service_dest`, type: `enum`, level: `G/C`
 
-When defining a [service](/docs/pgsql/service/#define-service), if `svc.dest`= `default`, this parameter will be used as the default value.
+When defining a [service](/pgsql/service/#define-service), if `svc.dest`= `default`, this parameter will be used as the default value.
 
 default values: `pgbouncer`, means 5433 the primary service and 5434 the replicas service will route traffic to pgbouncer by default.
 
@@ -1911,7 +1911,7 @@ name: `pg_default_services`, type: `service[]`, level: `G/C`
 
 postgres default service definitions
 
-default value is four default services definitions, which are explained in [PGSQL Service](/docs/pgsql/service/#define-service)
+default value is four default services definitions, which are explained in [PGSQL Service](/pgsql/service/#define-service)
 
 ```yaml
 pg_default_services:               # postgres default service definitions
@@ -2234,7 +2234,7 @@ extra cli args for pgbackrest_exporter, default value is empty string `""`.
 
 ## `PG_REMOVE`
 
-These flags control the behavior of [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) playbook, which is used to remove postgres instance or cluster.
+These flags control the behavior of [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) playbook, which is used to remove postgres instance or cluster.
 
 ```yaml
 pg_safeguard: false               # stop pg_remove running if pg_safeguard is enabled, false by default
@@ -2252,7 +2252,7 @@ name: `pg_safeguard`, type: `bool`, level: `G/C/A`
 
 prevent purging running postgres instance? false by default
 
-If enabled, [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
+If enabled, [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
 
 ------
 

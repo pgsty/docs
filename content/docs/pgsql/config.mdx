@@ -16,8 +16,6 @@ You can define different types of instances & clusters.
 - [Standby Cluster](#standby-cluster): Clone an existing cluster and follow it
 - [Delayed Cluster](#delayed-cluster): Clone an existing cluster for emergency data recovery
 - [Citus Cluster](#citus-cluster): Define a Citus distributed database cluster
-- [Major Version](#major-version): Create postgres cluster with a different major version
-
 
 --------
 
@@ -25,23 +23,23 @@ You can define different types of instances & clusters.
 
 There are **4** **REQUIRED** parameters to describe a PostgreSQL Cluster:
 
-|                     Name                     |   Type   |    Level     | Description                   |
-|:--------------------------------------------:|:--------:|:------------:|-------------------------------|
-|             `inventory_hostname`             |   `ip`   | **Instance** | **PG node IPv4 address**      |
-| [`pg_cluster`](/docs/pgsql/param#pg_cluster) | `string` | **Cluster**  | **PG database cluster name**  |
-|     [`pg_seq`](/docs/pgsql/param#pg_seq)     | `number` | **Instance** | **PG database instance id**   |
-|    [`pg_role`](/docs/pgsql/param#pg_role)    |  `enum`  | **Instance** | **PG database instance role** |
+|                  Name                   |   Type   |    Level     | Description                   |
+|:---------------------------------------:|:--------:|:------------:|-------------------------------|
+|          `inventory_hostname`           |   `ip`   | **Instance** | **PG node IPv4 address**      |
+| [`pg_cluster`](/pgsql/param#pg_cluster) | `string` | **Cluster**  | **PG database cluster name**  |
+|     [`pg_seq`](/pgsql/param#pg_seq)     | `number` | **Instance** | **PG database instance id**   |
+|    [`pg_role`](/pgsql/param#pg_role)    |  `enum`  | **Instance** | **PG database instance role** |
 
-- [`pg_cluster`](/docs/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
-- [`pg_role`](/docs/pgsql/param#pg_role): Configured at the instance level, identifies the role of the instance.
+- [`pg_cluster`](/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
+- [`pg_role`](/pgsql/param#pg_role): Configured at the instance level, identifies the role of the instance.
 - the `primary` role will mark this instance as cluster leader (initially).
 - the `replica` is the default role, which marks this instance as common read-only replica.
 - the `offline` marks this instance as special read-only replica that serves the `offline` service.
-- [`pg_seq`](/docs/pgsql/param#pg_seq): Used to identify the instance within the cluster, a non-negative integer
+- [`pg_seq`](/pgsql/param#pg_seq): Used to identify the instance within the cluster, a non-negative integer
 - Start from 0 or 1, incremental allocation in sequence, never change once assigned,
 - `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the instance, i.e. `pg_instance`.
 - `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
-- [`pg_shard`](/docs/pgsql/param#pg_shard) and [`pg_group`](/docs/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
+- [`pg_shard`](/pgsql/param#pg_shard) and [`pg_group`](/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
 
 
 These identities will be used in the entire system, for example, the metrics may look like:
@@ -59,8 +57,8 @@ You can use the **OPTIONAL** `pg_shard` and `pg_group` param to identify horizon
 
 |                     Name                     |   Type   | Level | Description                            |
 |:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
-|   [`pg_shard`](/docs/pgsql/param#pg_shard)   | `string` | **C** | **PG database shard name of cluster**  |
-|   [`pg_group`](/docs/pgsql/param#pg_group)   | `number` | **C** | **PG database shard index of cluster** |
+|   [`pg_shard`](/pgsql/param#pg_shard)   | `string` | **C** | **PG database shard name of cluster**  |
+|   [`pg_group`](/pgsql/param#pg_group)   | `number` | **C** | **PG database shard index of cluster** |
 
 For example, Horizontal sharding with citus, greenplum or sharding it manually
 
@@ -114,7 +112,7 @@ Pigsty follows the [**PostgreSQL Version Policy**](https://www.postgresql.org/su
 Pigsty has PG 13 - 17 (and 18beta1) support. Lower major version (12-) "may" work, with no guarantee.\
 For legacy PG version support, consider our [professional services](/docs/about/service).
 
-To use a different major version, configure the [`pg_version`](/docs/pgsql/param#pg_version) variable.
+To use a different major version, configure the [`pg_version`](/pgsql/param#pg_version) variable.
 Which can be globally [`configure`](/docs/config/configure) with `-v <ver>` option.
 No further changed needed as long as they are available in local / upstream repo.
 
@@ -177,7 +175,7 @@ bin/pgsql-add pg-test
 
 ## Replica
 
-To add a physical replica, you can assign a new instance to `pg-test` with [`pg_role`](/docs/pgsql/param#pg_role) set to `replica`
+To add a physical replica, you can assign a new instance to `pg-test` with [`pg_role`](/pgsql/param#pg_role) set to `replica`
 
 ```yaml
 pg-test:
@@ -188,7 +186,7 @@ pg-test:
     pg_cluster: pg-test
 ```
 
-You can [create](/docs/pgsql/admin#create-cluster) an entire cluster or [append](/docs/pgsql/admin#append-replica) a replica to the existing cluster:
+You can [create](/pgsql/admin#create-cluster) an entire cluster or [append](/pgsql/admin#append-replica) a replica to the existing cluster:
 
 ```bash
 bin/pgsql-add pg-test               # init entire cluster in one-pass
@@ -201,7 +199,7 @@ bin/pgsql-add pg-test 10.10.10.12   # add replica to existing cluster
 
 The offline instance is a dedicated replica to serve slow queries, ETL, OLAP traffic and interactive queries, etc…
 
-To add an offline instance, assign a new instance with [`pg_role`](/docs/pgsql/param#pg_role) set to `offline`.
+To add an offline instance, assign a new instance with [`pg_role`](/pgsql/param#pg_role) set to `offline`.
 
 ```yaml
 pg-test:
@@ -215,17 +213,17 @@ pg-test:
 
 Offline instance works like common replica instances, but it is used as a backup server in `pg-test-replica` service. That is to say, offline and primary instances serve only when all `replica` instances are down.
 
-You can have ad hoc access control offline with [`pg_default_hba_rules`](/docs/pgsql/param#pg_default_hba_rules) and [`pg_hba_rules`](/docs/pgsql/param#pg_hba_rules). It will apply to the offline instance and any instances with [`pg_offline_query`](/docs/pgsql/param#pg_offline_query) flag.
+You can have ad hoc access control offline with [`pg_default_hba_rules`](/pgsql/param#pg_default_hba_rules) and [`pg_hba_rules`](/pgsql/param#pg_hba_rules). It will apply to the offline instance and any instances with [`pg_offline_query`](/pgsql/param#pg_offline_query) flag.
 
 ------
 
 ## Sync Standby
 
-Pigsty uses asynchronous stream replication by default, which may have a small replication lag (10KB / 10ms). A small window of data loss may occur when the primary fails (can be controlled with [`pg_rpo`](/docs/pgsql/param#pg_rpo)), but it is acceptable for most scenarios.
+Pigsty uses asynchronous stream replication by default, which may have a small replication lag (10KB / 10ms). A small window of data loss may occur when the primary fails (can be controlled with [`pg_rpo`](/pgsql/param#pg_rpo)), but it is acceptable for most scenarios.
 
 But in some critical scenarios (e.g., financial transactions), data loss is totally unacceptable or read-your-write consistency is required. In this case, you can enable synchronous commit to ensure that.
 
-To enable sync standby mode, you can simply use `crit.yml` template in [`pg_conf`](/docs/pgsql/param#pg_conf)
+To enable sync standby mode, you can simply use `crit.yml` template in [`pg_conf`](/pgsql/param#pg_conf)
 
 ```yaml
 pg-test:
@@ -238,7 +236,7 @@ pg-test:
     pg_conf: crit.yml   # <--- use crit template
 ```
 
-To enable sync standby on existing clusters, [config](/docs/pgsql/admin#config-cluster) the cluster and enable `synchronous_mode`:
+To enable sync standby on existing clusters, [config](/pgsql/admin#config-cluster) the cluster and enable `synchronous_mode`:
 
 ```bash
 $ pg edit-config pg-test    # run on admin node with admin user
@@ -267,7 +265,7 @@ synchronous_mode: true          # make sure synchronous mode is enabled
 synchronous_node_count: 2       # at least 2 nodes to confirm a commit
 ```
 
-If you have more replicas and wish to have more sync standby, increase `synchronous_node_count` accordingly. Beware of adjust `synchronous_node_count` accordingly when you [append](/docs/pgsql/admin#append-replica) or [remove](/docs/pgsql/admin#remove-replica) replicas.
+If you have more replicas and wish to have more sync standby, increase `synchronous_node_count` accordingly. Beware of adjust `synchronous_node_count` accordingly when you [append](/pgsql/admin#append-replica) or [remove](/pgsql/admin#remove-replica) replicas.
 
 The postgres `synchronous_standby_names` parameter will be managed by patroni:
 
@@ -292,7 +290,7 @@ postgresql:
 
 You can clone an existing cluster and create a [standby cluster](#standby-cluster), which can be used for migration, horizontal split, multi-az deployment, or disaster recovery.
 
-A standby cluster’s definition is just the same as any other normal cluster, except there’s a [`pg_upstream`](/docs/pgsql/param#pg_upstream) defined on the primary instance.
+A standby cluster’s definition is just the same as any other normal cluster, except there’s a [`pg_upstream`](/pgsql/param#pg_upstream) defined on the primary instance.
 
 For example, you have a `pg-test` cluster, to create a standby cluster `pg-test2`, the inventory may look like this:
 
@@ -313,7 +311,7 @@ pg-test2:
 
 And `pg-test2-1`, the primary of `pg-test2` will be a replica of `pg-test` and serve as a **Standby Leader** in `pg-test2`.
 
-Just make sure that the [`pg_upstream`](/docs/pgsql/param#pg_upstream) parameter is configured on the primary of the backup cluster to pull backups from the original upstream automatically.
+Just make sure that the [`pg_upstream`](/pgsql/param#pg_upstream) parameter is configured on the primary of the backup cluster to pull backups from the original upstream automatically.
 
 ```bash
 bin/pgsql-add pg-test     # Creating the original cluster
@@ -344,7 +342,7 @@ pg-testdelay:
   vars: { pg_cluster: pg-test2 }
 ```
 
-You can also [configure](/docs/pgsql/admin#config-cluster) a replication delay on the existing [standby cluster](#standby-cluster).
+You can also [configure](/pgsql/admin#config-cluster) a replication delay on the existing [standby cluster](#standby-cluster).
 
 ```bash
 $ pg edit-config pg-testdelay
@@ -370,10 +368,10 @@ Pigsty has native citus support. Check [`files/pigsty/citus.yml`](https://github
 
 To define a citus cluster, you have to specify the following parameters:
 
-- [`pg_mode`](/docs/pgsql/param#pg_mode) has to be set to `citus` instead of default `pgsql`
-- [`pg_shard`](/docs/pgsql/param#pg_shard) & [`pg_group`](/docs/pgsql/param#pg_group) has to be defined on each sharding cluster
-- [`patroni_primary_db`](/docs/pgsql/param#pg_primary_db) has to be defined to specify the database to be managed
-- [`pg_dbsu_password`](/docs/pgsql/param#pg_dbsu_password) has to be set to a non-empty string plain password if you want to use the [`pg_dbsu`](/docs/pgsql/param#pg_dbsu) `postgres` rather than default [`pg_admin_username`](/docs/pgsql/param#pg_admin_username) to perform admin commands
+- [`pg_mode`](/pgsql/param#pg_mode) has to be set to `citus` instead of default `pgsql`
+- [`pg_shard`](/pgsql/param#pg_shard) & [`pg_group`](/pgsql/param#pg_group) has to be defined on each sharding cluster
+- [`patroni_primary_db`](/pgsql/param#pg_primary_db) has to be defined to specify the database to be managed
+- [`pg_dbsu_password`](/pgsql/param#pg_dbsu_password) has to be set to a non-empty string plain password if you want to use the [`pg_dbsu`](/pgsql/param#pg_dbsu) `postgres` rather than default [`pg_admin_username`](/pgsql/param#pg_admin_username) to perform admin commands
 
 Besides, extra hba rules that allow ssl access from local & other data nodes are required. Which may looks like this
 

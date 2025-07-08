@@ -1,0 +1,145 @@
+---
+title: PG Extensions
+description: Get 423 extensions out-of-the-box
+icon: Boxes
+---
+
+Pigsty allows you to harness the synergistic superpower of the PostgreSQL extensions ecosystem with three things:
+
+- [**Catalog**](/ext/list) : Find the extension you need, with unparalleled 420+ extensions included
+- [**Repository**](/ext/repo) : Get pre-made RPM/DEB packages for 10 mainstream Linux OS
+- [**Package Manager**](/ext/pig) : Install everything with a single command - `pig`
+
+Also check our blog post: [PostgreSQL is eating the Database World](https://medium.com/@fengruohang/postgres-is-eating-the-database-world-157c204dcfc4)
+
+[![ecosystem](/img/pigsty/ecosystem.gif)](https://medium.com/@fengruohang/postgres-is-eating-the-database-world-157c204dcfc4)
+
+--------
+
+## Extensions
+
+import { Badge } from '@/components/ui/badge';
+import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxes, Wrench, Variable, Landmark, Activity, Shield, FileInput, Shell, Truck } from 'lucide-react';
+
+<Badge icon={<Clock />}               variant="blue-subtle"><a   href="#time" className="no-underline">TIME</a></Badge>
+<Badge icon={<Globe />}               variant="green-subtle"><a  href="#gis" className="no-underline">GIS</a></Badge>
+<Badge icon={<Brain />}               variant="purple-subtle"><a href="#rag" className="no-underline">RAG</a></Badge>
+<Badge icon={<Search />}              variant="amber-subtle"><a  href="#fts" className="no-underline">FTS</a></Badge>
+<Badge icon={<ChartNoAxesCombined />} variant="red-subtle"><a    href="#olap" className="no-underline">OLAP</a></Badge>
+<Badge icon={<Sparkles />}            variant="pink-subtle"><a   href="#feat" className="no-underline">FEAT</a></Badge>
+<Badge icon={<BookA />}               variant="teal-subtle"><a   href="#lang" className="no-underline">LANG</a></Badge>
+<Badge icon={<Boxes />}               variant="gray-subtle"><a   href="#type" className="no-underline">TYPE</a></Badge><br />
+<Badge icon={<Wrench />}              variant="amber-subtle"><a  href="#util" className="no-underline">UTIL</a></Badge>
+<Badge icon={<Variable />}            variant="pink-subtle"><a   href="#func" className="no-underline">FUNC</a></Badge>
+<Badge icon={<Landmark />}            variant="gray-subtle"><a   href="#admin" className="no-underline">ADMIN</a></Badge>
+<Badge icon={<Activity />}            variant="green-subtle"><a  href="#stat" className="no-underline">STAT</a></Badge>
+<Badge icon={<Shield />}              variant="red-subtle"><a    href="#sec" className="no-underline">SEC</a></Badge>
+<Badge icon={<FileInput />}           variant="blue-subtle"><a   href="#fdw" className="no-underline">FDW</a></Badge>
+<Badge icon={<Shell />}               variant="teal-subtle"><a   href="#sim" className="no-underline">SIM</a></Badge>
+<Badge icon={<Truck />}               variant="purple-subtle"><a href="#etl" className="no-underline">ETL</a></Badge>
+
+| Category | Count | Description |
+|:---------|:-----:|:------------|
+| <Badge icon={<Clock />} variant="blue-subtle"><a href="/ext/cate/time" className="no-underline">TIME</a></Badge> | 11 | TimescaleDB, Versioning & Temporal Table, Crontab, Async & Background Job Scheduler |
+| <Badge icon={<Globe />} variant="green-subtle"><a href="/ext/cate/gis" className="no-underline">GIS</a></Badge> | 20 | GeoSpatial Data Types, Operators, and Indexes, Hexagonal Indexing, OGR Data FDW, GeoIP & MobilityDB |
+| <Badge icon={<Brain />} variant="purple-subtle"><a href="/ext/cate/rag" className="no-underline">RAG</a></Badge> | 10 | Vector Database with IVFFLAT, HNSW, DiskANN Indexes, AI & ML in SQL interface, Similarity Funcs |
+| <Badge icon={<Search />} variant="amber-subtle"><a href="/ext/cate/fts" className="no-underline">FTS</a></Badge> | 20 | ElasticSearch Alternative with BM25, 2-gram/3-gram Fuzzy Search, Zhparser & Hunspell Segregation Dicts |
+| <Badge icon={<ChartNoAxesCombined />} variant="red-subtle"><a href="/ext/cate/olap" className="no-underline">OLAP</a></Badge> | 13 | DuckDB Integration with FDW & PG Lakehouse, Access Parquet from File/S3, Sharding with Citus/Partman/PlProxy |
+| <Badge icon={<Sparkles />} variant="pink-subtle"><a href="/ext/cate/feat" className="no-underline">FEAT</a></Badge> | 56 | OpenCypher with AGE, GraphQL, JsonSchema, Hints & Hypo Index, HLL, Rum, IVM, ChemRDKit, and Message Queues |
+| <Badge icon={<BookA />} variant="teal-subtle"><a href="/ext/cate/lang" className="no-underline">LANG</a></Badge> | 31 | Develop, Test, Package, and Deliver Stored Procedures written in various PL/Languages: Java, Js, Lua, R, Sh, PRQL |
+| <Badge icon={<Boxes />} variant="gray-subtle"><a href="/ext/cate/type" className="no-underline">TYPE</a></Badge> | 37 | Dedicate New Data Types Like: prefix, sember, uint, SIUnit, RoaringBitmap, Rational, Sphere, Hash, RRule |
+| <Badge icon={<Wrench />} variant="amber-subtle"><a href="/ext/cate/util" className="no-underline">UTIL</a></Badge> | 31 | Utilities such as send http request, perform gzip/zstd compress, send mails, Regex, ICU, encoding, docs, Encryption |
+| <Badge icon={<Variable />} variant="pink-subtle"><a href="/ext/cate/func" className="no-underline">FUNC</a></Badge> | 43 | Function such as id generator, aggregations, sketches, vector functions, mathematical functions and digest functions |
+| <Badge icon={<Landmark />} variant="gray-subtle"><a href="/ext/cate/admin" className="no-underline">ADMIN</a></Badge> | 36 | Utilities for Bloat Control, DirtyRead, BufferInspect, DDL Generate, ChecksumVerify, Permission, Priority, Catalog |
+| <Badge icon={<Activity />} variant="green-subtle"><a href="/ext/cate/stat" className="no-underline">STAT</a></Badge> | 34 | Observability Catalogs, Monitoring Metrics & Views, Statistics, Query Plans, WaitSampling, SlowLogs |
+| <Badge icon={<Shield />} variant="red-subtle"><a href="/ext/cate/sec" className="no-underline">SEC</a></Badge> | 26 | Auditing Logs, Enforce Passwords, Keep Secrets, TDE, SM Algorithm, Login Hooks, Log Erros, Extension White List |
+| <Badge icon={<FileInput />} variant="blue-subtle"><a href="/ext/cate/fdw" className="no-underline">FDW</a></Badge> | 22 | Wrappers & Multicorn for FDW Development, Access other DBMS: MySQL, Mongo, SQLite, MSSQL, Oracle, HDFS, DB2 |
+| <Badge icon={<Shell />} variant="teal-subtle"><a href="/ext/cate/sim" className="no-underline">SIM</a></Badge> | 16 | Protocol Simulation & heterogeneous DBMS Compatibility: Oracle, MSSQL, DB2, MySQL, Memcached, and Babelfish |
+| <Badge icon={<Truck />} variant="purple-subtle"><a href="/ext/cate/etl" className="no-underline">ETL</a></Badge> | 17 | Logical Replication, Decoding, CDC in protobuf/JSON/Mongo format, Copy & Load & Compare Postgres Databases |
+
+
+--------
+
+## Repository
+
+Pigsty has a repository that provides 200+ extra PostgreSQL extensions on 10 mainstream [Linux Distros](/docs/prepare/linux/).
+It is designed to work together with the official PostgreSQL Global Development Group ([PGDG](https://www.postgresql.org/download/linux/)) repo.
+
+You can enable the pigsty infra & pgsql repo with the [pig](/ext/pig) CLI tool, or add them manually to your system:
+
+```bash tab="pig"
+curl https://repo.pigsty.io/pig | bash      # download and install the pig CLI tool
+pig repo add all -u                         # add linux, pgdg, pigsty repo and update cache
+```
+```bash tab="apt"
+# Add Pigsty's GPG public key to your system keychain to verify package signatures
+curl -fsSL https://repo.pigsty.io/key | sudo gpg --dearmor -o /etc/apt/keyrings/pigsty.gpg
+
+# Get Debian distribution codename (distro_codename=jammy, focal, bullseye, bookworm), and write the corresponding upstream repository address to the APT List file
+distro_codename=$(lsb_release -cs)
+sudo tee /etc/apt/sources.list.d/pigsty-io.list > /dev/null <<EOF
+deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/infra generic main
+deb [signed-by=/etc/apt/keyrings/pigsty.gpg] https://repo.pigsty.io/apt/pgsql/${distro_codename} ${distro_codename} main
+EOF
+
+# Refresh APT repository cache
+sudo apt update
+```
+```bash tab="yum"
+# Add Pigsty's GPG public key to your system keychain to verify package signatures
+curl -fsSL https://repo.pigsty.io/key | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-pigsty >/dev/null
+
+# Add Pigsty Repo definition files to /etc/yum.repos.d/ directory, including two repositories
+sudo tee /etc/yum.repos.d/pigsty-io.repo > /dev/null <<-'EOF'
+[pigsty-infra]
+name=Pigsty Infra for $basearch
+baseurl=https://repo.pigsty.io/yum/infra/$basearch
+skip_if_unavailable = 1
+enabled = 1
+priority = 1
+gpgcheck = 1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-pigsty
+module_hotfixes=1
+
+[pigsty-pgsql]
+name=Pigsty PGSQL For el$releasever.$basearch
+baseurl=https://repo.pigsty.io/yum/pgsql/el$releasever.$basearch
+skip_if_unavailable = 1
+enabled = 1
+priority = 1
+gpgcheck = 1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-pigsty
+module_hotfixes=1
+EOF
+
+# Refresh YUM/DNF repository cache
+sudo yum makecache;
+```
+
+All the RPM / DEB packages are signed with [GPG Key](/ext/repo/gpg) fingerprint (`B9BD8B20`) in Pigsty repository.
+
+
+--------
+
+## Package Manager
+
+"Postgres Install Genius, the missing extension package manager for PostgreSQL ecosystem"
+
+[Get started](/ext/pig/start) with PIG in seconds:
+
+```bash tab="default"
+curl -fsSL https://repo.pigsty.io/pig | bash
+```
+```bash tab="mirror"
+curl -fsSL https://repo.pigsty.cc/pig | bash
+```
+
+Then it’s ready to use, assume you want to install the [**`pg_duckdb`**](/e/pg_duckdb/) extension:
+
+```bash
+$ pig repo add pigsty pgdg -u  # add pgdg & pigsty repo, then update repo cache
+$ pig ext install pg17         # install PostgreSQL 17 kernels with native PGDG packages
+$ pig ext install pg_duckdb    # install the pg_duckdb extension (for current pg17)
+```
+
+

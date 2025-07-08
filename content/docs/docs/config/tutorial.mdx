@@ -1,0 +1,266 @@
+---
+title: Tutorial
+description: Forge a complex config from scratch
+icon: GraduationCap
+---
+
+Instead of using [`configure`](/docs/config/configure) to generate config, you can write a pigsty config file from scratch manually.
+
+Here is a tutorial to help you to build a complex config file [inventory](/docs/config/inventory) from scratch.
+
+
+--------
+
+## Minimal
+
+This is a minimal working config example, you have to tell pigsty the IP of admin node and infra node.
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children: {infra: {hosts: {10.10.10.10: { infra_seq: 1 }}}}
+  vars: { admin_ip: 10.10.10.10 }
+```
+
+This will install [**INFRA**](/infra) and [**NODE**](/node) module on `10.10.10.10` (change to your IP address).
+
+```bash title="~/pigsty"
+./install.yml
+```
+
+You'll have a complete observability stack with node monitoring. But database service is not running yet.
+
+
+
+--------
+
+## PGSQL & ETCD
+
+To provide PostgreSQL service, you have to define additional groups and install [**PGSQL**](/pgsql) & [**ETCD**](/etcd) modules.
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+We add two new groups here: `etcd` and `pg-meta`, which defines an 1-node ETCD cluster and a 1-node PGSQL cluster.
+Recreate everything with `./install.yml`, or using these cmd to do incremental steps:
+
+```bash title="~/pigsty"
+./etcd.yml  -l etcd      # install etcd module on group etcd
+./pgsql.yml -l pg-meta   # install pgsql module on group pg-meta
+```
+
+The [PGSQL](/pgsql) module depends on [**ETCD**](/etcd) for HA consensus, so make sure to install ETCD module first.
+
+
+
+--------
+
+## Database & Users
+
+Now we want to customize our postgres database cluster, with users, database, and backups:
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - { name: dbuser_meta ,password: DBUser.Meta ,pgbouncer: true ,roles: [dbrole_admin] ,comment: admin user}
+        pg_databases:
+          - { name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [vector]}
+        node_crontab:
+          - '00 01 * * * postgres /pg/bin/pg-backup full'
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+We define some additional details at the `pg-meta` cluster level:
+
+- `pg_users`: define a new user `dbuser_meta` with password `DBUser.Meta`
+- `pg_databases`: define a new database `meta` with pigsty [CMDB](/docs/config/cmdb) schema and `vector` extension
+- `node_crontab`: define crontab that takes a full backup at 1 am every day
+
+Instead of recreating everything with `./install.yml`, we make changes incrementally:
+
+```bash title="~/pigsty"
+bin/pgsql-user pg-meta dbuser_meta      # create user dbuser_meta on pg-meta
+bin/pgsql-db   pg-meta meta             # create database meta on pg-meta
+./node.yml -l pg-meta -t node_crontab   # add backup task to crontab on pg-meta
+```
+
+
+--------
+
+## PG VER & Extensions
+
+You can install different major versions of PostgreSQL, and [**420+**](https://ext.pigsty.io/#/list) corresponding extensions.
+
+Let's install PostgreSQL 16 (instead of default 17) with `timescaledb`, `postgis`, and `pgvector` extensions.
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - name: dbuser_meta
+            password: DBUser.Meta
+            pgbouncer: true
+            roles: [dbrole_admin]
+            comment: pigsty admin user
+        pg_databases:
+          - name: meta
+            baseline: cmdb.sql
+            comment: pigsty meta database
+            schemas: [pigsty]
+            extensions: [ vector, postgis, timescaledb ]           # <--- CREATE EXTENSIONS
+        pg_libs: 'timescaledb, pg_stat_statements, auto_explain'   # <--- LOAD EXTENSIONS
+        node_crontab:
+          - '00 01 * * * postgres /pg/bin/pg-backup full'
+  vars:
+    admin_ip: 10.10.10.10
+    region: default # use local mirror for faster download speed   # <--- default|china|europe
+    repo_extra_packages: [ timescaledb, postgis, pgvector, pgsql ] # <--- DOWNLOAD EXTENSIONS
+    pg_extensions:       [ timescaledb, postgis, pgvector ]        # <--- INSTALL EXTENSIONS
+    pg_version: 16   # PG 17 is the default latest major version   # <--- USE PG 16 VERSION
+```
+
+- `repo_extra_packages`: download `timescaledb` and `postgis` extensions.
+- `pg_libs`: preload `timescaledb`, `pg_stat_statements`, `auto_explain` extensions.
+
+Let's redownload missing packages (PG 16 kernel & extensions), remove the old cluster, and recreate it:
+
+```bash
+make repo                   # redownload packages
+./pgsql-rm.yml -l pg-meta   # remove the old pg-meta cluster (because it is PG17)
+./pgsql.yml    -l pg-meta   # recreate the pg-meta cluster with PG16 & extensions
+````
+
+
+
+--------
+
+## More NODE
+
+We can add **3** more nodes to this deployment.
+
+```yaml
+bin/node-add pg-test
+```
+
+Or add them one by one:
+
+```bash
+bin/node-add 10.10.10.11
+bin/node-add 10.10.10.12
+bin/node-add 10.10.10.13
+````
+
+
+--------
+
+## PGSQL HA
+
+Now we want to add a new database cluster `pg-test`, with 3-node HA setup:
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+    pg-test:
+      hosts:
+        10.10.10.11: { pg_seq: 1, pg_role: primary }
+        10.10.10.12: { pg_seq: 2, pg_role: replica  }
+        10.10.10.13: { pg_seq: 3, pg_role: replica  }
+      vars: { pg_cluster: pg-test }
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+Pigsty's working assumption is there's only ONE postgres instance on each node.
+There's no support to run multiple postgres instances on a single node.
+
+
+
+--------
+
+## Redis Up
+
+Pigsty has optional Redis support, which is used as a cache in front of PostgreSQL.
+
+```bash
+bin/redis-add redis-ms
+bin/redis-add redis-meta
+bin/redis-add redis-test
+
+```
+
+Redis HA setup requires cluster mode, or sentinel infra, check Redis Config for details.
+
+
+--------
+
+## MinIO Up
+
+Pigsty has optional MinIO support, which is used as a backup storage for PostgreSQL.
+
+```bash
+./minio.yml -l minio
+```
+
+Serious production MinIO deployment usually requires at least 4 nodes with 4 disks each (4N/16D)
+
+
+--------
+
+## Docker Up
+
+Install docker on the `infra` group:
+
+```bash
+./docker.yml -l infra
+```
+
+--------
+
+## Run PgAdmin
+
+Check the [App: Pgadmin](/app/pgadmin) for details on how to run pgAdmin with Pigsty. Short version:
+
+```bash
+./docker.yml -l infra
+./app.yml    -l infra -e app=pgadmin
+```
+
+--------
+
+## Self-Hosting Supabase
+
+Check the [App: Supabase](/app/supabase) for details on how to run Supabase with Pigsty. Short version:
+
+```bash
+./configure -c app/supa
+./install.yml
+./docker.yml
+./app.yml
+```
+
+
+
+

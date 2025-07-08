@@ -1,0 +1,222 @@
+---
+title: Citus
+description: Native Distributive Extension for PostgreSQL Sharding
+icon: DatabaseBackup
+---
+
+
+Citus is a PostgreSQL extension that transforms PostgreSQL into a distributed database, enabling horizontal scaling across multiple nodes to handle large amounts of data and queries.
+
+Since Patroni v3.0, native support for Citus high availability has been provided, simplifying the setup of Citus clusters. Pigsty also offers native support for this.
+
+- [What is Citus](https://docs.citusdata.com/en/stable/get_started/what_is_citus.html)
+- [Patroni Citus Support](https://patroni.readthedocs.io/en/latest/citus.html)
+
+> Note: The latest version of Citus (12.1.6) supports PostgreSQL versions 16, 15, and 14, but does not support PostgreSQL 17 and lacks official ARM64 support. Pigsty’s extension repository provides ARM64 packages for Citus, but caution is advised when using it on ARM architecture.
+
+------
+
+## Citus Cluster
+
+Pigsty natively supports Citus. Refer to [`conf/citus.yml`](https://github.com/pgsty/pigsty/blob/main/conf/citus.yml).
+
+This example uses a four-node sandbox with a Citus cluster named `pg-citus`, consisting of a two-node coordinator cluster `pg-citus0` and two worker clusters `pg-citus1` and `pg-citus2`.
+
+```yaml
+pg-citus:
+  hosts:
+    10.10.10.10: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.2/24 ,pg_seq: 1, pg_role: primary }
+    10.10.10.11: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.2/24 ,pg_seq: 2, pg_role: replica }
+    10.10.10.12: { pg_group: 1, pg_cluster: pg-citus1 ,pg_vip_address: 10.10.10.3/24 ,pg_seq: 1, pg_role: primary }
+    10.10.10.13: { pg_group: 2, pg_cluster: pg-citus2 ,pg_vip_address: 10.10.10.4/24 ,pg_seq: 1, pg_role: primary }
+  vars:
+    pg_mode: citus                            # pgsql cluster mode: citus
+    pg_version: 16                            # Citus does not support pg16 yet
+    pg_shard: pg-citus                        # Citus shard name: pg-citus
+    pg_primary_db: citus                      # primary database used by Citus
+    pg_vip_enabled: true                      # enable VIP for Citus cluster
+    pg_vip_interface: eth1                    # VIP interface for all members
+    pg_dbsu_password: DBUser.Postgres         # all DBSU passwords for Citus cluster
+    pg_extensions: [ citus, postgis, pgvector, topn, pg_cron, hll ]  # install these extensions
+    pg_libs: 'citus, pg_cron, pg_stat_statements' # Citus will be added automatically by Patroni
+    pg_users: [{ name: dbuser_citus ,password: DBUser.Citus ,pgbouncer: true ,roles: [ dbrole_admin ]    }]
+    pg_databases: [{ name: citus ,owner: dbuser_citus ,extensions: [ citus, vector, topn, pg_cron, hll ] }]
+    pg_parameters:
+      cron.database_name: citus
+      citus.node_conninfo: 'sslmode=require sslrootcert=/pg/cert/ca.crt sslmode=verify-full'
+    pg_hba_rules:
+      - { user: 'all' ,db: all  ,addr: 127.0.0.1/32  ,auth: ssl   ,title: 'all user ssl access from localhost' }
+      - { user: 'all' ,db: all  ,addr: intra         ,auth: ssl   ,title: 'all user ssl access from intranet'  }
+```
+
+Compared to a standard PostgreSQL cluster, Citus cluster configuration has some specific requirements. First, ensure that the Citus extension is downloaded, installed, loaded, and enabled. This involves the following four parameters:
+
+- [`repo_packages`](/infra/param/#repo_packages): Must include the `citus` extension, or you need to use a PostgreSQL offline package with the Citus extension.
+- [`pg_extensions`](/pgsql/param/#pg_extensions): Must include the `citus` extension, meaning you need to install the `citus` extension on each node.
+- [`pg_libs`](/pgsql/param/#pg_libs): Must include the `citus` extension, and it must be first in the list, but now Patroni will automatically handle this.
+- [`pg_databases`](/pgsql/param/#pg_databases): Define a primary database with the `citus` extension installed.
+
+Additionally, ensure the configuration for the Citus cluster is correct:
+
+- [`pg_mode`](/pgsql/param/#pg_mode): Must be set to `citus` to inform Patroni to use the Citus mode.
+- [`pg_primary_db`](/pgsql/param/#pg_primary_db): Specify the primary database name, which must have the `citus` extension (named `citus` here).
+- [`pg_shard`](/pgsql/param/#pg_shard): Specify a unified name as a prefix for all horizontal shard PG clusters (e.g., `pg-citus`).
+- [`pg_group`](/pgsql/param/#pg_group): Specify a shard number, starting from zero for the coordinator cluster and incrementing for worker clusters.
+- [`pg_cluster`](/pgsql/param/#pg_cluster): Must match the combination of [`pg_shard`] and [`pg_group`].
+- [`pg_dbsu_password`](/pgsql/param/#pg_dbsu_password): Set a non-empty plain-text password for proper Citus functionality.
+- [`pg_parameters`](/pgsql/param/#pg_parameters): It is recommended to set the `citus.node_conninfo` parameter, which enforces SSL access and requires node-to-node client certificate verification.
+
+Once configured, deploy the Citus cluster just like a regular PostgreSQL cluster using `pgsql.yml`.
+
+------
+
+## Managing Citus Clusters
+
+After defining the Citus cluster, use the same playbook `pgsql.yml` to deploy the Citus cluster:
+
+```bash
+./pgsql.yml -l pg-citus    # Deploy Citus cluster pg-citus
+```
+
+Any DBSU user (`postgres`) can use `patronictl` (alias: `pg`) to list the status of the Citus cluster:
+
+```bash
+$ pg list
++ Citus cluster: pg-citus ----------+---------+-----------+----+-----------+--------------------+
+| Group | Member      | Host        | Role    | State     | TL | Lag in MB | Tags               |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     0 | pg-citus0-1 | 10.10.10.10 | Leader  | running   |  1 |           | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 20C.40G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     1 | pg-citus1-1 | 10.10.10.11 | Leader  | running   |  1 |           | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 10C.20G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     2 | pg-citus2-1 | 10.10.10.12 | Leader  | running   |  1 |           | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 10C.20G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     2 | pg-citus2-2 | 10.10.10.13 | Replica | streaming |  1 |         0 | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 10C.20G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+```
+
+Each horizontal shard cluster can be treated as a separate PGSQL cluster, managed with the `pg` (`patronictl`) command. Note that when using `pg` to manage the Citus cluster, the `--group` parameter must be used to specify the cluster shard number:
+
+```bash
+pg list pg-citus --group 0   # Use --group 0 to specify the shard number
+```
+
+Citus has a system table called `pg_dist_node` to record node information, which Patroni automatically maintains.
+
+```bash
+PGURL=postgres://postgres:DBUser.Postgres@10.10.10.10/citus
+
+psql $PGURL -c 'SELECT * FROM pg_dist_node;'       # View node information
+```
+
+Additionally, you can view user authentication information (restricted to superusers):
+
+```bash
+$ psql $PGURL -c 'SELECT * FROM pg_dist_authinfo;'   # View node authentication info (superuser only)
+```
+
+You can then access the Citus cluster with regular business users (e.g., `dbuser_citus` with DDL permissions):
+
+```bash
+psql postgres://dbuser_citus:DBUser.Citus@10.10.10.10/citus -c 'SELECT * FROM pg_dist_node;'
+```
+
+------
+
+## Using the Citus Cluster
+
+When using a Citus cluster, we highly recommend reading the [Citus Official Documentation](https://docs.citusdata.com/en/stable/get_started/concepts.html) to understand its architecture and core concepts.
+
+Key to this is understanding the five types of tables in Citus, their characteristics, and use cases:
+
+- Distributed Table
+- Reference Table
+- Local Table
+- Local Management Table
+- Schema Table
+
+On the coordinator node, you can create distributed and reference tables and query them from any data node. Since version 11.2, any Citus database node can act as a coordinator.
+
+We can use `pgbench` to create some tables, distributing the main table (`pgbench_accounts`) across the nodes, and using other smaller tables as reference tables:
+
+```bash
+PGURL=postgres://dbuser_citus:DBUser.Citus@10.10.10.10/citus
+pgbench -i $PGURL
+
+psql $PGURL <<-EOF
+SELECT create_distributed_table('pgbench_accounts', 'aid'); SELECT truncate_local_data_after_distributing_table('public.pgbench_accounts');
+SELECT create_reference_table('pgbench_branches')         ; SELECT truncate_local_data_after_distributing_table('public.pgbench_branches');
+SELECT create_reference_table('pgbench_history')          ; SELECT truncate_local_data_after_distributing_table('public.pgbench_history');
+SELECT create_reference_table('pgbench_tellers')          ; SELECT truncate_local_data_after_distributing_table('public.pgbench_tellers');
+EOF
+```
+
+Run read-write bench:
+
+```bash
+pgbench -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.10/citus      # 直连协调者 5432 端口
+pgbench -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.10:6432/citus # 通过连接池，减少客户端连接数压力，可以有效提高整体吞吐。
+pgbench -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.13/citus      # 任意 primary 节点都可以作为 coordinator
+pgbench --select-only -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.11/citus # 可以发起只读查询
+```
+
+------
+
+## Production Deployment
+
+Production citus deployment usually requires physical replication for both coordinator and each worker cluster.
+
+For example, in [`simu.yml`](https://github.com/pgsty/pigsty/blob/main/conf/simu.yml) there’s a 10-node cluster cluster:
+
+```yaml
+pg-citus: # citus group
+  hosts:
+    10.10.10.50: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.60/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.51: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.60/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.52: { pg_group: 1, pg_cluster: pg-citus1 ,pg_vip_address: 10.10.10.61/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.53: { pg_group: 1, pg_cluster: pg-citus1 ,pg_vip_address: 10.10.10.61/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.54: { pg_group: 2, pg_cluster: pg-citus2 ,pg_vip_address: 10.10.10.62/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.55: { pg_group: 2, pg_cluster: pg-citus2 ,pg_vip_address: 10.10.10.62/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.56: { pg_group: 3, pg_cluster: pg-citus3 ,pg_vip_address: 10.10.10.63/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.57: { pg_group: 3, pg_cluster: pg-citus3 ,pg_vip_address: 10.10.10.63/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.58: { pg_group: 4, pg_cluster: pg-citus4 ,pg_vip_address: 10.10.10.64/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.59: { pg_group: 4, pg_cluster: pg-citus4 ,pg_vip_address: 10.10.10.64/24 ,pg_seq: 1, pg_role: replica }
+  vars:
+    pg_mode: citus                            # pgsql cluster mode: citus
+    pg_version: 16                            # citus does not have pg16 available
+    pg_shard: pg-citus                        # citus shard name: pg-citus
+    pg_primary_db: citus                      # primary database used by citus
+    pg_vip_enabled: true                      # enable vip for citus cluster
+    pg_vip_interface: eth1                    # vip interface for all members
+    pg_dbsu_password: DBUser.Postgres         # enable dbsu password access for citus
+    pg_extensions: [ citus, postgis, pgvector, topn, pg_cron, hll ]  # install these extensions
+    pg_libs: 'citus, pg_cron, pg_stat_statements' # citus will be added by patroni automatically
+    pg_users: [{ name: dbuser_citus ,password: DBUser.Citus ,pgbouncer: true ,roles: [ dbrole_admin ]    }]
+    pg_databases: [{ name: citus ,owner: dbuser_citus ,extensions: [ citus, vector, topn, pg_cron, hll ] }]
+    pg_parameters:
+      cron.database_name: citus
+      citus.node_conninfo: 'sslrootcert=/pg/cert/ca.crt sslmode=verify-full'
+    pg_hba_rules:
+      - { user: 'all' ,db: all  ,addr: 127.0.0.1/32  ,auth: ssl   ,title: 'all user ssl access from localhost' }
+      - { user: 'all' ,db: all  ,addr: intra         ,auth: ssl   ,title: 'all user ssl access from intranet'  }
+```
+
+We’ll cover a range of advanced topics in subsequent tutorials:
+
+- Read-write separation
+- Failover handling
+- Consistent backup and restore
+- Advanced monitoring and troubleshooting
+- Connection pool

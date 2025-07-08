@@ -18,7 +18,7 @@ It is designed to work together with the official PostgreSQL Global Development 
 
 ## Get Started
 
-You can enable the pigsty infra & pgsql repo with the [pig](/pig) CLI tool, or add them manually to your system:
+You can enable the pigsty infra & pgsql repo with the [pig](/ext/pig) CLI tool, or add them manually to your system:
 
 ```bash tab="pig"
 curl https://repo.pigsty.io/pig | bash      # download and install the pig CLI tool
@@ -69,17 +69,17 @@ EOF
 sudo yum makecache;
 ```
 
-All the RPM / DEB packages are signed with [GPG Key](/repo/gpg) fingerprint (`B9BD8B20`) in Pigsty repository.
+All the RPM / DEB packages are signed with [GPG Key](/ext/repo/gpg) fingerprint (`B9BD8B20`) in Pigsty repository.
 
 
 ---------
 
 ## Compatibility
 
-Pigsty has two major repos: [INFRA](/repo/infra/) and [PGSQL](/repo/pgsql/),
+Pigsty has two major repos: [INFRA](/ext/repo/infra/) and [PGSQL](/ext/repo/pgsql/),
 provide DEB / RPM for `x86_64` and `aarch64` architecture.
 
-The [`infra`](/repo/infra) repo contains packages that are generic to any PostgreSQL version and Linux major version,
+The [`infra`](/ext/repo/infra) repo contains packages that are generic to any PostgreSQL version and Linux major version,
 including prometheus & grafana stack, admin tools for postgres, and many utils written in go.
 
 | Linux  | Package | x86_64 | aarch64 |
@@ -87,7 +87,7 @@ including prometheus & grafana stack, admin tools for postgres, and many utils w
 |   EL   |  `rpm`  |   ✓    |    ✓    |
 | Debian |  `deb`  |   ✓    |    ✓    |
 
-The [`pgsql`](/repo/pgsql) repo contains packages that are ad hoc to specific PostgreSQL Major Versions.
+The [`pgsql`](/ext/repo/pgsql) repo contains packages that are ad hoc to specific PostgreSQL Major Versions.
 (Often ad hoc to a specific Linux distro major version, too) Including extensions, and some kernel forks.
 
 |  OS / Arch   | OS  |                                                                                               x86_64                                                                                                |                                                                                               aarch64                                                                                               |

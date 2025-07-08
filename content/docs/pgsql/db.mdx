@@ -10,7 +10,7 @@ A PostgreSQL server can serve multiple databases simultaneously. You can manage 
 
 ## Define Database
 
-Business databases are defined by [`pg_databases`](/docs/pgsql/param#pg_databases), which is a cluster-level parameter.
+Business databases are defined by [`pg_databases`](/pgsql/param#pg_databases), which is a cluster-level parameter.
 
 For example, the default `meta` database is defined in the `pg-meta` cluster:
 
@@ -61,9 +61,9 @@ Each database definition is a dict with the following fields:
 
 The only required field is `name`, which should be a valid and unique database name in PostgreSQL.
 
-Newly created databases are forked from `template1` database by default. Which is customized by [`PG_PROVISION`](/docs/pgsql/param#pg_provision) during cluster bootstrap.
+Newly created databases are forked from `template1` database by default. Which is customized by [`PG_PROVISION`](/pgsql/param#pg_provision) during cluster bootstrap.
 
-Check [ACL: Database Privilege](/docs/pgsql/acl#database-privilege) for details about database-level privilege.
+Check [ACL: Database Privilege](/pgsql/acl#database-privilege) for details about database-level privilege.
 
 
 
@@ -71,8 +71,8 @@ Check [ACL: Database Privilege](/docs/pgsql/acl#database-privilege) for details 
 
 ## Create Database
 
-Databases [defined](#define-database) in [`pg_databases`](/docs/pgsql/param#pg_databases) will be automatically created during module installation.
-If you wish to [create database](/docs/pgsql/admin#create-database) on an existing cluster, the `bin/pgsql-db` util can be used.
+Databases [defined](#define-database) in [`pg_databases`](/pgsql/param#pg_databases) will be automatically created during module installation.
+If you wish to [create database](/pgsql/admin#create-database) on an existing cluster, the `bin/pgsql-db` util can be used.
 
 Add new database definition to `all.children.<cls>.pg_databases`, and create that database with:
 
@@ -91,7 +91,7 @@ But if you have non-trivial `baseline` schema (like drop stuff), you should **NO
 <Callout title="Create postgres database with pigsty" type="warn">
 
     Pigsty will manage [pgbouncer database list](#pgbouncer-database), so please create business databases with the Pigsty playbook/utils.
-    Check [create database](/docs/pgsql/admin#create-database) SOP for details.
+    Check [create database](/pgsql/admin#create-database) SOP for details.
     If you are not using pgbouncer or able to maintain it by yourself, you can create databases in any way you like.
 
 </Callout>
@@ -100,7 +100,7 @@ But if you have non-trivial `baseline` schema (like drop stuff), you should **NO
 <Callout title="Create owner before create database" type="warn">
 
     If your database has a non-trivial `owner` (dbsu `postgres` by default), make sure the owner user exists before creating the database.
-    In short, always [create](/docs/pgsql/admin#create-user) the [users](/docs/pgsql/user) before creating databases.
+    In short, always [create](/pgsql/admin#create-user) the [users](/pgsql/user) before creating databases.
 
 </Callout>
 
@@ -114,7 +114,7 @@ But if you have non-trivial `baseline` schema (like drop stuff), you should **NO
 
 Pgbouncer is enabled by default and serves as connection pool middleware.
 
-Pigsty will add all databases in [`pg_databases`](/docs/pgsql/param#pg_databases) to the pgbouncer database list by default.
+Pigsty will add all databases in [`pg_databases`](/pgsql/param#pg_databases) to the pgbouncer database list by default.
 You can disable the pgbouncer proxy for a specific database by setting `pgbouncer: false` in the database [definition](#define-database).
 
 
@@ -132,7 +132,7 @@ noco     = host=/var/run/postgresql
 mongo    = host=/var/run/postgresql
 ```
 
-When you [create databases](/docs/pgsql/db#create-database), the Pgbouncer database list definition file will be refreshed and take effect through online configuration reload, without affecting existing connections.
+When you [create databases](/pgsql/db#create-database), the Pgbouncer database list definition file will be refreshed and take effect through online configuration reload, without affecting existing connections.
 
 
 To access pgbouncer admin functionality, you can use the `pgb` alias as dbsu (`postgres`).

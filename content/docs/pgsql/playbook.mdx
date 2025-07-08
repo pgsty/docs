@@ -8,12 +8,12 @@ How to manage PostgreSQL cluster with ansible playbooks
 
 Pigsty has a series of playbooks for PostgreSQL:
 
-- [`pgsql.yml`](/docs/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
-- [`pgsql-rm.yml`](/docs/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
-- [`pgsql-user.yml`](/docs/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
-- [`pgsql-db.yml`](/docs/pgsql/playbook/#pgsql-dbyml) : Add a new business database to existing PostgreSQL cluster
-- [`pgsql-monitor.yml`](/docs/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
-- [`pgsql-migration.yml`](/docs/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
+- [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
+- [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
+- [`pgsql-user.yml`](/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
+- [`pgsql-db.yml`](/pgsql/playbook/#pgsql-dbyml) : Add a new business database to existing PostgreSQL cluster
+- [`pgsql-monitor.yml`](/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
+- [`pgsql-migration.yml`](/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
 
 ------
 
@@ -21,7 +21,7 @@ Pigsty has a series of playbooks for PostgreSQL:
 
 If you are afraid of accidentally deleting your PostgreSQL cluster, you can enable the safeguard feature.
 
-Setting the [`pg_safeguard`](/docs/pgsql/param#pg_safeguard) parameter to `true` will stop the [`pgsql-rm.yml`](#pgsql-rmyml) from running.
+Setting the [`pg_safeguard`](/pgsql/param#pg_safeguard) parameter to `true` will stop the [`pgsql-rm.yml`](#pgsql-rmyml) from running.
 
 <Callout title="Before Pigsty v3.5, pgsql.yml can nuke your database with fat finger, use with caution!" type="warning">
 
@@ -123,15 +123,15 @@ pg_monitor              : # setup pgsql monitor and register to infra
 
 **Administration Tasks that use this playbook**
 
-- [`Create Cluster`](/docs/pgsql/admin#create-cluster)
-- [`Append Replica`](/docs/pgsql/admin#append-replica)
-- [`Reload Service`](/docs/pgsql/admin#reload-service)
-- [`Reload HBARule`](/docs/pgsql/admin#reload-hbarule)
+- [`Create Cluster`](/pgsql/admin#create-cluster)
+- [`Append Replica`](/pgsql/admin#append-replica)
+- [`Reload Service`](/pgsql/admin#reload-service)
+- [`Reload HBARule`](/pgsql/admin#reload-hbarule)
 
 <Callout title="Init Primary before Replicas" type="warning">
 
-    - you may have to run [`Reload HBARule`](/docs/pgsql/admin#reload-hbarule) and [`Append Replica`](/docs/pgsql/admin#append-replica) after replica init.
-    - The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/docs/pgsql/admin#append-replica) for details.
+    - you may have to run [`Reload HBARule`](/pgsql/admin#reload-hbarule) and [`Append Replica`](/pgsql/admin#append-replica) after replica init.
+    - The wrap script `pgsql-add` will do this, check SOP: [Add Instance](/pgsql/admin#append-replica) for details.
     - If you run this on the entire cluster, you don’t have to worry about this.
 
 </Callout>
@@ -139,7 +139,7 @@ pg_monitor              : # setup pgsql monitor and register to infra
 
 <Callout title="Init Upstream cluster before Standby Clusters" type="warning">
 
-    - If you are initializing a [standby cluster](/docs/pgsql/config#standby-cluster), you should make sure the upstream cluster is already initialized.
+    - If you are initializing a [standby cluster](/pgsql/config#standby-cluster), you should make sure the upstream cluster is already initialized.
 
 </Callout>
 
@@ -196,8 +196,8 @@ Some arguments can affect the behavior of this playbook:
 
 **Administration Tasks that use this playbook**
 
-- [`Remove Replica`](/docs/pgsql/admin#remove-replica)
-- [`Remove Cluster`](/docs/pgsql/admin#remove-cluster)
+- [`Remove Replica`](/pgsql/admin#remove-replica)
+- [`Remove Cluster`](/pgsql/admin#remove-cluster)
 
 **Some notes about this playbook**
 
@@ -212,7 +212,7 @@ Some arguments can affect the behavior of this playbook:
 <Callout title="Reload service after removing replicas from cluster" type="info">
 
     - It is a dead server, so it won’t affect the cluster service.
-    - But you should [reload service](/docs/pgsql/admin#reload-service) in time to ensure the consistency between the environment and the config inventory.
+    - But you should [reload service](/pgsql/admin#reload-service) in time to ensure the consistency between the environment and the config inventory.
 
 </Callout>
 
@@ -230,7 +230,7 @@ Some arguments can affect the behavior of this playbook:
 
 The playbook [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) can add new business user to existing PostgreSQL cluster.
 
-Check admin SOP: [`Create User`](/docs/pgsql/admin#create-user)
+Check admin SOP: [`Create User`](/pgsql/admin#create-user)
 
 ------
 
@@ -238,7 +238,7 @@ Check admin SOP: [`Create User`](/docs/pgsql/admin#create-user)
 
 The playbook [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) can add new business database to existing PostgreSQL cluster.
 
-Check admin SOP: [`Create Database`](/docs/pgsql/admin#create-database)
+Check admin SOP: [`Create Database`](/pgsql/admin#create-database)
 
 ------
 
@@ -246,7 +246,7 @@ Check admin SOP: [`Create Database`](/docs/pgsql/admin#create-database)
 
 The playbook [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml) can monitor remote postgres instance with local exporters.
 
-Check admin SOP: [`Monitor Postgres`](/docs/pgsql/monitor/#monitor-rds)
+Check admin SOP: [`Monitor Postgres`](/pgsql/monitor/#monitor-rds)
 
 ------
 
@@ -254,5 +254,5 @@ Check admin SOP: [`Monitor Postgres`](/docs/pgsql/monitor/#monitor-rds)
 
 The playbook [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) can generate migration manual & scripts for existing PostgreSQL cluster.
 
-Check admin SOP: [Migration](/docs/pgsql/migration/)
+Check admin SOP: [Migration](/pgsql/migration/)
 

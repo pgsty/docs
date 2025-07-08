@@ -1,15 +1,14 @@
 {
   "title": "ETCD",
   "description": "PG 高可用依赖的 DCS 元数据库",
-  "root": false,
-  "icon": "Settings",
+  "root": true,
   "pages": [
+    "index",
     "config",
     "param",
     "admin",
     "playbook",
     "monitor",
-    "faq",
-    "..."
+    "faq"
   ]
 }

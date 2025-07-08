@@ -1,0 +1,315 @@
+---
+title: Kernel
+description: Replace vanilla PostgreSQL with exotic kernel forks
+icon: Cpu
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Badge } from '@/components/ui/badge';
+import { Network, Database, Shield, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand, Bird } from 'lucide-react';
+
+
+Pigsty supports various PostgreSQL kernels and compatible forks,
+enabling you to simulate different database systems while leveraging PostgreSQL's ecosystem.
+Each kernel provides unique capabilities and compatibility layers.
+
+
+## Database Kernels
+
+<Cards>
+    <Card
+        title="Citus"
+        description="Native Distributive Extension"
+        href="#citus"
+        icon={<Network className="text-emerald-600"/>}
+    />
+    <Card
+        title="Babelfish"
+        description="SQL Server wire-compatible"
+        href="#babelfish"
+        icon={<Fish className="text-gray-600"/>}
+    />
+    <Card
+        title="IvorySQL"
+        description="Oracle grammar & PL/SQL compatible"
+        href="#ivorysql"
+        icon={<Target className="text-sky-700"/>}
+    />
+    <Card
+        title="OpenHalo"
+        description="MySQL wire-compatibility"
+        href="#openhalo"
+        icon={<RefreshCcw className="text-red-600"/>}
+    />
+    <Card
+        title="OrioleDB"
+        description="OLTP-optimized cloud-native storage engine"
+        href="#orioledb"
+        icon={<Bird className="text-yellow-500"/>}
+    />
+    <Card
+        title="PolarDB PG"
+        description="Aurora-like shared storage, with china compliance"
+        href="#polardb"
+        icon={<PawPrint className="text-orange-500"/>}
+    />
+    <Card
+        title="Supabase"
+        description="Backend as a Service, self-hosting Firebase"
+        href="#supabase"
+        icon={<Zap className="text-green-400"/>}
+    />
+    <Card
+        title="Greenplum"
+        description="Massively parallel processing data warehouse"
+        href="#greenplum"
+        icon={<Cherry className="text-emerald-700"/>}
+    />
+</Cards>
+
+
+--------
+
+## Choose the Right Kernel
+
+<Callout type="info">
+    **Flexible Kernel**: Choose the right kernel for your specific use case - whether you need MSSQL compatibility, Oracle features, or horizontal scaling capabilities.
+</Callout>
+
+| Kernel                              | Key Feature                     | Description                                    |
+|-------------------------------------|---------------------------------|------------------------------------------------|
+| [PostgreSQL](/pgsql/kernel/postgres)   | **Original Flavor**             | Vanilla PostgreSQL with 420+ extensions        |
+| [Citus](/pgsql/kernel/citus)        | **Horizontal Scaling**          | Distributive PostgreSQL via native extension   |
+| [WiltonDB](/pgsql/kernel/babelfish) | **SQL Server Migration**        | SQL Server wire-compatibility                  |
+| [IvorySQL](/pgsql/kernel/ivorysql)  | **Oracle Migration**            | Oracle Grammar and PL/SQL compatible           |
+| [OpenHalo](/pgsql/kernel/openhalo)  | **MySQL Migration**             | MySQL wire-protocol compatibility              |
+| [Percona](/pgsql/kernel/percona)    | **Transparent Data Encryption** | Percona Distribution with pg_tde               |
+| [FerretDB](/pgsql/kernel/ferretdb)  | **MongoDB Migration**           | MongoDB wire-protocol compatibility            |
+| [OrioleDB](/pgsql/kernel/orioledb)  | **OLTP Optimization**           | Zheap, No bloat, S3 Storage                    |
+| [PolarDB](/pgsql/kernel/polardb)    | **Aurora flavor RAC**           | RAC, China domestic compliance                 |
+| [Supabase](/pgsql/kernel/supabase)  | **Backend as Service**          | BaaS based on PostgreSQL, Firebase alternative |
+
+
+
+
+
+--------
+
+## Citus (Distributive) [#citus]
+
+<Badge icon={<Clock />}  variant="blue-subtle"><a   href="#citus" className="no-underline">Citus</a></Badge>
+<Badge icon={<Expand />}  variant="blue-subtle">Native Distributive</Badge>
+
+
+Citus transforms PostgreSQL into a distributed database system, enabling horizontal scaling across multiple nodes. Deploy native HA Citus clusters with Pigsty for better throughput and performance.
+
+### Key Features [!toc]
+
+- **Distributed Tables**: Automatically shard tables across worker nodes
+- **Distributed Queries**: Execute queries across the entire cluster
+- **High Availability**: Built-in replication and failover capabilities
+- **Real-time Analytics**: Handle both transactional and analytical workloads
+- **Postgres Compatibility**: Maintain full PostgreSQL feature compatibility
+
+### Use Cases [!toc]
+
+- Multi-tenant SaaS applications requiring horizontal scaling
+- Real-time analytics on large datasets
+- High-throughput OLTP workloads
+- Applications need to scale beyond single-node limitations
+
+<Callout type="warn">
+    **Planning Required**: Proper shard key selection is crucial for optimal performance and avoiding cross-shard queries.
+</Callout>
+
+--------
+
+## Babelfish (MSSQL) [#babelfish]
+
+<Callout variant="secondary">SQL Server Compatible</Callout> <Callout variant="outline">Beta</Callout>
+
+Create SQL Server-compatible PostgreSQL clusters with WiltonDB and Babelfish, providing wire protocol-level compatibility with Microsoft SQL Server.
+
+### Key Features [!toc]
+
+- **T-SQL Support**: Execute T-SQL queries natively
+- **Wire Protocol Compatibility**: Connect using SQL Server drivers and tools
+- **Stored Procedures**: Support for T-SQL stored procedures and functions
+- **Data Types**: Compatible with SQL Server data types and behaviors
+- **Migration Tools**: Simplified migration from SQL Server environments
+
+### Use Cases [!toc]
+
+- Migrating legacy SQL Server applications to PostgreSQL
+- Multi-database environments requiring SQL Server compatibility
+- Cost reduction while maintaining application compatibility
+- Cloud migration from SQL Server to open-source alternatives
+
+<Callout type="info">
+    **Migration Path**: Ideal for organizations looking to reduce licensing costs while maintaining existing SQL Server application compatibility.
+</Callout>
+
+--------
+
+## IvorySQL (Oracle) [#ivorysql]
+
+<Callout variant="secondary">Oracle Compatible</Callout> <Callout variant="outline">Community</Callout>
+
+Run Oracle-compatible PostgreSQL clusters with the IvorySQL kernel, open-sourced by HighGo, providing Oracle syntax and feature compatibility.
+
+### Key Features [!toc]
+
+- **PL/SQL Support**: Execute PL/SQL code with minimal modifications
+- **Oracle Syntax**: Support for Oracle-specific SQL syntax and functions
+- **Package Support**: Oracle-style package and procedure definitions
+- **Data Types**: Oracle-compatible data types and behaviors
+- **Migration Tools**: Utilities for Oracle to PostgreSQL migration
+
+### Use Cases [!toc]
+
+- Oracle database migration projects
+- Organizations seeking Oracle feature compatibility
+- Cost optimization while preserving Oracle functionality
+- Development environments requiring Oracle compatibility
+
+<Callout type="note">
+    **Enterprise Focus**: Particularly valuable for enterprises with significant Oracle investments looking for migration paths.
+</Callout>
+
+--------
+
+## OpenHalo (MySQL) [#openhalo]
+
+<Callout variant="secondary">MySQL Compatible</Callout> <Callout variant="outline">Experimental</Callout>
+
+The OpenHalo kernel provides MySQL-compatible PostgreSQL functionality, accessible using standard MySQL clients and protocols.
+
+### Key Features [!toc]
+
+- **MySQL Protocol**: Wire-level compatibility with MySQL protocol
+- **Client Compatibility**: Use existing MySQL drivers and tools
+- **SQL Dialect**: Support for MySQL-specific SQL syntax
+- **Migration Support**: Simplified migration from MySQL environments
+- **Ecosystem Integration**: Leverage PostgreSQL's advanced features with MySQL compatibility
+
+### Use Cases [!toc]
+
+- MySQL application migration to PostgreSQL
+- Multi-database environments requiring MySQL compatibility
+- Leveraging PostgreSQL features while maintaining MySQL interface
+- Gradual migration strategies from MySQL to PostgreSQL
+
+<Callout type="warn">
+    **Early Stage**: Currently experimental - evaluate thoroughly before production use.
+</Callout>
+
+--------
+
+## OrioleDB (OLTP) [#orioledb]
+
+<Callout variant="secondary">OLTP Optimized</Callout> <Callout variant="outline">Innovation</Callout>
+
+A PostgreSQL storage engine optimized for OLTP workloads, eliminating transaction ID wraparound issues and table bloat while supporting cloud storage.
+
+Compatible with PostgreSQL 17, Available on all support platforms.
+
+### Key Features [!toc]
+
+- **No XID Wraparound**: Eliminates transaction ID wraparound maintenance
+- **No Table Bloat**: Advanced storage management prevents table bloat
+- **Cloud Storage**: Native support for S3-compatible object storage
+- **OLTP Optimization**: Specifically designed for transactional workloads
+- **Improved Performance**: Better space utilization and query performance
+
+### Use Cases [!toc]
+
+- High-frequency transactional applications
+- Cloud-native deployments requiring object storage
+- Applications suffering from PostgreSQL maintenance overhead
+- Systems requiring consistent performance without vacuum cycles
+
+<Callout type="warn">
+    **Early Stage**: Currently in Beta - evaluate thoroughly before production use.
+</Callout>
+
+--------
+
+## PolarDB PG (RAC) [#polardb]
+
+<Callout variant="secondary">Shared Storage</Callout> <Callout variant="outline">Alibaba Cloud</Callout>
+
+Replace vanilla PostgreSQL with PolarDB PG, an open-source Aurora-like solution similar to Oracle RAC with shared storage architecture.
+
+### Key Features
+
+- **Shared Storage**: Multiple compute nodes sharing the same storage layer
+- **Read Scaling**: Add read replicas without storage duplication
+- **Fast Recovery**: Rapid recovery through shared storage architecture
+- **Cost Efficiency**: Reduced storage costs through sharing
+- **High Availability**: Built-in failover and disaster recovery
+
+### Use Cases
+
+- Applications requiring extreme read scalability
+- Cost-sensitive deployments needing high availability
+- Cloud environments with shared storage infrastructure
+- Workloads with variable read/write patterns
+
+<Callout type="note">
+    **Cloud Architecture**: Designed for cloud environments with disaggregated compute and storage.
+</Callout>
+
+--------
+
+## Supabase (Firebase) [#supabase]
+
+<Callout variant="secondary">Firebase Alternative</Callout> <Callout variant="outline">Self-Hosted</Callout>
+
+Self-host Supabase with existing managed HA PostgreSQL clusters, launching the stateless components with docker-compose for a complete Firebase alternative.
+
+### Key Features [!toc]
+
+- **Real-time APIs**: Auto-generated REST and GraphQL APIs
+- **Real-time Subscriptions**: WebSocket-based real-time data sync
+- **Authentication**: Built-in user authentication and authorization
+- **Storage**: File storage with CDN capabilities
+- **Edge Functions**: Serverless functions for custom logic
+
+### Use Cases [!toc]
+
+- Rapid application development with backend-as-a-service
+- Real-time applications requiring instant data sync
+- JAMstack applications needing serverless backend
+- Mobile and web apps requiring authentication and storage
+
+<Callout type="tip">
+    **Full Stack**: Provides a complete backend solution with PostgreSQL as the foundation.
+</Callout>
+
+--------
+
+## Greenplum (MPP) [#greenplum]
+
+<Callout variant="secondary">Massively Parallel</Callout> <Callout variant="outline">Analytics</Callout>
+
+Deploy and monitor Greenplum/YMatrix MPP clusters with Pigsty for large-scale analytical processing and data warehousing.
+
+### Key Features [!toc]
+
+- **Massively Parallel Processing**: Distribute queries across multiple nodes
+- **Columnar Storage**: Optimized storage for analytical workloads
+- **Advanced Analytics**: Built-in machine learning and statistical functions
+- **Petabyte Scale**: Handle massive datasets with linear scalability
+- **Standard SQL**: Full SQL compliance with PostgreSQL compatibility
+
+### Use Cases [!toc]
+
+- Data warehousing and business intelligence
+- Large-scale analytics and reporting
+- Machine learning on big datasets
+- ETL processing for enterprise data platforms
+
+<Callout type="info">
+    **Enterprise Analytics**: Designed for enterprise-scale analytical workloads requiring massive parallel processing capabilities.
+</Callout>
+

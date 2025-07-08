@@ -1,9 +1,10 @@
 {
-  "title": "APP",
+  "title": "Application",
   "description": "Run application with templates",
   "icon": "PencilRuler",
-  "root": false,
+  "root": true,
   "pages": [
+    "index",
     "playbook",
     "pgadmin",
     "supabase",

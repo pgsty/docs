@@ -7,7 +7,7 @@ icon: CodeXml
 
 You don't need to define node cluster and node instances explicitly.
 It is often implied by other database [module](/docs/intro/module)'s cluster definition.
-If you define a [PGSQL](/docs/pgsql/) cluster, it defines a node cluster implicitly.
+If you define a [PGSQL](/pgsql/) cluster, it defines a node cluster implicitly.
 
 
 But there are some cases where you may want to use explicit named node clusters / instances.
@@ -22,10 +22,10 @@ Pigsty uses node's primary IPv4 address (`inventory_hostname`) as its identity.
 |                      Name                       |   Type   | Level | Necessity    | Comment               |
 |:-----------------------------------------------:|:--------:|:-----:|--------------|-----------------------|
 |              `inventory_hostname`               |   `ip`   | **-** | **Required** | **Node IP**           |
-|     [`nodename`](/docs/node/param#nodename)     | `string` | **I** | Optional     | **Node Name**         |
-| [`node_cluster`](/docs/node/param#node_cluster) | `string` | **C** | Optional     | **Node cluster name** |
+|     [`nodename`](/node/param#nodename)     | `string` | **I** | Optional     | **Node Name**         |
+| [`node_cluster`](/node/param#node_cluster) | `string` | **C** | Optional     | **Node cluster name** |
 
-The [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/param#node_cluster) can be used as optional secondary identity for monitoring purpose.
+The [`nodename`](/node/param#nodename) & [`node_cluster`](/node/param#node_cluster) can be used as optional secondary identity for monitoring purpose.
 
 ```yaml title="node cluster example"
 node-test:
@@ -50,13 +50,13 @@ the node's identity can be borrowed from corresponding PG instances:
 
 |                      Name                       | Label | Level | Borrowed Identity               | Comment              |
 |:-----------------------------------------------:|:-----:|:-----:|---------------------------------|----------------------|
-|     [`nodename`](/docs/node/param#nodename)     | `ins` | **I** | `{{ pg_cluster }}-{{ pg_seq }}` | **PG Instance Name** |
-| [`node_cluster`](/docs/node/param#node_cluster) | `cls` | **C** | `{{ pg_cluster }}`              | **PG Cluster Name**  |
+|     [`nodename`](/node/param#nodename)     | `ins` | **I** | `{{ pg_cluster }}-{{ pg_seq }}` | **PG Instance Name** |
+| [`node_cluster`](/node/param#node_cluster) | `cls` | **C** | `{{ pg_cluster }}`              | **PG Cluster Name**  |
 
 This is default behavior, it's convenient to have PG & NODE with the same `cls` / `ins` identity labels in the monitoring system.
-This can be disabled by overwriting the [`node_id_from_pg`](/docs/node/param#node_id_from_pg) param to `false`
+This can be disabled by overwriting the [`node_id_from_pg`](/node/param#node_id_from_pg) param to `false`
 
-If there's no corresponding PG instance defined, and no explicit [`nodename`](/docs/node/param#nodename) & [`node_cluster`](/docs/node/param#node_cluster) defined,
+If there's no corresponding PG instance defined, and no explicit [`nodename`](/node/param#nodename) & [`node_cluster`](/node/param#node_cluster) defined,
 the node will be labeled with `cls` as `nodes` and `ins` as the current hostname.
 
 
@@ -66,7 +66,7 @@ the node will be labeled with `cls` as `nodes` and `ins` as the current hostname
 
 The `inventory_hostname` is used by [Ansible](/docs/admin/ansible) to connect to the node via SSH.
 
-If your node cannot be simply access via `ssh <inventory_hostname>`, [ssh alias](/docs/prepare/alias) and more [ansible conn param](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) (even a different IP) can be used.
+If your node cannot be simply access via `ssh <inventory_hostname>`, [ssh alias](/docs/prepare/admin/#using-alias) and more [ansible conn param](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) (even a different IP) can be used.
 But the `inventory_hostname` is still the core identity of the node.
 
 ```yaml title="ssh param example"
