@@ -6,7 +6,7 @@ icon: Download
 
 
 
-In Pigsty, downloading and [**installing**](/pgsql/ext/install) extensions are separate steps. During [**`INFRA`**](/infra/) module installation, Pigsty downloads all required software to the local machine and creates a local YUM/APT repo for the entire deployment.
+In Pigsty, downloading and [**installing**](/pgsql/extension/install) extensions are separate steps. During [**`INFRA`**](/infra/) module installation, Pigsty downloads all required software to the local machine and creates a local YUM/APT repo for the entire deployment.
 
 This approach accelerates installation, eliminates redundant downloads, removes the need for database nodes to access the internet, reduces network traffic, improves delivery reliability, and ensures consistent versions across your environment - all best practices for production deployments.
 
@@ -26,7 +26,7 @@ The default value for `repo_extra_packages` is `[pgsql-main]`, an alias represen
 repo_extra_packages: [ pgsql-main ]  # main packages (kernel + 3 extension) for current pg major 17
 ```
 
-To add specific extensions, simply add Pigsty [**extension package name (`pkg`)**](/pgsql/ext/pkg) to this parameter. Pigsty automatically downloads the appropriate packages for your active PG version and current OS distro.
+To add specific extensions, simply add Pigsty [**extension package name (`pkg`)**](/pgsql/extension/pkg) to this parameter. Pigsty automatically downloads the appropriate packages for your active PG version and current OS distro.
 
 ```yaml
 repo_extra_packages: [ pgsql-main, documentdb, citus, postgis, pgvector, pg_cron, rum ]
@@ -70,7 +70,7 @@ PostgreSQL has a rich open-source ecosystem with numerous packages across differ
 
 Pigsty provides an abstraction layer that categorizes PostgreSQL packages into “aliases,” hiding differences between systems, architectures, and PG versions.
 
-In the [**Quick Start**](/pgsql/ext/download#quick-start) section, we used aliases like `pgsql-main` and `pgsql-core`. These aliases are translated into specific package names based on your system and architecture. For EL systems, `pgsql-main` expands to `postgresql$v*` kernel packages with `pgvector_$v*`, `pg_repack_$v*`, and `wal2json_$v*` extension packages.
+In the [**Quick Start**](/pgsql/extension/download#quick-start) section, we used aliases like `pgsql-main` and `pgsql-core`. These aliases are translated into specific package names based on your system and architecture. For EL systems, `pgsql-main` expands to `postgresql$v*` kernel packages with `pgvector_$v*`, `pg_repack_$v*`, and `wal2json_$v*` extension packages.
 
 ```yaml
 pgsql-main:   "postgresql$v* pg_repack_$v* wal2json_$v* pgvector_$v*"

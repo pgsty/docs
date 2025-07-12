@@ -10,7 +10,7 @@ Pigsty piggyback on standard OS package managers (yum/apt) to install PostgreSQL
 
 ## Quick Start
 
-When installing extensions, Pigsty uses the same [**alias mapping**](/pgsql/ext/pkg) in the [**download**](/pgsql/ext/download) section.
+When installing extensions, Pigsty uses the same [**alias mapping**](/pgsql/extension/pkg) in the [**download**](/pgsql/extension/download) section.
 
 Install all extensions explicitly specified in the `pg_extensions` parameter, for the cluster `pg-meta`:
 
@@ -109,10 +109,10 @@ Note that extension plugins specified in the `pg_extension` task will be **upgra
 
 To install extension, you need to ensure one of the following conditions is met:
 
-- **Local Repo**: You have configured using Pigsty’s local repo, and the extensions have already been [**downloaded**](/pgsql/ext/download/) to the local repo.
+- **Local Repo**: You have configured using Pigsty’s local repo, and the extensions have already been [**downloaded**](/pgsql/extension/download/) to the local repo.
 - **Online Repo**: You have directly configured upstream internet repo on the target node, and internet access is available on these nodes.
 
-For production environments, we recommend using Pigsty’s local software repo to manage and install extensions uniformly: First [**download**](/pgsql/ext/download) extensions to the local repo, then install them from there.
+For production environments, we recommend using Pigsty’s local software repo to manage and install extensions uniformly: First [**download**](/pgsql/extension/download) extensions to the local repo, then install them from there.
 This ensures consistent extension versions across your environment and prevents database nodes from directly accessing the internet. You have to do nothing when installed from local repo, just make sure they are downloaded to the local repo.
 
 For development environments, you may choose to directly use upstream internet repo for convenience. Use the following commands to add Internet repo and install extensions on the target cluster directly:
@@ -126,11 +126,11 @@ For development environments, you may choose to directly use upstream internet r
 
 ## Package Alias
 
-When installing extensions, users can use [**extension aliases**](/pgsql/ext/pkg) to specify extension.
+When installing extensions, users can use [**extension aliases**](/pgsql/extension/pkg) to specify extension.
 
-The aliases will be [**translated**](/pgsql/ext/pkg) to the current active PG major version and OS environment.
+The aliases will be [**translated**](/pgsql/extension/pkg) to the current active PG major version and OS environment.
 
-and translated to the corresponding RPM/DEB package names by [**alias translation mechanism**](/pgsql/ext/pkg).
+and translated to the corresponding RPM/DEB package names by [**alias translation mechanism**](/pgsql/extension/pkg).
 
 ------
 

@@ -286,7 +286,7 @@ all:
             pool_connlimit: -1              # optional, max database connections at user level, default -1 disable limit
           - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly], comment: read-only viewer for meta database }
 
-        # define pg extensions: https://pgsty.com/pgsql/ext
+        # define pg extensions: https://pgsty.com/pgsql/extension
         pg_libs: 'pg_stat_statements, auto_explain' # add timescaledb to shared_preload_libraries
         pg_extensions: [ pgvector ] # check list for available extension for your pg & os combination: https://pigsty.io/ext/list
 

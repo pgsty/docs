@@ -766,7 +766,7 @@ PostgreSQL packages (rpm/deb) to be installed. This is an array of package names
 
 Default value: `[ pgsql-main pgsql-common ]`
 
-These default values are two aliases that are translated through [**alias mapping**](/pgsql/ext/pkg) into the main RPM/DEB package names for the current PG major version, as well as version-independent common components (such as Patroni, PgBackrest, etc.)
+These default values are two aliases that are translated through [**alias mapping**](/pgsql/extension/pkg) into the main RPM/DEB package names for the current PG major version, as well as version-independent common components (such as Patroni, PgBackrest, etc.)
 
 Since Pigsty v3, you can use the alias lists specified in the system configuration in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) for this parameter.
 
