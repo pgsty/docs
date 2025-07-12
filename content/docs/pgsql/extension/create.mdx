@@ -16,7 +16,7 @@ CREATE EXTENSION vector; -- no explicit loading required
 CREATE EXTENSION timescaledb; -- explicit loading required
 ```
 
-Extensions need to be [**installed**](/pgsql/extension/install) first, some extension also require [**preloading**](/pgsql/extension/config) before using.
+Extensions need to be [**installed**](/pgsql/extension/install) first, some extension also requires [**preloading**](/pgsql/extension/config) before using.
 
 Some extensions have dependencies on other extensions.
 In such cases, you can either install the dependencies first
@@ -94,7 +94,7 @@ But it's helpful to enlist them in the [config inventory](/config/inventory) for
 
 ## Default Extension
 
-Some built-in extensions and one special [`pg_repack`](/e/pg_repack) are created by default in Pigsty.
+Some built-in extensions and one special [`pg_repack`](https://ext.pgsty.com/e/pg_repack) are created by default in Pigsty.
 
 These extensions are defined by [**`pg_default_extensions`**](/pgsql/param#pg_default_extensions), created in the `template1` database and the `postgres` database by default.
 Newly created databases will inherit these extensions from `template1`, so you don't need to create them again.
@@ -123,18 +123,18 @@ Which is used to contain monitoring related extensions, tables, functions and vi
 
 There are three **3rd-party** extensions that are available by default in Pigsty:
 
-|           Extension           | What                          | Where                                                                                                   |
-|:-----------------------------:|-------------------------------|---------------------------------------------------------------------------------------------------------|
-| [`pg_repack`](/e/pg_repack) | Online Bloat Control  Tools   | in the [`pg_default_extensions`](/pgsql/param#pg_default_extensions)                               |
-|  [`wal2json`](/e/wal2json)  | Changing data capture in JSON | extension [without DDL](/ext/list/attr#without-ddl), [install](/pgsql/extension/install) means available |
-|    [`vector`](/e/vector)    | vector data type & indexes    | in [`pg_databases`](/pgsql/param#pg_databases)  as an example                                      |
+|                    Extension                     | What                          | Where                                                                                                                     |
+|:------------------------------------------------:|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| [`pg_repack`](https://ext.pgsty.com/e/pg_repack) | Online Bloat Control  Tools   | in the [`pg_default_extensions`](/pgsql/param#pg_default_extensions)                                                      |
+|  [`wal2json`](https://ext.pgsty.com/e/wal2json)  | Changing data capture in JSON | extension [without DDL](https://ext.pgsty.com/list/attr#without-ddl), [install](/pgsql/extension/install) means available |
+|    [`vector`](https://ext.pgsty.com/e/vector)    | vector data type & indexes    | in [`pg_databases`](/pgsql/param#pg_databases)  as an example                                                             |
 
-The [`pg_repack`](/e/pg_repack) extension is an important utility for maintaining bloat tables online.
+The [`pg_repack`](https://ext.pgsty.com/e/pg_repack) extension is an important utility for maintaining bloat tables online.
 
-[**`vector`**](/e/vector) is a very popular extension for RAG,
+[**`vector`**](https://ext.pgsty.com/e/vector) is a very popular extension for RAG,
 It is [**installed**](/pgsql/extension/install) by default (in the `pgsql-main` [alias](/pgsql/extension/pkg)) and created in the placeholder `meta` database in most [config template](/config/template).
 
-The [`wal2json`](/e/wal2json) is another important extension for Changing Data Capture (CDC). It is [installed](/pgsql/extension/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
+The [`wal2json`](https://ext.pgsty.com/e/wal2json) is another important extension for Changing Data Capture (CDC). It is [installed](/pgsql/extension/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
 So you don't need to `CREATE` it explicitly.
 
 
@@ -142,7 +142,7 @@ So you don't need to `CREATE` it explicitly.
 
 ## Extension without DDL
 
-[Extension without DDL](/ext/list/attr#without-ddl) does not require the `CREATE EXTENSION` command to work
+[Extension without DDL](https://ext.pgsty.com/list/attr#without-ddl) does not require the `CREATE EXTENSION` command to work
 
 PostgreSQL extensions typically consist of three parts: a required control file, optional SQL files, and optional libraries.
 If an extension does not have SQL file, `CREATE EXTENSION` command is not needed.
@@ -156,7 +156,7 @@ If an extension does not have SQL file, `CREATE EXTENSION` command is not needed
 Since SQL / LIB files are optional, there are four possible combinations of extension types:
 
 | **[LOAD](/pgsql/extension/config) / DDL** | Requires `CREATE EXTENSION` | Doesn't require `CREATE EXTENSION` |
-|------------------------------------------|-----------------------------|------------------------------------|
-| **Requires `LOAD`**                      | Extensions using hooks      | Headless extensions                |
-| **Doesn't Require `LOAD`**               | Extensions not using hooks  | Logical decoding output plugins    |
+|-------------------------------------------|-----------------------------|------------------------------------|
+| **Requires `LOAD`**                       | Extensions using hooks      | Headless extensions                |
+| **Doesn't Require `LOAD`**                | Extensions not using hooks  | Logical decoding output plugins    |
 

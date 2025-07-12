@@ -6,9 +6,9 @@ icon: Boxes
 
 Pigsty allows you to harness the synergistic superpower of the PostgreSQL extensions ecosystem with three things:
 
-- [**Catalog**](/ext/list) : Find the extension you need, with unparalleled 420+ extensions included
-- [**Repository**](/ext/repo) : Get pre-made RPM/DEB packages for 10 mainstream Linux OS
-- [**Package Manager**](/ext/pig) : Install everything with a single command - `pig`
+- [**Catalog**](https://ext.pgsty.com/list) : Find the extension you need, with unparalleled 420+ extensions included
+- [**Repository**](https://ext.pgsty.com/repo) : Get pre-made RPM/DEB packages for 10 mainstream Linux OS
+- [**Package Manager**](https://ext.pgsty.com/pig) : Install everything with a single command - `pig`
 
 Also check our blog post: [PostgreSQL is eating the Database World](https://medium.com/@fengruohang/postgres-is-eating-the-database-world-157c204dcfc4)
 
@@ -65,7 +65,7 @@ import { Clock, Globe, Brain, Search, ChartNoAxesCombined, Sparkles, BookA, Boxe
 Pigsty has a repository that provides 200+ extra PostgreSQL extensions on 10 mainstream [Linux Distros](/prepare/linux/).
 It is designed to work together with the official PostgreSQL Global Development Group ([PGDG](https://www.postgresql.org/download/linux/)) repo.
 
-You can enable the pigsty infra & pgsql repo with the [pig](/ext/pig) CLI tool, or add them manually to your system:
+You can enable the pigsty infra & pgsql repo with the [pig](https://ext.pgsty.com/pig) CLI tool, or add them manually to your system:
 
 ```bash tab="pig"
 curl https://repo.pigsty.io/pig | bash      # download and install the pig CLI tool
@@ -116,7 +116,7 @@ EOF
 sudo yum makecache;
 ```
 
-All the RPM / DEB packages are signed with [GPG Key](/ext/repo/gpg) fingerprint (`B9BD8B20`) in Pigsty repository.
+All the RPM / DEB packages are signed with [GPG Key](https://ext.pgsty.com/repo/gpg) fingerprint (`B9BD8B20`) in Pigsty repository.
 
 
 --------
@@ -125,7 +125,7 @@ All the RPM / DEB packages are signed with [GPG Key](/ext/repo/gpg) fingerprint 
 
 "Postgres Install Genius, the missing extension package manager for PostgreSQL ecosystem"
 
-[Get started](/ext/pig/start) with PIG in seconds:
+[Get started](https://ext.pgsty.com/pig/start) with PIG in seconds:
 
 ```bash tab="default"
 curl -fsSL https://repo.pigsty.io/pig | bash
@@ -134,7 +134,7 @@ curl -fsSL https://repo.pigsty.io/pig | bash
 curl -fsSL https://repo.pigsty.cc/pig | bash
 ```
 
-Then it’s ready to use, assume you want to install the [**`pg_duckdb`**](/e/pg_duckdb/) extension:
+Then it’s ready to use, assume you want to install the [**`pg_duckdb`**](https://ext.pgsty.com/e/pg_duckdb/) extension:
 
 ```bash
 $ pig repo add pigsty pgdg -u  # add pgdg & pigsty repo, then update repo cache

@@ -48,21 +48,21 @@ Supabase’s slogan is: “**Build in a weekend, Scale to millions**”. It has 
 
 That’s where Pigsty comes in. Pigsty provides a complete one-click self-hosting solution for Supabase. Self-hosted Supabase can enjoy full PostgreSQL monitoring, IaC, PITR, and high availability capability.
 
-You can run the latest PostgreSQL 17(,16,15) kernels, (supabase is using the 15 currently), alone with [421](/ext/list/) PostgreSQL extensions out-of-the-box. Run on [mainstream](/prepare/linux/) Linus OS distros
+You can run the latest PostgreSQL 17(,16,15) kernels, (supabase is using the 15 currently), alone with [423](/pgsql/ext/) PostgreSQL extensions out-of-the-box. Run on [mainstream](/prepare/linux/) Linus OS distros
 with production grade [HA](/feat/ha/) [PostgreSQL](/pgsql/), [MinIO](/minio/), Prometheus & Grafana Stack for observability, and Nginx for reverse proxy.
 
-Since most of the supabase maintained extensions are not available in the official PGDG repo, we have compiled all the RPM/DEBs for these extensions and put them in the [Pigsty repo](/ext/list/):
+Since most of the supabase maintained extensions are not available in the official PGDG repo, we have compiled all the RPM/DEBs for these extensions and put them in the [Pigsty repo](/pgsql/extension/):
 
-- [pg_graphql](/ext/feat/pg_graphql/): GraphQL support in PostgreSQL (Rust extension via PIGSTY)
-- [pg_jsonschema](/ext/feat/pg_jsonschema/): JSON Schema validation (Rust extension via PIGSTY)
-- [wrappers](/ext/fdw/wrappers/): Supabase’s foreign data source wrappers bundle (Rust extension via PIGSTY)
-- [index_advisor](/ext/feat/index_advisor/): Query index advisor (SQL extension via PIGSTY)
-- [pg_net](/ext/util/pg_net/): Async non-blocking HTTP/HTTPS requests in SQL (C extension via PIGSTY)
-- [vault](/ext/sec/supabase_vault/): Store encrypted credentials in Vault (C extension via PIGSTY)
-- [pgjwt](/ext/util/pgjwt/): PostgreSQL implementation of JSON Web Token API (SQL extension via PIGSTY)
-- [pgsodium](/ext/sec/pgsodium/): Table data encryption storage TDE (C extension via PIGSTY)
-- [supautils](/ext/sec/supautils/): Secure database clusters in cloud environments (C extension via PIGSTY)
-- [pg_plan_filter](/ext/feat/plan_filter/): Block specific queries using execution plan cost filtering (C extension via PIGSTY)
+- [pg_graphql](https://ext.pgsty.com/e/pg_graphql): GraphQL support in PostgreSQL (Rust extension via PIGSTY)
+- [pg_jsonschema](https://ext.pgsty.com/e/pg_jsonschema): JSON Schema validation (Rust extension via PIGSTY)
+- [wrappers](https://ext.pgsty.com/e/wrappers): Supabase’s foreign data source wrappers bundle (Rust extension via PIGSTY)
+- [index_advisor](https://ext.pgsty.com/e/index_advisor): Query index advisor (SQL extension via PIGSTY)
+- [pg_net](https://ext.pgsty.com/e/pg_net): Async non-blocking HTTP/HTTPS requests in SQL (C extension via PIGSTY)
+- [vault](https://ext.pgsty.com/e/supabase_vault): Store encrypted credentials in Vault (C extension via PIGSTY)
+- [pgjwt](https://ext.pgsty.com/e/pgjwt): PostgreSQL implementation of JSON Web Token API (SQL extension via PIGSTY)
+- [pgsodium](https://ext.pgsty.com/e/pgsodium): Table data encryption storage TDE (C extension via PIGSTY)
+- [supautils](https://ext.pgsty.com/e/supautils): Secure database clusters in cloud environments (C extension via PIGSTY)
+- [pg_plan_filter](https://ext.pgsty.com/e/plan_filter): Block specific queries using execution plan cost filtering (C extension via PIGSTY)
 
 Everything is under your control, you have the ability and freedom to scale PGSQL, MinIO, and Supabase itself. And take full advantage of the performance and cost advantages of modern hardware like Gen5 NVMe SSD.
 

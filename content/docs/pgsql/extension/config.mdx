@@ -21,7 +21,7 @@ And a wrongly configured preload library may lead to a failure on database resta
 Some extensions can partially work without preloading, which means part of the extension features are available directly, and the rest of the features are available after preloading.
 
 To preload an extension, add it to the [`shared_preload_libraries`](https://www.postgresql.org/docs/current/runtime-config-client.html#Rshared_preload_libraries) and restart the database server.
-The [Extension Catalog](/ext/list/attr#need-loading) gives the complete list of extensions that require dynamic preloading.
+The [Extension Catalog](https://ext.pgsty.com/list/attr#need-loading) gives the complete list of extensions that require dynamic preloading.
 
 
 
@@ -68,10 +68,10 @@ If you want to configure preloading manually, you can just change the `postgresq
 ## Default
 
 The default value of [`pg_libs`](/pgsql/param#pg_libs) is `pg_stat_statements, auto_explain`,
-which preload these two [Contrib extensions](/ext/list/repo#contrib) by default, these two extensions provide essential observability:
+which preload these two [Contrib extensions](https://ext.pgsty.com/list/repo#contrib) by default, these two extensions provide essential observability:
 
-- [**`auto_explain`**](/e/auto_explain): Automatic logging of slow query execution plans
-- [**`pg_stat_statements`**](/e/pg_stat_statements): Tracks planning and execution statistics for grouped SQL statements
+- [**`auto_explain`**](https://ext.pgsty.com/e/auto_explain): Automatic logging of slow query execution plans
+- [**`pg_stat_statements`**](https://ext.pgsty.com/e/pg_stat_statements): Tracks planning and execution statistics for grouped SQL statements
 
 
 --------
@@ -81,11 +81,11 @@ which preload these two [Contrib extensions](/ext/list/repo#contrib) by default,
 Preload libraries are loaded one by one, so the order of extensions in `shared_preload_libraries` matters,
 Here are some known rules to follow:
 
-- For [**STAT**](/ext/cate/stat) extension, add them **AFTER** `pg_stat_statements` to ensure using the same query_id.
-- [`timescaledb`](/e/timescaledb) and [`citus`](/e/citus) should be placed at the **BEGINNING** of `shared_preload_libraries`
-- If you use [`citus`](/e/citus) and [`timescaledb`](/e/timescaledb) together, place `citus` before `timescaledb`.
-- Use `pg_documentdb` and `pg_documentdb_core` as library name for [**documentdb**](/e/documentdb).
-- [`pg_search`](/e/pg_search) does not require preloading in PostgreSQL 17 and later, but earlier versions do.
+- For [**STAT**](https://ext.pgsty.com/cate/stat) extension, add them **AFTER** `pg_stat_statements` to ensure using the same query_id.
+- [`timescaledb`](https://ext.pgsty.com/e/timescaledb) and [`citus`](https://ext.pgsty.com/e/citus) should be placed at the **BEGINNING** of `shared_preload_libraries`
+- If you use [`citus`](https://ext.pgsty.com/e/citus) and [`timescaledb`](https://ext.pgsty.com/e/timescaledb) together, place `citus` before `timescaledb`.
+- Use `pg_documentdb` and `pg_documentdb_core` as library name for [**documentdb**](https://ext.pgsty.com/e/documentdb).
+- [`pg_search`](https://ext.pgsty.com/e/pg_search) does not require preloading in PostgreSQL 17 and later, but earlier versions do.
 
 -------
 

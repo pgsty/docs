@@ -41,7 +41,7 @@ If you’re using an extension that requires [**dynamic loading**](/pgsql/extens
 
 Remove the extension name from `shared_preload_libraries` and restart the database cluster for the changes to take effect.
 
-For extensions that need dynamic loading, refer to the [**Extensions that Need Loading**](/ext/list/attr#need-loading) list.
+For extensions that need dynamic loading, refer to the [**Extensions that Need Loading**](https://ext.pgsty.com/list/attr#need-loading) list.
 
 
 
@@ -55,6 +55,6 @@ After removing the extension (logical object) from **all databases** in the clus
 ansible <cls> -m package -a "name=<extname> state=absent"
 ```
 
-You can also use [**`pig`**](/ext/pig/), or `apt`/`yum` commands directly to uninstall.
+You can also use [**`pig`**](https://ext.pgsty.com/pig/), or `apt`/`yum` commands directly to uninstall.
 
-If you don’t know the extension package name, you can refer to the [**Extension List**](/ext/list/) or check the extension package name mapping defined in [**`roles/node_id/vars`**](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/).
+If you don’t know the extension package name, you can refer to the [**Extension List**](/pgsql/extension/) or check the extension package name mapping defined in [**`roles/node_id/vars`**](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/).
