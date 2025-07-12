@@ -10,6 +10,7 @@
     "value",
     "feat",
     "intro",
+
     "---Module---",
     "pgsql",
     "infra",
@@ -23,7 +24,7 @@
 
     "---Links---",
     "[PG Extension](https://ext.pgsty.com)",
-    "docs/about/service",
+    "[Subscription](/docs/about/service)",
     "[GitHub Repo](https://github.com/pgsty/pigsty)",
     "[Public Demo](https://demo.pigsty.cc)",
     "[ReleaseNote](docs/about/release)",

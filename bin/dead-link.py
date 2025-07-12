@@ -56,6 +56,12 @@ class FumaDocsLinkChecker:
             self.file_to_url_map[file_path] = url
             self.url_to_file_map[url] = file_path
             
+            # For index files, also map the URL without trailing slash
+            # This handles the implicit index routing in Next.js/Fumadocs
+            if url.endswith("/") and url != "/":
+                url_without_slash = url.rstrip("/")
+                self.url_to_file_map[url_without_slash] = file_path
+            
             # Extract anchors from this file
             self._extract_anchors(file_path)
         
@@ -67,6 +73,19 @@ class FumaDocsLinkChecker:
         # Remove content/ prefix and .mdx suffix
         relative_path = file_path.replace(self.content_dir + "/", "").replace(".mdx", "")
         
+        # Handle docs/ prefix - content/docs/* maps to /*
+        if relative_path.startswith("docs/"):
+            relative_path = relative_path[5:]  # Remove "docs/" prefix
+        
+        # Handle localization - extract .zh/.cn etc. suffixes
+        locale_suffix = ""
+        if ".zh" in relative_path:
+            relative_path = relative_path.replace(".zh", "")
+            locale_suffix = "/zh"
+        elif ".cn" in relative_path:
+            relative_path = relative_path.replace(".cn", "")
+            locale_suffix = "/zh"  # cn maps to zh
+        
         # Handle (name) bracket omission routing
         # e.g., docs/(home)/index -> docs/
         # e.g., docs/(home)/about -> docs/about
@@ -75,14 +94,72 @@ class FumaDocsLinkChecker:
         # Handle index files
         if relative_path.endswith("/index"):
             relative_path = relative_path.replace("/index", "/")
-        elif relative_path == "index":
+        elif relative_path == "index" or relative_path == "":
             relative_path = "/"
         
-        # Ensure leading slash
-        if not relative_path.startswith("/"):
+        # Ensure leading slash for non-root paths
+        if relative_path and not relative_path.startswith("/"):
             relative_path = "/" + relative_path
         
+        # Add locale prefix if present
+        if locale_suffix:
+            if relative_path == "/":
+                relative_path = locale_suffix + "/"
+            else:
+                relative_path = locale_suffix + relative_path
+        
         return relative_path
+    
+    def _url_to_file_path(self, url: str) -> str:
+        """Convert URL back to file path according to Fuma Docs routing rules."""
+        # Handle locale prefixes
+        locale_suffix = ""
+        if url.startswith("/zh/"):
+            locale_suffix = ".zh"
+            url = url[3:]  # Remove /zh prefix
+        elif url == "/zh":
+            locale_suffix = ".zh"
+            url = "/"
+        
+        # Handle root URL
+        if url == "/" or url == "":
+            base_path = "docs/index"
+        else:
+            # Remove leading slash and convert to file path
+            clean_url = url.lstrip("/")
+            
+            # For URLs ending with /, try both direct file and index file
+            if clean_url.endswith("/"):
+                clean_url = clean_url.rstrip("/")
+                # First try direct file (e.g., /pgsql/ -> pgsql.mdx)
+                direct_path = f"docs/{clean_url}"
+                direct_full_path = direct_path + locale_suffix + ".mdx"
+                direct_candidate = f"{self.content_dir}/{direct_full_path}"
+                if direct_candidate in self.file_to_url_map:
+                    return direct_candidate
+                
+                # Then try index file (e.g., /pgsql/ -> pgsql/index.mdx)
+                base_path = f"docs/{clean_url}/index"
+            else:
+                # For URLs without trailing slash, could be either direct file or index
+                base_path = f"docs/{clean_url}"
+        
+        # Add locale suffix if present
+        full_path = base_path + locale_suffix + ".mdx"
+        
+        # Check if this exact file exists
+        candidate_path = f"{self.content_dir}/{full_path}"
+        if candidate_path in self.file_to_url_map:
+            return candidate_path
+        
+        # If not found and doesn't end with /index, try index file pattern
+        if not base_path.endswith("/index") and not base_path.endswith("index"):
+            index_path = base_path + "/index" + locale_suffix + ".mdx"
+            candidate_index_path = f"{self.content_dir}/{index_path}"
+            if candidate_index_path in self.file_to_url_map:
+                return candidate_index_path
+        
+        return None
     
     def _extract_anchors(self, file_path: str):
         """Extract all anchors from a file."""
@@ -311,7 +388,13 @@ class FumaDocsLinkChecker:
             # Resolve relative URL
             current_url = self.file_to_url_map[link_ref.file_path]
             target_url = self._resolve_relative_url(current_url, url_part)
+            
+            # First try direct lookup in URL map (includes implicit routing)
             target_file = self.url_to_file_map.get(target_url)
+            
+            # If not found, try reverse mapping function as fallback
+            if not target_file:
+                target_file = self._url_to_file_path(target_url)
             
             if not target_file:
                 self.dead_links.append(DeadLink(

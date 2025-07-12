@@ -20,19 +20,14 @@
     "redis",
     "ferret",
     "docker",
-
-    "---Featured---",
-    "pgsql/kernel/postgres",
-
     "app",
-    "pgsql/kernel/supabase",
-    "docs/about/service",
 
     "---Links---",
-    "[Extension Catalog](https://ext.pgsty.com)",
-    "[GitHub Repo](https://github.com/pgsty/pigsty)",
-    "[Public Demo](https://demo.pigsty.cc)",
-    "[ReleaseNote](docs/about/release)",
+    "[扩展目录](https://ext.pgsty.com/zh/)",
+    "[订阅服务](/zh/docs/about/service)",
+    "[代码仓库](https://github.com/pgsty/pigsty)",
+    "[公开演示](https://demo.pigsty.cc)",
+    "[发布注记](docs/about/release)",
     "[pigsty.io](https://pigsty.io)",
     "[pigsty.cc](https://pigsty.cc)",
     "[Language: English](/)"
