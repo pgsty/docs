@@ -32,16 +32,9 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 ```
 
 </Step>
-<Step>
-[Bootstrap](/docs/install/offline#bootstrap) pigsty: (install [ansible](/docs/admin/ansible) dependency)
-
-```bash
-./bootstrap
-```
-</Step>
 
 <Step>
-    [**Configure**](/docs/config/configure) the [inventory](/docs/config/inventory) file according to your need. (<span className={"text-red-500 font-black"}>CHANGE PASSWORDS</span> in `pigsty.yml`)
+[**Configure**](/docs/config/configure) the [inventory](/docs/config/inventory) file according to your need. (<span className={"text-red-500 font-black"}>CHANGE PASSWORDS</span> in the generated [`pigsty.yml`](/docs/config/inventory))
 
 ```bash
 ./configure
@@ -61,7 +54,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 </Steps>
 
 
-Pigsty Installed!  Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for [grafana](/docs/install/interface#grafana) dashboards (`admin` / `pigsty`).
+Pigsty Installed!  Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for [Grafana](/docs/install/interface#grafana) dashboards (`admin` / `pigsty`).
 
 
 
@@ -89,7 +82,7 @@ Pigsty Installed!  Explore the [**User Interface**](/docs/install/interface), ch
         Setup multiple nodes for real high-available production environment.
     </Card>
     <Card icon={<SearchIcon className={"text-orange-400"} />} title='Offline Installation' href={"/docs/install/offline"}>
-        Bootstrap from a local offline package which contains all the packages.
+        Bootstrap from a local offline package when internet is not available.
     </Card>
     <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Minimal Installation' href={"/docs/install/minimal"}>
         Install essential packages for HA Postgres Cluster only, no monitoring.

@@ -156,7 +156,7 @@ There are **120** parameters about the `PGSQL` module.
 | [`pg_dns_suffix`](#pg_dns_suffix)                     | `string`    | C     | pgsql dns suffix, ’’ by default                                              |
 | [`pg_dns_target`](#pg_dns_target)                     | `enum`      | C     | auto, primary, vip, none, or ad hoc ip                                       |
 
-[`PG_EXPORTER`](#pg_exporter) : Add Monitor for PGSQL Instance
+[`PG_MONITOR`](#pg_monitor) : Add Monitor for PGSQL Instance
 
 | Name                                                            | Type          | Level | Comment                                                                       |
 |-----------------------------------------------------------------|---------------|-------|-------------------------------------------------------------------------------|
@@ -185,9 +185,9 @@ There are **120** parameters about the `PGSQL` module.
 | Name                            | Type   | Level | Comment                                                             |
 |---------------------------------|--------|-------|---------------------------------------------------------------------|
 | [`pg_safeguard`](#pg_safeguard) | `bool` | G/C/A | stop pg_remove running if pg_safeguard is enabled, false by default |
-| [`keep_data`](#keep_data)         | `bool` | G/C/A | keep postgres data during remove? false by default                 |
-| [`keep_backup`](#keep_backup)     | `bool` | G/C/A | keep pgbackrest backup during remove? false by default             |
-| [`keep_package`](#keep_package)   | `bool` | G/C/A | keep postgres packages during remove? false by default             |
+| [`keep_data`](#keep_data)       | `bool` | G/C/A | keep postgres data during remove? false by default                  |
+| [`keep_backup`](#keep_backup)   | `bool` | G/C/A | keep pgbackrest backup during remove? false by default              |
+| [`keep_package`](#keep_package) | `bool` | G/C/A | keep postgres packages during remove? false by default              |
 
 
 

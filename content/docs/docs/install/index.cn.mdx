@@ -1,6 +1,6 @@
 ---
-title: 快速上手
-description: 快速开启您的 PostgreSQL 之旅
+title: 安装
+description: 快速上手安装 Pigsty
 icon: Rocket
 full: true
 ---
@@ -10,107 +10,133 @@ import {
     CpuIcon,
     SearchIcon,
     FileCode,
+    Code,
     AtomIcon,
     ToyBrickIcon,
-    Server,
-    Landmark,
-    Settings
 } from 'lucide-react';
 
-## 简介
-
-**Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> 是一个开箱即用，本地优先，开源免费的 <span className="text-blue-500 font-bold">PostgreSQL 数据库发行版</span>。
-
-<Cards>
-    <Card icon={<Database className="text-blue-300" />} title='企业级 PostgreSQL' href={"/pgsql"}>
-        快速创建高可用、故障自愈的 PostgreSQL 集群。自动预置的PITR 时间点恢复、访问控制、SSL加密。自带本地 CA 与安全最佳实践，确保数据坚如磐石
-    </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='基础设施即代码' href={"/infra"}>
-        包含整套运行所需的基础设施闭包：声明所需的一切而无需操心实现细节，所有依赖一键拉起，无需K8S与容器的云原生体验。简单易用，最佳实践唾手可得
-    </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='震撼的可观测性'>
-        基于 Prometheus 与 Grafana 等现代可观测性技术堆栈提供无与伦比的可视化面板，与开箱即用的监控最佳实践。可独立部署使用并监控第三方 RDS 服务
-    </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='极致的可扩展性'>
-        <span className={"text-red-800 font-bold"}>420+</span> PGSQL 扩展开箱即用，真·遥遥领先！支持 Babelfish, IvorySQL, PolarDB 分叉内核，更有 Supabase，MinIO，Etcd，Redis 等自建支持
-    </Card>
-</Cards>
-
-Pigsty 满足您 “一切皆用 PostgreSQL” 的需求，提供 PG 生态中最全面的扩展插件/内核分支支持；
-并整合了 PG 生态开源组件与最佳实践，提供了自建企业级 PostgreSQL 服务所需的一切，
-让您无需数据库专家，即可在几分钟内以云数据库 RDS 1/10 不到的纯硬件成本，自建专业级数据库服务。
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 
-<Callout title="想要了解更多？">
-    欢迎阅读关于 [Pigsty是什么](/docs/intro) 的深度介绍。
-</Callout>
+
+## 快速上手
+
+[**Quick start**](/docs/install/start): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
+run as [user](/docs/prepare/admin#user) with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) privileges:
+
+<Steps>
+    <Step>
+
+        [**Download**](/docs/prepare/software#pigsty) pigsty with:
+
+        ```bash
+        curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+        ```
+
+    </Step>
+
+    <Step>
+        [**Configure**](/docs/config/configure) the [inventory](/docs/config/inventory) file according to your need. (<span className={"text-red-500 font-black"}>CHANGE PASSWORDS</span> in the generated [`pigsty.yml`](/docs/config/inventory))
+
+        ```bash
+        ./configure
+        ```
+
+    </Step>
+    <Step>
+
+        [**Install**](/docs/install/start) everything according to your config:
+
+        ```bash
+        ./install.yml
+        ```
+    </Step>
+
+
+</Steps>
+
+
+Pigsty Installed!  Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for [Grafana](/docs/install/interface#grafana) dashboards (`admin` / `pigsty`).
+
+
 
 --------
 
-## 架构
+## 下一步？
 
-Pigsty 直接运行于裸 Linux 系统之上，使用 Ansible 实现，采用可扩展的模块化架构。
-
-<Cards>
-    <Card icon={<Database className="text-sky-700" />} title='PGSQL' href={"/pgsql"}>
-        由 Patroni、Pgbouncer、HAproxy、PgBackrest 等驱动的自治高可用 PostgreSQL 集群
-    </Card>
-    <Card icon={<Landmark className="text-orange-400" />} title='INFRA' href={"/infra"}>
-        本地软件仓库、Prometheus、Grafana、Loki、AlertManager、PushGateway、Blackbox Exporter…
-    </Card>
-    <Card icon={<Server className={"text-green-500"} />} title='NODE' href={"/node"}>
-        调整节点到所需状态、名称、时区、NTP、ssh、sudo、haproxy、docker、promtail、keepalived
-    </Card>
-    <Card icon={<Settings className={"text-blue-400"} />} title='ETCD' href={"/etcd"}>
-        分布式键值存储，用作高可用 Postgres 集群的 DCS：共识选主 / 配置管理 / 服务发现。
-    </Card>
-</Cards>
-
-PGSQL：由 Patroni、Pgbouncer、HAproxy、PgBackrest 等驱动的自治高可用 Postgres 集群。
-INFRA：本地软件仓库、Prometheus、Grafana、Loki、AlertManager、PushGateway、Blackbox Exporter…
-NODE：调整节点到所需状态、名称、时区、NTP、ssh、sudo、haproxy、docker、promtail、keepalived
-ETCD：分布式键值存储，用作高可用 Postgres 集群的 DCS：共识选主/配置管理/服务发现。
-REDIS：Redis 服务器，支持独立主从、哨兵、集群模式，并带有完整的监控支持。
-MINIO：与 S3 兼容的简单对象存储服务器，可作为 PG数据库备份的可选目的地。
+- [访问 Postgres 服务](/docs/install/interface#postgresql)
+- [探索 Grafana 监控面板](/docs/install/interface#grafana)
+- [创建业务数据库](/pgsql/db#create-database) 与 [业务用户](/pgsql/user#create-user)
+- [使用更多节点构建高可用部署](/docs/install/multinode)
+- [加装更多 PostgreSQL 扩展](/pgsql/extension)
 
 
 --------
 
 ## 安装
 
-import { DynamicLink } from 'fumadocs-core/dynamic-link';
 
-准备一台全新安装 <DynamicLink href="/cn/docs/prepare/linux">兼容Linux系统</DynamicLink> 的节点，然后使用以下命令下载 Pigsty：
-
-```bash title="install"
-curl -fsSL https://repo.pigsty.io/get | bash;
-cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
-```
-
-import { File, Folder, Files } from 'fumadocs-ui/components/files';
-
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <File name="bootstrap" icon={<CpuIcon className="text-orange-400" />} />
-        <File name="configure"  icon={<CpuIcon className="text-orange-400" />} />
-        <File name="install.yml"  icon={<CpuIcon className="text-orange-400" />} />
-        <a href={"https://www.baidu.com"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
-    </Folder>
-</Files>
-
-Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for grafana dashboards.
-
+<Cards>
+    <Card icon={<Database className="text-blue-300" />} title='单节点安装' href={"/docs/install/start"}>
+        标准单机安装，在一台 Linux 服务器上从零开始部署一切组件。
+    </Card>
+    <Card icon={<AtomIcon className="text-green-600" />} title='多节点安装' href={"/docs/install/multinode"}>
+        使用更多节点打造真高可用部署，使用本地软件仓库确保版本一致性。
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='离线安装' href={"/docs/install/offline"}>
+        在没有互联网的环境中，从离线安装包安装所有组件
+    </Card>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='精简安装' href={"/docs/install/minimal"}>
+        只安装高可用 Postgres 集群，不带监控
+    </Card>
+</Cards>
 
 
 --------
 
-## What's More
+## 准备
 
-- Run Application: Supabase, Odoo, Dify, Gitlab, ...
+<Cards>
 
+    <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/docs/prepare"}>
+        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    </Card>
+
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux OS' href={"/docs/prepare/linux"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+
+    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/docs/prepare/vagrant"}>
+        Provision local linux virtual machines with vagrant / virtualbox
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/docs/prepare/terraform"}>
+        Provision cloud linux servers with terraform on cloud vendors
+    </Card>
+
+</Cards>
 
 
 --------
 
-## FAQ
+## 参考
 
+<Cards>
+
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Interface' href={"/docs/install/interface"}>
+        Provision cloud linux servers with terraform on cloud vendors
+    </Card>
+
+    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/docs/config/configure"}>
+        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    </Card>
+
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/docs/admin/playbook"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+
+    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/docs/config/security"}>
+        Security hardening and best practices for production environments
+    </Card>
+
+
+</Cards>
