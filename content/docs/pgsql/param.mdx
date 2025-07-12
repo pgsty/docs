@@ -796,7 +796,7 @@ pg_extensions: []
 
 The complete list of extensions can be found in [auto generated](https://github.com/pgsty/pigsty/tree/main/roles/node_id/vars) config
 
-The full extension list can be found in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) and listed in [Extension List](https://pigsty.io/ext/list/).
+The full extension list can be found in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) and listed in [Extension List](https://ext.pgsty.com/list/).
 
 
 
@@ -1148,7 +1148,7 @@ config template: `{oltp,olap,crit,tiny}.yml`, `oltp.yml` by default
 - `olap.yml`: optimize for OLAP workloads and throughput (4C8G+)
 - `crit.yml`: optimize for data consistency and critical applications (4C8G+)
 
-default values: `oltp.yml`, but [configure](/docs/config/configure) procedure will set this value to `tiny.yml` if current node is a tiny node.
+default values: `oltp.yml`, but [configure](/config/configure) procedure will set this value to `tiny.yml` if current node is a tiny node.
 
 You can have your own template, just put it under `templates/<mode>.yml` and set this value to the template name.
 
@@ -1566,7 +1566,7 @@ pg_default_extensions: # default extensions to be created
   - { name: pg_repack }
 ```
 
-The only 3rd party extension is [`pg_repack`](https://pigsty.io/ext/admin/pg_repack/), which is important for database maintenance, all other extensions are built-in postgres contrib extensions.
+The only 3rd party extension is [`pg_repack`](https://ext.pgsty.com/e/pg_repack/), which is important for database maintenance, all other extensions are built-in postgres contrib extensions.
 
 Monitor related extensions are installed in `monitor` schema, which is created by [`pg_default_schemas`](#pg_default_schemas).
 

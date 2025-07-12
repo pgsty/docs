@@ -1,10 +1,9 @@
 {
   "title": "REDIS",
   "description": "Optional data structure cache",
-  "root": true,
+  "root": false,
   "icon": "Layers",
   "pages": [
-    "index",
     "config",
     "param",
     "admin",

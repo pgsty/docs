@@ -110,10 +110,10 @@ Pigsty follows the [**PostgreSQL Version Policy**](https://www.postgresql.org/su
 
 
 Pigsty has PG 13 - 17 (and 18beta1) support. Lower major version (12-) "may" work, with no guarantee.\
-For legacy PG version support, consider our [professional services](/docs/about/service).
+For legacy PG version support, consider our [professional services](/about/service).
 
 To use a different major version, configure the [`pg_version`](/pgsql/param#pg_version) variable.
-Which can be globally [`configure`](/docs/config/configure) with `-v <ver>` option.
+Which can be globally [`configure`](/config/configure) with `-v <ver>` option.
 No further changed needed as long as they are available in local / upstream repo.
 
 ```yaml
@@ -358,7 +358,7 @@ Apply these changes? [y/N]: y
 
 When some tuples & tables are dropped by accident, you can advance this delayed cluster to a proper time point and select data from it.
 
-It takes more resources, but can be much faster and have less impact than [PITR](/docs/feat/pitr)
+It takes more resources, but can be much faster and have less impact than [PITR](/feat/pitr)
 
 ------
 

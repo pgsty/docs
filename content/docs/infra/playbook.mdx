@@ -28,7 +28,7 @@ The INFRA module playbook [`infra.yml`](https://github.com/pgsty/pigsty/blob/mai
 **This playbook executes on the [`infra`](/node/arch#infra-node) group by default:**
 
 - Pigsty installs the [**`INFRA`**](/infra/) module on the group named `infra` in the config file
-- During [configure](/docs/config/configure), Pigsty marks the current installation node as an Infra node and replaces the placeholder IP address `10.10.10.10` in the config template with the [**current node’s primary IP address**](/docs/prepare/hardware#network)
+- During [configure](/config/configure), Pigsty marks the current installation node as an Infra node and replaces the placeholder IP address `10.10.10.10` in the config template with the [**current node’s primary IP address**](/prepare/hardware#network)
 - This node can initiate management tasks and host infrastructure components while functioning like any regular managed node
 
 **Playbook notes:**
@@ -131,4 +131,4 @@ Common subtasks include:
 
 The INFRA module playbook [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) performs a complete one-time installation of Pigsty on **all nodes**.
 
-This playbook is described in more detail in [Playbook: One-Pass Deployment](/docs/admin/playbook#deployment).
+This playbook is described in more detail in [Playbook: One-Pass Deployment](/admin/playbook#deployment).

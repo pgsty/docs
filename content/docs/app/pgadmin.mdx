@@ -68,7 +68,7 @@ To launch the application, run:
 
 ## Domain & Cert
 
-To access pgadmin through nginx (rather than access port 8885 directly), configure the [infra portal](/docs/admin/portal) with:
+To access pgadmin through nginx (rather than access port 8885 directly), configure the [infra portal](/admin/portal) with:
 
 ```yaml title="pigsty.yml"
 all:
@@ -85,10 +85,10 @@ all:
       pgadmin      : { domain: adm.pigsty  ,endpoint: "127.0.0.1:8885" }
 ```
 
-Then run `make nginx` to update nginx config, and configure [local static DNS](/docs/admin/domain#local-static-resolution) record `<your_ip_address> adm.pigsty` in `/etc/hosts` or [local](/docs/admin/domain#internal-dynamic-resolution) / [public](/docs/admin/domain#public-domain-resolution) DNS server.
+Then run `make nginx` to update nginx config, and configure [local static DNS](/admin/domain#local-static-resolution) record `<your_ip_address> adm.pigsty` in `/etc/hosts` or [local](/admin/domain#internal-dynamic-resolution) / [public](/admin/domain#public-domain-resolution) DNS server.
 
 Pigsty will issue self-signed SSL certs for the domains listed in [`infra_portal`](/infra/param#infra_portal) automatically.
-If you want to use real domain names, define `cerbot` entry and run `make cert`, check [SSL Certs](/docs/admin/cert) for details.
+If you want to use real domain names, define `cerbot` entry and run `make cert`, check [SSL Certs](/admin/cert) for details.
 
 ```yaml
 all:

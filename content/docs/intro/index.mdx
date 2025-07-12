@@ -1,0 +1,42 @@
+---
+title: Reference
+description: Architecture, use cases, comparison, etc...
+icon: BookMarked
+---
+
+import {
+    Database,
+    SearchIcon,
+    AtomIcon,
+    ToyBrickIcon,
+} from 'lucide-react';
+
+
+<span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
+is a Battery-Included, FOSS <a href="/intro/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
+as a Local-First <a href="/intro/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
+
+
+<Cards>
+    <Card icon={<Database className="text-blue-300" />} title='PostgreSQL Enterprise' href={"/pgsql"}>
+        Create self-healing High-Available PG clusters without hassle, with pre-configured Point-In-Time-Recovery, ACL, CA, SSL...
+    </Card>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Infrastructure as Code' href={"/infra"}>
+        Declare your entire infra with code, and setup everything PG needs from Bare OS: LB, Nginx, NTP, DNS, Local Repo, etc...
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Stunning Observability'>
+        Unparalleled monitoring best practices built upon modern Prometheus & Grafana observability stacks out-of-the-box
+    </Card>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Extensions & Forks'>
+        <span className={"text-red-800 font-bold"}>420+</span> PGSQL Extensions battery-included! Alone with forks: Babelfish, Oriole, IvorySQL, OpenHalo, PolarDB, Supabase,...
+    </Card>
+</Cards>
+
+Pigsty provides everything you'll need for self-hosting an enterprise-grade PostgreSQL Service even without expertise.
+
+Just use PostgreSQL for **EVERYTHING**, and Self-Hosting PostgreSQL Like a Pro!
+
+<Callout title="Want to learn more?">
+    Read our in-depth [What is Pigsty](/intro) introduction.
+
+</Callout>

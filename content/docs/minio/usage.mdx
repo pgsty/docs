@@ -16,13 +16,13 @@ It is straightforward to deploy a single-node MinIO instance with Pigsty.
 minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 ```
 
-Define it in the [config inventory](/docs/config/inventory), then run the playbook:
+Define it in the [config inventory](/config/inventory), then run the playbook:
 
 ```bash
 ./minio.yml -l minio
 ```
 
-The [`install.yml`](/docs/admin/playbook#deployment) playbook will automatically create the MinIO cluster defined in the inventory, so you don’t need to run the `minio.yml` playbook manually, if you choose the default one-pass installation.
+The [`install.yml`](/admin/playbook#deployment) playbook will automatically create the MinIO cluster defined in the inventory, so you don’t need to run the `minio.yml` playbook manually, if you choose the default one-pass installation.
 
 If you plan to deploy a production-grade large-scale multi-node MinIO cluster, we **strongly** recommend you to read the Pigsty MinIO [configuration document](/minio/config) and the MinIO [document](https://min.io/docs/minio/linux/operations/concepts.html) before proceeding.
 

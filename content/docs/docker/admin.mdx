@@ -81,7 +81,7 @@ You can add this repo to your nodes with:
 
 ## Upgrade
 
-To upgrade Docker Daemon, using the [`ansible`](/docs/admin/ansible) command, add docker [repo](#repository), then:
+To upgrade Docker Daemon, using the [`ansible`](/admin/ansible) command, add docker [repo](#repository), then:
 
 ```bash title="~/pigsty"
 ansible infra -m package -b -a 'name=docker-ce state=latest'
@@ -95,7 +95,7 @@ It will upgrade the `docker-ce` package to the latest version available on your 
 
 ## Remove
 
-To remove Docker Daemon, using the [`ansible`](/docs/admin/ansible) command to run:
+To remove Docker Daemon, using the [`ansible`](/admin/ansible) command to run:
 
 ```bash title="~/pigsty"
 ansible infra -m package -b -a 'name=docker-ce state=absent'

@@ -6,7 +6,7 @@ icon: CodeXml
 ---
 
 You don't need to define node cluster and node instances explicitly.
-It is often implied by other database [module](/docs/intro/module)'s cluster definition.
+It is often implied by other database [module](/intro/module)'s cluster definition.
 If you define a [PGSQL](/pgsql/) cluster, it defines a node cluster implicitly.
 
 
@@ -64,9 +64,9 @@ the node will be labeled with `cls` as `nodes` and `ins` as the current hostname
 
 ## SSH Connection
 
-The `inventory_hostname` is used by [Ansible](/docs/admin/ansible) to connect to the node via SSH.
+The `inventory_hostname` is used by [Ansible](/admin/ansible) to connect to the node via SSH.
 
-If your node cannot be simply access via `ssh <inventory_hostname>`, [ssh alias](/docs/prepare/admin/#using-alias) and more [ansible conn param](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) (even a different IP) can be used.
+If your node cannot be simply access via `ssh <inventory_hostname>`, [ssh alias](/prepare/admin/#using-alias) and more [ansible conn param](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters) (even a different IP) can be used.
 But the `inventory_hostname` is still the core identity of the node.
 
 ```yaml title="ssh param example"

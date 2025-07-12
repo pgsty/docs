@@ -22,7 +22,7 @@ Pigsty provides support for self-hosting Dify, allowing you to deploy Dify with 
 
 ## Quick Start
 
-On a fresh Linux x86 / ARM server running a [**compatible distribution**](/docs/prepare/linux), execute:
+On a fresh Linux x86 / ARM server running a [**compatible distribution**](/prepare/linux), execute:
 
 ```bash
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
@@ -55,7 +55,7 @@ Pigsty ensures all Dify state is stored in externally managed services, includin
 
 Let’s start with single-node Dify deployment. We’ll cover production high-availability deployment methods later.
 
-First, use Pigsty’s [standard installation process](/docs/install) to install the PostgreSQL instance required by Dify:
+First, use Pigsty’s [standard installation process](/install) to install the PostgreSQL instance required by Dify:
 
 ```bash
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
@@ -204,8 +204,8 @@ all:
 
 Here’s a checklist of configuration items you need to focus on:
 
--  Hardware/Software: [Prepare required machine resources](/docs/prepare): Linux `x86_64/arm64` server, fresh installation of [mainstream Linux operating systems](/docs/prepare/linux)
--  Network/Permissions: [SSH](https://pigsty.io/docs/setup/prepar/#management-user-preparation) passwordless login access, user has [passwordless sudo privileges](/docs/prepare/admin#user)
+-  Hardware/Software: [Prepare required machine resources](/prepare/hardware): Linux `x86_64/arm64` server, fresh installation of [mainstream Linux operating systems](/prepare/linux)
+-  Network/Permissions: [SSH](/prepar/admin#ssh) passwordless login access, user has [passwordless sudo privileges](/prepare/admin#user)
 -  Ensure machine has static IPv4 network address in internal network and can access internet
 -  If accessing via public network, ensure you have an available domain name pointing to the current node’s **public IP address**
 - Ensure using `app/dify` config template and modify parameters as needed
@@ -285,7 +285,7 @@ Execute `app.yml` playbook to redeploy Dify service to make `NGINX_SERVER_NAME` 
 
 ## File Backup
 
-You can use [`restic`](https://pigsty.io/docs/tasks/restic/) to backup Dify’s filesystem. Dify’s data files are in the `/data/dify` directory. You can use the following commands to backup:
+You can use `restic` to back up Dify’s filesystem. Dify’s data files are in the `/data/dify` directory. You can use the following commands to backup:
 
 ```bash
 export RESTIC_REPOSITORY=/data/backups/dify   # Specify dify backup directory
@@ -308,7 +308,7 @@ restic check                                  # Periodically check repository in
 
 Another more reliable way is to use JuiceFS to mount MinIO object storage to the `/data/dify` directory, so you can use MinIO/S3 to store file state.
 
-If you want to store all data in PostgreSQL, consider [using JuiceFS to store filesystem data in PostgreSQL](https://pigsty.io/blog/pg/pgfs/):
+If you want to store all data in PostgreSQL, consider "Using JuiceFS to store filesystem data in PostgreSQL"
 
 For example, you can create another `dify_fs` database and use it as JuiceFS’s metadata storage:
 

@@ -1,0 +1,139 @@
+---
+title: Installation
+description: Getting started with Pigsty
+icon: Rocket
+full: true
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    FileCode,
+    Code,
+    AtomIcon,
+    ToyBrickIcon,
+} from 'lucide-react';
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+## Quick Start
+
+[**Quick start**](/install/start): [Prepare](/prepare) an [ssh-accessible](/prepare/admin#check-accessibility) [node](/prepare/hardware#node) with fresh installed [Linux](/prepare/linux),
+ run as [user](/prepare/admin#user) with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#sudo-privileges) privileges:
+
+<Steps>
+<Step>
+
+[**Download**](/prepare/software#pigsty) pigsty with:
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+```
+
+</Step>
+
+<Step>
+[**Configure**](/config/configure) the [inventory](/config/inventory) file according to your need. (<span className={"text-red-500 font-black"}>CHANGE PASSWORDS</span> in the generated [`pigsty.yml`](/config/inventory))
+
+```bash
+./configure
+```
+
+</Step>
+<Step>
+
+[**Install**](/install/start) everything according to your config:
+
+```bash
+./install.yml
+```
+</Step>
+
+
+</Steps>
+
+
+Pigsty Installed!  Explore the [**User Interface**](/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for [Grafana](/install/interface#grafana) dashboards (`admin` / `pigsty`).
+
+
+
+--------
+
+## What's Next?
+
+- [Access Postgres Service](/install/interface#postgresql)
+- [Explore Grafana Dashboards](/install/interface#grafana)
+- [Create Biz Database](/pgsql/db#create-database) and [User](/pgsql/user#create-user)
+- [Adding more nodes for real HA](/install/multinode)
+- [Get more PostgreSQL Extensions](/pgsql/extension)
+
+
+--------
+
+## Installation
+
+
+<Cards>
+    <Card icon={<Database className="text-blue-300" />} title='Get Started' href={"/install/start"}>
+        Setup current linux node, and download everything from the Internet
+    </Card>
+    <Card icon={<AtomIcon className="text-green-600" />} title='Multi-Node Installation' href={"/install/multinode"}>
+        Setup multiple nodes for real high-available production environment.
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Offline Installation' href={"/install/offline"}>
+        Bootstrap from a local offline package when internet is not available.
+    </Card>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Minimal Installation' href={"/install/minimal"}>
+        Install essential packages for HA Postgres Cluster only, no monitoring.
+    </Card>
+</Cards>
+
+
+--------
+
+## Preparation
+
+<Cards>
+
+    <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/prepare"}>
+        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    </Card>
+
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux OS' href={"/prepare/linux"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+
+    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/prepare/vagrant"}>
+        Provision local linux virtual machines with vagrant / virtualbox
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/prepare/terraform"}>
+        Provision cloud linux servers with terraform on cloud vendors
+    </Card>
+
+</Cards>
+
+--------
+
+## Reference
+
+<Cards>
+
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Interface' href={"/install/interface"}>
+        Provision cloud linux servers with terraform on cloud vendors
+    </Card>
+
+    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/config/configure"}>
+        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    </Card>
+
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/admin/playbook"}>
+        Check compatible linux distributions and availability matrix
+    </Card>
+
+    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/config/security"}>
+        Security hardening and best practices for production environments
+    </Card>
+
+
+</Cards>

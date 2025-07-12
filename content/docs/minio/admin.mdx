@@ -22,7 +22,7 @@ Check [ETCD: FAQ](/minio/faq/) for more questions.
 
 ## Create Cluster
 
-To create a MinIO cluster, define the `minio` cluster in [inventory](/docs/config/inventory) first:
+To create a MinIO cluster, define the `minio` cluster in [inventory](/config/inventory) first:
 
 ```yaml
 minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }

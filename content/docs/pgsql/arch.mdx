@@ -12,7 +12,7 @@ There are four types of core entities in Pigsty’s **PGSQL** module:
 - **Cluster**: An autonomous PostgreSQL business unit, the top-level namespace for other entities.
 - [**Service**](/pgsql/service): An abstraction of cluster ability, traffic routes, and expose services via different node ports.
 - **Instance**: A postgres server which consists of a group of running processes & files on a single node.
-- [**Node**](/docs/prepare/hardware#node): An abstraction of hardware resources, which can be bare metal, virtual machine, or k8s pods.
+- [**Node**](/prepare/hardware#node): An abstraction of hardware resources, which can be bare metal, virtual machine, or k8s pods.
 
 ![](/img/pigsty/er-min.png)
 
@@ -21,7 +21,7 @@ There are four types of core entities in Pigsty’s **PGSQL** module:
 
 ## Architecture
 
-Here's a PostgreSQL Cluster `pg-test` described in the [config inventory](/docs/config/inventory):
+Here's a PostgreSQL Cluster `pg-test` described in the [config inventory](/config/inventory):
 
 ```yaml
 pg-test:
@@ -35,7 +35,7 @@ pg-test:
 
 ![](/img/pigsty/ha.png)
 
-It defines a [HA](/docs/feat/ha) PostgreSQL cluster looks like the above, and here are related entities in this cluster:
+It defines a [HA](/feat/ha) PostgreSQL cluster looks like the above, and here are related entities in this cluster:
 
 - 1 PostgreSQL cluster: `pg-test`
 - 2 Instance Roles: `primary` & `replica`
@@ -160,7 +160,7 @@ Meanwhile, the [Infra Node](/node/arch#infra-node) consists of the following com
 
 ## Full ER Diagram
 
-There is one [config inventory](/docs/config/inventory) file and one [infra](/infra) corresponding to a Pigsty deployment.
+There is one [config inventory](/config/inventory) file and one [infra](/infra) corresponding to a Pigsty deployment.
 And there may have multiple database clusters in a Pigsty deployment.
 
 A Cluster / Instance may have multiple Databases, and Databases contain Tables and other Objects (Query, Index, Function, Seq, ...).

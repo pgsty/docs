@@ -2,7 +2,7 @@
   "title": "PGSQL",
   "description": "PostgreSQL：数据库内核",
   "icon": "Database",
-  "root": true,
+  "root": false,
   "defaultOpen": false,
   "pages": [
     "arch",

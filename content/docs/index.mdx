@@ -19,24 +19,24 @@ import {Database,CpuIcon,Landmark,Settings,Container,Leaf,Box,Layers,Rocket,Squa
 ## Introduction
 
 <span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
-is a Battery-Included, FOSS <a href="/docs/intro/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
-as a Local-First <a href="/docs/intro/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
+is a Battery-Included, FOSS <a href="/intro/distro"><span className="text-sky-700 font-black">PostgreSQL Distribution</span></a>
+as a Local-First <a href="/intro/rds"><span className="text-amber-600 font-black">RDS Alternative</span></a>.
 
 <Cards>
 
-    <Card icon={<Rocket className="text-blue-300" />} title='Values' href={"/docs/value"}>
+    <Card icon={<Rocket className="text-blue-300" />} title='Values' href={"/value"}>
         Why use Pigsty?
         The 8 core value propositions of Pigsty
     </Card>
 
-    <Card icon={<SquareStack className={"text-red-500"} />} title='Features' href={"/docs/feat"}>
+    <Card icon={<SquareStack className={"text-red-500"} />} title='Features' href={"/feat"}>
         Key features, Highlights and Technical details
     </Card>
 
-    <Card icon={<Code className="text-green-600" />} title='References' href={"/docs/intro"}>
+    <Card icon={<Code className="text-green-600" />} title='References' href={"/intro"}>
         Architecture, Use Cases, Comparisons, and other references
     </Card>
-    <Card icon={<Landmark className={"text-orange-400"} />} title='About' href={"/docs/about"}>
+    <Card icon={<Landmark className={"text-orange-400"} />} title='About' href={"/about"}>
         License, Release, Community, News, Author, Service, etc...
     </Card>
 
@@ -52,32 +52,32 @@ Pigsty assembles all the superpowers from the PostgreSQL and Database world, pro
 
 ## Installation
 
-[**Quick Start**](/docs/install/start): [Prepare](/docs/prepare) an [ssh-accessible](/docs/prepare/admin#check-accessibility) [node](/docs/prepare/hardware#node) with fresh installed [Linux](/docs/prepare/linux),
-run as [user](/docs/prepare/admin#user) with nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) privileges:
+[**Quick Start**](/install/start): [Prepare](/prepare) an [ssh-accessible](/prepare/admin#check-accessibility) [node](/prepare/hardware#node) with fresh installed [Linux](/prepare/linux),
+run as [user](/prepare/admin#user) with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#sudo-privileges) privileges:
 
 ```bash title="install"
 curl -fsSL https://repo.pigsty.io/get | bash;
 cd ~/pigsty; ./configure; ./install.yml;
 ```
 
-[**Download**](/docs/prepare/software#pigsty), [Bootstrap](/docs/install/offline#bootstrap), [**Configure**](/docs/config/configure) and [**Install**](/docs/install). Pigsty [**Installed**](/docs/install)! You can [**add more**](/docs/install/multinode) nodes and database clusters later.
+[**Download**](/prepare/software#pigsty), [Bootstrap](/install/offline#bootstrap), [**Configure**](/config/configure) and [**Install**](/install). Pigsty [**Installed**](/install)! You can [**add more**](/install/multinode) nodes and database clusters later.
 
-Explore the [**User Interface**](/docs/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
+Explore the [**User Interface**](/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for grafana dashboards (userpass: `admin` / `pigsty`).
 
 <Cards>
 
-    <Card icon={<Rocket className="text-blue-300" />} title='Installation' href={"/docs/install"}>
+    <Card icon={<Rocket className="text-blue-300" />} title='Installation' href={"/install"}>
         Install Pigsty on Linux Servers
     </Card>
 
-    <Card icon={<SquareStack className={"text-red-500"} />} title='Preparation' href={"/docs/prepare"}>
+    <Card icon={<SquareStack className={"text-red-500"} />} title='Preparation' href={"/prepare"}>
         Prepare Environment for Serious Deployment
     </Card>
 
-    <Card icon={<Code className="text-green-600" />} title='Configuration' href={"/docs/config"}>
+    <Card icon={<Code className="text-green-600" />} title='Configuration' href={"/config"}>
         Customize database clusters with Config Inventory
     </Card>
-    <Card icon={<Landmark className={"text-orange-400"} />} title='Administration' href={"/docs/admin"}>
+    <Card icon={<Landmark className={"text-orange-400"} />} title='Administration' href={"/admin"}>
         Manage your environment with Ansible Playbook
     </Card>
 
@@ -87,7 +87,7 @@ Explore the [**User Interface**](/docs/install/interface), check port `5432` for
 
 ## Modules
 
-Pigsty consists of multiple [**Modules**](/docs/intro/module). The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">REQUIRED</span> for self-hosting Postgres RDS service.
+Pigsty consists of multiple [**Modules**](/intro/module). The `PINE` stack: `PGSQL` / `INFRA` / `NODE` / `ETCD` are <span className="text-sky-700 font-black">REQUIRED</span> for self-hosting Postgres RDS service.
 
 <Cards>
     <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/pgsql"}>

@@ -2,7 +2,7 @@
   "title": "FERRET",
   "description": "Optional mongo over pgsql",
   "icon": "Leaf",
-  "root": true,
+  "root": false,
   "pages": [
     "usage",
     "config",

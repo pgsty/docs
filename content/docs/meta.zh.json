@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "pages": [
+    "---Pigsty---",
+    "install",
+    "prepare",
+    "config",
+    "admin",
+    "about",
+    "value",
+    "feat",
+    "intro",
+
+    "---Module---",
+    "pgsql",
+    "infra",
+    "node",
+    "etcd",
+    "minio",
+    "redis",
+    "ferret",
+    "docker",
+
+    "---Featured---",
+    "pgsql/kernel/postgres",
+
+    "app",
+    "pgsql/kernel/supabase",
+    "docs/about/service",
+
+    "---Links---",
+    "[Extension Catalog](https://ext.pgsty.com)",
+    "[GitHub Repo](https://github.com/pgsty/pigsty)",
+    "[Public Demo](https://demo.pigsty.cc)",
+    "[ReleaseNote](docs/about/release)",
+    "[pigsty.io](https://pigsty.io)",
+    "[pigsty.cc](https://pigsty.cc)",
+    "[Language: English](/)"
+  ]
+}

@@ -86,7 +86,7 @@ If the database doesn’t exist yet, the extensions defined here will be automat
 
 Re-creating database with non-trivial baseline schema may be dangerous (if you put some `DROP` there)
 So for existing clusters / databases, it's advised to use your own schema migration tool to manage extensions. (pgadmin, psql, bytebase, flyway, sqlitch,...)
-But it's helpful to enlist them in the [config inventory](/docs/config/inventory) for bookkeeping purposes. (So if you want to fork this cluster, it includes these extensions)
+But it's helpful to enlist them in the [config inventory](/config/inventory) for bookkeeping purposes. (So if you want to fork this cluster, it includes these extensions)
 
 
 
@@ -132,7 +132,7 @@ There are three **3rd-party** extensions that are available by default in Pigsty
 The [`pg_repack`](/e/pg_repack) extension is an important utility for maintaining bloat tables online.
 
 [**`vector`**](/e/vector) is a very popular extension for RAG,
-It is [**installed**](/pgsql/extension/install) by default (in the `pgsql-main` [alias](/pgsql/extension/pkg)) and created in the placeholder `meta` database in most [config template](/docs/config/template).
+It is [**installed**](/pgsql/extension/install) by default (in the `pgsql-main` [alias](/pgsql/extension/pkg)) and created in the placeholder `meta` database in most [config template](/config/template).
 
 The [`wal2json`](/e/wal2json) is another important extension for Changing Data Capture (CDC). It is [installed](/pgsql/extension/install) by default, but it is an [**extension without DDL**](#extension-without-ddl),
 So you don't need to `CREATE` it explicitly.

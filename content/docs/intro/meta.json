@@ -1,0 +1,14 @@
+{
+    "title": "Reference",
+    "description": "Arch, use cases, comparison, and other reference",
+    "icon": "BookMarked",
+    "defaultOpen": false,
+    "pages": [
+        "distro",
+        "rds",
+        "arch",
+        "case",
+        "compare",
+        "module"
+    ]
+}

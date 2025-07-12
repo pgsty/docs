@@ -1,0 +1,79 @@
+---
+title: Sandbox
+description: The 4-node env for learning & testing
+icon: PackageOpen
+---
+
+
+Pigsty has a sandbox, which is a 4-node deployment with fixed IP addresses and other identifiers.
+
+We will use this as a standard demonstration environment for learning and testing purposes.
+
+![pigsty-sandbox.jpg](/img/pigsty/sandbox.jpg)
+
+
+--------
+
+## Description
+
+The sandbox consists of 4 nodes with fixed IP addresses and identities:
+
+| ID |  IP Address   | [NODE](/node) | [PGSQL](/pgsql) | [INFRA](/infra) | [**ETCD**](/etcd) | [**MINIO**](/minio) |
+|:--:|:-------------:|:------------------:|:--------------------:|:--------------------:|:----------------------:|:-------------------------|
+| 1  | `10.10.10.10` |       `meta`       |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        | `minio-1`                |
+| 2  | `10.10.10.11` |      `node-1`      |     `pg-test-1`      |                      |                        |                          |
+| 3  | `10.10.10.12` |      `node-2`      |     `pg-test-1`      |                      |                        |                          |
+| 4  | `10.10.10.13` |      `node-3`      |     `pg-test-1`      |                      |                        |                          |
+
+
+There’s a primary singleton PostgreSQL cluster: `pg-meta` on the `meta` node,
+which can be used standalone, and there's also an optional L2 VIP `10.10.10.2` and cluster DNS `pg-meta` bind to it.
+
+```bash
+10.10.10.10 meta pg-meta-1
+10.10.10.2  pg-meta
+```
+
+There are three additional nodes in the sandbox, form a 3-instance PostgreSQL HA cluster `pg-test`.
+With an optional L2 VIP `10.10.10.3` and cluster DNS `pg-test` bind to the cluster leader.
+
+```bash
+10.10.10.11 node-1 pg-test-1
+10.10.10.12 node-2 pg-test-2
+10.10.10.13 node-3 pg-test-3
+10.10.10.3  pg-test
+```
+
+There’s also a 1-node `etcd` cluster, and 1-node `minio` cluster on the `meta` node, too.
+
+```bash
+10.10.10.10 minio-1
+10.10.10.10 etcd-1
+```
+
+
+
+
+------
+
+## Implementation
+
+You can create a local sandbox with [Vagrant](/prepare/vagrant), or a cloud sandbox with [Terraform](/prepare/terraform).
+
+To utilize local vagrant templates:
+
+```bash
+make full9     # create 4-node sandbox with RockyLinux 9
+make full12     # create 4-node sandbox with Debian 12
+make full24     # create 4-node sandbox with Ubuntu 24.04
+```
+
+To utilize cloud terraform templates, use the [spec/aliyun-full.tf](https://github.com/pgsty/pigsty/tree/main/terraform/spec/aliyun-full.tf) as an example,
+Aliyun 4-node sandbox template for all distro & amd/arm.
+
+```bash
+make tu     # terraform up
+make td     # terraform destroy
+make tssh   # write ssh alias to ~/.ssh/pigsty_config
+```
+

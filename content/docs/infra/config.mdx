@@ -5,7 +5,7 @@ icon: CodeXml
 ---
 
 
-The INFRA module primarily provides **monitoring** infrastructure and is [**optional**](/docs/install/minimal) for PostgreSQL service.
+The INFRA module primarily provides **monitoring** infrastructure and is [**optional**](/install/minimal) for PostgreSQL service.
 
 Unless you have manually configured dependencies on DNS/NTP services from INFRA nodes elsewhere, failures in the INFRA module typically won’t affect the normal operation of PostgreSQL database clusters.
 
@@ -21,7 +21,7 @@ Using more than 3 INFRA nodes provides limited benefits, but you can use more ET
 
 ## Examples
 
-To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/docs/config/inventory) and assign them an Infra instance number [`infra_seq`](/infra/param#infra_seq).
+To install the INFRA module on nodes, first add node IPs to the `infra` group in the [**inventory**](/config/inventory) and assign them an Infra instance number [`infra_seq`](/infra/param#infra_seq).
 
 By default, a single INFRA node configuration meets most requirements. All configuration templates include a default `infra` group definition:
 
@@ -31,7 +31,7 @@ all:
     infra: { hosts: { 10.10.10.10: { infra_seq: 1 } }}
 ```
 
-The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](/docs/prepare/hardware#network) during [**configuration**](/docs/config/configure), meaning the INFRA module will be installed on the current node.
+The `10.10.10.10` IP placeholder in the `infra` group will be replaced with the [**current node’s primary IP address**](/prepare/hardware#network) during [**configuration**](/config/configure), meaning the INFRA module will be installed on the current node.
 
 Then use the [`infra.yml`](/infra/playbook/#infrayml) playbook to initialize the INFRA module on the node.
 

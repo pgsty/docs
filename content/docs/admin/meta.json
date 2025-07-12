@@ -1,0 +1,16 @@
+{
+  "title": "Administration",
+  "description": "Run playbooks, manage access, setup modules",
+  "icon": "Landmark",
+  "defaultOpen": false,
+  "pages": [
+    "ansible",
+    "playbook",
+    "dashboard",
+    "monitor",
+    "portal",
+    "repo",
+    "domain",
+    "cert"
+  ]
+}

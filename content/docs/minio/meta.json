@@ -1,10 +1,9 @@
 {
   "title": "MINIO",
   "description": "Optional object storage service",
-  "root": true,
+  "root": false,
   "icon": "Box",
   "pages": [
-    "index",
     "usage",
     "config",
     "param",

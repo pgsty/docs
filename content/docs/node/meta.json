@@ -2,7 +2,7 @@
   "title": "NODE",
   "description": "Enroll linux machine hosts",
   "icon": "Server",
-  "root": true,
+  "root": false,
   "pages": [
     "arch",
     "config",

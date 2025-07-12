@@ -203,7 +203,7 @@ psql postgres://dbuser_dba:DBUser.DBA@pg-meta:5436/meta     # pg-meta-default : 
 psql postgres://dbuser_stats:DBUser.Stats@pg-meta:5438/meta # pg-meta-offline : Direct connect offline via offline postgres(5432)
 ```
 
-[![pigsty-ha.png](/img/pigsty/ha.png)](/docs/feat/ha/)
+[![pigsty-ha.png](/img/pigsty/ha.png)](/feat/ha/)
 
 Here the `pg-meta` domain name is point to the cluster’s L2 VIP, which in turn points to the haproxy load balancer on the primary instance.
 It is responsible for routing traffic to different instances, check [Access Services](#access-service) for details.

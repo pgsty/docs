@@ -2,7 +2,7 @@
   "title": "Application",
   "description": "Run application with templates",
   "icon": "PencilRuler",
-  "root": true,
+  "root": false,
   "pages": [
     "index",
     "playbook",

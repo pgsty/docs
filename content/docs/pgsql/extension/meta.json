@@ -3,11 +3,10 @@
   "description": "PostgreSQL Extensions",
   "icon": "Blocks",
   "root": false,
-  "defaultOpen": true,
+  "defaultOpen": false,
   "pages": [
-    "repo",
+    "start",
     "pkg",
-    "list",
     "download",
     "install",
     "config",

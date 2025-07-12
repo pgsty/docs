@@ -24,7 +24,7 @@ These are essential for a production-grade PostgreSQL service, and will be insta
 
 <Callout title="HA PG can be deployed without INFRA" type="warn">
 
-If you don't want these, the [**Minimal Install**](/docs/install/minimal) mode deploy HA Postgres without the Infra module.
+If you don't want these, the [**Minimal Install**](/install/minimal) mode deploy HA Postgres without the Infra module.
 
 </Callout>
 
@@ -41,7 +41,7 @@ If you don't want these, the [**Minimal Install**](/docs/install/minimal) mode d
 
 
 
-The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/docs/install/minimal) mode.
+The INFRA module isn’t mandatory for HA PostgreSQL - for instance, it’s omitted in [**Slim Install**](/install/minimal) mode.
 
 However, since INFRA provides essential supporting services for production-grade HA PostgreSQL clusters, it’s strongly recommended for most deployments.
 
@@ -77,9 +77,9 @@ Pigsty allows rich Nginx customization as a local file server or reverse proxy, 
 
 For more details, check these tutorials:
 
-- [**Tutorial: DNS Configuration**](/docs/admin/domain)
-- [**Tutorial: Nginx Service Exposure**](/docs/admin/portal)
-- [**Tutorial: Certbot HTTPS Certificate Management**](/docs/admin/cert)
+- [**Tutorial: DNS Configuration**](/admin/domain)
+- [**Tutorial: Nginx Service Exposure**](/admin/portal)
+- [**Tutorial: Certbot HTTPS Certificate Management**](/admin/cert)
 
 
 
@@ -91,7 +91,7 @@ During installation, Pigsty creates a local software repository on the INFRA nod
 
 Located at `/www/pigsty` and served by Nginx, it’s accessible via `http://h.pigsty/pigsty`.
 
-Pigsty’s [offline package](/docs/install/offline) is a tarball of a pre-built repo directory. If `/www/pigsty` exists with a `/www/pigsty/repo_complete` marker, Pigsty skips downloading from upstream - perfect for air-gapped environments!
+Pigsty’s [offline package](/install/offline) is a tarball of a pre-built repo directory. If `/www/pigsty` exists with a `/www/pigsty/repo_complete` marker, Pigsty skips downloading from upstream - perfect for air-gapped environments!
 
 Repo definition lives in `/www/pigsty.repo`, fetchable via `http://${admin_ip}/pigsty.repo`:
 
@@ -151,7 +151,7 @@ Configs live in: [Config: INFRA - GRAFANA](/infra/param#grafana) and [Config: IN
 
 ### Ansible
 
-Ansible is already installed on the [Admin Node](/node/arch#admin-node) during [bootstrap](/docs/install/start#bootstrap).
+Ansible is already installed on the [Admin Node](/node/arch#admin-node) during [bootstrap](/install/start#bootstrap).
 So the `ansible` on [infra nodes](/node/arch#infra-node) are not actually used.
 But it gives you a viable backup option in case your admin node is compromised.
 

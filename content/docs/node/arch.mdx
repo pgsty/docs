@@ -4,10 +4,10 @@ description: Node types, architecture, and core concepts
 icon: Blocks
 ---
 
-A ["**node**"](/docs/prepare/hardware#node) refers to a resource that is SSH [accessible](#accessibility) and offers a bare Linux OS environment.
+A ["**node**"](/prepare/hardware#node) refers to a resource that is SSH [accessible](#accessibility) and offers a bare Linux OS environment.
 It could be a physical machine, a virtual machine, or an OS-like container equipped with `systemd`, `sudo` and `sshd`.
 
-There are three different types of nodes in Pigsty, In a [one-node deployment](/docs/install/start), they are the same one.
+There are three different types of nodes in Pigsty, In a [one-node deployment](/install/start), they are the same one.
 
 | Node Type                   | Description                                                      |
 |-----------------------------|------------------------------------------------------------------|
@@ -19,7 +19,7 @@ There are three different types of nodes in Pigsty, In a [one-node deployment](/
 
 ## Example
 
-In the following 4-node [sandbox](/docs/prepare/sandbox) config snippet, we have 4 common nodes.\
+In the following 4-node [sandbox](/prepare/sandbox) config snippet, we have 4 common nodes.\
 And the `10.10.10.10` is marked as Infra Node and Admin Node simultaneously.
 
 ```yaml
@@ -64,14 +64,14 @@ These components are optional, can be enabled with parameters.
 
 ## ADMIN Node
 
-[Admin](/docs/prepare/admin) Node is the first node where Pigsty is installed, all control commands are issued from it.
+[Admin](/prepare/admin) Node is the first node where Pigsty is installed, all control commands are issued from it.
 
 There is one and only one admin node in a pigsty deployment, which is specified by [`admin_ip`](/infra/param/#admin_ip).
-This parameter will be set during the [configure](/docs/config/configure) procedure, to the value of primary IP address.
+This parameter will be set during the [configure](/config/configure) procedure, to the value of primary IP address.
 
 <Callout title="Secure admin node access" type="warn">
 
-    The admin node should have nopass [`ssh`](/docs/prepare/admin#ssh) and [`sudo`](/docs/prepare/admin#sudo-privileges) access to all other nodes in the environment,
+    The admin node should have nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#sudo-privileges) access to all other nodes in the environment,
     which is dangerous when exposed to unauthorized access. Please keep it safe.
 
 </Callout>

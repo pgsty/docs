@@ -3,7 +3,7 @@
   "description": "PostgreSQL Kernel Forks",
   "icon": "Cpu",
   "root": false,
-  "defaultOpen": true,
+  "defaultOpen": false,
   "pages": [
     "postgres",
     "citus",

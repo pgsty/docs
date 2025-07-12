@@ -1,0 +1,160 @@
+---
+title: Community
+description: Open source community and user groups
+icon: HeartHandshake
+full: true
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    Newspaper,
+    ClipboardList,
+    Map,
+    ScanFace,
+    Bug,
+    AtomIcon,
+    ToyBrickIcon, 
+    ScaleIcon,
+    Github,
+    MessagesSquare,
+    Users,
+    GitPullRequest,
+    MessageCircle,
+    Send,
+    HeartHandshake,
+} from 'lucide-react';
+
+
+The Pigsty community already offers free WeChat/Discord/Telegram Q&A Office Hours, and we are also happy to provide more free value-added services to our supporters.
+
+------
+
+## GitHub HQ
+
+Consider giving us a [**star**](https://github.com/pgsty/pigsty/stargazers) on GitHub if you find Pigsty useful.
+Issues, PRs, and discussions are welcome.
+
+<Cards>
+
+    <Card icon={<Github className={"text-black-700"} />} title='Repo' href={"https://github.com/pgsty/pigsty"}>
+        The source code repository of Pigsty
+    </Card>
+    <Card icon={<Users className={"text-blue-500"} />} title='Organization' href={"https://github.com/pgsty"}>
+        The `pgsty` organization on GitHub is the official home of Pigsty.
+    </Card>
+
+    <Card icon={<GitPullRequest className="text-amber-600" />} title='Issues' href={"https://github.com/pgsty/pigsty/issues/new"}>
+        Create new issues and report bugs, submit feature requests
+    </Card>
+    <Card icon={<MessageCircle className="text-red-600" />} title='Discuss' href={"https://github.com/pgsty/pigsty/discussions"}>
+        Ask questions, share ideas, and get help from the community
+    </Card>
+
+</Cards>
+
+
+
+------
+
+## Community
+
+We have 7 active wechat user groups with around 2700+ users, join our discussions!
+
+<Cards>
+
+    <Card icon={<MessagesSquare className="text-gray-600" />} title='Discuss' href={"https://github.com/pgsty/pigsty/discussions"}>
+        The GitHub discussion forum of Pigsty
+    </Card>
+
+    <Card icon={<MessageCircle className="text-green-500" />} title='WeChat' href={"https://pigsty.io/img/pigsty/pigsty-cc.jpg"}>
+        Search `pigsty-cc` and join the User Group.
+    </Card>
+    <Card icon={<Send className={"text-sky-300"} />} title='Telegram' href={"https://t.me/joinchat/gV9zfZraNPM3YjFh"}>
+        The Telegram group of Pigsty: gV9zfZraNPM3YjFh
+    </Card>
+    <Card icon={<HeartHandshake className={"text-violet-500"} />} title='Discord' href={"https://discord.gg/j5pG8qfKxU"}>
+        The Discord server of Pigsty: j5pG8qfKxU
+    </Card>
+
+</Cards>
+
+
+You can also contact me with email: [rh@vonng.com](mailto:rh@vonng.com)
+
+
+
+
+
+------
+
+## Ask for Help
+
+You can [ask community](https://github.com/pgsty/pigsty/discussions/338#discussion-5761383) for help, questions with enough info & context are more likely to get help.
+
+Also consider using our [ChatGPT QA Agent](https://chat.openai.com/g/g-y0USNfoXJ-pigsty-consul) or [Professional Service](/about/service).
+
+<Callout title="Ask for Help" type="info">
+
+**What happened?** (**REQUIRED**)
+
+**Pigsty Version & OS Version** (**REQUIRED**)
+
+```bash
+$ grep version  pigsty.yml 
+
+$ cat /etc/os-release
+```
+
+If you are using a cloud provider, please tell us which cloud provider and what operating system image you are using.
+
+If you have customized and modified the environment after installing the bare OS, or have specific security rules and firewall configurations in your WAN, please also tell us when troubleshooting.
+
+**Pigsty Config File** (**REQUIRED**)
+
+Don’t forget to remove sensitive information like passwords, etc…
+
+```bash
+cat ~/pigsty/pigsty.yml
+```
+
+**What did you expect to happen?**
+
+> Please describe what you expected to happen.
+
+**How to reproduce it?**
+
+> Please tell us as much detail as possible about how to reproduce the problem.
+
+**Monitoring Screenshots**
+
+If you are using pigsty monitoring system, you can paste **RELEVANT** screenshots here.
+
+**Error Log**
+
+Please copy and paste any **RELEVANT** log output. Do not paste something like “Failed to start xxx service”
+
+- Syslog: `/var/log/messages` (RHEL) or `/var/log/syslog` (Debian)
+- Postgres: `/pg/log/postgres/*`
+- Patroni: `/pg/log/patroni/*`
+- Pgbouncer: `/pg/log/pgbouncer/*`
+- Pgbackrest: `/pg/log/pgbackrest/*`
+
+```bash
+journalctl -u patroni
+journalctl -u <service name>
+```
+
+**Have you tried the Issue & FAQ?**
+
+- [Pigsty FAQ](/intro/faq/)
+- [Github Issues](https://github.com/pgsty/pigsty/issues)
+- [Pigsty Discussion Forum](https://github.com/pgsty/pigsty/discussions)
+
+**Anything else we need to know?**
+
+The more information and context you provide, the more likely we are to be able to help you solve the problem.
+
+</Callout>
+

@@ -1,0 +1,17 @@
+{
+    "title": "Features",
+    "description": "Key Features",
+    "icon": "Feather",
+    "defaultOpen": false,
+    "pages": [
+        "ext",
+        "kernel",
+        "infra",
+        "ha",
+        "pitr",
+        "iac",
+        "raw",
+        "app",
+        "supabase"
+    ]
+}

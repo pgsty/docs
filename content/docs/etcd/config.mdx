@@ -4,7 +4,7 @@ description: describe the cluster you want
 icon: CodeXml
 ---
 
-You have to define the etcd cluster in the [config inventory](/docs/config/inventory) before deploying it.
+You have to define the etcd cluster in the [config inventory](/config/inventory) before deploying it.
 
 Usually you can choose an etcd cluster with:
 
@@ -27,7 +27,7 @@ Define the group `etcd` in the inventory, It will create a singleton etcd instan
 etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
 ```
 
-This line exists almost in all single-node [config template](/docs/config/template), where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
+This line exists almost in all single-node [config template](/config/template), where the placeholder IP address `10.10.10.10` will be replaced with the current admin node IP.
 
 The only necessary parameters are [`etcd_seq`](/etcd/param#etcd_seq) and [`etcd_cluster`](/etcd/param#etcd_cluster), which uniquely identify the cluster and each instance.
 
@@ -61,7 +61,7 @@ etcd: # dcs service for postgres/patroni ha consensus
 
 Five nodes etcd cluster can tolerate two node failure, suitable for large prod env.
 
-There’s a five-node etcd cluster example in the [`prod`](/docs/config/template) template:
+There’s a five-node etcd cluster example in the [`prod`](/config/template) template:
 
 ```yaml
 etcd:
