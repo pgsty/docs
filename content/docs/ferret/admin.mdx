@@ -9,7 +9,7 @@ icon: Wrench
 
 ## Create FerretDB Cluster
 
-After [defining](https://pigsty.io/docs/ferret/config/#configuration) the FerretDB cluster in the [inventory](https://pigsty.io/docs/setup/config/), you can install it with:
+After [defining](/ferret/config/) the FerretDB cluster in the [inventory](/docs/config/inventory), you can install it with:
 
 ```bash
 ./mongo.yml -l ferret   # Install MongoDB/FerretDB on ferret group
@@ -21,7 +21,7 @@ Since FerretDB uses PostgreSQL as its underlying storage, running this playbook 
 
 ## Remove FerretDB Cluster
 
-To remove a Mongo/FerretDB cluster, run the `mongo_purge` subtask of [`mongo.yml`](https://pigsty.io/docs/ferret/admin/#mongoyml) playbook with the `mongo_purge` parameter:
+To remove a Mongo/FerretDB cluster, run the `mongo_purge` subtask of [`mongo.yml`](/ferret/playbook) playbook with the `mongo_purge` parameter:
 
 ```bash
 ./mongo.yml -e mongo_purge=true -t mongo_purge

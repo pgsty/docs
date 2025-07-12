@@ -27,9 +27,9 @@ There are **9** sections in total, and **57** parameters in this module.
 |-------------------------------------------------------------|-----------------------------------|--------------|-------|----------------------------------------------------|
 | [`version`](#version)                                       | [`META`](#meta)                   | `string`     | G     | pigsty version string                              |
 | [`admin_ip`](#admin_ip)                                     | [`META`](#meta)                   | `ip`         | G     | admin node ip address                              |
-| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | upstream mirror region: default, china, europe       |
+| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | upstream mirror region: default, china, europe     |
 | [`proxy_env`](#proxy_env)                                   | [`META`](#meta)                   | `dict`       | G     | global proxy env when downloading packages         |
-| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create, recreate, copy; create by default            |
+| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create, recreate, copy; create by default          |
 | [`ca_cn`](#ca_cn)                                           | [`CA`](#ca)                       | `string`     | G     | CA common name, fixed as pigsty-ca                 |
 | [`cert_validity`](#cert_validity)                           | [`CA`](#ca)                       | `interval`   | G     | cert validity, 20 years by default                 |
 | [`infra_seq`](#infra_seq)                                   | [`INFRA_ID`](#infra_id)           | `int`        | I     | infra node identity, REQUIRED                      |
@@ -48,7 +48,8 @@ There are **9** sections in total, and **57** parameters in this module.
 | [`infra_packages_pip`](#infra_packages_pip)                 | [`INFRA_PACKAGE`](#infra_package) | `string`     | G     | pip installed packages for infra nodes             |
 | [`nginx_enabled`](#nginx_enabled)                           | [`NGINX`](#nginx)                 | `bool`       | G/I   | enable nginx on this infra node?                   |
 | [`nginx_exporter_enabled`](#nginx_enabled)                  | [`NGINX`](#nginx)                 | `bool`       | G/I   | enable nginx_exporter on this infra node?          |
-| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx ssl mode? disable, enable, enforce             |
+| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx ssl mode? disable, enable, enforce           |
+| [`nginx_cert_validity`](#nginx_cert_validity)               | [`NGINX`](#nginx)                 | `duration`   | G     | nginx self-signed cert validity, 397d by default   |
 | [`nginx_home`](#nginx_home)                                 | [`NGINX`](#nginx)                 | `path`       | G     | nginx content dir, `/www` by default               |
 | [`nginx_port`](#nginx_port)                                 | [`NGINX`](#nginx)                 | `port`       | G     | nginx listen port, 80 by default                   |
 | [`nginx_ssl_port`](#nginx_ssl_port)                         | [`NGINX`](#nginx)                 | `port`       | G     | nginx ssl listen port, 443 by default              |
@@ -75,7 +76,7 @@ There are **9** sections in total, and **57** parameters in this module.
 | [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager listen port, `9093` by default        |
 | [`alertmanager_options`](#alertmanager_options)             | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | alertmanager extra server options                  |
 | [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter metric path, `/metrics` by default        |
-| [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | how to install exporter? none, yum, binary           |
+| [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | how to install exporter? none, yum, binary         |
 | [`exporter_repo_url`](#exporter_repo_url)                   | [`PROMETHEUS`](#prometheus)       | `url`        | G     | exporter repo file url if install exporter via yum |
 | [`grafana_enabled`](#grafana_enabled)                       | [`GRAFANA`](#grafana)             | `bool`       | G/I   | enable grafana on this infra node?                 |
 | [`grafana_clean`](#grafana_clean)                           | [`GRAFANA`](#grafana)             | `bool`       | G/A   | clean grafana data during init?                    |
@@ -283,42 +284,44 @@ Each record consists of a Key and a Value dictionary, where name is the key, rep
 
 Each record consists of a Key and a Value dictionary, where name is the key, representing the component name, and the value is an object that can configure the following parameters:
 
-- name: **REQUIRED**, specify the name of the Nginx server
+- `name`: **REQUIRED**, specify the name of the Nginx server
     - Default records: home, grafana, prometheus, alertmanager, blackbox, loki are fixed names, please do not modify them.
     - Used as part of the Nginx configuration file name, corresponding to the configuration file: `/etc/nginx/conf.d/<name>.conf`
     - Nginx servers without the domain field will not generate configuration files, but will be used as references.
-- domain: **OPTIONAL**, when the service needs to be exposed to the outside world via Nginx, it is a **REQUIRED** field, specifying the domain name used
+- `domain`: **OPTIONAL**, when the service needs to be exposed to the outside world via Nginx, it is a **REQUIRED** field, specifying the domain name used
     - In Pigsty self-signed Nginx HTTPS certificate, the domain name will be added to the SAN field of the Nginx SSL certificate
     - Pigsty web page cross-references will use the default domain name here
-- endpoint: Usually used as an alternative to path, specifies the upstream server address. Setting endpoint indicates this is a reverse proxy server
+- `endpoint`: Usually used as an alternative to path, specifies the upstream server address. Setting endpoint indicates this is a reverse proxy server
     - In the configuration, `${admin_ip}` can be used as a placeholder, and will be dynamically replaced with [admin_ip](/infra/param#admin_ip) during deployment
     - The default reverse proxy server uses [endpoint.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/endpoint.conf) as the configuration template
     - The reverse proxy server can also configure the websocket and schema parameters
-- path: Usually used as an alternative to endpoint, specifies the local file server path. Setting path means this is a local web server
+- `path`: Usually used as an alternative to endpoint, specifies the local file server path. Setting path means this is a local web server
     - The local web server uses [path.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/path.conf) as the configuration template
     - The local web server can also configure the index parameter, whether to enable the file index page
-- certbot: Certbot certificate name, if configured, will use Certbot to apply for a certificate
+- `certbot`: Certbot certificate name, if configured, will use Certbot to apply for a certificate
     - If multiple servers specify the same certbot, Pigsty will merge the certificate application, and the final certificate name will be the name of this certbot
-- cert: Nginx certificate file path, if configured, will override the default certificate path
-- key: Nginx certificate key file path, if configured, will override the default certificate key path
-- websocket: Whether to enable WebSocket support
+- `cert`: Cert file path, if configured, will override the default certificate path
+- `key`: Cert key file path, if configured, will override the default certificate key path
+- `websocket`: Whether to enable WebSocket support
     - Only reverse proxy servers can configure this parameter, if enabled it will allow upstream to use WebSocket connections
-- schema: Protocol used by the upstream server, if configured, will override the default protocol
+- `schema`: Protocol used by the upstream server, if configured, will override the default protocol
     - Default is http, if configured as https it will force HTTPS connections to the upstream server
-- index: Whether to enable file index page
+- `index`: Whether to enable file index page
     - Only local web servers can configure this parameter, if enabled it will enable the autoindex configuration to automatically generate index pages for directories
-- log: Nginx log file path
+- `log`: Nginx log file path
     - If specified, access logs will be written to this file, otherwise the default log file will be used according to the server type
     - Reverse proxy servers use `/var/log/nginx/<name>.log` as the default log file path
     - Local web servers use the default Access log
-- conf: Nginx configuration file path
+- `conf`: Nginx configuration file path
     - Explicitly specifies the configuration template file to use, located in [roles/infra/templates/nginx](https://github.com/pgsty/pigsty/tree/main/roles/infra/templates/nginx) or [templates/nginx](https://github.com/pgsty/pigsty/tree/main/templates/nginx) directory
     - If this parameter is not specified, the default configuration template will be used, located in [roles/infra/templates/nginx](https://github.com/pgsty/pigsty/tree/main/roles/infra/templates/nginx) or [templates/nginx](https://github.com/pgsty/pigsty/tree/main/templates/nginx) directory
-- config: Nginx configuration code block
+- `config`: Nginx configuration code block
     - Configuration text directly injected into the Nginx Server configuration block
-- enforce_https: Redirect HTTP to HTTPS
+- `enforce_https`: Redirect HTTP to HTTPS
     - Global configuration can be specified by nginx_sslmode: enforce
     - This configuration does not affect the default home server, which will always listen on ports 80 and 443 simultaneously to ensure compatibility.
+
+
 
 ------
 
@@ -634,6 +637,7 @@ This Nginx also serves as a local YUM/APT repository.
 nginx_enabled: true               # enable nginx on this infra node?
 nginx_exporter_enabled: true      # enable nginx_exporter on this infra node?
 nginx_sslmode: enable             # nginx ssl mode? disable,enable,enforce
+nginx_cert_validity: 397d         # nginx self-signed cert validity, 397d by default
 nginx_home: /www                  # nginx content dir, `/www` by default
 nginx_port: 80                    # nginx listen port, 80 by default
 nginx_ssl_port: 443               # nginx ssl listen port, 443 by default
@@ -677,7 +681,23 @@ nginx ssl mode? which could be: `disable`, `enable`, `enforce`, the default valu
 - `disable`: listen on [`nginx_port`](#nginx_port) and serve plain HTTP only
 - `enable`: also listen on [`nginx_ssl_port`](#nginx_ssl_port) and serve HTTPS
 - `enforce`: all links will be rendered as `https://` by default
-  - also redirect 80 port to 443 port for all non-default servers in nginx [`infra_portal`](#infra_portal)
+  - also redirect the 80 port to 443 port for all non-default servers in nginx [`infra_portal`](#infra_portal)
+
+
+
+------
+
+### `nginx_cert_validity`
+
+type: `duration`, level: `G`
+
+nginx self-signed cert validity, `397d` by default
+
+Use longer validity is not recommended, as the latest browsers require the website certificate to be valid for at most 397 days, so this is the default value.
+
+
+
+
 
 ------
 
@@ -695,7 +715,7 @@ Nginx root directory which contains static resource and repo resource. It’s wi
 
 type: `port`, level: `G`
 
-nginx listen port which serves the HTTP requests, `80` by default.
+Nginx listening port which serves the HTTP requests, `80` by default.
 
 If your default 80 port is occupied or unavailable, you can consider using another port, and change [`repo_endpoint`](#repo_endpoint) and [`repo_upstream`](#repo_upstream) (the `local` entry) accordingly.
 

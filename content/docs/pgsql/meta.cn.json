@@ -5,24 +5,29 @@
   "root": false,
   "defaultOpen": false,
   "pages": [
-    "arch",
-    "usage",
-    "config",
-    "param",
-    "admin",
-    "playbook",
-    "monitor",
-    "faq",
-    "--- ---",
-    "user",
-    "hba",
-    "acl",
-    "database",
-    "service",
-    "backup",
-    "dashboard",
-    "migration",
-    "kernel",
-    "ext"
-  ]
-}
+        "arch",
+        "usage",
+        "config",
+        "param",
+        "admin",
+        "playbook",
+        "monitor",
+        "faq",
+
+        "--- ---",
+        "user",
+        "hba",
+        "acl",
+        "database",
+        "service",
+        "backup",
+        "dashboard",
+        "migration",
+
+        "--- ---",
+        "kernel",
+
+        "--- ---",
+        "extension"
+      ]
+    },

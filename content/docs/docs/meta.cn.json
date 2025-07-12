@@ -1,6 +1,6 @@
 {
   "root": true,
-  "description": "Pigsty v3.5 文档",
+  "description": "Pigsty v3.6 文档",
   "icon": "PiggyBank",
   "pages": [
     "install",

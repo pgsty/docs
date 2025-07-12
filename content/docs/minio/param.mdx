@@ -1,6 +1,6 @@
 ---
 title: Parameter
-description: customize with options
+description: Customize MinIO parameters
 icon: Variable
 ---
 
@@ -13,7 +13,7 @@ You may also use it for other purposes, such as storing large files, documents, 
 
 ## Parameters
 
-There are **15** related parameters in MinIO module:
+There are **20** related parameters in MinIO module:
 
 | Parameter                               |   Type   | Level | Comment                                                            |
 |:----------------------------------------|:--------:|:-----:|--------------------------------------------------------------------|
@@ -21,6 +21,7 @@ There are **15** related parameters in MinIO module:
 | [`minio_cluster`](#minio_cluster)       |  string  |   C   | minio cluster name, minio by default                               |
 | [`minio_clean`](#minio_clean)           |   bool   | G/C/A | cleanup minio during init?, false by default                       |
 | [`minio_user`](#minio_user)             | username |   C   | minio os user, `minio` by default                                  |
+| [`minio_https`](#minio_https)           |   bool   |   G   | use https for minio, true by default                               |
 | [`minio_node`](#minio_node)             |  string  |   C   | minio node name pattern                                            |
 | [`minio_data`](#minio_data)             |   path   |   C   | minio data dir(s), use `{x...y}` to specify multi drivers          |
 | [`minio_volumes`](#minio_volumes)       |  string  |   C   | minio core parameter, specify nodes and disks, auto-gen by default |
@@ -30,6 +31,7 @@ There are **15** related parameters in MinIO module:
 | [`minio_access_key`](#minio_access_key) | username |   C   | root access key, `minioadmin` by default                           |
 | [`minio_secret_key`](#minio_secret_key) | password |   C   | root secret key, `minioadmin` by default                           |
 | [`minio_extra_vars`](#minio_extra_vars) |  string  |   C   | extra environment variables for minio server                       |
+| [`minio_provision`](#minio_provision)   |   bool   |  G/C  | run minio provisioning tasks?                                      |
 | [`minio_alias`](#minio_alias)           |  string  |   G   | alias name for local minio deployment                              |
 | [`minio_endpoint`](#minio_endpoint)     |  string  |   C   | corresponding host:port for above minio alias                      |
 | [`minio_buckets`](#minio_buckets)       | bucket[] |   C   | list of minio bucket to be created                                 |
@@ -52,6 +54,7 @@ The default parameters of MinIO is defined in [`roles/minio/defaults/main.yml`](
 minio_cluster: minio              # minio cluster identifier, REQUIRED
 minio_clean: false                # cleanup minio during init?, false by default
 minio_user: minio                 # minio os user, `minio` by default
+minio_https: true                 # use https for minio, true by default
 minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio node name pattern
 minio_data: '/data/minio'         # minio data dir(s), use {x...y} to specify multi drivers
 #minio_volumes:                   # minio data volumes, override defaults if specified
@@ -61,12 +64,18 @@ minio_admin_port: 9001            # minio console port, 9001 by default
 minio_access_key: minioadmin      # root access key, `minioadmin` by default
 minio_secret_key: minioadmin      # root secret key, `minioadmin` by default
 minio_extra_vars: ''              # extra environment variables
+minio_provision: true             # run minio provisioning tasks?
 minio_alias: sss                  # alias name for local minio deployment
 #minio_endpoint: https://sss.pigsty:9000 # if not specified, overwritten by defaults
-minio_buckets: [ { name: pgsql }, { name: infra },  { name: redis } ]
-minio_users:
-  - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
-  - { access_key: pgbackrest , secret_key: S3User.Backup, policy: readwrite }
+minio_buckets:                    # list of minio bucket to be created
+  - { name: pgsql ,lock: true }
+  - { name: meta  ,lock: true ,versioning: true }
+  - { name: data }
+minio_users:                      # list of minio user to be created
+  - { access_key: pgbackrest  ,secret_key: S3User.Backup ,policy: pgsql }
+  - { access_key: s3user_meta ,secret_key: S3User.Meta   ,policy: meta  }
+  - { access_key: s3user_data ,secret_key: S3User.Data   ,policy: data  }
+
 ```
 
 ------
@@ -100,6 +109,17 @@ cleanup minio during init?, `false` by default
 name: `minio_user`, type: `username`, level: `C`
 
 minio os user name, `minio` by default
+
+------
+
+## `minio_https`
+
+name: `minio_https`, type: `bool`, level: `G`
+
+Use HTTPS or HTTP for MinIO service, `true` by default, means using HTTPS.
+
+Beware that pgbackrest requires MinIO HTTPS to work properly, but if you don't use minio for that, and don't want to use HTTPS for MinIO, you can set this to `false`.
+
 
 ------
 
@@ -185,7 +205,12 @@ root secret key, `minioadmin` by default
 
 default values: `minioadmin`
 
-> **PLEASE CHANGE THIS IN YOUR DEPLOYMENT**
+<Callout title="Change PASSWORDS!" type="warning">
+
+    It's very important to change this password in your deployment!
+
+</Callout>
+
 
 ------
 
@@ -232,10 +257,20 @@ name: `minio_buckets`, type: `bucket[]`, level: `C`
 list of minio bucket to be created by default:
 
 ```yaml
-minio_buckets: [ { name: pgsql }, { name: infra },  { name: redis } ]
+minio_buckets:                    # list of minio bucket to be created
+  - { name: pgsql ,lock: true }
+  - { name: meta  ,lock: true ,versioning: true }
+  - { name: data }
 ```
 
-Three default buckets are created for module [`PGSQL`](/pgsql/), [`INFRA`](/infra/), and [`REDIS`](/redis/)
+Three default buckets are created by default, with different policies.
+
+The `pgsql` bucket is used for PostgreSQL backups by default. while `meta` and `data` are open buckets for other purposes.
+For example, the supabase template may use the `data` bucket to store business data.
+And if you have important metadata that requires versioning & deletion protection (lock), you can use the `meta` bucket out-of-the-box.
+
+Each bucket will have a default policy, policy names same as the bucket name. e.g., the `pgsql` policy have all the privileges on the `pgsql` bucket, and so on.
+
 
 ------
 
@@ -243,14 +278,19 @@ Three default buckets are created for module [`PGSQL`](/pgsql/), [`INFRA`](/infr
 
 name: `minio_users`, type: `user[]`, level: `C`
 
-list of minio user to be created, default value:
+list of minio users to be created, default value:
 
 ```yaml
-minio_users:
-  - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
-  - { access_key: pgbackrest , secret_key: S3User.Backup, policy: readwrite }
+minio_users:                      # list of minio user to be created
+  - { access_key: pgbackrest  ,secret_key: S3User.Backup ,policy: pgsql }
+  - { access_key: s3user_meta ,secret_key: S3User.Meta   ,policy: meta  }
+  - { access_key: s3user_data ,secret_key: S3User.Data   ,policy: data  }
 ```
 
 Two default users are created for PostgreSQL DBA and pgBackREST.
 
-#### It's dangerous to use default passwords!
+<Callout title="Change PASSWORDS!" type="warning">
+
+    Please change these passwords in serious production deployments.
+
+</Callout>

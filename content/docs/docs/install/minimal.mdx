@@ -27,16 +27,24 @@ To use slim installation, you need to:
     </Step>
 </Steps>
 
+```bash
+curl https://repo.pigsty.cc/get | bash
+./configure -c slim
+./install.yml
+```
+
+
 Slim installation only installs these essential components:
-| Component | Required | Description |
-|-----------|----------|-------------|
-| patroni | <span className="text-red-500 font-black">REQUIRED</span> | Bootstrap HA PostgreSQL cluster |
-| etcd | <span className="text-red-500 font-black">REQUIRED</span> | meta database dependency (DCS) for patroni|
-| pgbouncer | *OPTIONAL* | Connection pooler for postgres |
-| vip-manager | *OPTIONAL* | L2 VIP binding to postgres cluster leader |
-| haproxy | *OPTIONAL* | Auto-routing [**service**](/pgsql/service/) |
-| chronyd | *OPTIONAL* | Time synchronization with NTP server |
-| tuned | *OPTIONAL* | Node tuned template and kernel parameters management |
+
+|  Component  |                         Required                          | Description                                          |
+|:-----------:|:---------------------------------------------------------:|------------------------------------------------------|
+|   patroni   | <span className="text-red-500 font-black">REQUIRED</span> | Bootstrap HA PostgreSQL cluster                      |
+|    etcd     | <span className="text-red-500 font-black">REQUIRED</span> | meta database dependency (DCS) for patroni           |
+|  pgbouncer  | <span className="text-blue-500 font-bold">OPTIONAL</span> | Connection pooler for postgres                       |
+| vip-manager | <span className="text-blue-500 font-bold">OPTIONAL</span> | L2 VIP binding to postgres cluster leader            |
+|   haproxy   | <span className="text-blue-500 font-bold">OPTIONAL</span> | Auto-routing [**service**](/pgsql/service/)          |
+|   chronyd   | <span className="text-blue-500 font-bold">OPTIONAL</span> | Time synchronization with NTP server                 |
+|    tuned    | <span className="text-blue-500 font-bold">OPTIONAL</span> | Node tuned template and kernel parameters management |
 
 You can turn off the optional components, the only two required components are `patroni` and `etcd`.
 
@@ -52,38 +60,58 @@ Config file example: [`conf/slim.yml`](https://github.com/pgsty/pigsty/blob/main
 ```yaml
 all:
   children:
+    infra: { hosts: { 10.10.10.10: { infra_seq: 1 }} ,vars: { repo_enabled: false }}
+    etcd:  { hosts: { 10.10.10.10: { etcd_seq: 1  }} ,vars: { etcd_cluster: etcd  }}
 
-    # actually not used, a placeholder
-    infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
-
-    # etcd cluster
-    etcd:
-      hosts:
-        10.10.10.10: { etcd_seq: 1 }
-      vars:
-        etcd_cluster: etcd
-
-    # postgres cluster 'pg-meta' with 2 instances
+    #----------------------------------------------#
+    # PostgreSQL Cluster
+    #----------------------------------------------#
     pg-meta:
       hosts:
         10.10.10.10: { pg_seq: 1, pg_role: primary }
-        10.10.10.11: { pg_seq: 2, pg_role: replica }
       vars:
         pg_cluster: pg-meta
-        pg_databases: [ { name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [{name: vector}]}]
         pg_users:
-          - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [ dbrole_admin ]    ,comment: pigsty admin user }
-          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [ dbrole_readonly ] ,comment: read-only viewer for meta database }
+          - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
+        pg_databases:
+          - { name: meta, baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [ vector ]}
+        pg_hba_rules:
+          - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
         node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
 
-  vars:                               # global parameters
-    version: v3.5.0                   # pigsty version string
+  vars:
+    #----------------------------------------------#
+    # INFRA : https://pgsty.com/docs/infra/param
+    #----------------------------------------------#
+    version: v3.5.1                   # pigsty version string
     admin_ip: 10.10.10.10             # admin node ip address
     region: default                   # upstream mirror region: default,china,europe
-    node_tune: oltp                   # node tuning specs: oltp,olap,tiny,crit
-    pg_conf: oltp.yml                 # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
+    infra_portal:                     # domain names and upstream servers
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+      blackbox     : { endpoint: "${admin_ip}:9115" }
+      loki         : { endpoint: "${admin_ip}:3100" }
 
-    # slim installation setup
+    #----------------------------------------------#
+    # NODE : https://pgsty.com/docs/node/param
+    #----------------------------------------------#
+    node_repo_modules: node,infra,pgsql # add these repos directly to the singleton node
+    node_tune: oltp                     # node tuning specs: oltp,olap,tiny,crit
+
+    #----------------------------------------------#
+    # PGSQL : https://pgsty.com/docs/pgsql/param
+    #----------------------------------------------#
+    pg_version: 17                      # Default PostgreSQL Major Version is 17
+    pg_conf: oltp.yml                   # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
+    pg_packages: [ pgsql-main, pgsql-common ]   # pg kernel and common utils
+    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ,pg17-olap]
+
+    #----------------------------------------------#
+    # SLIM: http://localhost:3000/docs/install/minimal
+    #----------------------------------------------#
     nginx_enabled: false              # nginx not exists
     dns_enabled: false                # dnsmasq not exists
     prometheus_enabled: false         # prometheus not exists
@@ -92,14 +120,6 @@ all:
     pgbouncer_exporter_enabled: false # disable pgbouncer_exporter
     pgbackrest_exporter_enabled: false # disable pgbackrest_exporter
     pg_vip_enabled: false             # disable pg_vip
-
-    #----------------------------------#
-    # Repo, Node, Packages
-    #----------------------------------#
-    node_repo_modules: node,infra,pgsql # use node_repo_modules instead of repo_modules
-    node_repo_remove: true              # remove existing node repo for node managed by pigsty?
-    pg_version: 17                      # default postgres version
-    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
 ```
 
 

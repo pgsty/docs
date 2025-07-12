@@ -22,10 +22,10 @@ import {
 **Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> 是一个开箱即用，本地优先，开源免费的 <span className="text-blue-500 font-bold">PostgreSQL 数据库发行版</span>。
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='企业级 PostgreSQL' href={"/docs/pgsql"}>
+    <Card icon={<Database className="text-blue-300" />} title='企业级 PostgreSQL' href={"/pgsql"}>
         快速创建高可用、故障自愈的 PostgreSQL 集群。自动预置的PITR 时间点恢复、访问控制、SSL加密。自带本地 CA 与安全最佳实践，确保数据坚如磐石
     </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='基础设施即代码' href={"/docs/infra"}>
+    <Card icon={<AtomIcon className="text-green-600" />} title='基础设施即代码' href={"/infra"}>
         包含整套运行所需的基础设施闭包：声明所需的一切而无需操心实现细节，所有依赖一键拉起，无需K8S与容器的云原生体验。简单易用，最佳实践唾手可得
     </Card>
     <Card icon={<SearchIcon className={"text-orange-400"} />} title='震撼的可观测性'>
@@ -52,16 +52,16 @@ Pigsty 满足您 “一切皆用 PostgreSQL” 的需求，提供 PG 生态中�
 Pigsty 直接运行于裸 Linux 系统之上，使用 Ansible 实现，采用可扩展的模块化架构。
 
 <Cards>
-    <Card icon={<Database className="text-sky-700" />} title='PGSQL' href={"/docs/pgsql"}>
+    <Card icon={<Database className="text-sky-700" />} title='PGSQL' href={"/pgsql"}>
         由 Patroni、Pgbouncer、HAproxy、PgBackrest 等驱动的自治高可用 PostgreSQL 集群
     </Card>
-    <Card icon={<Landmark className="text-orange-400" />} title='INFRA' href={"/docs/infra"}>
+    <Card icon={<Landmark className="text-orange-400" />} title='INFRA' href={"/infra"}>
         本地软件仓库、Prometheus、Grafana、Loki、AlertManager、PushGateway、Blackbox Exporter…
     </Card>
-    <Card icon={<Server className={"text-green-500"} />} title='NODE' href={"/docs/node"}>
+    <Card icon={<Server className={"text-green-500"} />} title='NODE' href={"/node"}>
         调整节点到所需状态、名称、时区、NTP、ssh、sudo、haproxy、docker、promtail、keepalived
     </Card>
-    <Card icon={<Settings className={"text-blue-400"} />} title='ETCD' href={"/docs/etcd"}>
+    <Card icon={<Settings className={"text-blue-400"} />} title='ETCD' href={"/etcd"}>
         分布式键值存储，用作高可用 Postgres 集群的 DCS：共识选主 / 配置管理 / 服务发现。
     </Card>
 </Cards>

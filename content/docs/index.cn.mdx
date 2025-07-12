@@ -1,5 +1,5 @@
 ---
-title: Pigsty v3.5
+title: Pigsty v3.6
 description: 开始您的 PostgreSQL 之旅
 icon: Rocket
 full: true
@@ -30,8 +30,6 @@ import { DynamicLink } from 'fumadocs-core/dynamic-link';
 Pigsty 满足您 “一切皆用 PostgreSQL” 的需求，提供 PG 生态中最全面的扩展插件/内核分支支持；
 并整合了 PG 生态开源组件与最佳实践，提供了自建企业级 PostgreSQL 服务所需的一切，
 让您无需数据库专家，即可在几分钟内以云数据库 RDS 1/10 不到的纯硬件成本，自建专业级数据库服务。
-
-
 
 
 <Callout title="想要了解更多？">
@@ -72,7 +70,7 @@ Pigsty 直接运行于裸 Linux 系统之上，使用 Ansible 实现，采用可
 
 ```bash title="install"
 curl -fsSL https://repo.pigsty.io/get | bash;
-cd ~/pigsty; ./bootstrap; ./configure; ./install.yml;
+cd ~/pigsty; ./configure; ./install.yml;
 ```
 
 import { File, Folder, Files } from 'fumadocs-ui/components/files';
@@ -86,5 +84,4 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
     </Folder>
 </Files>
 
-Pigsty Singleton Ready! Check port `5432` for postgres service, port `3000` for grafana dashboards.
-
+Pigsty 单节点安装完毕，你可以通过 `5432` 端口访问 PostgreSQL 服务，或通过 `3000` 端口访问 Grafana 仪表盘。

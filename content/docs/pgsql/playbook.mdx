@@ -40,7 +40,7 @@ The [`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml) is used f
 
 [![asciicast](/img/asciinema/pgsql.svg)](https://asciinema.org/a/566417)
 
-**This playbook contains following subtasks**:
+**This playbook contains the following subtasks**:
 
 ```yaml
 pg_install              : # install postgres packages & extensions
@@ -189,9 +189,9 @@ Some arguments can affect the behavior of this playbook:
 ./pgsql-rm.yml                          # remove all the postgres clusters (VERY DANGEROUS)
 ./pgsql-rm.yml -l pg-test               # remove the cluster `pg-test`
 ./pgsql-rm.yml -e pg_safeguard=false    # force disable safeguard, run this playbook anyway
-./pgsql-rm.yml -e pg_rm_bkup=false      # do not purge pgbackrest backup repo by default (keep the backup)
-./pgsql-rm.yml -e pg_rm_data=false      # do not purge postgres data by default (keep the data)
-./pgsql-rm.yml -e pg_rm_pkg=false       # do not uninstall postgres packages by default (keep the packages)
+./pgsql-rm.yml -e keep_data=true        # keep the data directory, do not remove it (keep the data)
+./pgsql-rm.yml -e keep_backup=true      # do not purge postgres data by default (keep the backup repo)
+./pgsql-rm.yml -e keep_package=true     # do not uninstall postgres packages by default (keep the packages)
 ```
 
 **Administration Tasks that use this playbook**

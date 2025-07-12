@@ -4,6 +4,7 @@
   "root": true,
   "icon": "Layers",
   "pages": [
+    "index",
     "config",
     "param",
     "admin",

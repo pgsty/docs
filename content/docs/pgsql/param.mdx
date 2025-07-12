@@ -75,7 +75,7 @@ There are **120** parameters about the `PGSQL` module.
 | Name                                                | Type       | Level | Comment                                                                       |
 |-----------------------------------------------------|------------|-------|-------------------------------------------------------------------------------|
 | [`pg_data`](#pg_data)                               | `path`     | C     | postgres data directory, `/pg/data` by default                                |
-| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C     | mountpoint/path for postgres main data, `/data` by default                    |
+| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C     | postgres backup data directory, `/data/backups` by default                    |
 | [`pg_fs_bkup`](#pg_fs_bkup)                         | `path`     | C     | mountpoint/path for pg backup data, `/data/backup` by default                 |
 | [`pg_storage_type`](#pg_storage_type)               | `enum`     | C     | storage type for pg main data, SSD,HDD, SSD by default                        |
 | [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C     | size of `/pg/dummy`, hold 64MB disk space for emergency use                   |
@@ -185,9 +185,9 @@ There are **120** parameters about the `PGSQL` module.
 | Name                            | Type   | Level | Comment                                                             |
 |---------------------------------|--------|-------|---------------------------------------------------------------------|
 | [`pg_safeguard`](#pg_safeguard) | `bool` | G/C/A | stop pg_remove running if pg_safeguard is enabled, false by default |
-| [`pg_rm_data`](#pg_rm_data)     | `bool` | G/C/A | remove postgres data during remove? true by default                 |
-| [`pg_rm_bkup`](#pg_rm_bkup)     | `path` | G/C/A | remove pgbackrest backup during primary remove? true by default     |
-| [`pg_rm_pkg`](#pg_rm_pkg)       | `path` | G/C/A | uninstall postgres packages during remove? true by default          |
+| [`keep_data`](#keep_data)         | `bool` | G/C/A | keep postgres data during remove? false by default                 |
+| [`keep_backup`](#keep_backup)     | `bool` | G/C/A | keep pgbackrest backup during remove? false by default             |
+| [`keep_package`](#keep_package)   | `bool` | G/C/A | keep postgres packages during remove? false by default             |
 
 
 
@@ -814,8 +814,8 @@ It also init cluster template databases with default roles, schemas & extensions
 
 ```yaml
 pg_data: /pg/data                 # postgres data directory, `/pg/data` by default
-pg_fs_main: /data                 # mountpoint/path for postgres main data, `/data` by default
-pg_fs_bkup: /data/backups         # mountpoint/path for pg backup data, `/data/backup` by default
+pg_fs_main: /data/postgres        # postgres main data directory, `/data/postgres` by default
+pg_fs_bkup: /data/backups         # postgres backup data directory, `/data/backups` by default
 pg_storage_type: SSD              # storage type for pg main data, SSD,HDD, SSD by default
 pg_dummy_filesize: 64MiB          # size of `/pg/dummy`, hold 64MB disk space for emergency use
 pg_listen: '0.0.0.0'              # postgres/pgbouncer listen addresses, comma separated list
@@ -872,11 +872,15 @@ It’s a soft link that points to the underlying data directory.
 
 name: `pg_fs_main`, type: `path`, level: `C`
 
-mountpoint/path for postgres main data, `/data` by default
+postgres main data directory, `/data/postgres` by default.
 
-default values: `/data`, which will be used as parent dir of postgres main data directory: `/data/postgres`.
+This directory will be created and owned by the [`pg_dbsu`](#pg_dbsu) user, and it will be used as the main data directory for postgres.
 
-It’s recommended to use NVME SSD for postgres main data storage, Pigsty is optimized for SSD storage by default. But HDD is also supported, you can change [`pg_storage_type`](#pg_storage_type) to `HDD` to optimize for HDD storage.
+If your main data directory [`node_data`](/node/param#node_data) is changed, consider changing this parameter as well.
+
+It’s recommended to use NVME SSD for postgres main data storage, Pigsty is optimized for SSD storage by default.
+If you are using HDD storage, consider changing the [`pg_storage_type`](#pg_storage_type) to `HDD` to optimize for HDD storage.
+
 
 ------
 
@@ -884,13 +888,18 @@ It’s recommended to use NVME SSD for postgres main data storage, Pigsty is opt
 
 name: `pg_fs_bkup`, type: `path`, level: `C`
 
-mountpoint/path for pg backup data, `/data/backup` by default
+postgres backup data directory, `/data/backups` by default
 
+This directory will be created and owned by the [`pg_dbsu`](#pg_dbsu) user, and it will be used as the local backup storage for postgres.
+
+Local backup is enabled by default on primary pg cluster.
 If you are using the default [`pgbackrest_method`](#pgbackrest_method) = `local`, it is recommended to have a separate disk for backup storage.
+The backup disk should be large enough to hold all your backups, at least enough for 3 base backups + 2-day WAL archive.
+This is usually not a problem since you can use affordable and large HDD for that.
 
-The backup disk should be large enough to hold all your backups, at least enough for 3 base backups + 2-day WAL archive. This is usually not a problem since you can use affordable and large HDD for that.
+It's optional if you are using remote / centralized backup storage (e.g. [`pgbackrest_method`](#pgbackrest_method) = `minio`).
 
-It’s recommended to use a separate disk for backup storage, otherwise pigsty will fall back to the main data disk.
+
 
 ------
 
@@ -2238,9 +2247,9 @@ These flags control the behavior of [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmym
 
 ```yaml
 pg_safeguard: false               # stop pg_remove running if pg_safeguard is enabled, false by default
-pg_rm_data: true                  # remove postgres data during remove? true by default
-pg_rm_bkup: true                  # remove pgbackrest backup during primary remove? true by default
-pg_rm_pkg: true                   # uninstall postgres packages during remove? true by default
+keep_data: false                  # keep postgres data during remove? false by default
+keep_backup: false                # keep pgbackrest backup during remove? false by default
+keep_package: false               # keep postgres packages during remove? false by default
 ```
 
 
@@ -2256,37 +2265,32 @@ If enabled, [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/pgsql/p
 
 ------
 
-### `pg_rm_data`
+### `keep_data`
 
-name: `pg_rm_data`, type: `bool`, level: `G/C/A`
+name: `keep_data`, type: `bool`, level: `G/C/A`
 
-purging existing postgres during pgsql init? `true` by default, which remove postgres data directory during remove playbook.
-
-If you want to keep the data directory, set it to `false`, which will leave the data directory there.
-
-
-------
-
-### `pg_rm_bkup`
-
-name: `pg_rm_bkup`, type: `bool`, level: `G/C/A`
-
-remove pgbackrest backup during primary remove? `true` by default， which will remove the pgbackrest backup repo during remove playbook.
-
-It only performs on primary instance, and only when [`pgbackrest_enabled`](#pgbackrest_enabled) is `true`.
-
-If you want to keep the backup, set it to `false`, which will leave the backup repo there.
-
+keep postgres data during remove? `false` by default. 
+If set to `true`, the postgres data directory will be preserved during the remove playbook.
 
 
 ------
 
-### `pg_rm_pkg`
+### `keep_backup`
 
-name: `pg_rm_pkg`, type: `bool`, level: `G/C/A`
+name: `keep_backup`, type: `bool`, level: `G/C/A`
 
-uninstall postgres packages during remove? `true` by default, which will uninstall the postgres / extension packages during remove playbook.
+keep pgbackrest backup during remove? `false` by default. 
+If set to `true`, the pgbackrest backup repository will be preserved during the remove playbook.
 
-If you want to keep the packages, set it to `false`, which will leave the packages there.
+This only applies to primary instance. (backup will be remove when primary instance is removed)
 
 
+
+------
+
+### `keep_package`
+
+name: `keep_package`, type: `bool`, level: `G/C/A`
+
+keep postgres packages during remove? `false` by default. 
+If set to `true`, the postgres and extension packages will be preserved during the remove playbook.
