@@ -20,10 +20,9 @@
     "acl",
     "database",
     "service",
-    "backup",
     "dashboard",
     "migration",
-
+    "backup",
     "kernel",
     "extension"
   ]

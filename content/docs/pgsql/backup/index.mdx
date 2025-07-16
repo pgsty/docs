@@ -1,0 +1,76 @@
+---
+title: Backup
+description: Backup and point-in-time recovery
+icon: DatabaseBackup
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+
+Pigsty uses [pgBackRest](https://pgbackrest.org/) to manage PostgreSQL backups, it may be the most powerful open-source backup tools in the ecosystem.
+With incremental / parallel backup & restore, encryption, [MinIO](/minio) / S3 support, and many other features.
+Pigsty has pre-configured it for every [PGSQL](/pgsql) cluster by default.
+
+<Cards>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='Policy' href={"/pgsql/backup/mechanism"}>
+        Backup scripts, scheduling, pgbackrest, repo and admin
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Admin' href={"/pgsql/backup/policy"}>
+        Backup policy, disk planning, recovery window trade-off
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Restore' href={"/pgsql/backup/restore"}>
+        Restore to specific time point with playbook
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='Example' href={"/pgsql/backup/example"}>
+        Sandbox example: Perform recovery with bare hands
+    </Card>
+</Cards>
+
+<Callout title="NO WRANTTY" type="warn">
+
+    Pigsty try its best to provide a reliable PITR solution, but we do not take any responsibility for the data loss caused by the PITR operation, use it at your own risk.
+    For professional support, consider our [pro service](/about/services).
+
+</Callout>
+
+
+
+--------
+
+## Quick Start
+
+<Steps>
+
+    <Step>
+        [Backup Policy](/pgsql/backup/mechanism): Schedule Base Backups with Crontab
+
+    </Step>
+
+    <Step>
+        [WAL Archiving](/pgsql/backup/policy): Continuously record write activities
+
+    </Step>
+
+    <Step>
+        [Restore & Recovery](/pgsql/backup/restore): Recover from backup and wal archive
+    </Step>
+
+</Steps>
+
+```yaml title="Full backup everyday 1am"
+node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ]
+```
+
+```bash title="restore to a timepoint"
+./pgsql-pitr.yml -e '{"pg_pitr": { "time": "2025-07-13 10:00:00+00" }}'
+```
+

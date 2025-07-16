@@ -1,0 +1,12 @@
+{
+  "title": "Backup",
+  "icon": "DatabaseBackup",
+  "pages": [
+    "mechanism",
+    "repository",
+    "policy",
+    "admin",
+    "restore",
+    "example"
+  ]
+}

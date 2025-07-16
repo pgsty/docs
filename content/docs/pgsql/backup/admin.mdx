@@ -1,0 +1,156 @@
+---
+title: Admin
+description: Manage backup repo and backups
+icon: DatabaseBackup
+---
+
+
+## Enable Backup
+
+If you database cluster is created with [`pgbackrest_enable`](/pgsql/param/#pgbackrest_enable) set to `true`, the backup will be enabled automatically.
+
+If it created with the `false` value, you can enable the pgbackrest component with:
+
+```bash
+./pgsql.yml -t pg_backup    # run the pgbackrest subtask
+```
+
+
+--------
+
+## Remove Backup
+
+Pigsty will remove pgbackrest backup stanza when removing the primary instance ([`pg_role`](/pgsql/param/#pg_role) = `primary`).
+
+```bash
+./pgsql-rm.yml
+./pgsql-rm.yml -e pg_rm_backup=false   # leave backup intact
+./pgsql-rm.yml -t pg_backup            # only remove backup
+```
+
+Use the `pg_backup` subtask to remove the backup only, and use the [`keep_backup`](/pgsql/param/#keep_backup) arg to keep backups.
+
+If your backup repo is **locked**, (e.g., S3 / MinIO has a lock option), this operation will fail.
+
+<Callout title="Backup Removal" type="warn">
+
+    Removing backup may lead to permanent data loss, it's a dangerous operation, do with extreme caution.
+
+</Callout>
+
+
+--------
+
+## List Backup
+
+This command will list all backups in the pgbackrest repository (shared by all clusters)
+
+```bash
+pgbackrest info
+````
+
+
+--------
+
+## Manual Backup
+
+Pigsty has a built-in script `/pg/bin/pg-backup` which wraps the `pgbackrest` backup command.
+
+```bash
+pg-backup        # take an incremental backup
+pg-backup full   # take an full backup
+pg-backup incr   # take an incremental backup
+pg-backup diff   # take an differential backup
+```
+
+
+
+--------
+
+## Base Backup
+
+Pigsty has an alternative backup script `/pg/bin/pg-basebackup` which does not rely on `pgbackrest`, and gives you a physical copy of the database cluster.
+The default backup dir is `/pg/backup`.
+
+```bash tab="help"
+NAME
+  pg-basebackup  -- make base backup from PostgreSQL instance
+
+SYNOPSIS
+  pg-basebackup -sdfeukr
+  pg-basebackup --src postgres:/// --dst . --file backup.tar.lz4
+
+DESCRIPTION
+-s, --src, --url     Backup source URL, optional, "postgres:///" by default, if password is required, it should be given in url, ENV or .pgpass
+-d, --dst, --dir     Where to put backup files, "/pg/backup" by default
+-f, --file           Overwrite default backup filename, "backup_${tag}_${date}.tar.lz4"
+-r, --remove         .lz4 Files mtime before n minutes ago will be removed, default is 1200 (20hour)
+-t, --tag            Backup file tag, if not set, target cluster_name or local ip address will be used. Also used as part of DEFAULT filename
+-k, --key            Encryption key when --encrypt is specified, default key is ${tag}
+-u, --upload         Upload backup files to cloud storage, (need your own implementation)
+-e, --encryption     Encrypt with RC4 using OpenSSL, if not key is specified, tag is used as key
+-h, --help           Print this message
+```
+```bash tab="backup"
+postgres@pg-meta-1:~$ pg-basebackup
+[2025-07-13 06:16:05][INFO] ================================================================
+[2025-07-13 06:16:05][INFO] [INIT] pg-basebackup begin, checking parameters
+[2025-07-13 06:16:05][DEBUG] [INIT] #====== BINARY
+[2025-07-13 06:16:05][DEBUG] [INIT] pg_basebackup     :   /usr/pgsql/bin/pg_basebackup
+[2025-07-13 06:16:05][DEBUG] [INIT] openssl           :   /usr/bin/openssl
+[2025-07-13 06:16:05][DEBUG] [INIT] #====== PARAMETER
+[2025-07-13 06:16:05][DEBUG] [INIT] filename  (-f)    :   backup_pg-meta_20250713.tar.lz4
+[2025-07-13 06:16:05][DEBUG] [INIT] src       (-s)    :   postgres:///
+[2025-07-13 06:16:05][DEBUG] [INIT] dst       (-d)    :   /pg/backup
+[2025-07-13 06:16:05][DEBUG] [INIT] tag       (-t)    :   pg-meta
+[2025-07-13 06:16:05][DEBUG] [INIT] key       (-k)    :   pg-meta
+[2025-07-13 06:16:05][DEBUG] [INIT] encrypt   (-e)    :   false
+[2025-07-13 06:16:05][DEBUG] [INIT] upload    (-u)    :   false
+[2025-07-13 06:16:05][DEBUG] [INIT] remove    (-r)    :   -mmin +1200
+[2025-07-13 06:16:05][INFO] [LOCK] acquire lock @ /tmp/backup.lock
+[2025-07-13 06:16:05][INFO] [LOCK] lock acquired success on /tmp/backup.lock, pid=107417
+[2025-07-13 06:16:05][INFO] [BKUP] backup begin, from postgres:/// to /pg/backup/backup_pg-meta_20250713.tar.lz4
+[2025-07-13 06:16:05][INFO] [BKUP] backup in normal mode
+pg_basebackup: initiating base backup, waiting for checkpoint to complete
+
+pg_basebackup: checkpoint completed
+pg_basebackup: write-ahead log start point: 0/7000028 on timeline 1
+pg_basebackup: write-ahead log end point: 0/7000FD8
+pg_basebackup: syncing data to disk ...
+pg_basebackup: base backup completed
+[2025-07-13 06:16:06][INFO] [BKUP] backup complete!
+[2025-07-13 06:16:06][INFO] [RMBK] remove local obsolete backup: 1200
+[2025-07-13 06:16:06][INFO] [BKUP] find obsolete backups: find /pg/backup/ -maxdepth 1 -type f -mmin +1200 -name 'backup*.lz4'
+[2025-07-13 06:16:06][WARN] [BKUP] remove obsolete backups:
+[2025-07-13 06:16:06][INFO] [RMBK] remove old backup complete
+[2025-07-13 06:16:06][INFO] [LOCK] release lock @ /tmp/backup.lock
+[2025-07-13 06:16:06][INFO] [DONE] backup procedure complete!
+[2025-07-13 06:16:06][INFO] ================================================================
+```
+
+Backup are compressed with `lz4`, You can unzip and extract the tarball with the following command:
+
+```bash
+mkdir -p /tmp/data   # extract backup to this directory
+cat /pg/backup/backup_pg-meta_20250713.tar.lz4 | unlz4 -d -c | tar -xC /tmp/data
+```
+
+
+--------
+
+## Logical Backup
+
+You can also use the `pg_dump` command to perform a logical backup.
+
+Logical backups cannot be used for PITR (Point In Time Recovery),
+but they are useful for migrating data between different major versions, or implement flexible data export logic.
+
+
+
+--------
+
+## Bootstrap from Repo
+
+Now let's say you have an existing cluster `pg-meta`, and want to **FORK** it as `pg-meta2`:
+
+You'll need to create the new `pg-meta2` cluster fork, then run `pitr` on it.

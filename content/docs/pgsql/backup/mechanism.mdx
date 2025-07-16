@@ -1,0 +1,328 @@
+---
+title: Mechanism
+description: Backup script, schedule, repository, and infrastructure
+icon: DatabaseBackup
+---
+
+
+Backups can be invoked by built-in [scripts](#script), scheduled with node [crontab](#crontab),
+managed by [pgbackrest](https://pgbackrest.org/), and stored in backup repo,
+which could be local disk filesystem or MinIO / S3, with different [retention](#retention) policies.
+
+
+--------
+
+## Script
+
+You can create a backup with `pgbackrest` command with [`pg_dbsu`](/pgsql/param#pg_dbsu) user (`postgres` by default):
+
+```bash tab="backup"
+pgbackrest --stanza=pg-meta --type=full backup   # create a full backup for cluster pg-meta
+```
+```bash tab="full"
+$ pgbackrest --stanza=pg-meta --type=full backup
+2025-07-15 01:36:57.007 P00   INFO: backup command begin 2.54.2: --annotation=pg_cluster=pg-meta --compress-type=lz4 --delta --exec-id=88380-4b22e767 --expire-auto --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --pg1-path=/pg/data --pg1-port=5432 --repo1-block --repo1-bundle --repo1-bundle-limit=20MiB --repo1-bundle-size=128MiB --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-retention-full=14 --repo1-retention-full-type=time --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --stanza=pg-meta --start-fast --type=full
+2025-07-15 01:36:57.030 P00   INFO: execute non-exclusive backup start: backup begins after the requested immediate checkpoint completes
+2025-07-15 01:36:57.105 P00   INFO: backup start archive = 000000010000000000000006, lsn = 0/6000028
+2025-07-15 01:36:57.105 P00   INFO: check archive for prior segment 000000010000000000000005
+2025-07-15 01:36:58.403 P00   INFO: execute non-exclusive backup stop and wait for all WAL segments to archive
+2025-07-15 01:36:58.421 P00   INFO: backup stop archive = 000000010000000000000006, lsn = 0/6000120
+2025-07-15 01:36:58.424 P00   INFO: check archive for segment(s) 000000010000000000000006:000000010000000000000006
+2025-07-15 01:36:58.540 P00   INFO: new backup label = 20250715-013657F
+2025-07-15 01:36:58.588 P00   INFO: full backup size = 44.5MB, file total = 1437
+2025-07-15 01:36:58.589 P00   INFO: backup command end: completed successfully (1584ms)
+2025-07-15 01:36:58.589 P00   INFO: expire command begin 2.54.2: --exec-id=88380-4b22e767 --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-retention-full=14 --repo1-retention-full-type=time --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --stanza=pg-meta
+2025-07-15 01:36:58.593 P00   INFO: repo1: time-based archive retention not met - archive logs will not be expired
+2025-07-15 01:36:58.593 P00   INFO: expire command end: completed successfully (4ms)
+```
+```bash tab="diff"
+$ pgbackrest --stanza=pg-meta --type=diff backup
+2025-07-15 01:37:24.952 P00   INFO: backup command begin 2.54.2: --annotation=pg_cluster=pg-meta --compress-type=lz4 --delta --exec-id=88431-1b8ca3e0 --expire-auto --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --pg1-path=/pg/data --pg1-port=5432 --repo1-block --repo1-bundle --repo1-bundle-limit=20MiB --repo1-bundle-size=128MiB --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-retention-full=14 --repo1-retention-full-type=time --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --stanza=pg-meta --start-fast --type=diff
+2025-07-15 01:37:24.985 P00   INFO: last backup label = 20250715-013657F, version = 2.54.2
+2025-07-15 01:37:24.985 P00   INFO: execute non-exclusive backup start: backup begins after the requested immediate checkpoint completes
+2025-07-15 01:37:25.045 P00   INFO: backup start archive = 000000010000000000000008, lsn = 0/8000028
+2025-07-15 01:37:25.045 P00   INFO: check archive for prior segment 000000010000000000000007
+2025-07-15 01:37:26.204 P00   INFO: execute non-exclusive backup stop and wait for all WAL segments to archive
+2025-07-15 01:37:26.220 P00   INFO: backup stop archive = 000000010000000000000008, lsn = 0/8000158
+2025-07-15 01:37:26.223 P00   INFO: check archive for segment(s) 000000010000000000000008:000000010000000000000008
+2025-07-15 01:37:26.337 P00   INFO: new backup label = 20250715-013657F_20250715-013724D
+2025-07-15 01:37:26.381 P00   INFO: diff backup size = 424.3KB, file total = 1437
+2025-07-15 01:37:26.381 P00   INFO: backup command end: completed successfully (1431ms)
+2025-07-15 01:37:26.381 P00   INFO: expire command begin 2.54.2: --exec-id=88431-1b8ca3e0 --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-retention-full=14 --repo1-retention-full-type=time --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --stanza=pg-meta
+2025-07-15 01:37:26.386 P00   INFO: repo1: time-based archive retention not met - archive logs will not be expired
+2025-07-15 01:37:26.386 P00   INFO: expire command end: completed successfully (5ms)
+```
+```bash tab="incr"
+$ pgbackrest --stanza=pg-meta --type=incr backup
+2025-07-15 01:37:30.305 P00   INFO: backup command begin 2.54.2: --annotation=pg_cluster=pg-meta --compress-type=lz4 --delta --exec-id=88449-eba235f7 --expire-auto --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --pg1-path=/pg/data --pg1-port=5432 --repo1-block --repo1-bundle --repo1-bundle-limit=20MiB --repo1-bundle-size=128MiB --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-retention-full=14 --repo1-retention-full-type=time --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --stanza=pg-meta --start-fast --type=incr
+2025-07-15 01:37:30.337 P00   INFO: last backup label = 20250715-013657F_20250715-013724D, version = 2.54.2
+2025-07-15 01:37:30.337 P00   INFO: execute non-exclusive backup start: backup begins after the requested immediate checkpoint completes
+2025-07-15 01:37:30.383 P00   INFO: backup start archive = 000000010000000000000009, lsn = 0/9000028
+2025-07-15 01:37:30.383 P00   INFO: check archive for segment 000000010000000000000009
+2025-07-15 01:37:31.191 P00   INFO: execute non-exclusive backup stop and wait for all WAL segments to archive
+2025-07-15 01:37:31.230 P00   INFO: backup stop archive = 00000001000000000000000A, lsn = 0/A000050
+2025-07-15 01:37:31.232 P00   INFO: check archive for segment(s) 000000010000000000000009:00000001000000000000000A
+2025-07-15 01:37:31.356 P00   INFO: new backup label = 20250715-013657F_20250715-013730I
+2025-07-15 01:37:31.403 P00   INFO: incr backup size = 8.3KB, file total = 1437
+2025-07-15 01:37:31.403 P00   INFO: backup command end: completed successfully (1099ms)
+2025-07-15 01:37:31.403 P00   INFO: expire command begin 2.54.2: --exec-id=88449-eba235f7 --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-retention-full=14 --repo1-retention-full-type=time --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --stanza=pg-meta
+2025-07-15 01:37:31.409 P00   INFO: repo1: time-based archive retention not met - archive logs will not be expired
+2025-07-15 01:37:31.409 P00   INFO: expire command end: completed successfully (6ms)
+```
+```bash tab="info"
+$ pgbackrest --stanza=pg-meta info
+stanza: pg-meta
+    status: ok
+    cipher: aes-256-cbc
+
+    db (current)
+        wal archive min/max (17): 000000010000000000000001/00000001000000000000000A
+
+        full backup: 20250715-013441F
+            timestamp start/stop: 2025-07-15 01:34:41+00 / 2025-07-15 01:34:43+00
+            wal start/stop: 000000010000000000000004 / 000000010000000000000004
+            database size: 43.9MB, database backup size: 43.9MB
+            repo1: backup size: 8.3MB
+
+        full backup: 20250715-013657F
+            timestamp start/stop: 2025-07-15 01:36:57+00 / 2025-07-15 01:36:58+00
+            wal start/stop: 000000010000000000000006 / 000000010000000000000006
+            database size: 44.5MB, database backup size: 44.5MB
+            repo1: backup size: 8.7MB
+
+        diff backup: 20250715-013657F_20250715-013724D
+            timestamp start/stop: 2025-07-15 01:37:24+00 / 2025-07-15 01:37:26+00
+            wal start/stop: 000000010000000000000008 / 000000010000000000000008
+            database size: 44.5MB, database backup size: 424.3KB
+            repo1: backup size: 94KB
+            backup reference total: 1 full
+
+        incr backup: 20250715-013657F_20250715-013730I
+            timestamp start/stop: 2025-07-15 01:37:30+00 / 2025-07-15 01:37:31+00
+            wal start/stop: 000000010000000000000009 / 00000001000000000000000A
+            database size: 44.5MB, database backup size: 8.3KB
+            repo1: backup size: 504B
+            backup reference total: 1 full, 1 diff
+```
+
+The `stanza` here is the database cluster name: [`pg_cluster`](/pgsql/param#pg_cluster), which is `pg-meta` for the default setup.
+
+Pigsty has an alias `pb` and wrapper script `pg-backup` that fills the current cluster name as stanza:
+
+```bash title="alias"
+function pb() {
+    local stanza=$(grep -o '\[[^][]*]' /etc/pgbackrest/pgbackrest.conf | head -n1 | sed 's/.*\[\([^]]*\)].*/\1/')
+    pgbackrest --stanza=$stanza $@
+}
+pb ...    # pgbackrest --stanza=pg-meta ...
+pb info   # pgbackrest --stanza=pg-meta info
+pb backup # pgbackrest --stanza=pg-meta backup
+```
+
+```bash title="script"
+pg-backup full   # take an full backup         = pgbackrest --stanza=pg-meta --type=incr backup
+pg-backup incr   # take an incremental backup  = pgbackrest --stanza=pg-meta --type=incr backup
+pg-backup diff   # take an differential backup = pgbackrest --stanza=pg-meta --type=incr backup
+```
+
+
+
+--------
+
+## Crontab
+
+Pigsty is leveraging Linux's crontab to schedule backups. You can define your backup policies with it
+
+For example, most one-node config template will have the following [`node_crontab`](/node/param#node_crontab) for backup.
+
+```yaml title="Full backup everyday 1am"
+node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ]
+```
+
+You can design more sophisticated backup policies with crontab and `pg-backup` script, such as:
+
+```yaml title="Full backup on Monday, incremental backup during weekdays"
+node_crontab:  # make a full backup on monday 1am, and an incremental backup during weekdays
+  - '00 01 * * 1 postgres /pg/bin/pg-backup full'
+  - '00 01 * * 2,3,4,5,6,7 postgres /pg/bin/pg-backup'
+```
+
+To apply crontab change, use the [`node.yml`](/node/playbook/#nodeyml) to update the crontab on all nodes.
+
+```bash title="apply crontab"
+./node.yml -t node_crontab -l pg-meta    # apply crontab change to the pg-meta group
+```
+
+
+--------
+
+## pgbackrest
+
+Here's pigsty's setup details for pgbackrest:
+
+- The pgbackrest backup tool is enabled and configured by default ([`pgbackrest_enabled`](/pgsql/param/#pgbackrest_enabled))
+- Installed in the `pg_install` task in the [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) playbook, defined in [`pg_packages`](/pgsql/param/#pg_packages)
+- configured in the `pg_backup` task in the [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) playbook, [PARAM: PG_BACKUP](/pgsql/param/#pg_backup)
+- init backup repo in the `pgbackrest_init` task, fails if repo exists! (errors can be ignored)
+- Create initial backup in the `pgbackrest_backup` task, controlled by [`pgbackrest_init_backup`](/pgsql/param/#pgbackrest_init_backup)
+
+### FHS
+
+- bin: `/usr/bin/pgbackrest`, from the PGDG's `pgbackrest` package, in the group alias `pgsql-common`.
+- conf: `/etc/pgbackrest`, the main config is [`/etc/pgbackrest/pgbackrest.conf`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pgbackrest.conf).
+- logs: `/pg/log/pgbackrest/*`, controlled by [`pgbackrest_log_dir`](/pgsql/param/#pgbackrest_log_dir)
+- tmp: `/pg/spool` is used as the temp spool directory for pgbackrest
+- data: `/pg/backup` is used, if the default `local` filesystem backup repo is selected.
+
+Moreover, during the [PITR Recovery](/pgsql/backup/recovery) process,
+Pigsty will create a temp `/pg/conf/pitr.conf` pgbackrest config file.
+And write postgres recovery log to the `/pg/tmp/recovery.log` file.
+
+### Monitoring
+
+There is a `pgbackrest_exporter` service running on ([`pgbackrest_exporter_port`](/pgsql/param/#pgbackrest_exporter_port): `9854`) to export the pgbackrest metrics.
+You can customize it by [`pgbackrest_exporter_options`](/pgsql/param/#pgbackrest_exporter_options) and disable it with setting [`pgbackrest_exporter_enabled`](/pgsql/param/#pgbackrest_exporter_enabled) to `false`.
+
+### Initial Backup
+
+When a postgres cluster is created, pigsty will create an initial backup automatically.
+It's a tiny backup since the new cluster is almost empty.
+It will leave a marker file `/etc/pgbackrest/initial.done` to avoid creating the initial backup again.
+Set the [`pgbackrest_init_backup`](/pgsql/param/#pgbackrest_initial) to `false` if you don't want it.
+
+
+--------
+
+## Administration
+
+### Enable Backup
+
+If you database cluster is created with [`pgbackrest_enable`](/pgsql/param/#pgbackrest_enable) set to `true`, the backup will be enabled automatically.
+
+If it created with the `false` value, you can enable the pgbackrest component with:
+
+```bash
+./pgsql.yml -t pg_backup    # run the pgbackrest subtask
+```
+
+### Remove Backup
+
+Pigsty will remove pgbackrest backup stanza when removing the primary instance ([`pg_role`](/pgsql/param/#pg_role) = `primary`).
+
+```bash
+./pgsql-rm.yml
+./pgsql-rm.yml -e pg_rm_backup=false   # leave backup intact
+./pgsql-rm.yml -t pg_backup            # only remove backup
+```
+
+Use the `pg_backup` subtask to remove the backup only, and use the [`keep_backup`](/pgsql/param/#keep_backup) arg to keep backups.
+
+If your backup repo is **locked**, (e.g., S3 / MinIO has a lock option), this operation will fail.
+
+<Callout title="Backup Removal" type="warn">
+
+    Removing backup may lead to permanent data loss, it's a dangerous operation, do with extreme caution.
+
+</Callout>
+
+
+### List Backup
+
+This command will list all backups in the pgbackrest repository (shared by all clusters)
+
+```bash
+pgbackrest info
+````
+
+### Manual Backup
+
+Pigsty has a built-in script `/pg/bin/pg-backup` which wraps the `pgbackrest` backup command.
+
+```bash
+pg-backup        # take an incremental backup
+pg-backup full   # take an full backup
+pg-backup incr   # take an incremental backup
+pg-backup diff   # take an differential backup
+```
+
+### Base Backup
+
+Pigsty has an alternative backup script `/pg/bin/pg-basebackup` which does not rely on `pgbackrest`, and gives you a physical copy of the database cluster.
+The default backup dir is `/pg/backup`.
+
+```bash tab="help"
+NAME
+  pg-basebackup  -- make base backup from PostgreSQL instance
+
+SYNOPSIS
+  pg-basebackup -sdfeukr
+  pg-basebackup --src postgres:/// --dst . --file backup.tar.lz4
+
+DESCRIPTION
+-s, --src, --url     Backup source URL, optional, "postgres:///" by default, if password is required, it should be given in url, ENV or .pgpass
+-d, --dst, --dir     Where to put backup files, "/pg/backup" by default
+-f, --file           Overwrite default backup filename, "backup_${tag}_${date}.tar.lz4"
+-r, --remove         .lz4 Files mtime before n minutes ago will be removed, default is 1200 (20hour)
+-t, --tag            Backup file tag, if not set, target cluster_name or local ip address will be used. Also used as part of DEFAULT filename
+-k, --key            Encryption key when --encrypt is specified, default key is ${tag}
+-u, --upload         Upload backup files to cloud storage, (need your own implementation)
+-e, --encryption     Encrypt with RC4 using OpenSSL, if not key is specified, tag is used as key
+-h, --help           Print this message
+```
+```bash tab="backup"
+postgres@pg-meta-1:~$ pg-basebackup
+[2025-07-13 06:16:05][INFO] ================================================================
+[2025-07-13 06:16:05][INFO] [INIT] pg-basebackup begin, checking parameters
+[2025-07-13 06:16:05][DEBUG] [INIT] #====== BINARY
+[2025-07-13 06:16:05][DEBUG] [INIT] pg_basebackup     :   /usr/pgsql/bin/pg_basebackup
+[2025-07-13 06:16:05][DEBUG] [INIT] openssl           :   /usr/bin/openssl
+[2025-07-13 06:16:05][DEBUG] [INIT] #====== PARAMETER
+[2025-07-13 06:16:05][DEBUG] [INIT] filename  (-f)    :   backup_pg-meta_20250713.tar.lz4
+[2025-07-13 06:16:05][DEBUG] [INIT] src       (-s)    :   postgres:///
+[2025-07-13 06:16:05][DEBUG] [INIT] dst       (-d)    :   /pg/backup
+[2025-07-13 06:16:05][DEBUG] [INIT] tag       (-t)    :   pg-meta
+[2025-07-13 06:16:05][DEBUG] [INIT] key       (-k)    :   pg-meta
+[2025-07-13 06:16:05][DEBUG] [INIT] encrypt   (-e)    :   false
+[2025-07-13 06:16:05][DEBUG] [INIT] upload    (-u)    :   false
+[2025-07-13 06:16:05][DEBUG] [INIT] remove    (-r)    :   -mmin +1200
+[2025-07-13 06:16:05][INFO] [LOCK] acquire lock @ /tmp/backup.lock
+[2025-07-13 06:16:05][INFO] [LOCK] lock acquired success on /tmp/backup.lock, pid=107417
+[2025-07-13 06:16:05][INFO] [BKUP] backup begin, from postgres:/// to /pg/backup/backup_pg-meta_20250713.tar.lz4
+[2025-07-13 06:16:05][INFO] [BKUP] backup in normal mode
+pg_basebackup: initiating base backup, waiting for checkpoint to complete
+
+pg_basebackup: checkpoint completed
+pg_basebackup: write-ahead log start point: 0/7000028 on timeline 1
+pg_basebackup: write-ahead log end point: 0/7000FD8
+pg_basebackup: syncing data to disk ...
+pg_basebackup: base backup completed
+[2025-07-13 06:16:06][INFO] [BKUP] backup complete!
+[2025-07-13 06:16:06][INFO] [RMBK] remove local obsolete backup: 1200
+[2025-07-13 06:16:06][INFO] [BKUP] find obsolete backups: find /pg/backup/ -maxdepth 1 -type f -mmin +1200 -name 'backup*.lz4'
+[2025-07-13 06:16:06][WARN] [BKUP] remove obsolete backups:
+[2025-07-13 06:16:06][INFO] [RMBK] remove old backup complete
+[2025-07-13 06:16:06][INFO] [LOCK] release lock @ /tmp/backup.lock
+[2025-07-13 06:16:06][INFO] [DONE] backup procedure complete!
+[2025-07-13 06:16:06][INFO] ================================================================
+```
+
+Backup are compressed with `lz4`, You can unzip and extract the tarball with the following command:
+
+```bash
+mkdir -p /tmp/data   # extract backup to this directory
+cat /pg/backup/backup_pg-meta_20250713.tar.lz4 | unlz4 -d -c | tar -xC /tmp/data
+```
+
+### Logical Backup
+
+You can also use the `pg_dump` command to perform a logical backup.
+
+Logical backups cannot be used for PITR (Point In Time Recovery),
+but they are useful for migrating data between different major versions, or implement flexible data export logic.
+
+
+### Bootstrap from Repo
+
+Now let's say you have an existing cluster `pg-meta`, and want to **FORK** it as `pg-meta2`:
+
+You'll need to create the new `pg-meta2` cluster fork, then run `pitr` on it.

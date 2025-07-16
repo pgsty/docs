@@ -1640,11 +1640,12 @@ pgbackrest_enabled: true          # enable pgbackrest on pgsql host?
 pgbackrest_clean: true            # remove pg backup data during init?
 pgbackrest_log_dir: /pg/log/pgbackrest # pgbackrest log dir, `/pg/log/pgbackrest` by default
 pgbackrest_method: local          # pgbackrest repo method: local,minio,[user-defined...]
+pgbackrest_init_backup: true      # take a full backup after pgbackrest is initialized?
 pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/configuration.html#section-repository
   local:                          # default pgbackrest repo with local posix fs
     path: /pg/backup              # local backup directory, `/pg/backup` by default
     retention_full_type: count    # retention full backups by count
-    retention_full: 2             # keep 2, at most 3 full backup when using local fs repo
+    retention_full: 2             # keep 2, at most 3 full backups when using local fs repo
   minio:                          # optional minio repo for pgbackrest
     type: s3                      # minio is s3-compatible, so s3 is used
     s3_endpoint: sss.pigsty       # minio endpoint domain name, `sss.pigsty` by default
@@ -1663,7 +1664,8 @@ pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/conf
     cipher_type: aes-256-cbc      # enable AES encryption for remote backup repo
     cipher_pass: pgBackRest       # AES encryption password, default is 'pgBackRest'
     retention_full_type: time     # retention full backup by time on minio repo
-    retention_full: 14            # keep full backup for last 14 days
+    retention_full: 14            # keep full backup for the last 14 days
+
 ```
 
 ------
@@ -1704,6 +1706,23 @@ This parameter is used to determine which repo to use for pgBackRest, all availa
 
 Pigsty will use `local` backup repo by default, which will create a backup repo on primary instance’s `/pg/backup` directory. The underlying storage is specified by [`pg_fs_bkup`](#pg_fs_bkup).
 
+
+------
+
+### `pgbackrest_init_backup`
+
+name: `pgbackrest_init_backup`, type: `bool`, level: `C`
+
+Take a full backup after pgBackRest is initialized? default value is `true`.
+
+An initial pgbackrest backup is created after repo init if:
+
+- `pgbackrest_init_backup` is `true` (and `pgbackrest_enabled` is `true` of course)
+- The `/etc/pgbackrest/initial.done` marker file doesn't exist (will be created after the initial backup is done).
+
+If you don't want to take an initial full backup at all, just set this parameter to`false`.
+
+
 ------
 
 ### `pgbackrest_repo`
@@ -1719,7 +1738,7 @@ pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/conf
   local:                          # default pgbackrest repo with local posix fs
     path: /pg/backup              # local backup directory, `/pg/backup` by default
     retention_full_type: count    # retention full backups by count
-    retention_full: 2             # keep 2, at most 3 full backup when using local fs repo
+    retention_full: 2             # keep 2, at most 3 full backups when using local fs repo
   minio:                          # optional minio repo for pgbackrest
     type: s3                      # minio is s3-compatible, so s3 is used
     s3_endpoint: sss.pigsty       # minio endpoint domain name, `sss.pigsty` by default

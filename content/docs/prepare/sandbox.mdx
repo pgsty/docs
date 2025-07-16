@@ -19,11 +19,11 @@ We will use this as a standard demonstration environment for learning and testin
 The sandbox consists of 4 nodes with fixed IP addresses and identities:
 
 | ID |  IP Address   | [NODE](/node) | [PGSQL](/pgsql) | [INFRA](/infra) | [**ETCD**](/etcd) | [**MINIO**](/minio) |
-|:--:|:-------------:|:------------------:|:--------------------:|:--------------------:|:----------------------:|:-------------------------|
-| 1  | `10.10.10.10` |       `meta`       |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        | `minio-1`                |
-| 2  | `10.10.10.11` |      `node-1`      |     `pg-test-1`      |                      |                        |                          |
-| 3  | `10.10.10.12` |      `node-2`      |     `pg-test-1`      |                      |                        |                          |
-| 4  | `10.10.10.13` |      `node-3`      |     `pg-test-1`      |                      |                        |                          |
+|:--:|:-------------:|:-------------:|:---------------:|:---------------:|:-----------------:|:--------------------|
+| 1  | `10.10.10.10` |    `meta`     |   `pg-meta-1`   |    `infra-1`    |     `etcd-1`      | `minio-1`           |
+| 2  | `10.10.10.11` |   `node-1`    |   `pg-test-1`   |                 |                   |                     |
+| 3  | `10.10.10.12` |   `node-2`    |   `pg-test-1`   |                 |                   |                     |
+| 4  | `10.10.10.13` |   `node-3`    |   `pg-test-1`   |                 |                   |                     |
 
 
 There’s a primary singleton PostgreSQL cluster: `pg-meta` on the `meta` node,

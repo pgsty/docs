@@ -4,3 +4,70 @@ description: The vanilla PostgreSQL kernel with 420+ extensions
 icon: Database
 ---
 
+[PostgreSQL](https://www.postgresql.org/) is the most advanced & popular open source database in the world.
+
+Pigsty supports PostgreSQL 13 ~ 17, and provides 420+ extensions alone with it.
+
+
+------
+
+## Get Started
+
+[**install**](/install/start) Pigsty’s with the [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) config template.
+
+```bash
+./configure -c pgsql     # use percona postgres kernel
+./install.yml            # setup everything with pigsty
+```
+
+Most of the [config template](/config/template) is use the PostgreSQL kernel by default, such as:
+
+- [`meta`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) : **DEFAULT**, postgres with core extensions (vector, postgis, timescale)
+- [`rich`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) : postgres with all extensions installed
+- [`slim`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) : postgres only without monitor infra
+- [`full`](https://github.com/pgsty/pigsty/blob/main/conf/full.yml) : the 4-node sandbox for HA demonstration
+- [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) : the minimal postgres kernel config example
+
+------
+
+## Configure
+
+Nothing special needs to be tuned for vanilla PostgreSQL kernel:
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_users:
+      - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+      - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
+    pg_databases:
+      - { name: meta, baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [ vector ]}
+    pg_hba_rules:
+      - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+    node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
+    pg_packages: [ pgsql-main, pgsql-common ]   # pg kernel and common utils
+    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ,pg17-olap]
+```
+
+To use a different PostgreSQL major version, you can [configure](/config/configure) with `-v` parameter:
+
+```bash
+./configure -c pgsql -v 17      # use postgresql 17
+./configure -c pgsql -v 16      # use postgresql 16
+./configure -c pgsql -v 15      # use postgresql 15
+./configure -c pgsql -v 14      # use postgresql 14
+./configure -c pgsql -v 13      # use postgresql 13
+```
+
+If PostgreSQL cluster is already installed, you'll need to uninstall it before installing the new version
+
+```bash
+./pgsql-rm.yml # -l pg-meta
+```
+
+
+
+

@@ -1,0 +1,395 @@
+---
+title: Restore
+description: Restore PostgreSQL from Backup
+icon: DatabaseBackup
+---
+
+
+You can use the pre-configured pgbackrest to perform Point-in-Time Recovery (PITR) in Pigsty.
+
+- [**Manually**](#manually):  PITR with the `pg-pitr` hint script, do it manually, more flexible with more complexity.
+- [**Playbook**](#playbook): PITR with the `pgsql-pitr.yml` playbook, automatic, but less flexible and more error-prone.
+
+If you are very convenient with your configuration, you can use the fully automatic playbook,
+otherwise, consider do it step by step manually
+
+
+--------
+
+## Quick Start
+
+If you want to roll back the `pg-meta` cluster to the previous timepoint, adding the `pg_pitr`:
+
+```yaml
+pg-meta:
+  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-meta2
+    pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore from the latest backup
+```
+
+Then run the `pgsql-pitr.yml` playbook, it will roll back the `pg-meta` cluster to the specified timepoint.
+
+```bash
+./pgsql-pitr.yml -l pg-meta
+```
+
+--------
+
+## Restore PITR
+
+The `archive_mode` will be **disabled** on recovered cluster to prevent unwanted WAL writes.
+If the recovered database status is ok, you can enable the `archive_mode` and make a full backup.
+
+```bash title="postgres @ pg-meta $"
+psql -c 'ALTER SYSTEM RESET archive_mode; SELECT pg_reload_conf();'
+pg-backup full    # take a new full backup
+```
+
+
+--------
+
+## Recovery Target
+
+You can specify different types of recovery targets in `pg_pitr`, but they are mutually exclusive:
+
+- [`time`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-TIME): which time point to restore?
+- [`name`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-NAME): restore to a named restore point (created by `pg_create_restore_point`)
+- [`xid`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-XID): restore to a specific transaction ID (TXID/XID)
+- [`lsn`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-LSN): restore to a specific LSN (Log Sequence Number) point
+
+The recovery [`type`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-TYPE) will be set accordingly if any of the above parameters is specified,
+otherwise it will be set to `latest` (the end of the WAL archive stream).
+The special `immediate` type can be used to instruct pgbackrest to minimize the recovery time by stop at the first consistent point.
+
+
+
+### Target Type
+
+```yaml tab="latest"
+pg_pitr: { }  # restore to the latest status (wal archive stream end)
+```
+```yaml tab="time"
+pg_pitr: { time: "2025-07-13 10:00:00+00" }
+```
+```yaml tab="lsn"
+pg_pitr: { lsn: "0/4001C80" }
+```
+```yaml tab="xid"
+pg_pitr: { xid: "250000" }
+```
+```yaml tab="name"
+pg_pitr: { name: "some_restore_point" }
+```
+```yaml tab="immediate"
+pg_pitr: { type: "immediate" }
+```
+
+### By Time
+
+The most frequently used target is the time point; you can specify the time point to restore to:
+
+```bash title="restore to a timepoint"
+./pgsql-pitr.yml -e '{"pg_pitr": { "time": "2025-07-13 10:00:00+00" }}'
+```
+
+Time should be a valid PostgreSQL [`TIMESTAMP`](https://www.postgresql.org/docs/17/datatype-datetime.html#DATATYPE-DATETIME-INPUT-TIME-STAMPS), `YYYY-MM-DD HH:MM:SS+TZ` is recommended.
+
+
+### By Name
+
+You can create a named restore point with [`pg_create_restore_point`](https://www.postgresql.org/docs/current/functions-admin.html#id-1.5.8.34.5.5.2.2.1.1.1.1):
+
+```sql
+SELECT pg_create_restore_point('shit_incoming');
+```
+
+And use that named restore point in PITR:
+
+```bash
+./pgsql-pitr.yml -e '{"pg_pitr": { "name": "shit_incoming" }}'
+```
+
+
+### By XID
+
+If you have a transaction that accidentally deleted some data, the best way to recover is to restore the database to the state before that transaction.
+
+```bash title="restore right before a transaction"
+./pgsql-pitr.yml -e '{"pg_pitr": { "xid": "250000", exclusive: true }}'
+```
+
+You can find the exact transaction id from monitoring dashboard, or find it from `TXID` from the CSVLOG.
+
+<Callout title="Inclusive vs Exclusive" type="info">
+
+    The target parameter is "inclusive" by default, which means the recovery will include the target point.
+    The `exclusive` flag will exclude that exact target, like the xid 24999 will be the last transaction being replayed
+
+    This only applies to `time`, `xid`, `lsn` recovery targets, check [`recovery_target_inclusive`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-INCLUSIVE) for details.
+
+</Callout>
+
+
+### By LSN
+
+PostgreSQL uses the [LSN](https://www.postgresql.org/docs/current/datatype-pg-lsn.html) (Log Sequence Number) to identify the position of a WAL record.
+You can find it everywhere, like the PG LSN panel from Pigsty dashboards.
+
+```bash title="restore to a LSN"
+./pgsql-pitr.yml -e '{"pg_pitr": { "lsn": "0/4001C80", timeline: "1" }}'
+```
+
+To restore to an exact point in the WAL stream, you may also specify the [`timeline`](https://www.postgresql.org/docs/current/runtime-config-wal.html#RECOVERY-TARGET-TIMELINE) parameter (default to `latest`)
+
+
+
+
+
+--------
+
+## Recovery Source
+
+- `cluster`: which cluster to restore? the current `pg_cluster` will be used by default, you can use any other cluster in the same pgbackrest repo
+- `repo`: overwrite the backup repo, use the same format in `pgbackrest_repo`
+- `set`: the `latest` backup set is used by default, but you can specify a specific pgbackrest backup by label
+
+
+
+Pigsty will recover from the pgbackrest backup repository, if you are using a centralized backup repo (like MinIO/S3),
+you can specify another "stanza" (another cluster's backup directory) to restore from.
+
+```yaml
+pg-meta2:
+  hosts: { 10.10.10.11: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-meta2
+    pg_pitr: { cluster: pg-meta }  # restore from the pg-meta cluster backup
+```
+
+The above configuration will mark the PITR procedure to use the `pg-meta` stanza.
+You can also pass the `pg_pitr` parameter via CLI args:
+
+```bash title="pitr pg-meta2 with pg-meta backup"
+./pgsql-pitr.yml -l pg-meta2 -e '{"pg_pitr": { "cluster": "pg-meta" }}'
+```
+
+You can also use these targets when pitr from another cluster:
+
+```bash
+./pgsql-pitr.yml -l pg-meta2 -e '{"pg_pitr": { "cluster": "pg-meta", "time": "2025-07-14 08:00:00+00" }}'
+```
+
+
+
+
+--------
+
+## Break Down
+
+This approach is semi-automatic, you will participate in the PITR process to make key decisions.
+
+For example, this configuration will restore the `pg-meta` cluster itself to the specified timepoint
+
+```yaml
+pg-meta:
+  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-meta2
+    pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore from the latest backup
+```
+
+Let's do this one step by step:
+
+```bash
+./pgsql-pitr.yml -l pg-meta -t down     # pause patroni HA
+./pgsql-pitr.yml -l pg-meta -t pitr     # run the pitr procedure
+./pgsql-pitr.yml -l pg-meta -t up       # generate pgbackrest config and restore script
+```
+
+```yaml
+# down                 : # stop ha and shutdown patroni and postgres
+#   - pause            : # pause patroni auto failover
+#   - stop             : # stop patroni and postgres service
+#     - stop_patroni   : # stop patroni service
+#     - stop_postgres  : # stop postgres service
+# pitr                 : # perform the PITR procedure
+#   - config           : # generate pgbackrest config and restore script
+#   - restore          : # run the pgbackrest restore command
+#   - verify           : # verify the recovered cluster control data
+#   - promote          : # promote the restored instance (if needed)
+# up:                  : # start postgres / patroni and resume ha
+#   - start            : # start patroni and postgres service
+#     - start_postgres : # start postgres service
+#     - start_patroni  : # start patroni service
+#   - resume           : # resume patroni auto failover
+```
+
+--------
+
+## Pro User
+
+If you are a PostgreSQL professional, you can use the `pgbackrest restore` command directly.
+The `pgsql-pitr.yml` playbook can also help you to generate the correct restore command:
+
+```bash
+./pgsql-pitr.yml -l pg-meta -t print -e '{"pg_pitr": {}}'       # restore to the latest status
+```
+
+
+
+--------
+
+## Restore Target
+
+You can specify restore target
+
+```yaml tab="latest"
+pg_pitr: { }  # restore to the latest status (wal archive stream end)
+```
+```yaml tab="time"
+pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore to the latest backup
+```
+```yaml tab="lsn"
+pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore to the latest backup
+```
+```yaml tab="xid"
+pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore to the xid
+```
+```yaml tab="name"
+pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore to the latest named point
+```
+```yaml tab="set"
+pg_pitr: { time: '2025-07-13 10:00:00+00' }  # restore to the latest backup set
+```
+
+
+--------
+
+## Restore Example
+
+```bash
+./pgsql-pitr.yml -l pg-meta -t down     # shutdown cluster
+./pgsql-pitr.yml -l pg-meta -t pitr -e '{"pg_pitr": {}}'
+./pgsql-pitr.yml -l pg-meta -t up       # generate pgbackrest config and restore script
+
+```
+
+
+--------
+
+## PITR Definition
+
+There are more options available in the `pg_pitr` parameter:
+
+```yaml
+pg_pitr:
+  type: 'time'
+  path: '/pg/data'
+  time: '2025-01-01 00:00:00+08'
+  action: 'promote'
+  exclusive: true
+  db_exclude: [ template0, template1 ]
+  db_include: []
+  link_map:
+    pg_wal: '/data/wal'
+    pg_xact: '/data/pg_xact'
+  process: 4
+```
+
+
+--------
+
+## Quick Start
+
+Use the following command to perform [restore](https://pgbackrest.org/command.html#command-restore)
+
+```bash
+pg-pitr                                 # restore to wal archive stream end (e.g. used in case of entire DC failure)
+pg-pitr -i                              # restore to the time of latest backup complete (not often used)
+pg-pitr --time="2022-12-30 14:44:44+08" # restore to specific time point (in case of drop db, drop table)
+pg-pitr --name="my-restore-point"       # restore TO a named restore point create by pg_create_restore_point
+pg-pitr --lsn="0/7C82CB8" -X            # restore right BEFORE a LSN
+pg-pitr --xid="1234567" -X -P           # restore right BEFORE a specific transaction id, then promote
+pg-pitr --backup=latest                 # restore to latest backup set
+pg-pitr --backup=20221108-105325        # restore to a specific backup set, which can be checked with pgbackrest info
+
+pg-pitr                                 # pgbackrest --stanza=pg-meta restore
+pg-pitr -i                              # pgbackrest --stanza=pg-meta --type=immediate restore
+pg-pitr -t "2022-12-30 14:44:44+08"     # pgbackrest --stanza=pg-meta --type=time --target="2022-12-30 14:44:44+08" restore
+pg-pitr -n "my-restore-point"           # pgbackrest --stanza=pg-meta --type=name --target=my-restore-point restore
+pg-pitr -b 20221108-105325F             # pgbackrest --stanza=pg-meta --type=name --set=20221230-120101F restore
+pg-pitr -l "0/7C82CB8" -X               # pgbackrest --stanza=pg-meta --type=lsn --target="0/7C82CB8" --target-exclusive restore
+pg-pitr -x 1234567 -X -P                # pgbackrest --stanza=pg-meta --type=xid --target="0/7C82CB8" --target-exclusive --target-action=promote restore
+```
+
+The `pg-pitr` script will generate instructions for you to perform PITR.
+
+For example, if you wish to roll back current cluster status back to `"2023-02-07 12:38:00+08"`:
+
+```bash
+$ pg-pitr -t "2023-02-07 12:38:00+08"
+pgbackrest --stanza=pg-meta --type=time --target='2023-02-07 12:38:00+08' restore
+Perform time PITR on pg-meta
+[1. Stop PostgreSQL] ===========================================
+   1.1 Pause Patroni (if there are any replicas)
+       $ pg pause <cls>  # pause patroni auto failover
+   1.2 Shutdown Patroni
+       $ pt-stop         # sudo systemctl stop patroni
+   1.3 Shutdown Postgres
+       $ pg-stop         # pg_ctl -D /pg/data stop -m fast
+
+[2. Perform PITR] ===========================================
+   2.1 Restore Backup
+       $ pgbackrest --stanza=pg-meta --type=time --target='2023-02-07 12:38:00+08' restore
+   2.2 Start PG to Replay WAL
+       $ pg-start        # pg_ctl -D /pg/data start
+   2.3 Validate and Promote
+     - If database content is ok, promote it to finish recovery, otherwise goto 2.1
+       $ pg-promote      # pg_ctl -D /pg/data promote
+
+[3. Restart Patroni] ===========================================
+   3.1 Start Patroni
+       $ pt-start;        # sudo systemctl start patroni
+   3.2 Enable Archive Again
+       $ psql -c 'ALTER SYSTEM SET archive_mode = on; SELECT pg_reload_conf();'
+   3.3 Restart Patroni
+       $ pt-restart      # sudo systemctl start patroni
+
+[4. Restore Cluster] ===========================================
+   3.1 Re-Init All Replicas (if any replicas)
+       $ pg reinit <cls> <ins>
+   3.2 Resume Patroni
+       $ pg resume <cls> # resume patroni auto failover
+   3.2 Make Full Backup (optional)
+       $ pg-backup full  # pgbackrest --stanza=pg-meta backup --type=full
+```
+
+
+
+## Before PITR
+
+You can also acquire backup info from the monitoring system: [PGCAT Instance - Backup](https://demo.pigsty.cc/d/pgcat-instance/pgcat-instance?from=now-1h&to=now&var-job=pgsql&var-ds=Prometheus&orgId=1&viewPanel=158) or the dedicated PGSQL PITR dashboard.
+
+```bash
+$ pb info
+stanza: pg-meta
+    status: ok
+    cipher: none
+
+    db (current)
+        wal archive min/max (14): 000000010000000000000001/000000010000000000000023
+
+        full backup: 20221108-105325F
+            timestamp start/stop: 2022-11-08 10:53:25 / 2022-11-08 10:53:29
+            wal start/stop: 000000010000000000000004 / 000000010000000000000004
+            database size: 96.6MB, database backup size: 96.6MB
+            repo1: backup set size: 18.9MB, backup size: 18.9MB
+
+        incr backup: 20221108-105325F_20221108-105938I
+            timestamp start/stop: 2022-11-08 10:59:38 / 2022-11-08 10:59:41
+            wal start/stop: 00000001000000000000000F / 00000001000000000000000F
+            database size: 246.7MB, database backup size: 167.3MB
+            repo1: backup set size: 35.4MB, backup size: 20.4MB
+            backup reference list: 20221108-105325F
+```
