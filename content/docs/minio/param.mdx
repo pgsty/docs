@@ -13,7 +13,7 @@ You may also use it for other purposes, such as storing large files, documents, 
 
 ## Parameters
 
-There are **20** related parameters in MinIO module:
+There are **23** related parameters in MinIO module:
 
 | Parameter                               |   Type   | Level | Comment                                                            |
 |:----------------------------------------|:--------:|:-----:|--------------------------------------------------------------------|
@@ -37,6 +37,14 @@ There are **20** related parameters in MinIO module:
 | [`minio_buckets`](#minio_buckets)       | bucket[] |   C   | list of minio bucket to be created                                 |
 | [`minio_users`](#minio_users)           |  user[]  |   C   | list of minio user to be created                                   |
 
+**MINIO_REMOVE Parameters (for minio_remove role)**
+
+| Parameter                             | Type | Level | Comment                                                   |
+|:--------------------------------------|:----:|:-----:|-----------------------------------------------------------|
+| [`minio_safeguard`](#minio_safeguard) | bool | G/C/A | prevent accidental removal? (default: false)              |
+| [`minio_rm_data`](#minio_rm_data)     | bool | G/C/A | remove minio data during removal? (default: true)         |
+| [`minio_rm_pkg`](#minio_rm_pkg)       | bool | G/C/A | uninstall minio packagkes during removal? (default: false) |
+
 The [`minio_volumes`](#minio_volumes) and [`minio_endpoint`](#minio_endpoint) are auto-generated parameters, but you can explicitly override these two parameters.
 
 
@@ -45,6 +53,8 @@ The [`minio_volumes`](#minio_volumes) and [`minio_endpoint`](#minio_endpoint) ar
 ## Defaults
 
 The default parameters of MinIO is defined in [`roles/minio/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/minio/defaults/main.yml)
+
+Additional removal parameters are defined in [`roles/minio_remove/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/minio_remove/defaults/main.yml)
 
 ```yaml
 #-----------------------------------------------------------------
@@ -78,6 +88,17 @@ minio_users:                      # list of minio user to be created
 
 ```
 
+**MINIO_REMOVE Parameters**
+
+```yaml
+#-----------------------------------------------------------------
+# MINIO_REMOVE
+#-----------------------------------------------------------------
+minio_safeguard: false            # prevent accidental removal?
+minio_rm_data: true               # remove minio data during removal?
+minio_rm_pkg: false               # uninstall minio packages during removal?
+```
+
 ------
 
 ## `minio_seq`
@@ -101,6 +122,12 @@ minio cluster name, `minio` by default. This is useful when deploying multiple M
 name: `minio_clean`, type: `bool`, level: `G/C/A`
 
 cleanup minio during init?, `false` by default
+
+<Callout title="Deprecated: Pigsty v3.6+" type="warning">
+
+The `minio_clean` functionality in the main minio.yml playbook is deprecated since Pigsty v3.6+. Use the dedicated minio-rm.yml playbook and minio_remove role for cluster removal operations.
+
+</Callout>
 
 ------
 
@@ -298,3 +325,33 @@ Two default users are created for PostgreSQL DBA and pgBackREST.
     Please change these passwords in serious production deployments.
 
 </Callout>
+
+------
+
+## `minio_safeguard`
+
+name: `minio_safeguard`, type: `bool`, level: `G/C/A`
+
+prevent accidental removal? default value is `false`
+
+If enabled, the [`minio-rm.yml`](/minio/playbook/#minio-rmyml) playbook will abort and refuse to remove the MinIO cluster, providing protection against accidental deletions.
+
+------
+
+## `minio_rm_data`
+
+name: `minio_rm_data`, type: `bool`, level: `G/C/A`
+
+remove minio data during removal? default value is `true`
+
+When enabled, the [`minio-rm.yml`](/minio/playbook/#minio-rmyml) playbook will remove MinIO data directories and configuration files during cluster removal.
+
+------
+
+## `minio_rm_pkg`
+
+name: `minio_rm_pkg`, type: `bool`, level: `G/C/A`
+
+uninstall minio packages during removal? default value is `false`
+
+When enabled, the [`minio-rm.yml`](/minio/playbook/#minio-rmyml) playbook will uninstall MinIO packages during cluster removal. This is disabled by default to preserve the MinIO installation for potential future use.

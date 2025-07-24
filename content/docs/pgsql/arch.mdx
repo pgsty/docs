@@ -148,7 +148,7 @@ Meanwhile, the [Infra Node](/node/arch#infra-node) consists of the following com
 - Pgbouncer Exporter will expose pgbouncer metrics @ port 9631
     - Pgbouncer’s metrics will be scraped by prometheus on infra nodes
 - pgBackRest will work on the local repo by default (`pgbackrest_method`)
-    - If `local` (default) is used as the backup repo, primary’s [`pg_fs_bkup`](/pgsql/param#pg_fs_bkup) is used as local backup repo
+    - If `local` (default) is used as the backup repo, primary’s [`pg_fs_backup`](/pgsql/param#pg_fs_backup) is used as local backup repo
     - If `minio` is used, pgBackRest will create the repo on the dedicated MinIO cluster
 - Postgres-related logs (postgres,pgbouncer,patroni,pgbackrest) are exposed by promtail @ port 9080
     - Promtail will send logs to Loki on infra node

@@ -83,6 +83,7 @@ You can use even more nodes, but 3 or 5 nodes are recommended.
 </Callout>
 
 
+
 ------
 
 ## Etcd Usage
@@ -97,13 +98,12 @@ You’ll have to [**reload**](/etcd/admin/#reload-config) etcd config after any 
 e.g, update patroni reference to etcd endpoints:
 
 ```bash
-./pgsql.yml -t pg_conf                            # generate patroni config
-ansible all -f 1 -b -a 'systemctl reload patroni' # reload patroni config
+./pgsql.yml -t pg_conf                                  # re-gen patroni config
+./pgsql.yml -t patroni_reload -e patroni_reload=true    # reload patroni config
 ```
 
-e.g, update vip-manager reference to etcd endpoints (if you are using PGSQL L2 VIP):
+e.g., update vip-manager reference to etcd endpoints (if you are using PGSQL L2 VIP):
 
 ```bash
-./pgsql.yml -t pg_vip_config                           # generate vip-manager config
-ansible all -f 1 -b -a 'systemctl restart vip-manager' # restart vip-manager to use
+./pgsql.yml -t pg_vip # reload vip-manager config
 ```

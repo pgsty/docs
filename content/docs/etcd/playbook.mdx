@@ -12,17 +12,17 @@ There’s a built-in playbook: [`etcd.yml`](https://github.com/pgsty/pigsty/blob
 
 To [create a new etcd cluster](/etcd/admin/#create-cluster), run the following playbook:
 
-```bash
+```bash tab="playbook"
 ./etcd.yml    # install etcd cluster on group 'etcd'
+```
+```bash tab="script"
+bin/etcd-add    # create entire etcd cluster
 ```
 
 Here are available sub tasks:
 
 - `etcd_assert` : generate etcd identity
 - `etcd_install` : install etcd rpm packages
-- `etcd_clean` : cleanup existing etcd
-  - `etcd_check` : check etcd instance is running
-  - `etcd_purge` : remove running etcd instance & data
 - `etcd_dir` : create etcd data & conf dir
 - `etcd_config` : generate etcd config
   - `etcd_conf` : generate etcd main config
@@ -30,57 +30,60 @@ Here are available sub tasks:
 - `etcd_launch` : launch etcd service
 - `etcd_register` : register etcd to prometheus
 
+If you want to [**append a new member**](/etcd/admin/#append-member) to an existing etcd cluster,
+you have to add it to the [config inventory](/config/inventory), and run the playbook with [`etcd_init`](/etcd/param/#etcd_init) = `existing`
+against the new member:
 
-
-There’s no dedicated remove playbook for etcd. If you want to uninstall etcd, you can use `etcd_clean` subtask:
-
-```bash
-./etcd.yml -t etcd_clean
+```bash tab="playbook"
+./etcd.yml -l <new_instance> -e etcd_init=existing
 ```
+```bash tab="script"
+bin/etcd-add <ip> # append new members to existing etcd cluster
+```
+
+It's usually OK to re-run the playbook, it will update the etcd cluster config and restart etcd instances.
+
+<Callout title="Change Since Pigsty v3.6+" type="info">
+
+    Since Pigsty v3.6+, the `etcd.yml` playbook no longer has cluster removal capabilities. Use the dedicated `etcd-rm.yml` playbook and `etcd_remove` role for etcd cluster removal operations.
+
+</Callout>
+
 
 
 
 ------
 
-## Commands
+## `etcd-rm.yml`
 
-Some shortcuts and common commands:
-
-```bash
-./etcd.yml                                      # init etcd cluster
-./etcd.yml -t etcd_launch                       # restart etcd cluster
-./etcd.yml -t etcd_clean                        # remove etcd cluster
-./etcd.yml -t etcd_purge                        # remove etcd cluster with brute force
-./etcd.yml -t etcd_conf                         # refreshing /etc/etcd/etcd.conf
-./etcd.yml -l 10.10.10.12 -e etcd_init=existing # add new member to existing etcd cluster
-./etcd.yml -l 10.10.10.12 -t etcd_purge         # remove member from existing etcd cluster
-```
-
-
-
-------
-
-## Safeguard
-
-Pigsty has a safeguard mechanism for etcd module to prevent accidental purge.
-
-- [`etcd_clean`](/etcd/param#etcd_clean): `true` by default, which will clean existing etcd instances during init
-- [`etcd_safeguard`](/etcd/param#etcd_safeguard): `false` by default, will not prevent purge etcd cluster.
-
-The default setting is useful for development, testing, and emergency rebuild of etcd cluster in production.
-
-If you wish to prevent accidental purge, you can enable safeguard by setting [`etcd_clean`](/etcd/param#etcd_clean) to `false` and [`etcd_safeguard`](/etcd/param#etcd_safeguard) to `true`.
-And you can always override this setting by using `-e etcd_clean=true` and `-e etcd_safeguard=false` in command line.
-
-If you wish to remove existing cluster:
+To [remove the etcd cluster](/etcd/admin/#remove-cluster), run the following playbook:
 
 ```bash
-./etcd.yml -l <cls> -e etcd_clean=true -t etcd_clean
+./etcd-rm.yml    # remove etcd cluster
 ```
 
-The final brutal way to remove etcd cluster is using the `etcd_purge` subtask, which will ignore the safeguard:
+Here are available sub tasks:
 
-```bash
-./etcd.yml -l <cls> -t etcd_purge
+- `etcd_safeguard` : check safeguard and abort if enabled
+- `prometheus`     : remove etcd targets registration from prometheus
+- `etcd_leave`     : try graceful leaving etcd cluster before purge
+- `etcd_stop`      : stop and disable etcd service with systemd
+- `etcd_data`      : remove etcd data (disable with `etcd_rm_data=false`)
+- `etcd_pkg`       : uninstall etcd packages (enable with `etcd_rm_pkg=true`)
+
+To [**remove a member**](/etcd/admin/#remove-member) from an existing etcd cluster, you can run the playbook
+
+```bash tab="playbook"
+./etcd-rm.yml -l <ip>
 ```
+```bash tab="script"
+bin/etcd-rm <ip1> <ip2> ...    # remove specific members from etcd cluster
+bin/etcd-rm                    # remove entire etcd cluster
+```
+
+The removal playbook uses the new **etcd_remove** role with configurable parameters:
+
+- [`etcd_safeguard`](/etcd/param#etcd_safeguard): Prevents accidental removal when set to `true`
+- [`etcd_rm_data`](/etcd/param#etcd_rm_data): Controls whether ETCD data is deleted (`true` by default)
+- [`etcd_rm_pkg`](/etcd/param#etcd_rm_pkg): Controls whether ETCD packages are uninstalled (`false` by default)
 

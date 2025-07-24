@@ -76,7 +76,7 @@ There are **120** parameters about the `PGSQL` module.
 |-----------------------------------------------------|------------|-------|-------------------------------------------------------------------------------|
 | [`pg_data`](#pg_data)                               | `path`     | C     | postgres data directory, `/pg/data` by default                                |
 | [`pg_fs_main`](#pg_fs_main)                         | `path`     | C     | postgres backup data directory, `/data/backups` by default                    |
-| [`pg_fs_bkup`](#pg_fs_bkup)                         | `path`     | C     | mountpoint/path for pg backup data, `/data/backup` by default                 |
+| [`pg_fs_backup`](#pg_fs_backup)                     | `path`     | C     | mountpoint/path for pg backup data, `/data/backup` by default                 |
 | [`pg_storage_type`](#pg_storage_type)               | `enum`     | C     | storage type for pg main data, SSD,HDD, SSD by default                        |
 | [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C     | size of `/pg/dummy`, hold 64MB disk space for emergency use                   |
 | [`pg_listen`](#pg_listen)                           | `ip(s)`    | C/I   | postgres/pgbouncer listen addresses, comma separated list                     |
@@ -815,7 +815,7 @@ It also init cluster template databases with default roles, schemas & extensions
 ```yaml
 pg_data: /pg/data                 # postgres data directory, `/pg/data` by default
 pg_fs_main: /data/postgres        # postgres main data directory, `/data/postgres` by default
-pg_fs_bkup: /data/backups         # postgres backup data directory, `/data/backups` by default
+pg_fs_backup: /data/backups         # postgres backup data directory, `/data/backups` by default
 pg_storage_type: SSD              # storage type for pg main data, SSD,HDD, SSD by default
 pg_dummy_filesize: 64MiB          # size of `/pg/dummy`, hold 64MB disk space for emergency use
 pg_listen: '0.0.0.0'              # postgres/pgbouncer listen addresses, comma separated list
@@ -884,9 +884,9 @@ If you are using HDD storage, consider changing the [`pg_storage_type`](#pg_stor
 
 ------
 
-### `pg_fs_bkup`
+### `pg_fs_backup`
 
-name: `pg_fs_bkup`, type: `path`, level: `C`
+name: `pg_fs_backup`, type: `path`, level: `C`
 
 postgres backup data directory, `/data/backups` by default
 
@@ -1704,7 +1704,7 @@ pgBackRest repo method: `local`, `minio`, or other user-defined methods, `local`
 
 This parameter is used to determine which repo to use for pgBackRest, all available repo methods are defined in [`pgbackrest_repo`](#pgbackrest_repo).
 
-Pigsty will use `local` backup repo by default, which will create a backup repo on primary instance’s `/pg/backup` directory. The underlying storage is specified by [`pg_fs_bkup`](#pg_fs_bkup).
+Pigsty will use `local` backup repo by default, which will create a backup repo on primary instance’s `/pg/backup` directory. The underlying storage is specified by [`pg_fs_backup`](#pg_fs_backup).
 
 
 ------

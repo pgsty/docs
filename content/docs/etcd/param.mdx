@@ -4,13 +4,13 @@ description: Customize etcd with the 10-parameter
 icon: Variable
 ---
 
-There are **10** parameters about the `ETCD` module.
+There are **13** parameters about the `ETCD` module.
 
 | Parameter                                             |  Type  | Level | Comment                                      |
 |-------------------------------------------------------|:------:|:-----:|----------------------------------------------|
 | [`etcd_seq`](#etcd_seq)                               |  int   |   I   | etcd instance identifier, REQUIRED           |
 | [`etcd_cluster`](#etcd_cluster)                       | string |   C   | etcd cluster & group name, etcd by default   |
-| [`etcd_safeguard`](#etcd_safeguard)                   |  bool  | G/C/A | prevent purging running etcd instance?       |
+| [`etcd_learner`](#etcd_learner)                       |  bool  |   I   | prevent purging running etcd instance?       |
 | [`etcd_clean`](#etcd_clean)                           |  bool  | G/C/A | purging existing etcd during initialization? |
 | [`etcd_data`](#etcd_data)                             |  path  |   C   | etcd data directory, /data/etcd by default   |
 | [`etcd_port`](#etcd_port)                             |  port  |   C   | etcd client port, 2379 by default            |
@@ -18,6 +18,14 @@ There are **10** parameters about the `ETCD` module.
 | [`etcd_init`](#etcd_init)                             |  enum  |   C   | etcd initial cluster state, new or existing  |
 | [`etcd_election_timeout`](#etcd_election_timeout)     |  int   |   C   | etcd election timeout, 1000ms by default     |
 | [`etcd_heartbeat_interval`](#etcd_heartbeat_interval) |  int   |   C   | etcd heartbeat interval, 100ms by default    |
+
+**ETCD_REMOVE Parameters (for etcd_remove role)**
+
+| Parameter                           | Type | Level | Comment                                                  |
+|-------------------------------------|:----:|:-----:|----------------------------------------------------------|
+| [`etcd_safeguard`](#etcd_safeguard) | bool | G/C/A | prevent purging running etcd instance?                   |
+| [`etcd_rm_data`](#etcd_rm_data)     | bool | G/C/A | remove etcd data during removal? (default: true)         |
+| [`etcd_rm_pkg`](#etcd_rm_pkg)       | bool | G/C/A | uninstall etcd packages during removal? (default: false) |
 
 
 
@@ -28,20 +36,32 @@ There are **10** parameters about the `ETCD` module.
 
 The default parameters are defined in [`roles/etcd/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/etcd/defaults/main.yml)
 
+Additional removal parameters are defined in [`roles/etcd_remove/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/etcd_remove/defaults/main.yml)
+
 ```yaml
 #-----------------------------------------------------------------
-# etcd
+# ETCD
 #-----------------------------------------------------------------
 #etcd_seq: 1                      # etcd instance identifier, explicitly required
 etcd_cluster: etcd                # etcd cluster & group name, etcd by default
-etcd_safeguard: false             # prevent purging running etcd instance?
-etcd_clean: true                  # purge existing etcd during initialization?
 etcd_data: /data/etcd             # etcd data directory, /data/etcd by default
+etcd_learner: false               # etcd instance run as learner? false by default
 etcd_port: 2379                   # etcd client port, 2379 by default
 etcd_peer_port: 2380              # etcd peer port, 2380 by default
 etcd_init: new                    # etcd initial cluster state, new or existing
 etcd_election_timeout: 1000       # etcd election timeout, 1000ms by default
 etcd_heartbeat_interval: 100      # etcd heartbeat interval, 100ms by default
+```
+
+**ETCD_REMOVE Parameters**
+
+```yaml
+#-----------------------------------------------------------------
+# ETCD_REMOVE
+#-----------------------------------------------------------------
+etcd_safeguard: false             # prevent accidental removal?
+etcd_rm_data: true                # remove etcd data during removal?
+etcd_rm_pkg: false                # uninstall etcd packages during removal?
 ```
 
 ------
@@ -76,27 +96,21 @@ etcd cluster & group name, etcd by default
 
 default values: `etcd`, which is a fixed group name, can be useful when you want to use deployed some extra etcd clusters
 
-------
 
-## `etcd_safeguard`
-
-name: `etcd_safeguard`, type: `bool`, level: `G/C/A`
-
-prevent purging running etcd instance? default value is `false`
-
-If enabled, running etcd instance will not be purged by [`etcd.yml`](/etcd/playbook/#etcdyml) playbook.
 
 ------
 
-## `etcd_clean`
+## `etcd_learner`
 
-name: `etcd_clean`, type: `bool`, level: `G/C/A`
+name: `etcd_learner`, type: `bool`, level: `I`
 
-purging existing etcd during initialization? default value is `true`
+Init etcd instance as learner? default value is `false`
 
-If enabled, running etcd instance will be purged by [`etcd.yml`](/etcd/playbook/#etcdyml) playbook, which makes the playbook fully idempotent.
+When set to `true`, the etcd instance will be init as leaner, so it will not be able to vote in the etcd cluster.
+You can promote it to a full member later with `etcdctl member promote` command.
 
-But if [`etcd_safeguard`](#etcd_safeguard) is enabled, it will still abort on any running etcd instance.
+
+
 
 ------
 
@@ -132,7 +146,7 @@ etcd initial cluster state, `new` or `existing`
 
 default values: `new`, which will create a standalone new etcd cluster.
 
-The value `existing` is used when trying to [**add new member**](/etcd/admin/#add-member) to existing etcd cluster.
+The value `existing` is used when trying to [**append new member**](/etcd/admin/#append-member) to existing etcd cluster.
 
 ------
 
@@ -149,3 +163,34 @@ etcd election timeout, `1000` (ms) by default
 name: `etcd_heartbeat_interval`, type: `int`, level: `C`
 
 etcd heartbeat interval, `100` (ms) by default
+
+------
+
+## `etcd_safeguard`
+
+name: `etcd_safeguard`, type: `bool`, level: `G/C/A`
+
+prevent purging etcd instance? default value is `false`
+
+If enabled, running etcd instance will not be purged by [`etcd-rm.yml`](/etcd/playbook/#etcd-rmyml) playbook.
+
+
+------
+
+## `etcd_rm_data`
+
+name: `etcd_rm_data`, type: `bool`, level: `G/C/A`
+
+remove etcd data during removal? default value is `true`
+
+When enabled, the [`etcd-rm.yml`](/etcd/playbook/#etcd-rmyml) playbook will remove etcd data directories and configuration files during cluster or member removal.
+
+------
+
+## `etcd_rm_pkg`
+
+name: `etcd_rm_pkg`, type: `bool`, level: `G/C/A`
+
+uninstall etcd packages during removal? default value is `false`
+
+When enabled, the [`etcd-rm.yml`](/etcd/playbook/#etcd-rmyml) playbook will uninstall etcd packages during cluster or member removal.

@@ -42,17 +42,31 @@ This snippet defines a single-node MinIO cluster, using the following command to
 
 ## Remove Cluster
 
-To destroy an existing MinIO cluster, use the `minio_clean` subtask of [`minio.yml`](/minio/playbook/#minioyml), DO THINK before you type.
+To destroy an existing MinIO cluster, use the dedicated [`minio-rm.yml`](/minio/playbook/#minio-rmyml) playbook:
 
 ```bash
-./minio.yml -l minio -t minio_clean -e minio_clean=true   # Stop MinIO and Remove Data Dir
+./minio-rm.yml -l minio                                  # Remove MinIO cluster
 ```
 
-If you wish to remove prometheus monitor target too:
+You can also customize the removal process with parameters:
 
 ```bash
-ansible infra -b -a 'rm -rf /etc/prometheus/targets/minio/minio-1.yml'  # delete the minio monitoring target
+./minio-rm.yml -l minio -e minio_rm_pkg=true            # Also remove packages
+./minio-rm.yml -l minio -e minio_rm_data=false          # Keep data directories
+./minio-rm.yml -l minio -e minio_safeguard=true         # Enable safeguard (will abort)
 ```
+
+**Legacy approach (deprecated):**
+
+```bash
+./minio.yml -l minio -t minio_clean -e minio_clean=true  # DEPRECATED: use minio-rm.yml instead
+```
+
+<Callout title="Architecture Change: Pigsty v3.6+" type="info">
+
+Since Pigsty v3.6+, MinIO cluster removal has been moved to the dedicated **minio-rm.yml** playbook using the **minio_remove** role. The prometheus monitoring targets are automatically cleaned up during the removal process.
+
+</Callout>
 
 
 

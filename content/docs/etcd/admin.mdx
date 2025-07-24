@@ -11,7 +11,8 @@ Here are some administration SOP for etcd:
 - [Remove Cluster](#remove-cluster)
 - [CLI Environment](#cli-environment)
 - [Reload Config](#reload-config)
-- [Add Member](#add-member)
+- [Management Scripts](#management-scripts)
+- [Append Member](#append-member)
 - [Remove Member](#remove-member)
 
 Check [ETCD: FAQ](/etcd/faq) for more questions.
@@ -38,11 +39,21 @@ Then run the [`etcd.yml`](/etcd/playbook/#etcdyml) playbook.
 ./etcd.yml   # init etcd module on group 'etcd'
 ```
 
+If there's an existing etcd cluster, this playbook will update the config and **restart** all the etcd instances
+
+
+
 Pigsty has a safeguard mechanism to prevent accidental purge. By default, [`etcd_clean`](/etcd/param#etcd_clean) is `true`, and [`etcd_safeguard`](/etcd/param#etcd_safeguard) is `false`,
 which means the playbook will purge etcd cluster even if there are running etcd instances. In this case, `etcd.yml` is truly idempotent,
 which is useful for development, testing, and emergency rebuild of etcd cluster in production.
 
 For provisioned etcd cluster in prod env, you can enable safeguard to prevent accidental clean.
+
+<Callout title="Architecture Change: Pigsty v3.6+" type="info">
+
+Since Pigsty v3.6+, the **etcd.yml** playbook and **etcd** role are focused solely on cluster installation and member addition. All removal operations have been moved to the dedicated **etcd-rm.yml** playbook using the **etcd_remove** role.
+
+</Callout>
 
 
 
@@ -50,14 +61,17 @@ For provisioned etcd cluster in prod env, you can enable safeguard to prevent ac
 
 ## Remove Cluster
 
-To remove an existing etcd cluster, use the `etcd_clean` subtask of [`etcd.yml`](/etcd/playbook/#etcdyml), do think before you type.
+To remove an existing etcd cluster, you can use the dedicated [`etcd-rm.yml`](/etcd/playbook/#etcdyml):
 
-```bash
-./etcd.yml -t etcd_clean  # remove entire cluster, honor the etcd_safeguard
-./etcd.yml -t etcd_purge  # purge with brutal force, omit the etcd_safeguard
+```bash tab="playbook"
+./etcd-rm.yml   # remove the default etcd cluster
+```
+```bash tab="script"
+bin/etcd-rm     # remove the default etcd cluster
 ```
 
-The `etcd_clean` subtask will honor the [`etcd_safeguard`](/etcd/param#etcd_safeguard), while the `etcd_purge` subtask will ignore that and wipe out the entire etcd cluster.
+If the [`etcd_safeguard`](/etcd/param#etcd_safeguard) is set to `true`, the playbook will abort.
+
 
 
 
@@ -93,46 +107,45 @@ e put a 10 ; e get a; e del a ; # V3 API
 
 In case of permanent etcd cluster membership changes, You’ll have to refresh the 4 etcd endpoints references:
 
-- config file of existing etcd members
-- etcdctl client environment variables
+- config file of existing etcd members and client env var
 - patroni dcs endpoint config
 - vip-manager dcs endpoint config
 
-To refresh etcd config file `/etc/etcd/etcd.conf` on existing members:
+To refresh etcd config file `/etc/etcd/etcd.conf` on existing members and client env vars:
 
 ```bash
-./etcd.yml -t etcd_conf                           # refresh /etc/etcd/etcd.conf with latest status
-ansible etcd -f 1 -b -a 'systemctl restart etcd'  # optional: restart etcd
+./etcd.yml -t etcd_conf         # refresh /etc/etcd/etcd.conf with latest status
+./etcd.yml -t etcd_launch -f 1  # restart etcd instances one by one
 ```
 
-To refresh `etcdctl` client environment variables
+Update patroni reference to etcd endpoints:
 
 ```bash
-$ ./etcd.yml -t etcd_env                          # refresh /etc/profile.d/etcdctl.sh
+./pgsql.yml -t pg_conf                                  # re-gen patroni config
+./pgsql.yml -t patroni_reload -e patroni_reload=true    # reload patroni config
 ```
 
-To update etcd endpoints reference on `patroni`:
+Update vip-manager reference to etcd endpoints (if you are using PGSQL L2 VIP):
 
 ```bash
-./pgsql.yml -t pg_conf                            # regenerate patroni config
-ansible all -f 1 -b -a 'systemctl reload patroni' # reload patroni config
+./pgsql.yml -t pg_vip # reload vip-manager config
 ```
 
-To update etcd endpoints reference on `vip-manager`, (optional, if you are using a L2 vip)
-
-```bash
-./pgsql.yml -t pg_vip_config                           # regenerate vip-manager config
-ansible all -f 1 -b -a 'systemctl restart vip-manager' # restart vip-manager to use new config
-```
 
 
 
 
 ------
 
-## Add Member
+## Append Member
 
 ETCD Reference: [Add a member](https://etcd.io/docs/v3.6/op-guide/runtime-configuration/#add-a-new-member)
+
+Pigsty can perform etcd cluster expansion with [`bin/etcd-add`](https://github.com/pgsty/pigsty/blob/main/bin/etcd-add) script or the [`etcd.yml`](/etcd/playbook#etcdyml) playbook.
+
+```bash
+bin/etcd-add <ip>
+```
 
 You can add new members to existing etcd cluster in 5 steps:
 
@@ -142,7 +155,7 @@ You can add new members to existing etcd cluster in 5 steps:
 4. promote the new member from leaner to follower
 5. update etcd endpoints reference with [reload-config](#reload-config)
 
-**Short Version**
+**Manual Approach**
 
 ```bash
 etcdctl member add <etcd-?> --learner=true --peer-urls=https://<new_ins_ip>:2380
@@ -150,14 +163,61 @@ etcdctl member add <etcd-?> --learner=true --peer-urls=https://<new_ins_ip>:2380
 etcdctl member promote <new_ins_server_id>
 ```
 
+**Automated Approach (Recommended)**
+
+Use the `bin/etcd-add` script to simplify the process:
+
+```bash
+# Add new members to inventory first, then:
+bin/etcd-add <ip1> <ip2> ...  # append specific members to existing cluster
+```
+
+The `etcd-add` script will:
+- Validate IP addresses
+- Execute the etcd.yml playbook with appropriate parameters
+- Provide safety warnings and countdown timers
+- Guide you through post-operation configuration updates
+
 
 ------
 
 ## Remove Member
 
-To remove a member from existing etcd cluster, it usually takes 3 steps:
+To remove a member from existing etcd cluster, you have two approaches:
+
+**Automated Approach (Recommended)**
+
+Use the `bin/etcd-rm` script for simplified removal:
+
+```bash
+bin/etcd-rm <ip> ...    # remove specific members
+```
+
+Or use the dedicated removal playbook:
+
+```bash
+./etcd-rm.yml -l <ip>         # remove specific member
+```
+
+**Manual Approach**
+
+For manual removal, it usually takes 3 steps:
 
 1. remove/uncomment it from inventory and [reload config](#reload-config)
 2. remove it with `etcdctl member remove <server_id>` command and kick it out of the cluster
-3. temporarily add it back to inventory and purge that instance, then remove it from inventory permanently
+3. use the etcd-rm.yml playbook to clean up the instance
+
+**Removal Parameters**
+
+The etcd_remove role supports several configuration options:
+
+- `etcd_safeguard=true`: Prevents accidental removal
+- `etcd_rm_data=true`: Removes etcd data directories (default: true)
+- `etcd_rm_pkg=false`: Uninstalls etcd packages (default: false)
+
+Example with custom parameters:
+
+```bash
+./etcd-rm.yml -l <ip> -e etcd_rm_pkg=true  # also remove packages
+```
 
