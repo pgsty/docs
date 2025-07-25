@@ -1,0 +1,168 @@
+---
+title: 架构设计
+description: PostgreSQL 集群架构和概念
+icon: Boxes
+---
+
+
+## 实体关系 [#entity-relationships]
+
+Pigsty 的 **PGSQL** 模块中有四种核心实体类型：
+
+- **集群**：一个自治的 PostgreSQL 业务单元，其他实体的顶层命名空间
+- [**服务**](/zh/pgsql/service)：集群能力的抽象，流量路由，通过不同的节点端口暴露服务
+- **实例**：一个 PostgreSQL 服务器，由单个节点上的一组运行进程和文件组成
+- [**节点**](/zh/prepare/hardware#node)：硬件资源的抽象，可以是裸机、虚拟机或 k8s pod
+
+![](/img/pigsty/er-min.png)
+
+
+------
+
+## 架构 [#architecture]
+
+以下是在 [配置清单](/zh/config/inventory) 中描述的 PostgreSQL 集群 `pg-test`：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica }
+  vars:
+    pg_cluster: pg-test
+```
+
+![](/img/pigsty/ha.png)
+
+它定义了一个如上所示的 [高可用](/zh/feat/ha) PostgreSQL 集群，该集群中的相关实体包括：
+
+- 1 个 PostgreSQL 集群：`pg-test`
+- 2 个实例角色：`primary` 和 `replica`
+- 3 个 PostgreSQL 实例：`pg-test-1`、`pg-test-2`、`pg-test-3`
+- 3 个节点：`10.10.10.11`、`10.10.10.12`、`10.10.10.13`
+- 4 个 PostgreSQL 服务，默认自动生成：
+  - [`pg-test-primary`](/zh/pgsql/service/#primary-service)：读写服务（路由到主库 pgbouncer）
+  - [`pg-test-replica`](/zh/pgsql/service/#replica-service)：只读服务（路由到从库 pgbouncer）
+  - [`pg-test-default`](/zh/pgsql/service/#default-service)：直连读写服务（路由到主库 postgres）
+  - [`pg-test-offline`](/zh/pgsql/service/#offline-service)：离线读取服务（路由到专用 postgres）
+
+
+
+
+
+
+------
+
+## 高可用描述 [#ha-description]
+
+[PostgreSQL](https://www.postgresql.org/) 集群由 [Patroni](https://patroni.readthedocs.io/) 管理，
+这是一个经过实战验证的 PostgreSQL 高可用解决方案。
+它将在多个节点上设置 PostgreSQL 复制，并在主节点宕机时执行自动故障转移。
+
+备份由 [pgBackRest](https://pgbackrest.org/) 处理，这是一个强大的 PostgreSQL 备份工具，
+支持增量备份/恢复、压缩、加密，备份到本地磁盘或 S3 / MinIO。
+
+[pgbouncer](https://www.pgbouncer.org/) 是一个轻量级连接池，可以在高并发情况下提高性能。
+它与 Postgres 服务器 1:1 部署，默认被主库/从库服务使用。
+
+[服务](/zh/pgsql/service) 由 [HAProxy](https://www.haproxy.org/) 暴露，这是一个高性能的 TCP/HTTP 负载均衡器，它是 [NODE](/zh/node/) 模块的一部分。
+4 个 [默认服务](/zh/pgsql/service/#default-service) 以**幂等**的方式在所有集群节点上自动暴露。
+
+应用程序可以访问任何 haproxy 来访问 Postgres 集群，流量将根据 patroni 健康检查端点路由到正确的实例。
+因此故障转移对应用程序是透明的。
+
+patroni 需要您的部署中有一个正常工作的 [ETCD](/zh/etcd)，pgbackrest 可以使用可选的 [MinIO](/zh/minio) 作为集中备份存储；
+监控导出器将收集指标和日志到 [**Infra**](/zh/infra) 模块。
+
+
+--------
+
+## 组件 [#components]
+
+[PGSQL 节点](/zh/node/arch#pgsql-node) 由以下组件组成（部分可以禁用）：
+
+![](/img/pigsty/infra.png)
+
+|       组件       |  端口  | 描述                                  |
+|:---------------------:|:------:|----------------------------------------------|
+|      `postgres`       | `5432` | 由 Patroni 管理的 PostgreSQL 服务器进程 |
+|      `pgbouncer`      | `6432` | Pgbouncer 连接池                    |
+|     `pgbackrest`      |   -    | 备份和时间点恢复工具      |
+|       `patroni`       | `8008` | Patroni 高可用组件，管理 `postgres`      |
+| `primary` @ `haproxy` | `5433` | 主库连接池：读写服务  |
+| `replica` @ `haproxy` | `5434` | 从库连接池：只读服务   |
+| `default` @ `haproxy` | `5436` | 主库直连服务               |
+| `offline` @ `haproxy` | `5438` | 离线直连：离线读取服务 |
+|     `pg_exporter`     | `9630` | PostgreSQL 监控指标导出器         |
+| `pgbouncer_exporter`  | `9631` | pgbouncer 监控指标导出器        |
+| `pgbackrest_exporter` | `9854` | pgbackrest 监控指标导出器       |
+|     `vip-manager`     |   -    | 绑定 VIP 到主库                      |
+
+
+
+--------
+
+## 交互 [#interaction]
+
+同时，[基础设施节点](/zh/node/arch#infra-node) 由以下与 PGSQL 交互的组件组成：
+
+|      组件      |  端口  |   域名   | 描述                       |
+|:-------------------:|:------:|:----------:|-----------------------------------|
+|       `nginx`       |  `80`  | `h.pigsty` | Web 服务门户（YUM/APT 仓库） |
+|   `alertmanager`    | `9093` | `a.pigsty` | 告警聚合和分发    |
+|    `prometheus`     | `9090` | `p.pigsty` | 监控时间序列数据库   |
+|      `grafana`      | `3000` | `g.pigsty` | 可视化平台            |
+|        `lok`        | `3100` |     -      | 日志收集服务器         |
+|    `pushgateway`    | `9091` |     -      | 收集一次性作业指标      |
+| `blackbox_exporter` | `9115` |     -      | 黑盒探测                  |
+|      `dnsmasq`      |  `53`  |     -      | DNS 服务器                        |
+|      `chronyd`      | `123`  |     -      | NTP 时间服务器                   |
+|      `ansible`      |   -    |     -      | 运行剧本                     |
+
+
+- 集群 DNS 由基础设施节点上的 DNSMASQ 解析
+- 集群 VIP 由 `vip-manager` 管理，绑定到集群主库
+    - `vip-manager` 将直接从 `etcd` 集群获取由 `patroni` 写入的集群领导者信息
+- 集群服务由节点上的 Haproxy 暴露，服务通过节点端口（`543x`）区分
+    - Haproxy 端口 9101：监控指标、统计信息和管理页面
+    - Haproxy 端口 5433：路由到主库 pgbouncer 的默认服务：[primary](/zh/pgsql/service/#primary-service)
+    - Haproxy 端口 5434：路由到从库 pgbouncer 的默认服务：[replica](/zh/pgsql/service/#replica-service)
+    - Haproxy 端口 5436：路由到主库 postgres 的默认服务：[default](/zh/pgsql/service/#default-service)
+    - Haproxy 端口 5438：路由到离线 postgres 的默认服务：[offline](/zh/pgsql/service/#offline-service)
+    - HAProxy 将根据 `patroni` 提供的健康检查信息路由流量
+- Pgbouncer 是监听端口 6432 的连接池
+    - 通过本地 unix socket 与 Postgres 服务器 1:1 部署
+    - 生产流量（主库/从库）默认通过 pgbouncer
+    - 通过将 [`pg_default_service_dest`](/zh/pgsql/param#pg_default_service_dest) 设置为 `postgres` 来绕过 `primary`/`replica` 服务的 pgbouncer
+    - 默认/离线服务将始终绕过 pgbouncer 并直接连接到目标 Postgres
+- Postgres 在端口 5432 提供关系数据库服务
+    - 在多个节点上安装 PGSQL 模块将自动基于复制形成高可用集群
+    - PostgreSQL 默认由 `patroni` 监督
+- Patroni 将默认在端口 8008 监督 PostgreSQL 服务器
+    - Patroni 将 postgres 服务器作为子进程生成
+    - Patroni 使用 `etcd` 作为 DCS：配置存储、故障检测和领导者选举
+    - Patroni 将通过健康检查提供 Postgres 信息，由 HAProxy 使用
+    - Patroni 指标将被基础设施节点上的 prometheus 抓取
+- PG Exporter 将在端口 9630 暴露 postgres 指标
+- Pgbouncer Exporter 将在端口 9631 暴露 pgbouncer 指标
+    - Pgbouncer 的指标将被基础设施节点上的 prometheus 抓取
+- pgBackRest 默认在本地仓库上工作（`pgbackrest_method`）
+    - 如果使用 `local`（默认）作为备份仓库，主库的 [`pg_fs_backup`](/zh/pgsql/param#pg_fs_backup) 用作本地备份仓库
+    - 如果使用 `minio`，pgBackRest 将在专用 MinIO 集群上创建仓库
+- Postgres 相关日志（postgres、pgbouncer、patroni、pgbackrest）由 promtail 在端口 9080 暴露
+    - Promtail 将日志发送到基础设施节点上的 Loki
+
+
+
+
+--------
+
+## 完整实体关系图 [#full-er-diagram]
+
+一个 Pigsty 部署对应一个 [配置清单](/zh/config/inventory) 文件和一个 [基础设施](/zh/infra)。
+一个 Pigsty 部署中可能有多个数据库集群。
+
+一个集群/实例可能有多个数据库，数据库包含表和其他对象（查询、索引、函数、序列...）。
+
+![](/img/pigsty/er-full.png)

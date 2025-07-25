@@ -1,0 +1,16 @@
+{
+  "title": "管理",
+  "description": "执行剧本，管理访问，配置模块，域名，证书",
+  "icon": "Landmark",
+  "defaultOpen": false,
+  "pages": [
+    "ansible",
+    "playbook",
+    "dashboard",
+    "monitor",
+    "portal",
+    "repo",
+    "domain",
+    "cert"
+  ]
+}

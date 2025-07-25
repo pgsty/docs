@@ -1,7 +1,7 @@
 {
   "root": true,
   "pages": [
-    "---Pigsty---",
+    "index",
     "install",
     "prepare",
     "config",

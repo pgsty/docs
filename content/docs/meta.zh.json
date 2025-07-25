@@ -1,7 +1,7 @@
 {
   "root": true,
   "pages": [
-    "---Pigsty---",
+    "index",
     "install",
     "prepare",
     "config",
@@ -12,7 +12,7 @@
     "intro",
     "release",
 
-    "---Module---",
+    "---模块---",
     "pgsql",
     "infra",
     "node",
@@ -23,7 +23,7 @@
     "docker",
     "app",
 
-    "---Links---",
+    "---链接---",
     "[订阅服务](/zh/about/service)",
     "[扩展目录](https://ext.pgsty.com/zh/)",
     "[代码仓库](https://github.com/pgsty/pigsty)",

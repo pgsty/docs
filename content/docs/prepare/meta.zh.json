@@ -1,0 +1,15 @@
+{
+    "title": "准备",
+    "description": "准备节点，操作系统，网络，磁盘，用户，SSH，权限，……",
+    "icon": "SquareStack",
+    "defaultOpen": false,
+    "pages": [
+        "hardware",
+        "linux",
+        "software",
+        "admin",
+        "sandbox",
+        "vagrant",
+        "terraform"
+    ]
+}

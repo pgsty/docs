@@ -1,0 +1,17 @@
+{
+    "title": "特性",
+    "description": "Pigsty 的关键技术特性",
+    "icon": "Feather",
+    "defaultOpen": false,
+    "pages": [
+        "ext",
+        "kernel",
+        "infra",
+        "ha",
+        "pitr",
+        "iac",
+        "raw",
+        "app",
+        "supabase"
+    ]
+}

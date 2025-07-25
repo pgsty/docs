@@ -1,6 +1,6 @@
 ---
 title: 安装
-description: 快速上手安装 Pigsty
+description: Pigsty 入门指南
 icon: Rocket
 full: true
 ---
@@ -18,99 +18,97 @@ import {
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 
+## 快速开始 [#quick-start]
 
-## 快速上手
-
-[**Quick start**](/install/start): [Prepare](/prepare) an [ssh-accessible](/prepare/admin#check-accessibility) [node](/prepare/hardware#node) with fresh installed [Linux](/prepare/linux),
-run as [user](/prepare/admin#user) with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#sudo-privileges) privileges:
+[**快速开始**](/zh/install/start)：[准备](/zh/prepare) 一台具有 [SSH访问权限](/zh/prepare/admin#check-accessibility) 的 [节点](/zh/prepare/hardware#node)，新安装 [Linux](/zh/prepare/linux)系统，
+使用具有免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的[用户](/zh/prepare/admin#user)运行：
 
 <Steps>
     <Step>
+    使用以下命令[**下载**](/zh/prepare/software#pigsty) pigsty：
 
-        [**Download**](/prepare/software#pigsty) pigsty with:
-
-        ```bash
-        curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
-        ```
-
+    ```bash
+    curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
+    ```
     </Step>
 
     <Step>
-        [**Configure**](/config/configure) the [inventory](/config/inventory) file according to your need. (<span className={"text-red-500 font-black"}>CHANGE PASSWORDS</span> in the generated [`pigsty.yml`](/config/inventory))
 
-        ```bash
-        ./configure
-        ```
+    执行 [`configure`](/zh/config/configure) 生成 [配置清单](/zh/config/inventory)。（<span className={"text-red-500 font-black"}>务必修改</span> 生成的 [`pigsty.yml`](/zh/config/inventory) 中的密码）
+
+    ```bash
+    ./configure
+    ```
 
     </Step>
     <Step>
 
-        [**Install**](/install/start) everything according to your config:
+    一键 [**安装部署**](/zh/install/start) 所有组件：
 
-        ```bash
-        ./install.yml
-        ```
+    ```bash
+    ./install.yml
+    ```
     </Step>
 
 
 </Steps>
 
 
-Pigsty Installed!  Explore the [**User Interface**](/install/interface), check port `5432` for [Postgres](/pgsql) [Service](/pgsql/service), port `3000` for [Grafana](/install/interface#grafana) dashboards (`admin` / `pigsty`).
+Pigsty 安装完成！请探索 [**用户界面**](/zh/install/interface)，访问 `5432` 端口上的 [Postgres](/zh/pgsql) [服务](/zh/pgsql/service)，或 `3000` 端口上的 [Grafana](/zh/install/interface#grafana) 监控大盘（`admin` / `pigsty`）。
 
 
 
 --------
 
-## 下一步？
+## 下一步做什么？ [#whats-next]
 
-- [访问 Postgres 服务](/install/interface#postgresql)
-- [探索 Grafana 监控面板](/install/interface#grafana)
-- [创建业务数据库](/pgsql/db#create-database) 与 [业务用户](/pgsql/user#create-user)
-- [使用更多节点构建高可用部署](/install/multinode)
-- [加装更多 PostgreSQL 扩展](/pgsql/extension)
+- [访问 Postgres 服务](/zh/install/interface#postgresql)
+- [探索 Grafana 仪表盘](/zh/install/interface#grafana)
+- [创建业务数据库](/zh/pgsql/db#create-database) 和 [用户](/zh/pgsql/user#create-user)
+- [添加更多节点实现真正的高可用](/zh/install/multinode)
+- [获取更多 PostgreSQL 扩展](/zh/pgsql/extension)
 
 
 --------
 
-## 安装
+## 安装 [#installation]
 
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='单节点安装' href={"/install/start"}>
-        标准单机安装，在一台 Linux 服务器上从零开始部署一切组件。
+    <Card icon={<Database className="text-blue-300" />} title='单机安装' href={"/zh/install/start"}>
+        在当前 Linux 节点上，执行标准的完整在线安装流程
     </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='多节点安装' href={"/install/multinode"}>
-        使用更多节点打造真高可用部署，使用本地软件仓库确保版本一致性。
+    <Card icon={<AtomIcon className="text-green-600" />} title='高可用安装' href={"/zh/install/multinode"}>
+        在多个节点上安装，以实现真正的企业级高可用部署
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='离线安装' href={"/install/offline"}>
-        在没有互联网的环境中，从离线安装包安装所有组件
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='离线安装' href={"/zh/install/offline"}>
+        在没有互联网连接的情况下，从本地离线包引导安装
     </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='精简安装' href={"/install/minimal"}>
-        只安装高可用 Postgres 集群，不带监控
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='精简安装' href={"/zh/install/minimal"}>
+        仅安装高可用 Postgres 集群所必须的组件，不装监控
     </Card>
 </Cards>
 
 
 --------
 
-## 准备
+## 准备工作 [#preparation]
 
 <Cards>
 
-    <Card icon={<Database className="text-blue-300" />} title='Prepare' href={"/prepare"}>
-        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    <Card icon={<Database className="text-blue-300" />} title='准备' href={"/zh/prepare"}>
+        准备节点、网络、存储、用户、ssh、sudo、ansible 等
     </Card>
 
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux OS' href={"/prepare/linux"}>
-        Check compatible linux distributions and availability matrix
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Linux 操作系统' href={"/zh/prepare/linux"}>
+        检查兼容的 Linux 发行版和可用性矩阵
     </Card>
 
-    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/prepare/vagrant"}>
-        Provision local linux virtual machines with vagrant / virtualbox
+    <Card icon={<AtomIcon className="text-green-600" />} title='Vagrant' href={"/zh/prepare/vagrant"}>
+        使用 vagrant / virtualbox 置备本地 Linux 虚拟机
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/prepare/terraform"}>
-        Provision cloud linux servers with terraform on cloud vendors
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Terraform' href={"/zh/prepare/terraform"}>
+        在云供应商上使用 terraform 置备云 Linux 服务器
     </Card>
 
 </Cards>
@@ -118,24 +116,24 @@ Pigsty Installed!  Explore the [**User Interface**](/install/interface), check p
 
 --------
 
-## 参考
+## 参考 [#reference]
 
 <Cards>
 
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='Interface' href={"/install/interface"}>
-        Provision cloud linux servers with terraform on cloud vendors
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='界面' href={"/zh/install/interface"}>
+        访问和管理 Pigsty 提供的数据库端点与图形用户界面
     </Card>
 
-    <Card icon={<Database className="text-blue-300" />} title='Configure' href={"/config/configure"}>
-        Prepare node, network, storage, user, ssh, sudo, ansible, etc...
+    <Card icon={<Database className="text-blue-300" />} title='配置' href={"/zh/config/configure"}>
+        使用声明式的配置文件描述你需要的基础设施与集群
     </Card>
 
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='Playbook' href={"/admin/playbook"}>
-        Check compatible linux distributions and availability matrix
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='剧本' href={"/zh/admin/playbook"}>
+        了解可用的 Ansible 剧本和其使用方法
     </Card>
 
-    <Card icon={<AtomIcon className="text-red-600" />} title='Security' href={"/config/security"}>
-        Security hardening and best practices for production environments
+    <Card icon={<AtomIcon className="text-red-600" />} title='安全' href={"/zh/config/security"}>
+        生产环境的安全加固和最佳实践
     </Card>
 
 

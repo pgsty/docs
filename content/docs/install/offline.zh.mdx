@@ -1,46 +1,46 @@
 ---
-title: Offline Install
-description: install pigsty without Internet access?
+title: 离线安装
+description: 如何在没有互联网访问的情况下安装 pigsty？
 icon: FolderSymlink
 ---
 
 import {Step, Steps} from 'fumadocs-ui/components/steps';
 
 
-Pigsty [**install**](/install) from Internet upstream by default, while some environments are isolated from the Internet.
-To address this issue, Pigsty supports offline installation from [**offline packages**](#offline-package).
+Pigsty 默认从互联网上游 [**安装**](/zh/install)，但有些环境与互联网隔离。
+为了解决这个问题，Pigsty 支持从 [**离线软件包**](#offline-package) 进行离线安装。
 
 <Steps>
     <Step>
-        Download the pigsty offline package, put it to `/tmp/pkg.tgz`
+        下载 pigsty 离线软件包，将其放到 `/tmp/pkg.tgz`
     </Step>
 
     <Step>
-        Download the pigsty source package, extract it (assume `~/pigsty`)
+        下载 pigsty 源码包，解压（假设到 `~/pigsty`）
     </Step>
 
     <Step>
-        `cd ~/pigsty; ./bootstrap`, it will extract the pkg and use the local repo
+        `cd ~/pigsty; ./bootstrap`，它将解压软件包并使用本地仓库
     </Step>
 
     <Step>
-        `vi ~/pigsty.yml`, overwrite [`node_repo_modules`](/node/param#node_repo_modules) to `local` to use the local repo
+        `vi ~/pigsty.yml`，覆盖 [`node_repo_modules`](/zh/node/param#node_repo_modules) 设为 `local` 以使用本地仓库
     </Step>
 
     <Step>
-        Run `./install.yml` as usual. it will install everything from the local repo.
+        照常运行 `./install.yml`。它将从本地仓库安装所有内容。
     </Step>
 
 </Steps>
 
 ------
 
-## What is offline package?
+## 什么是离线软件包？ [#what-is-offline-package]
 
-Offline package packs all the required RPM/DEB packages and their dependencies;
-it is essentially a snapshot tarball of local APT / YUM repo, taken after a normal [installation](/install/start).
+离线软件包打包了所有需要的 RPM/DEB 软件包及其依赖；
+它本质上是在正常 [安装](/zh/install/start) 后采取的本地 APT / YUM 仓库的快照压缩包。
 
-You can find these packages from the [GitHub release page](https://github.com/pgsty/pigsty/releases/latest), for example:
+您可以从 [GitHub 发布页面](https://github.com/pgsty/pigsty/releases/latest) 找到这些软件包，例如：
 
 ```
 df64ac0c2b5aab39dd29698a640daf2e  pigsty-v3.6.0.tgz

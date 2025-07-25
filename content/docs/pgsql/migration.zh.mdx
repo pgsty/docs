@@ -1,0 +1,125 @@
+---
+title: 迁移
+description: 零宕机蓝绿部署
+icon: Truck
+---
+
+Pigsty 有一个内置的 playbook [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) 来执行基于逻辑复制的在线数据库迁移。
+
+通过适当的自动化，宕机时间可以最小化到几秒钟。但请注意，逻辑复制需要 PostgreSQL 10+ 才能工作。
+您仍然可以使用这里的工具，并使用 pg_dump | psql 代替逻辑复制。
+
+
+
+------
+
+## 定义迁移任务 [#define-migration-task]
+
+您必须创建一个迁移任务定义文件来使用此 playbook。
+
+查看 [`files/migration/pg-meta.yml`](https://github.com/pgsty/pigsty/blob/main/files/migration/pg-meta.yml) 作为示例。
+
+它将尝试将 `pg-meta.meta` 迁移到 `pg-test.test`。
+
+```bash
+pg-meta-1	10.10.10.10  --> pg-test-1	10.10.10.11 (10.10.10.12,10.10.10.13)
+```
+
+您必须告诉 Pigsty 源集群和目标集群在哪里。要迁移的数据库以及主 IP 地址。
+
+您应该在两端都有超级用户权限才能继续
+
+您可以使用 `src_pg` 覆盖到源集群的超级用户连接，使用 `sub_conn` 覆盖逻辑复制连接字符串，否则将使用 Pigsty 默认的管理员和复制器凭据。
+
+```yaml
+---
+#-----------------------------------------------------------------
+# PG_MIGRATION
+#-----------------------------------------------------------------
+context_dir: ~/migration           # 迁移手册和脚本
+#-----------------------------------------------------------------
+# SRC 集群（旧集群）
+#-----------------------------------------------------------------
+src_cls: pg-meta      # 源集群名称         <必填>
+src_db: meta          # 源数据库名称        <必填>
+src_ip: 10.10.10.10   # 源集群主 IP        <必填>
+#src_pg: ''            # 如果定义，使用此作为源 dbsu pgurl 而不是：
+#                      # postgres://{{ pg_admin_username }}@{{ src_ip }}/{{ src_db }}
+#                      # 例如 'postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta'
+#sub_conn: ''          # 如果定义，使用此作为订阅 connstr 而不是：
+#                      # host={{ src_ip }} dbname={{ src_db }} user={{ pg_replication_username }}'
+#                      # 例如 'host=10.10.10.10 dbname=meta user=replicator password=DBUser.Replicator'
+#-----------------------------------------------------------------
+# DST 集群（新集群）
+#-----------------------------------------------------------------
+dst_cls: pg-test      # 目标集群名称         <必填>
+dst_db: test          # 目标数据库名称        <必填>
+dst_ip: 10.10.10.11   # 目标集群主 IP        <必填>
+#dst_pg: ''            # 如果定义，使用此作为目标 dbsu pgurl 而不是：
+#                      # postgres://{{ pg_admin_username }}@{{ dst_ip }}/{{ dst_db }}
+#                      # 例如 'postgres://dbuser_dba:DBUser.DBA@10.10.10.11:5432/test'
+#-----------------------------------------------------------------
+# PGSQL
+#-----------------------------------------------------------------
+pg_dbsu: postgres
+pg_replication_username: replicator
+pg_replication_password: DBUser.Replicator
+pg_admin_username: dbuser_dba
+pg_admin_password: DBUser.DBA
+pg_monitor_username: dbuser_monitor
+pg_monitor_password: DBUser.Monitor
+#-----------------------------------------------------------------
+...
+```
+
+
+
+--------
+
+## 生成计划 [#generate-plan]
+
+该 playbook 不会将源迁移到目标，但它会生成您需要执行此操作的所有内容。
+
+执行后，您将在默认的 `~/migration/pg-meta.meta` 下找到迁移上下文目录
+
+按照 `README.md` 并逐一执行这些脚本，您就能完成此操作！
+
+```bash
+# 此脚本将使用环境变量设置迁移上下文
+. ~/migration/pg-meta.meta/activate
+
+# 这些脚本用于检查源集群状态
+# 并帮助在 Pigsty 中生成新的集群定义
+./check-user     # 检查源用户
+./check-db       # 检查源数据库
+./check-hba      # 检查源 hba 规则
+./check-repl     # 检查源副本标识
+./check-misc     # 检查源特殊对象
+
+# 这些脚本用于在现有源集群和 Pigsty 管理的目标集群之间
+# 构建逻辑复制
+# 架构、数据将实时同步，除了序列
+./copy-schema    # 将架构复制到目标
+./create-pub     # 在源上创建发布
+./create-sub     # 在目标上创建订阅
+./copy-progress  # 打印逻辑复制进度
+./copy-diff      # 通过计数表快速比较源和目标差异
+
+# 这些脚本将在在线迁移中运行，它们将
+# 停止源集群，复制序列号（逻辑复制不会同步）
+# 您必须根据您的访问方法重新路由您的应用流量（dns,vip,haproxy,pgbouncer 等...）
+# 然后执行清理以删除订阅和发布
+./copy-seq [n]   # 同步序列号，如果给定 n，将应用额外的偏移
+#./disable-src   # 限制源集群仅对管理节点和新集群的访问（您的实现）
+#./re-routing    # 将应用程序流量从源路由到目标！            （您的实现）
+./drop-sub       # 迁移后在目标上删除订阅
+./drop-pub       # 迁移后在源上删除发布
+```
+
+**注意事项**
+
+您可以使用 `./copy-seq 1000` 在同步序列后将所有序列提前一个数字（例如 `1000`）。这可能会防止新集群中潜在的串行主键冲突。
+
+您必须实现自己的 `./re-routing` 脚本来将应用程序流量从源路由到目标。因为我们不知道您的流量是如何路由的（例如 dns、VIP、haproxy 或 pgbouncer）。当然，您总是可以手动完成...
+
+您必须实现自己的 `./disable-src` 脚本来限制源集群。您可以通过更改 HBA 规则并重新加载（推荐）来做到这一点，或者只是关闭 postgres、pgbouncer 或 haproxy...

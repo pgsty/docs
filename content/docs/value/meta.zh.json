@@ -1,0 +1,16 @@
+{
+    "title": "价值",
+    "description": "Pigsty 的八条核心价值主张",
+    "icon": "HandCoins",
+    "defaultOpen": false,
+    "pages": [
+        "extensibility",
+        "reliability",
+        "observability",
+        "scalability",
+        "maintainability",
+        "composability",
+        "controllability",
+        "affordability"
+    ]
+}

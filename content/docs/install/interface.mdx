@@ -9,8 +9,8 @@ Once installed, you’ll have the four core modules:
 [**`PGSQL`**](/pgsql/), [**`INFRA`**](/infra/), [**`NODE`**](/node/), and [**`ETCD`**](/etcd/) on current node.
 
 | ID | [NODE](/node) | [PGSQL](/pgsql) | [INFRA](/infra) | [**ETCD**](/etcd) |
-|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
-| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+|:--:|:-------------:|:---------------:|:---------------:|:-----------------:|
+| 1  |   `node-1`    |   `pg-meta-1`   |    `infra-1`    |     `etcd-1`      |
 
 
 You can access [WebUI](#grafana) services from the following **Ports** directly (not recommended for prod).
@@ -18,12 +18,12 @@ Or use local / public [Domain Names](/admin/domain) to access them via [Nginx Po
 [SSL Certs](/admin/cert) can only be used with domains.
 
 
-|            Component            |   Port   |   Domain   | Comment                     | Public Demo                                |
-|:-------------------------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
+|         Component          |   Port   |   Domain   | Comment                     | Public Demo                                |
+|:--------------------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
 | [**Nginx**](/admin/portal) | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.io`](https://h.pigsty.io)    |
-|     [**Grafana**](#grafana)     |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.cc`](https://demo.pigsty.cc) |
-|           Prometheus            |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
-|          AlertManager           |  `9093`  | `a.pigsty` | Alert Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
+|  [**Grafana**](#grafana)   |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.cc`](https://demo.pigsty.cc) |
+|         Prometheus         |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
+|        AlertManager        |  `9093`  | `a.pigsty` | Alert Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
 
 You can access the default PostgreSQL database (`meta`) @ default port `5432` via the following users and corresponding `PGURL`:
 

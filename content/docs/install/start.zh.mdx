@@ -1,6 +1,6 @@
 ---
-title: Quick Start
-description: how to install pigsty on your linux machine?
+title: 快速上手
+description: 如何在您的 Linux 主机上安装 pigsty？
 icon: CloudDownload
 defaultOpen: false
 ---
@@ -11,19 +11,19 @@ import {File, Folder, Files} from 'fumadocs-ui/components/files';
 import {CpuIcon, FileCode} from 'lucide-react';
 
 
-This is a one-node installation guide, check [**Multi-Node**](/install/multinode) for real HA production setup.
+这是单节点安装指南，请查看 [**多节点**](/zh/install/multinode) 来了解真正的高可用生产环境部署。
 
 --------
 
-## Short Version
+## 简化版本 [#short-version]
 
-[Prepare](#prepare) an [ssh-accessible](/prepare/admin#check-accessibility) [node](/prepare/hardware#node) with [Compatible Linux Distro](/prepare/linux),
-run as user with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#sudo-privileges):
+[准备](#prepare) 一台具有 [SSH 访问权限](/zh/prepare/admin#check-accessibility) 的 [节点](/zh/prepare/hardware#node) 并安装 [兼容的 Linux 发行版](/zh/prepare/linux)，
+使用免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的用户运行：
 
 <Steps>
     <Step>
 
-        [**Download**](#download) pigsty with:
+        使用以下命令 [**下载**](#download) pigsty：
 
         ```bash
         curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
@@ -31,8 +31,7 @@ run as user with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#
 
     </Step>
     <Step>
-        [**Configure**](#configure) the [`pigsty.yml`](/config/inventory) inventory file according to
-        your need and environment.
+        根据您的需求和环境 [**配置**](#configure) [`pigsty.yml`](/zh/config/inventory) 配置清单文件。
 
         ```bash
         ./configure
@@ -41,7 +40,7 @@ run as user with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#
     </Step>
     <Step>
 
-        [**Install**](#install) everything according to your config:
+        根据您的配置 [**安装**](#install) 所有组件：
 
         ```bash
         ./install.yml
@@ -51,47 +50,47 @@ run as user with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#
 
 </Steps>
 
-**Example: Singleton Installation on RockyLinux 9:**
+**示例：在 RockyLinux 9 上的单机安装：**
 
 [![asciicast](/img/asciinema/install.svg)](https://asciinema.org/a/673459)
 
 
 ------
 
-## Prepare
+## 准备 [#prepare]
 
-Check [**Preparation**](/prepare) for all the details, here's a quick summary:
+查看 [**准备工作**](/zh/prepare) 了解所有详细信息，这里是快速摘要：
 
-|               Item                | Requirement                           |                       Item                       | Requirement                                          |
+|               项目                | 要求                           |                       项目                       | 要求                                          |
 |:---------------------------------:|:--------------------------------------|:------------------------------------------------:|:-----------------------------------------------------|
-|  [Node](/prepare/hardware#node)   | `1C1G` at least, `2C2G` recommended   |          [Spec](/prepare/hardware#spec)          | `1` node at least, `2` for semi-HA, `3+` for real HA |
-|  [Disk](/prepare/hardware#disk)   | `/data`, main mount point, `ext4/xfs` |       [Network](/prepare/hardware#network)       | static IPv4 address                                  |
-|   [VIP](/prepare/hardware#vip)    | Optional L2 VIP                       |        [Domain](/prepare/hardware#domain)        | Optional local / public domain names                 |
-| [Kernel](/prepare/software#linux) | `Linux`                               |             [Distro](/prepare/linux)             | el8, el9, d12, u22, u24 x `x86_64` / `aarch64`       |
-| [Locale](/prepare/software#linux) | `C.UTF-8` or `C`                      |      [Firewall](/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                   |
-|    [User](/prepare/admin#user)    | avoid using `root` & `postgres`       |      [Sudo](/prepare/admin#sudo-privileges)      | `nopass` sudo privilege                              |
-|     [SSH](/prepare/admin#ssh)     | `nopass` via public key               | [Accessible](/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` without error              |
+|  [节点](/zh/prepare/hardware#node)   | 至少 `1C1G`，推荐 `2C2G`   |          [规格](/zh/prepare/hardware#spec)          | 至少 `1` 个节点，`2` 个用于半高可用，`3+` 个用于真正高可用 |
+|  [磁盘](/zh/prepare/hardware#disk)   | `/data`，主挂载点，`ext4/xfs` |       [网络](/zh/prepare/hardware#network)       | 静态 IPv4 地址                                  |
+|   [VIP](/zh/prepare/hardware#vip)    | 可选的 L2 VIP                       |        [域名](/zh/prepare/hardware#domain)        | 可选的本地/公共域名                 |
+| [内核](/zh/prepare/software#linux) | `Linux`                               |             [发行版](/zh/prepare/linux)             | el8, el9, d12, u22, u24 x `x86_64` / `aarch64`       |
+| [语言环境](/zh/prepare/software#linux) | `C.UTF-8` 或 `C`                      |      [防火墙](/zh/prepare/software#firewall)      | 端口：`80` / `443` / `22` / `5432`                   |
+|    [用户](/zh/prepare/admin#user)    | 避免使用 `root` 和 `postgres`       |      [Sudo](/zh/prepare/admin#sudo-privileges)      | `nopass` sudo 权限                              |
+|     [SSH](/zh/prepare/admin#ssh)     | 通过公钥 `nopass`               | [可访问性](/zh/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` 无错误              |
 
 
 
 
 ------
 
-## Download
+## 下载 [#download]
 
-(<span className="text-sky-500 font-black">RECOMMENDED</span>) You can get & extract the latest stable version of pigsty source with:
+（<span className="text-sky-500 font-black">推荐</span>）您可以使用以下命令获取并解压最新稳定版本的 pigsty 源码：
 
-```bash tab="Default"
+```bash tab="默认"
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
 ```
-```bash tab="Mirror"
-curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # china mirror
+```bash tab="镜像"
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # 中国镜像
 ```
-```bash tab="Specific Version"
+```bash tab="指定版本"
 curl -fsSL https://repo.pigsty.io/get | bash -s v3.6.0; cd ~/pigsty
 ```
 
-You can also install via `git`, `pig`, or [**download source**](/prepare/software#pigsty) & [offline package](/install/offline#what-is-offline-package) tarball directly from [GitHub](https://github.com/pgsty/pigsty).
+您也可以通过 `git`、`pig` 或直接从 [GitHub](https://github.com/pgsty/pigsty) [**下载源码**](/zh/prepare/software#pigsty) 和 [离线软件包](/zh/install/offline#what-is-offline-package) 压缩包的方式安装。
 
 <Files>
     <Folder name="pigsty" defaultOpen>
@@ -107,26 +106,26 @@ You can also install via `git`, `pig`, or [**download source**](/prepare/softwar
 
 ------
 
-## Configure
+## 配置 [#configure]
 
-The [`configure`](https://github.com/pgsty/pigsty/blob/main/configure) script will generate the `pigsty.yml` config file [inventory](/config/inventory) with good defaults according to your environment and input.
-It's **OPTIONAL**, you can edit the `pigsty.yml` directly as the [**tutorial**](/config/tutorial) shows.
+[`configure`](https://github.com/pgsty/pigsty/blob/main/configure) 脚本将根据您的环境和输入生成具有良好默认值的 `pigsty.yml` 配置文件 [配置清单](/zh/config/inventory)。
+这是 **可选的**，您可以如 [**教程**](/zh/config/tutorial) 所示直接编辑 `pigsty.yml`。
 
-There are many [**Config Templates**](/config/template) for your reference, here are some quick examples:
+有许多 [**配置模板**](/zh/config/template) 供您参考，以下是一些快速示例：
 
 ```bash
-./configure                  # use the default template, PG 17 with minimal extensions
-./configure -v 16            # default meta template with PG 16 instead of 17
-./configure -c rich          # PG 17 with all available extensions, and more demo databases
-./configure -c slim          # minimal installation template, use with ./slim.yml playbook
-./configure -c app/supa      # use the app/supa self-hosting supabase config template
-./configure -c ivory         # use the ivorysql kernel instead of vanilla PG
-./configure -i 10.11.12.13   # give primary IP address explicitly
-./configure -r china         # use use china mirror instead of default repo
-./configure -c full -s       # use the 4-node sandbox config template, without IP replace & probe
+./configure                  # 使用默认模板，PG 17 带最少扩展
+./configure -v 16            # 使用 PG 16 而非 17 的默认元数据模板
+./configure -c rich          # PG 17 带所有可用扩展和更多演示数据库
+./configure -c slim          # 最小安装模板，与 ./slim.yml 剧本一起使用
+./configure -c app/supa      # 使用 app/supa 自托管 supabase 配置模板
+./configure -c ivory         # 使用 ivorysql 内核而非原生 PG
+./configure -i 10.11.12.13   # 显式指定主 IP 地址
+./configure -r china         # 使用中国镜像而非默认仓库
+./configure -c full -s       # 使用 4 节点沙箱配置模板，不进行 IP 替换和探测
 ```
 
-Let's just do `configure` without any args, it may ask you for the primary IP if more than one is found.
+让我们不带任何参数执行 `configure`，如果发现多个 IP 地址，它可能会要求您输入主 IP 地址。
 
 ```bash
 [vagrant@node-2 pigsty]$ ./configure
@@ -152,18 +151,18 @@ configure pigsty v3.6.0 begin
 proceed with ./install.yml
 ```
 
-This script will replace the IP placeholder `10.10.10.10` to the primary IPv4 address of current node.
-Beware of this when you are configure pigsty [manually](/config/tutorial). Check the generated `pigsty.yml` to proceed.
+该脚本将把 IP 占位符 `10.10.10.10` 替换为当前节点的主 IPv4 地址。
+在 [手动](/zh/config/tutorial) 配置 pigsty 时请注意这一点。检查生成的 `pigsty.yml` 以继续。
 
-### HEY! Don't forget these passwords! [!toc]
+### 嘿！别忘了这些密码！ [#hey-dont-forget-these-passwords]
 
-<Callout title="Change default passwords!" type="warn">
+<Callout title="修改默认密码！" type="warn">
 
-PLEASE <a href="/config/security#passwords"><span className="text-red-500 font-bold">CHANGE DEFAULT PASSWORDS</span></a> in any serious deployment before [install](#install)
+在 [安装](#install) 前，任何正式部署中请务必 <a href="/zh/config/security#passwords"><span className="text-red-500 font-bold">修改默认密码</span></a>
 
 </Callout>
 
-Then change default [passwords](/config/security#passwords) and make necessary adjustments, the final `pigsty.yml` may look like:
+然后修改默认 [密码](/zh/config/security#passwords) 并进行必要的调整，最终的 `pigsty.yml` 可能如下所示：
 
 ```yaml title="~/pigsty/pigsty.yml"
 ---
@@ -360,16 +359,16 @@ all:
     #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
 ```
 
-<Callout title="What if I want more Extensions?" type="info">
+<Callout title="如果想要更多扩展怎么办？" type="info">
 
-    Just uncomment the following two parameters in `pigsty.yml` to make it looks like:
+    只需在 `pigsty.yml` 中取消注释以下两个参数，使其看起来像这样：
 
 ```yaml
     repo_extra_packages: [ pg17-main ,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
     pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
 ```
 
-    There are much more magic you can do with the config file, check the [**Configuration**](/config) for details.
+    您可以用配置文件做更多神奇的事情，查看 [**配置**](/zh/config) 了解详情。
 
 </Callout>
 
@@ -377,17 +376,17 @@ all:
 
 ------
 
-## Install
+## 安装 [#install]
 
-Everything in Pigsty is described in [config inventory](/config/inventory): the `pigsty.yml` blueprint generated [above](#configure).
+Pigsty 中的一切都在 [配置清单](/zh/config/inventory) 中描述：即 [上面](#configure) 生成的 `pigsty.yml` 蓝图。
 
-Run the [`install.yml`](/admin/playbook#deployment) [playbook](/admin/playbook) to materialize it into reality.
+运行 [`install.yml`](/zh/admin/playbook#deployment) [副本](/zh/admin/playbook) 将其实现为现实。
 
 ```bash title="~/pigsty"
 ./install.yml
 ```
 
-If you see something like `pgsql init done` or `grafana datasource meta`, `PLAY RECAP` or simlar stuff in the output, it means the installation is complete!
+如果您在输出中看到类似 `pgsql init done` 或 `grafana datasource meta`、`PLAY RECAP` 等内容，说明安装已经完成！
 
 ```bash
 ......
@@ -407,20 +406,20 @@ localhost                  : ok=6    changed=3    unreachable=0    failed=0    s
 ```
 
 
-Sometimes upstream repo (like linux / pgdg repo) may break, this do happen from time to time, and led to installation failure.
-You can use pre-made [offline packages](/install/offline#what-is-offline-package) to address this issue.
+有时上游仓库（如 linux / pgdg 仓库）可能会损坏，这确实会时不时发生，并导致安装失败。
+您可以使用预制的 [离线软件包](/zh/install/offline#what-is-offline-package) 来解决这个问题。
 
 
-<Callout title="NEVER RUN THIS AGAIN ON EXISTING DEPLOYMENT!" type="error">
+<Callout title="在现有部署上绝不要再次运行这个！" type="error">
 
-Re-run this playbook entirely will nuke (wipe-out) the current deployment and create a new one!
+完整重新运行这个副本将会摧毁（清除）当前部署并创建一个新的！
 
-If you have enough knowledge with [ansible](/admin/ansible) and know what you are doing, still do it with caution!
+如果您对 [ansible](/zh/admin/ansible) 有足够的了解并知道自己在做什么，仍请谨慎操作！
 
 </Callout>
 
 
-Once installed, you can explore the [**Interface**](/install/interface) and deploy [**More Nodes**](#more) and more HA database clusters.
+安装完成后，您可以探索 [**界面**](/zh/install/interface) 并部署 [**更多节点**](#more) 和更多高可用数据库集群。
 
 
 
@@ -429,20 +428,20 @@ Once installed, you can explore the [**Interface**](/install/interface) and depl
 
 ------
 
-## More
+## 更多 [#more]
 
-You can deploy & monitor [More Clusters](/install/multinode) with pigsty: add definition to the [Inventory](/config/inventory) and run:
+您可以使用 pigsty 部署和监控 [更多集群](/zh/install/multinode)：向 [配置清单](/zh/config/inventory) 添加定义并运行：
 
 ```bash
-bin/node-add pg-test    # init 3 nodes of cluster pg-test
-bin/pgsql-add pg-test   # init HA PGSQL Cluster pg-test
-bin/redis-add redis-ms  # init redis cluster redis-ms
+bin/node-add pg-test    # 初始化集群 pg-test 的 3 个节点
+bin/pgsql-add pg-test   # 初始化高可用 PGSQL 集群 pg-test
+bin/redis-add redis-ms  # 初始化 redis 集群 redis-ms
 ```
 
-Remember that most modules require the [`NODE`](/node/) module installed first. Check available [**modules**](/intro/module) for detail
+记住，大多数模块都需要先安装 [`NODE`](/zh/node/) 模块。查看可用的 [**模块**](/zh/intro/module) 了解详情
 
-[**`PGSQL`**](/pgsql/), [**`INFRA`**](/infra/), [**`NODE`**](/node/), [**`ETCD`**](/etcd/),
-[**`MINIO`**](/minio/), [**`REDIS`**](/redis/), [**`FERRET`**](/ferret/), [**`DOCKER`**](/node/), ……
+[**`PGSQL`**](/zh/pgsql/)、[**`INFRA`**](/zh/infra/)、[**`NODE`**](/zh/node/)、[**`ETCD`**](/zh/etcd/)、
+[**`MINIO`**](/zh/minio/)、[**`REDIS`**](/zh/redis/)、[**`FERRET`**](/zh/ferret/)、[**`DOCKER`**](/zh/node/)……
 
 
 

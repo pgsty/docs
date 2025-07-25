@@ -1,0 +1,256 @@
+---
+title: Playbook
+description: 控制原语
+icon: ScrollText
+---
+
+如何使用 Ansible playbook 管理 PostgreSQL 集群
+
+Pigsty 有一系列 PostgreSQL playbook：
+
+- [`pgsql.yml`](/zh/pgsql/playbook/#pgsqlyml)：初始化 HA PostgreSQL 集群或添加新副本。
+- [`pgsql-rm.yml`](/zh/pgsql/playbook/#pgsql-rmyml)：删除 PostgreSQL 集群，或删除副本
+- [`pgsql-user.yml`](/zh/pgsql/playbook/#pgsql-useryml)：向现有 PostgreSQL 集群添加新业务用户
+- [`pgsql-db.yml`](/zh/pgsql/playbook/#pgsql-dbyml)：向现有 PostgreSQL 集群添加新业务数据库
+- [`pgsql-monitor.yml`](/zh/pgsql/playbook/#pgsql-monitoryml)：使用本地导出器监控远程 PostgreSQL 实例
+- [`pgsql-migration.yml`](/zh/pgsql/playbook/#pgsql-migrationyml)：为现有 PostgreSQL 生成迁移手册和脚本
+
+------
+
+### 安全防护 [#safeguard]
+
+如果您担心意外删除 PostgreSQL 集群，可以启用安全防护功能。
+
+将 [`pg_safeguard`](/zh/pgsql/param#pg_safeguard) 参数设置为 `true` 将阻止 [`pgsql-rm.yml`](#pgsql-rmyml) 运行。
+
+<Callout title="在 Pigsty v3.5 之前，pgsql.yml 可能会误删数据库，请谨慎使用！" type="warning">
+
+    Pigsty v3.5 从 [`pgsql.yml`](#pgsqlyml) 中删除了 pg 清除逻辑，
+    所以现在删除 PostgreSQL 的唯一方法是运行 [`pgsql-rm.yml`](#pgsql-rmyml)。
+
+</Callout>
+
+
+
+------
+
+## `pgsql.yml` [#pgsqlyml]
+
+[`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml) 用于初始化 HA PostgreSQL 集群或添加新副本。
+
+[![asciicast](/img/asciinema/pgsql.svg)](https://asciinema.org/a/566417)
+
+**此 playbook 包含以下子任务**：
+
+```yaml
+pg_install              : # 安装 postgres 包和扩展
+  - pg_dbsu             : # 为 postgres dbsu 设置操作系统用户 sudo
+    - pg_dbsu_create    : # 交换 dbsu ssh 密钥
+    - pg_dbsu_sudo      : # 交换 dbsu ssh 密钥
+    - pg_ssh            : # 交换 dbsu ssh 密钥
+  - pg_pkg              : # 安装 postgres 包
+    - pg_ext            : # 安装 postgres 扩展包
+  - pg_link             : # 将 pgsql 版本 bin 链接到 /usr/pgsql
+  - pg_path             : # 将 pgsql bin 添加到系统路径
+  - pg_dir              : # 创建 postgres 目录并设置 fhs
+  - pg_bin              : # 同步 /pg/bin 脚本
+  - pg_alias            : # 写入 pgsql/psql 别名
+  - pg_dummy            : # 创建虚拟占位符文件
+```
+```yaml
+pg_bootstrap            : # 引导 postgres 集群
+  - pg_config           : # 生成 postgres 配置
+    - pg_conf           : # 生成 patroni 配置
+    - pg_key            : # 生成 pgsodium 密钥
+    - pg_pitr_conf      : # 生成可选的 pitr 配置
+  - pg_cert             : # 为 postgres 颁发证书
+    - pg_cert_private   : # 检查 pg 私钥是否存在
+    - pg_cert_issue     : # 签署 pg 服务器证书
+    - pg_cert_copy      : # 将密钥和证书复制到 pg 节点
+  - pg_launch           : # 启动 patroni 主实例和副本（patroni）
+    - pg_watchdog       : # 为 postgres 授予看门狗权限
+    - pg_primary        : # 启动 patroni/postgres 主实例
+    - pg_init           : # 使用角色/模板初始化 pg 集群
+    - pg_pass           : # 将 .pgpass 文件写入 pg 主目录
+    - pg_replica        : # 启动 patroni/postgres 副本
+    - pg_hba            : # 生成 pg HBA 规则
+    - patroni_reload    : # 重新加载 patroni 配置
+    - pg_patroni        : # 如有必要暂停或删除 patroni
+```
+```yaml
+pg_provision            : # 置备 postgres 业务用户和数据库
+ - pg_user              : # 置备 postgres 业务用户
+    - pg_user_config    : # 渲染创建用户 sql
+    - pg_user_create    : # 在 postgres 上创建用户
+ - pg_db                : # 置备 postgres 业务数据库
+    - pg_db_config      : # 渲染创建数据库 sql
+    - pg_db_create      : # 在 postgres 上创建数据库
+```
+```yaml
+pg_backup               : # 初始化 postgres PITR 备份
+  - pgbackrest          : # 为备份设置 pgbackrest
+    - pgbackrest_config : # 生成 pgbackrest 配置
+    - pgbackrest_init   : # 初始化 pgbackrest 仓库
+    - pgbackrest_backup : # 引导后进行初始备份
+```
+```yaml
+pg_access               : # 初始化 postgres 服务访问、池、dns、vip、svc
+ - pgbouncer            : # 部署 pgbouncer sidecar 与 postgres
+   - pgbouncer_dir      : # 创建 pgbouncer 目录
+   - pgbouncer_config   : # 生成 pgbouncer 配置
+     -  pgbouncer_hba   : # 生成 pgbouncer hba 配置
+     -  pgbouncer_user  : # 生成 pgbouncer 用户列表
+   -  pgbouncer_launch  : # 启动 pgbouncer 池化服务
+   -  pgbouncer_reload  : # 重新加载 pgbouncer 配置
+ - pg_vip               : # 使用 vip-manager 将 vip 绑定到 pgsql 主实例
+   - pg_vip_config      : # 生成 vip-manager 配置
+   - pg_vip_launch      : # 启动 vip-manager 以绑定 vip
+ - pg_dns               : # 将 dns 名称注册到基础设施 dnsmasq
+   - pg_dns_ins         : # 注册 pg 实例名称
+   - pg_dns_cls         : # 注册 pg 集群名称
+ - pg_service           : # 使用 haproxy 暴露 pgsql 服务
+   - pg_service_config  : # 生成 pg 服务的本地 haproxy 配置
+   - pg_service_reload  : # 使用 haproxy 暴露 postgres 服务
+```
+```yaml
+pg_monitor              : # 设置 pgsql 监控并注册到基础设施
+  - pg_exporter         : # 配置和启动 pg_exporter
+  - pgbouncer_exporter  : # 配置和启动 pgbouncer_exporter
+  - pgbackrest_exporter : # 配置和启动 pgbackrest_exporter
+  - register_prometheus : # 将 pg 注册为 prometheus 监控目标
+  - register_grafana    : # 将 pg 数据库注册为 grafana 数据源
+```
+
+**使用此 playbook 的管理任务**
+
+- [`创建集群`](/zh/pgsql/admin#create-cluster)
+- [`追加副本`](/zh/pgsql/admin#append-replica)
+- [`重新加载服务`](/zh/pgsql/admin#reload-service)
+- [`重新加载 HBA 规则`](/zh/pgsql/admin#reload-hbarule)
+
+<Callout title="先初始化主实例再初始化副本" type="warning">
+
+    - 副本初始化后，您可能需要运行[`重新加载 HBA 规则`](/zh/pgsql/admin#reload-hbarule)和[`追加副本`](/zh/pgsql/admin#append-replica)。
+    - 包装脚本 `pgsql-add` 会执行此操作，详情请查看 SOP：[添加实例](/zh/pgsql/admin#append-replica)。
+    - 如果您在整个集群上运行此操作，则无需担心此问题。
+
+</Callout>
+
+
+<Callout title="在备用集群之前初始化上游集群" type="warning">
+
+    - 如果您正在初始化[备用集群](/zh/pgsql/config#standby-cluster)，您应该确保上游集群已经初始化。
+
+</Callout>
+
+
+------
+
+## `pgsql-rm.yml` [#pgsql-rmyml]
+
+playbook [`pgsql-rm.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-rm.yml) 可以删除 PostgreSQL 集群，或从集群中删除特定副本。
+
+[![asciicast](/img/asciinema/pgsql-rm.svg)](https://asciinema.org/a/566418)
+
+**此 playbook 包含以下子任务**：
+
+```yaml
+pg_monitor               : # 删除 prometheus、grafana、nginx 中的注册
+  - prometheus           : # 从 prometheus 中删除监控目标
+  - grafana              : # 从 grafana 中删除数据源
+  - pg_exporter          : # 删除 pg_exporter（postgres 监控）
+  - pgbouncer_exporter   : # 删除 pgbouncer_exporter（pgbouncer 监控）
+  - pgbackrest_exporter  : # 删除 pgbackrest_exporter（pgbackrest 监控）
+```
+```yaml
+pg_access                : # 删除 pg 服务访问
+  - dns                  : # 删除 pg dns 记录
+  - vip                  : # 删除 vip-manager
+  - pg_service           : # 从 haproxy 删除 pg 服务
+  - pgbouncer            : # 删除 pgbouncer 连接中间件
+```
+```yaml
+postgres                 : # 删除 postgres 实例
+  - pg_replica           : # 删除所有副本
+  - pg_primary           : # 删除主实例
+  - pg_meta              : # 从 dcs 删除元数据
+```
+```yaml
+pg_backup                : # 删除备份仓库（使用 `pg_rm_bkup=false` 禁用）
+pg_data                  : # 删除 postgres 数据（使用 `pg_rm_data=false` 禁用）
+pg_pkg                   : # 卸载 pg 包（使用 `pg_rm_pkg=false` 禁用）
+ - pg_ext                : # 单独卸载 postgres 扩展
+```
+
+一些参数可以影响此 playbook 的行为：
+
+```bash
+# 删除 pgsql 集群 `pg-test`
+./pgsql-rm.yml                          # 删除所有 postgres 集群（非常危险）
+./pgsql-rm.yml -l pg-test               # 删除集群 `pg-test`
+./pgsql-rm.yml -e pg_safeguard=false    # 强制禁用安全防护，强制运行此 playbook
+./pgsql-rm.yml -e keep_data=true        # 保留数据目录，不要删除它（保留数据）
+./pgsql-rm.yml -e keep_backup=true      # 默认不清除 postgres 数据（保留备份仓库）
+./pgsql-rm.yml -e keep_package=true     # 默认不卸载 postgres 包（保留包）
+```
+
+**使用此 playbook 的管理任务**
+
+- [`删除副本`](/zh/pgsql/admin#remove-replica)
+- [`删除集群`](/zh/pgsql/admin#remove-cluster)
+
+**关于此 playbook 的一些注意事项**
+
+<Callout title="当仍有副本时，不要直接在单个集群主实例上运行此 playbook" type="warning">
+
+    - 否则，其余副本将触发自动故障转移。
+    - 如果您在删除主实例之前删除所有副本，就不会有问题。
+    - 如果您在整个集群上运行此操作，则无需担心此问题。
+
+</Callout>
+
+<Callout title="从集群中删除副本后重新加载服务" type="info">
+
+    - 它是一个死服务器，所以不会影响集群服务。
+    - 但您应该及时[重新加载服务](/zh/pgsql/admin#reload-service)以确保环境与配置清单之间的一致性。
+
+</Callout>
+
+
+
+
+
+
+- 删除副本时，它仍然在 haproxy 负载均衡器的配置文件中。
+
+------
+
+## `pgsql-user.yml` [#pgsql-useryml]
+
+playbook [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) 可以向现有 PostgreSQL 集群添加新业务用户。
+
+查看管理 SOP：[`创建用户`](/zh/pgsql/admin#create-user)
+
+------
+
+## `pgsql-db.yml` [#pgsql-dbyml]
+
+playbook [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) 可以向现有 PostgreSQL 集群添加新业务数据库。
+
+查看管理 SOP：[`创建数据库`](/zh/pgsql/admin#create-database)
+
+------
+
+## `pgsql-monitor.yml` [#pgsql-monitoryml]
+
+playbook [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml) 可以使用本地导出器监控远程 postgres 实例。
+
+查看管理 SOP：[`监控 Postgres`](/zh/pgsql/monitor/#monitor-rds)
+
+------
+
+## `pgsql-migration.yml` [#pgsql-migrationyml]
+
+playbook [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) 可以为现有 PostgreSQL 集群生成迁移手册和脚本。
+
+查看管理 SOP：[迁移](/zh/pgsql/migration/)

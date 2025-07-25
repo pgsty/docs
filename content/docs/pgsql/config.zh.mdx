@@ -1,0 +1,414 @@
+---
+title: 配置集群
+description: 描述和配置 PostgreSQL 集群
+icon: CodeXml
+---
+
+您可以定义不同类型的实例和集群。
+
+- [身份参数](#identity-parameters)：用于描述 PostgreSQL 集群的参数
+- [命名规范](#naming-convention)：用于描述 PostgreSQL 集群的参数
+- [主库](#primary)：定义单实例集群
+- [从库](#replica)：定义具有一个主库和一个从库的基本高可用集群
+- [离线库](#offline)：为 OLAP/ETL/交互查询定义专用实例
+- [同步从库](#sync-standby)：启用同步提交以确保无数据丢失
+- [法定人数提交](#quorum-commit)：使用法定人数同步提交获得更高的一致性级别
+- [备用集群](#standby-cluster)：克隆现有集群并跟随它
+- [延迟集群](#delayed-cluster)：克隆现有集群用于紧急数据恢复
+- [Citus 集群](#citus-cluster)：定义 Citus 分布式数据库集群
+
+--------
+
+## 身份参数 [#identity-parameters]
+
+描述 PostgreSQL 集群需要 **4** 个**必需**参数：
+
+|                  名称                   |   类型   |    级别     | 描述                   |
+|:---------------------------------------:|:--------:|:------------:|-------------------------------|
+|          `inventory_hostname`           |   `ip`   | **实例** | **PG 节点 IPv4 地址**      |
+| [`pg_cluster`](/zh/pgsql/param#pg_cluster) | `string` | **集群**  | **PG 数据库集群名称**  |
+|     [`pg_seq`](/zh/pgsql/param#pg_seq)     | `number` | **实例** | **PG 数据库实例 ID**   |
+|    [`pg_role`](/zh/pgsql/param#pg_role)    |  `enum`  | **实例** | **PG 数据库实例角色** |
+
+- [`pg_cluster`](/zh/pgsql/param#pg_cluster)：集群名称，在集群级别配置
+- [`pg_role`](/zh/pgsql/param#pg_role)：在实例级别配置，标识实例的角色
+- `primary` 角色将此实例标记为集群领导者（初始时）
+- `replica` 是默认角色，将此实例标记为普通只读从库
+- `offline` 将此实例标记为服务于 `offline` 服务的特殊只读从库
+- [`pg_seq`](/zh/pgsql/param#pg_seq)：用于在集群内标识实例，一个非负整数
+- 从 0 或 1 开始，按顺序递增分配，一旦分配就不要更改
+- `{{ pg_cluster }}-{{ pg_seq }}` 用于唯一标识实例，即 `pg_instance`
+- `{{ pg_cluster }}-{{ pg_role }}` 用于标识集群内的服务，即 `pg_service`
+- [`pg_shard`](/zh/pgsql/param#pg_shard) 和 [`pg_group`](/zh/pgsql/param#pg_group) 用于水平分片集群，仅适用于 citus 和 greenplum
+
+
+这些身份将在整个系统中使用，例如，指标可能如下所示：
+
+```yaml
+pg_up{cls="pg-test", ins="pg-test-1", ip="10.10.10.11", job="pgsql"}
+pg_up{cls="pg-test", ins="pg-test-2", ip="10.10.10.12", job="pgsql"}
+pg_up{cls="pg-test", ins="pg-test-3", ip="10.10.10.13", job="pgsql"}
+```
+
+
+### 分片集群 [#sharding-clusters]
+
+您可以使用**可选的** `pg_shard` 和 `pg_group` 参数来标识水平分片集群：
+
+|                     名称                     |   类型   | 级别 | 描述                            |
+|:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
+|   [`pg_shard`](/zh/pgsql/param#pg_shard)   | `string` | **C** | **集群的 PG 数据库分片名称**  |
+|   [`pg_group`](/zh/pgsql/param#pg_group)   | `number` | **C** | **集群的 PG 数据库分片索引** |
+
+例如，使用 citus、greenplum 或手动分片进行水平分片：
+
+```yaml
+pg-citus:
+  hosts:
+    10.10.10.10: { pg_group: 0, pg_cluster: pg-citus0 ,pg_seq: 1, pg_role: primary }
+    10.10.10.11: { pg_group: 0, pg_cluster: pg-citus0 ,pg_seq: 2, pg_role: replica }
+    10.10.10.12: { pg_group: 1, pg_cluster: pg-citus1 ,pg_seq: 1, pg_role: primary }
+    10.10.10.13: { pg_group: 2, pg_cluster: pg-citus2 ,pg_seq: 1, pg_role: primary }
+  vars:
+    pg_mode: citus          # PostgreSQL 集群模式：citus
+    pg_shard: pg-citus      # citus 分片名称：pg-citus
+```
+
+
+
+------
+
+## 命名规范 [#naming-convention]
+
+- 集群名称应为有效的域名，匹配 `[a-zA-Z0-9-]+`，且 ≤ 40 字符
+- 服务名称以集群名称为前缀，以单个单词为后缀，用 `-` 连接
+- 实例名称以集群名称为前缀，以整数为后缀，用 `-` 连接
+- 节点由其主要 IPv4 地址标识，主机名用作次要标识符
+
+|    实体    | 命名示例                                                                               |
+|:------------:|:----------------------------------------------------------------------------------------------|
+| **集群**  | `pg-meta`、`pg-test`...                                                                     |
+| **服务**  | `pg-meta-primary`、`pg-test-replica`、`pg-test-offline`、`pg-test-standby`、`pg-meta-default` |
+| **实例** | `pg-meta-1`、`pg-test-1`、`pg-test-2`、`pg-test-3`...                                        |
+|   **节点**   | `10.10.10.10`、`10.10.10.11`、`10.10.10.12`、`10.10.10.13`...                                 |
+
+
+
+------
+
+## 版本策略 [#version-policy]
+
+Pigsty 遵循 [**PostgreSQL 版本策略**](https://www.postgresql.org/support/versioning/) 并"官方"支持以下主要版本。
+
+| 主版本 | 小版本   | 注释                                     | 扩展 DEB | 扩展 RPM |
+|-------|---------|---------------------------------------------|:-------:|:-------:|
+| `17`  | `17.5`  | 最新稳定版本（**推荐**） |   394   |   396   |
+| `16`  | `16.9`  | 次要稳定版本                |   400   |   407   |
+| `15`  | `15.13` | 2022-10-13 首次发布                 |   402   |   409   |
+| `14`  | `14.18` | 2021-09-30 首次发布                 |   389   |   392   |
+| `13`  | `13.21` | 2020-09-24 首次发布，即将结束支持     |   362   |   367   |
+
+
+Pigsty 支持 PG 13 - 17（和 18beta1）。较低的主版本（12-）"可能"有效，但不保证。\
+对于遗留 PG 版本支持，请考虑我们的 [专业服务](/zh/about/service)。
+
+要使用不同的主版本，请配置 [`pg_version`](/zh/pgsql/param#pg_version) 变量。
+可以使用 `-v <ver>` 选项全局 [`配置`](/zh/config/configure)。
+只要它们在本地/上游仓库中可用，就不需要进一步更改。
+
+```yaml
+pg-v13:
+  hosts: { 10.10.10.13: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v13
+    pg_version: 13
+
+pg-v14:
+  hosts: { 10.10.10.14: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v14
+    pg_version: 14
+
+pg-v15:
+  hosts: { 10.10.10.15: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v15
+    pg_version: 15
+
+pg-v16:
+  hosts: { 10.10.10.16: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v16
+    pg_version: 16
+
+pg-v17:
+  hosts: { 10.10.10.17: { pg_seq: 1 ,pg_role: primary } }
+  vars:
+    pg_cluster: pg-v17
+    pg_version: 17
+```
+
+
+
+
+------
+
+## 主库 [#primary]
+
+让我们从最简单的情况开始，单例元数据库：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-test
+```
+
+使用以下命令在 `10.10.10.11` 节点上创建主数据库实例。
+
+```bash
+bin/pgsql-add pg-test
+```
+
+------
+
+## 从库 [#replica]
+
+要添加物理从库，您可以将新实例分配给 `pg-test`，并将 [`pg_role`](/zh/pgsql/param#pg_role) 设置为 `replica`：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }  # <--- 新添加的
+  vars:
+    pg_cluster: pg-test
+```
+
+您可以 [创建](/zh/pgsql/admin#create-cluster) 整个集群或 [添加](/zh/pgsql/admin#append-replica) 从库到现有集群：
+
+```bash
+bin/pgsql-add pg-test               # 一次性初始化整个集群
+bin/pgsql-add pg-test 10.10.10.12   # 向现有集群添加从库
+```
+
+------
+
+## 离线库 [#offline]
+
+离线实例是专用从库，用于服务慢查询、ETL、OLAP 流量和交互查询等。
+
+要添加离线实例，分配一个新实例并将 [`pg_role`](/zh/pgsql/param#pg_role) 设置为 `offline`。
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: offline } # <--- 新添加的
+  vars:
+    pg_cluster: pg-test
+```
+
+离线实例的工作方式类似于普通从库实例，但它在 `pg-test-replica` 服务中用作备份服务器。也就是说，只有当所有 `replica` 实例都宕机时，离线和主实例才会提供服务。
+
+您可以使用 [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules) 和 [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules) 对离线实例进行临时访问控制。它将应用于离线实例和任何带有 [`pg_offline_query`](/zh/pgsql/param#pg_offline_query) 标志的实例。
+
+------
+
+## 同步从库 [#sync-standby]
+
+Pigsty 默认使用异步流复制，可能有小的复制延迟（10KB / 10ms）。当主库失效时可能出现小的数据丢失窗口（可通过 [`pg_rpo`](/zh/pgsql/param#pg_rpo) 控制），但对于大多数场景这是可以接受的。
+
+但在一些关键场景（例如金融交易）中，数据丢失是完全不可接受的，或者需要读写一致性。在这种情况下，您可以启用同步提交来确保这一点。
+
+要启用同步从库模式，您可以在 [`pg_conf`](/zh/pgsql/param#pg_conf) 中简单使用 `crit.yml` 模板：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica }
+  vars:
+    pg_cluster: pg-test
+    pg_conf: crit.yml   # <--- 使用 crit 模板
+```
+
+要在现有集群上启用同步从库，[配置](/zh/pgsql/admin#config-cluster) 集群并启用 `synchronous_mode`：
+
+```bash
+$ pg edit-config pg-test    # 在管理节点上使用管理员用户运行
++++
+-synchronous_mode: false    # <--- 旧值
++synchronous_mode: true     # <--- 新值
+ synchronous_mode_strict: false
+
+Apply these changes? [y/N]: y
+```
+
+如果 `synchronous_mode: true`，[`synchronous_standby_names`](https://www.postgresql.org/docs/current/runtime-config-replication.html#synchronous_standby_names) 参数将由 patroni 管理。它将从所有可用从库中选择一个同步从库，并将其名称写入主库的配置文件。
+
+------
+
+## 法定人数提交 [#quorum-commit]
+
+当启用 [同步从库](#sync-standby) 时，PostgreSQL 将选择一个从库作为备用实例，所有其他从库作为候选。主库将等待备用实例刷新到磁盘后再确认提交，备用实例将始终拥有最新数据而没有任何延迟。
+
+但是，您可以通过法定人数提交实现更高/更低的一致性级别（与可用性权衡）。
+
+例如，要让**所有** 2 个从库确认提交：
+
+```yaml
+synchronous_mode: true          # 确保启用同步模式
+synchronous_node_count: 2       # 至少需要 2 个节点确认提交
+```
+
+如果您有更多从库并希望有更多同步从库，请相应增加 `synchronous_node_count`。注意在您 [添加](/zh/pgsql/admin#append-replica) 或 [移除](/zh/pgsql/admin#remove-replica) 从库时相应调整 `synchronous_node_count`。
+
+postgres `synchronous_standby_names` 参数将由 patroni 管理：
+
+```yaml
+synchronous_standby_names = '2 ("pg-test-3","pg-test-2")'
+```
+
+
+经典的法定人数提交是使用**大多数**从库来确认提交。
+
+```yaml
+synchronous_mode: quorum        # 使用法定人数提交
+postgresql:
+  parameters:                   # 更改 PostgreSQL 参数 `synchronous_standby_names`，使用 `ANY n ()` 记号
+    synchronous_standby_names: 'ANY 1 (*)'  # 您可以指定备用名称列表，或使用 `*` 匹配所有
+```
+
+
+------
+
+## 备用集群 [#standby-cluster]
+
+您可以克隆现有集群并创建 [备用集群](#standby-cluster)，用于迁移、水平拆分、多可用区部署或灾难恢复。
+
+备用集群的定义与任何其他普通集群相同，除了在主实例上定义了 [`pg_upstream`](/zh/pgsql/param#pg_upstream)。
+
+例如，您有一个 `pg-test` 集群，要创建备用集群 `pg-test2`，配置清单可能如下所示：
+
+```yaml
+# pg-test 是原始集群
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+  vars: { pg_cluster: pg-test }
+
+# pg-test2 是 pg-test 的备用集群
+pg-test2:
+  hosts:
+    10.10.10.12: { pg_seq: 1, pg_role: primary , pg_upstream: 10.10.10.11 } # <--- 在这里定义 pg_upstream
+    10.10.10.13: { pg_seq: 2, pg_role: replica }
+  vars: { pg_cluster: pg-test2 }
+```
+
+而 `pg-test2-1`，`pg-test2` 的主库将是 `pg-test` 的从库，并在 `pg-test2` 中充当**备用领导者**。
+
+只需确保在备份集群的主库上配置了 [`pg_upstream`](/zh/pgsql/param#pg_upstream) 参数，以自动从原始上游拉取备份。
+
+```bash
+bin/pgsql-add pg-test     # 创建原始集群
+bin/pgsql-add pg-test2    # 创建备份集群
+```
+
+
+------
+
+## 延迟集群 [#delayed-cluster]
+
+延迟集群是一种特殊类型的备用集群，用于尽快恢复"意外删除"的数据。
+
+例如，如果您希望有一个集群 `pg-testdelay`，其数据与 1 天前的 `pg-test` 集群相同：
+
+```yaml
+# pg-test 是原始集群
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+  vars: { pg_cluster: pg-test }
+
+# pg-testdelay 是 pg-test 的延迟集群
+pg-testdelay:
+  hosts:
+    10.10.10.12: { pg_seq: 1, pg_role: primary , pg_upstream: 10.10.10.11, pg_delay: 1d }
+    10.10.10.13: { pg_seq: 2, pg_role: replica }
+  vars: { pg_cluster: pg-test2 }
+```
+
+您也可以在现有 [备用集群](#standby-cluster) 上 [配置](/zh/pgsql/admin#config-cluster) 复制延迟。
+
+```bash
+$ pg edit-config pg-testdelay
+ standby_cluster:
+   create_replica_methods:
+   - basebackup
+   host: 10.10.10.11
+   port: 5432
++  recovery_min_apply_delay: 1h    # <--- 在这里添加延迟
+
+Apply these changes? [y/N]: y
+```
+
+当某些元组和表被意外删除时，您可以将此延迟集群推进到适当的时间点并从中选择数据。
+
+它需要更多资源，但比 [PITR](/zh/feat/pitr) 更快且影响更小。
+
+------
+
+## Citus 集群 [#citus-cluster]
+
+Pigsty 有原生 citus 支持。查看 [`files/pigsty/citus.yml`](https://github.com/pgsty/pigsty/blob/main/conf/citus.yml) 和 [`prod.yml`](https://github.com/pgsty/pigsty/blob/main/conf/prod.yml#L298) 示例。
+
+要定义 citus 集群，您必须指定以下参数：
+
+- [`pg_mode`](/zh/pgsql/param#pg_mode) 必须设置为 `citus` 而不是默认的 `pgsql`
+- [`pg_shard`](/zh/pgsql/param#pg_shard) 和 [`pg_group`](/zh/pgsql/param#pg_group) 必须在每个分片集群上定义
+- [`patroni_primary_db`](/zh/pgsql/param#pg_primary_db) 必须定义以指定要管理的数据库
+- 如果您想使用 [`pg_dbsu`](/zh/pgsql/param#pg_dbsu) `postgres` 而不是默认的 [`pg_admin_username`](/zh/pgsql/param#pg_admin_username) 执行管理命令，[`pg_dbsu_password`](/zh/pgsql/param#pg_dbsu_password) 必须设置为非空字符串明文密码
+
+此外，需要允许从本地和其他数据节点进行 ssl 访问的额外 hba 规则。可能如下所示：
+
+```yaml
+all:
+  children:
+    pg-citus0: # citus 数据节点 0
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars: { pg_cluster: pg-citus0 , pg_group: 0 }
+    pg-citus1: # citus 数据节点 1
+      hosts: { 10.10.10.11: { pg_seq: 1, pg_role: primary } }
+      vars: { pg_cluster: pg-citus1 , pg_group: 1 }
+    pg-citus2: # citus 数据节点 2
+      hosts: { 10.10.10.12: { pg_seq: 1, pg_role: primary } }
+      vars: { pg_cluster: pg-citus2 , pg_group: 2 }
+    pg-citus3: # citus 数据节点 3，带有额外从库
+      hosts:
+        10.10.10.13: { pg_seq: 1, pg_role: primary }
+        10.10.10.14: { pg_seq: 2, pg_role: replica }
+      vars: { pg_cluster: pg-citus3 , pg_group: 3 }
+  vars:                               # 所有 citus 集群的全局参数
+    pg_mode: citus                    # PostgreSQL 集群模式：citus
+    pg_shard: pg-citus                # citus 分片名称：pg-citus
+    patroni_citus_db: meta            # citus 分布式数据库名称
+    pg_dbsu_password: DBUser.Postgres # 所有 citus 集群的数据库超级用户密码访问
+    pg_users: [ { name: dbuser_meta ,password: DBUser.Meta ,pgbouncer: true ,roles: [ dbrole_admin ] } ]
+    pg_databases: [ { name: meta ,extensions: [ { name: citus }, { name: postgis }, { name: timescaledb } ] } ]
+    pg_hba_rules:
+      - { user: 'all' ,db: all  ,addr: 127.0.0.1/32 ,auth: ssl ,title: 'all user ssl access from localhost' }
+      - { user: 'all' ,db: all  ,addr: intra        ,auth: ssl ,title: 'all user ssl access from intranet'  }
+```
+
+您可以在协调器节点上创建分布式表和引用表。自 citus 11.2 以来，任何数据节点都可以用作协调器节点。
+
+```bash
+SELECT create_distributed_table('pgbench_accounts', 'aid'); SELECT truncate_local_data_after_distributing_table($$public.pgbench_accounts$$);
+SELECT create_reference_table('pgbench_branches')         ; SELECT truncate_local_data_after_distributing_table($$public.pgbench_branches$$);
+SELECT create_reference_table('pgbench_history')          ; SELECT truncate_local_data_after_distributing_table($$public.pgbench_history$$);
+SELECT create_reference_table('pgbench_tellers')          ; SELECT truncate_local_data_after_distributing_table($$public.pgbench_tellers$$);
+```

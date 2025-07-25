@@ -1,0 +1,344 @@
+---
+title: 管理运维
+description: 执行数据库管理任务
+icon: Wrench
+---
+
+> 如何使用 Pigsty 维护现有的 PostgreSQL 集群？
+
+以下是常见 PostgreSQL 管理任务的标准操作程序：
+
+- 案例 1：[创建集群](#create-cluster)
+- 案例 2：[创建用户](#create-user)
+- 案例 3：[创建数据库](#create-database)
+- 案例 4：[重载服务](#reload-service)
+- 案例 5：[重载 HBA 规则](#reload-hbarule)
+- 案例 6：[配置集群](#config-cluster)
+- 案例 7：[添加从库](#append-replica)
+- 案例 8：[移除从库](#remove-replica)
+- 案例 9：[移除集群](#remove-cluster)
+- 案例 10：[主从切换](#switchover)
+- 案例 11：[备份集群](#backup-cluster)
+- 案例 12：[恢复集群](#restore-cluster)
+- 案例 13：[添加软件包](#adding-packages)
+- 案例 14：[安装扩展](#install-extension)
+- 案例 15：[小版本升级](#minor-upgrade)
+- 案例 16：[大版本升级](#major-upgrade)
+
+------
+
+## 快捷命令 [#cheatsheet]
+
+PGSQL 剧本和快捷命令：
+
+```bash
+bin/pgsql-add   <cls>                   # 创建 PostgreSQL 集群 <cls>
+bin/pgsql-user  <cls> <username>        # 在集群 <cls> 上创建用户 <username>
+bin/pgsql-db    <cls> <dbname>          # 在集群 <cls> 上创建数据库 <dbname>
+bin/pgsql-svc   <cls> [...ip]           # 重载集群 <cls> 的 PostgreSQL 服务
+bin/pgsql-hba   <cls> [...ip]           # 重载集群 <cls> 的 postgres/pgbouncer HBA 规则
+bin/pgsql-add   <cls> [...ip]           # 为集群 <cls> 添加从库
+bin/pgsql-rm    <cls> [...ip]           # 从集群 <cls> 移除从库
+bin/pgsql-rm    <cls>                   # 移除 PostgreSQL 集群 <cls>
+```
+
+Patroni 管理命令和快捷方式：
+
+```bash
+pg list        <cls>                    # 打印集群信息
+pg edit-config <cls>                    # 编辑集群配置
+pg reload      <cls> [ins]              # 重载集群配置
+pg restart     <cls> [ins]              # 重启 PostgreSQL 集群
+pg reinit      <cls> [ins]              # 重新初始化集群成员
+pg pause       <cls>                    # 进入维护模式（无自动故障转移）
+pg resume      <cls>                    # 退出维护模式
+pg switchover  <cls>                    # 在集群 <cls> 上执行主从切换
+pg failover    <cls>                    # 在集群 <cls> 上执行故障转移
+```
+
+pgBackRest 备份与恢复命令和快捷方式：
+
+```bash
+pb info                                 # 打印 pgbackrest 仓库信息
+pg-backup                               # 进行备份，增量备份，或在必要时进行完整备份
+pg-backup full                          # 进行完整备份
+pg-backup diff                          # 进行差异备份
+pg-backup incr                          # 进行增量备份
+pg-pitr -i                              # 恢复到最新备份完成的时间（不常用）
+pg-pitr --time="2022-12-30 14:44:44+08" # 恢复到特定时间点（在删除数据库、删除表的情况下）
+pg-pitr --name="my-restore-point"       # 恢复到由 pg_create_restore_point 创建的命名恢复点
+pg-pitr --lsn="0/7C82CB8" -X            # 恢复到 LSN 之前
+pg-pitr --xid="1234567" -X -P           # 恢复到特定事务 ID 之前，然后提升
+pg-pitr --backup=latest                 # 恢复到最新备份集
+pg-pitr --backup=20221108-105325        # 恢复到特定备份集，可通过 pgbackrest info 检查
+```
+
+Systemd 组件快速参考：
+
+```bash
+systemctl stop patroni                  # start stop restart reload
+systemctl stop pgbouncer                # start stop restart reload
+systemctl stop pg_exporter              # start stop restart reload
+systemctl stop pgbouncer_exporter       # start stop restart reload
+systemctl stop node_exporter            # start stop restart
+systemctl stop haproxy                  # start stop restart reload
+systemctl stop vip-manager              # start stop restart reload
+systemctl stop postgres                 # 仅当 patroni_mode == 'remove' 时
+```
+
+------
+
+## 创建集群 [#create-cluster]
+
+要创建新的 Postgres 集群，首先在配置清单中定义它，然后使用以下命令初始化：
+
+```bash
+bin/node-add <cls>                # 为集群 <cls> 初始化节点           # ./node.yml  -l <cls>
+bin/pgsql-add <cls>               # 初始化集群 <cls> 的 PostgreSQL 实例  # ./pgsql.yml -l <cls>
+```
+
+> 注意，请先执行 `bin/node-add`，然后执行 `bin/pgsql-add`，PGSQL 只能在受管节点上工作。
+
+
+
+------
+
+## 创建用户 [#create-user]
+
+要在现有 Postgres 集群上创建新的业务用户，将用户定义添加到 `all.children.<cls>.pg_users`，然后按如下方式创建用户：
+
+```bash
+bin/pgsql-user <cls> <username>   # ./pgsql-user.yml -l <cls> -e username=<username>
+```
+
+
+
+------
+
+## 创建数据库 [#create-database]
+
+要在现有 Postgres 集群上创建新的数据库用户，将数据库定义添加到 `all.children.<cls>.pg_databases`，然后按如下方式创建数据库：
+
+```bash
+bin/pgsql-db <cls> <dbname>       # ./pgsql-db.yml -l <cls> -e dbname=<dbname>
+```
+
+注意：如果数据库指定了拥有者，该用户应该已经存在，否则您需要先 [创建用户](#create-user)。
+
+
+
+------
+
+## 重载服务 [#reload-service]
+
+服务是由 HAProxy 服务的暴露访问点。
+
+此任务用于集群成员发生变化时，例如 [添加](#append-replica)/[移除](#remove-replica) 从库、[主从切换](#switchover)/故障转移或暴露新服务或更新现有服务的配置（例如负载均衡权重）。
+
+要在整个代理集群或特定实例上创建新服务或重载现有服务：
+
+```bash
+bin/pgsql-svc <cls>               # pgsql.yml -l <cls> -t pg_service -e pg_reload=true
+bin/pgsql-svc <cls> [ip...]       # pgsql.yml -l ip... -t pg_service -e pg_reload=true
+```
+
+
+
+------
+
+## 重载 HBA 规则 [#reload-hbarule]
+
+此任务用于您的 Postgres/Pgbouncer HBA 规则发生变化时，您*可能*需要重载 HBA 以应用更改。
+
+如果您有任何特定于角色的 HBA 规则，您可能也需要在主从切换/故障转移后重载 HBA。
+
+要在整个集群或特定实例上重载 postgres 和 pgbouncer HBA 规则：
+
+```bash
+bin/pgsql-hba <cls>               # pgsql.yml -l <cls> -t pg_hba,pg_reload,pgbouncer_hba,pgbouncer_reload -e pg_reload=true
+bin/pgsql-hba <cls> [ip...]       # pgsql.yml -l ip... -t pg_hba,pg_reload,pgbouncer_hba,pgbouncer_reload -e pg_reload=true
+```
+
+
+
+------
+
+## 配置集群 [#config-cluster]
+
+要更改现有 Postgres 集群的配置，您必须在**使用管理员用户的管理节点**上发起控制命令：
+
+```bash
+pg edit-config <cls>              # 使用 patronictl 交互式配置集群
+```
+
+更改 patroni 参数和 `postgresql.parameters`，使用向导保存并应用更改。
+
+
+
+
+
+
+
+------
+
+## 添加从库 [#append-replica]
+
+要向现有 Postgres 集群添加新的从库，您必须将其定义添加到配置清单：`all.children.<cls>.hosts`，然后：
+
+```bash
+bin/node-add <ip>                 # 为新从库初始化节点 <ip>
+bin/pgsql-add <cls> <ip>          # 在 <ip> 上为集群 <cls> 初始化 PostgreSQL 实例
+```
+
+这将把节点 `<ip>` 添加到 pigsty 并将其初始化为集群 `<cls>` 的从库。
+
+集群服务将被 [重载](#reload-service) 以采纳新成员。
+
+
+
+------
+
+## 移除从库 [#remove-replica]
+
+要从现有 PostgreSQL 集群中移除从库：
+
+```bash
+bin/pgsql-rm <cls> <ip...>        # ./pgsql-rm.yml -l <ip>
+```
+
+这将从集群 `<cls>` 中移除实例 `<ip>`。集群服务将被 [重载](#reload-service) 以从负载均衡器中踢出被移除的实例。
+
+
+
+------
+
+## 移除集群 [#remove-cluster]
+
+要移除整个 Postgres 集群，只需运行：
+
+```bash
+bin/pgsql-rm <cls>                # ./pgsql-rm.yml -l <cls>
+```
+
+
+
+
+------
+
+## 主从切换 [#switchover]
+
+您可以使用 patroni 命令执行 PostgreSQL 集群主从切换。
+
+```bash
+pg switchover <cls>   # 交互模式，您可以使用以下选项跳过
+pg switchover --leader pg-test-1 --candidate=pg-test-2 --scheduled=now --force pg-test
+```
+
+
+
+------
+
+## 备份集群 [#backup-cluster]
+
+要使用 pgBackRest 创建备份，以本地数据库超级用户身份运行：
+
+```bash
+pg-backup                         # 进行 PostgreSQL 基础备份
+pg-backup full                    # 进行完整备份
+pg-backup diff                    # 进行差异备份
+pg-backup incr                    # 进行增量备份
+pb info                           # 检查备份信息
+```
+
+详情请查看 [备份](/zh/pgsql/backup/) 和 PITR。
+
+
+
+
+------
+
+## 恢复集群 [#restore-cluster]
+
+要将集群恢复到之前的时间点（PITR），以本地数据库超级用户身份运行：
+
+```bash
+pg-pitr -i                              # 恢复到最新备份完成的时间（不常用）
+pg-pitr --time="2022-12-30 14:44:44+08" # 恢复到特定时间点（在删除数据库、删除表的情况下）
+pg-pitr --name="my-restore-point"       # 恢复到由 pg_create_restore_point 创建的命名恢复点
+pg-pitr --lsn="0/7C82CB8" -X            # 恢复到 LSN 之前
+pg-pitr --xid="1234567" -X -P           # 恢复到特定事务 ID 之前，然后提升
+pg-pitr --backup=latest                 # 恢复到最新备份集
+pg-pitr --backup=20221108-105325        # 恢复到特定备份集，可通过 pgbackrest info 检查
+```
+
+然后按照指导向导操作，详情请查看备份和 [PITR](/zh/pgsql/backup/)。
+
+
+
+------
+
+## 添加软件包 [#adding-packages]
+
+要添加更新版本的 RPM 软件包，您必须将它们添加到 [`repo_packages`](/zh/infra/param#repo_packages) 和 [`repo_url_packages`](/zh/infra/param#repo_url_packages)。
+
+然后使用 `./infra.yml -t repo_build` 子任务在基础设施节点上重建仓库，然后您可以使用 `ansible` 模块 `package` 安装这些软件包：
+
+```bash
+ansible pg-test -b -m package -a "name=pg_cron_15,topn_15,pg_stat_monitor_15*"  # 安装一些软件包
+```
+
+
+
+------
+
+## 安装扩展 [#install-extension]
+
+如果您想在 PostgreSQL 集群上安装扩展，将它们添加到 [`pg_extensions`](/zh/pgsql/param#pg_extensions) 并确保它们被安装：
+
+```bash
+./pgsql.yml -t pg_extension     # 安装扩展
+```
+
+一些扩展需要在 `shared_preload_libraries` 中加载，您可以将它们添加到 [`pg_libs`](/zh/pgsql/param#pg_libs)，或 [配置](#config-cluster) 现有集群。
+
+最后，在集群主实例上执行 `CREATE EXTENSION <extname>;` 来安装它。
+
+
+
+详情请查看 [PGSQL 扩展：安装](/zh/pgsql/extension/install)。
+
+------
+
+## 小版本升级 [#minor-upgrade]
+
+要执行小版本的服务器版本升级/降级，您必须首先将软件包 [添加](#adding-packages) 到 yum/apt 仓库。
+
+然后从所有从库执行滚动升级/降级，然后切换集群以升级主库。
+
+```bash
+ansible <cls> -b -a "yum upgrade/downgrade -y <pkg>"    # 升级/降级软件包
+pg restart --force <cls>                                # 重启集群
+```
+
+
+
+
+------
+
+## 大版本升级 [#major-upgrade]
+
+实现大版本升级的最简单方法是使用新版本创建新集群，然后使用逻辑复制和蓝绿部署进行 [迁移](/zh/pgsql/migration/)。
+
+您也可以执行就地大版本升级，但不建议这样做，特别是当安装了某些扩展时。但这是可能的。
+
+假设您想将 PostgreSQL 14 升级到 15，您必须将软件包 [添加](#adding-packages) 到 yum/apt 仓库，并保证扩展也具有完全相同的版本。
+
+```bash
+./pgsql.yml -t pg_pkg -e pg_version=15                         # 为 PostgreSQL 15 安装软件包
+sudo su - postgres; mkdir -p /data/postgres/pg-meta-15/data/   # 为 15 准备目录
+pg_upgrade -b /usr/pgsql-14/bin/ -B /usr/pgsql-15/bin/ -d /data/postgres/pg-meta-14/data/ -D /data/postgres/pg-meta-15/data/ -v -c # 预检
+pg_upgrade -b /usr/pgsql-14/bin/ -B /usr/pgsql-15/bin/ -d /data/postgres/pg-meta-14/data/ -D /data/postgres/pg-meta-15/data/ --link -j8 -v -c
+rm -rf /usr/pgsql; ln -s /usr/pgsql-15 /usr/pgsql;             # 修复二进制链接
+mv /data/postgres/pg-meta-14 /data/postgres/pg-meta-15         # 重命名数据目录
+rm -rf /pg; ln -s /data/postgres/pg-meta-15 /pg                # 修复数据目录链接
+```

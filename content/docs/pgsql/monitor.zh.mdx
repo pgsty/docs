@@ -1,0 +1,468 @@
+---
+title: 监控
+description: 监控现有 PostgreSQL 或 RDS
+icon: Telescope
+---
+
+## 概述 [#overview]
+
+Pigsty 使用现代可观测性栈进行 PostgreSQL 监控：
+
+- Grafana 用于指标可视化和 PostgreSQL 数据源。
+- Prometheus 用于 PostgreSQL / Pgbouncer / Patroni / HAProxy / Node 指标
+- Loki 用于 PostgreSQL / Pgbouncer / Patroni / pgBackRest 日志
+- 开箱即用的 PostgreSQL 和其他一切的[仪表板](/zh/pgsql/dashboard/)
+
+### **指标**
+
+PostgreSQL 的指标由收集器文件定义：[`pg_exporter.yml`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg_exporter.yml)。Prometheus 记录规则和告警评估将进一步处理它：[`files/prometheus/rules/pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/files/prometheus/rules/pgsql.yml)
+
+有三个身份标签：`cls`、`ins`、`ip`，它们将附加到所有指标和日志。节点和 haproxy 将尝试重用相同的身份以提供一致的指标和日志。
+
+```yaml
+{ cls: pg-meta, ins: pg-meta-1, ip: 10.10.10.10 }
+{ cls: pg-meta, ins: pg-test-1, ip: 10.10.10.11 }
+{ cls: pg-meta, ins: pg-test-2, ip: 10.10.10.12 }
+{ cls: pg-meta, ins: pg-test-3, ip: 10.10.10.13 }
+```
+
+### **日志**
+
+PostgreSQL 相关日志默认由 promtail 收集并发送到基础设施节点上的 Loki。
+
+- [`pg_log_dir`](/zh/pgsql/param#pg_log_dir)：postgres 日志目录，默认为 `/pg/log/postgres`
+- [`pgbouncer_log_dir`](/zh/pgsql/param#pgbouncer_log_dir)：pgbouncer 日志目录，默认为 `/pg/log/pgbouncer`
+- [`patroni_log_dir`](/zh/pgsql/param#patroni_log_dir)：patroni 日志目录，默认为 `/pg/log/patroni`
+- [`pgbackrest_log_dir`](/zh/pgsql/param#pgbackrest_log_dir)：pgbackrest 日志目录，默认为 `/pg/log/pgbackrest`
+
+### **目标**
+
+Prometheus 监控目标在 `/etc/prometheus/targets/pgsql/` 下的静态文件中定义。每个实例都有一个对应的文件。以 `pg-meta-1` 为例：
+
+```yaml
+# pg-meta-1 [primary] @ 10.10.10.10
+- labels: { cls: pg-meta, ins: pg-meta-1, ip: 10.10.10.10 }
+  targets:
+    - 10.10.10.10:9630    # <--- PostgreSQL 指标的 pg_exporter
+    - 10.10.10.10:9631    # <--- Pgbouncer 指标的 pg_exporter
+    - 10.10.10.10:8008    # <--- patroni 指标
+```
+
+当全局标志 [`patroni_ssl_enabled`](/zh/pgsql/param#patroni_ssl_enabled) 设置时，patroni 目标将作为 `/etc/prometheus/targets/patroni/<ins>.yml` 管理，因为它需要不同的抓取端点（https）。
+
+当集群被 `bin/pgsql-rm` 或 `pgsql-rm.yml` 删除时，Prometheus 监控目标将被删除。您可以使用 playbook 子任务，或手动删除它们：
+
+```bash
+bin/pgmon-rm <ins>      # 从所有基础设施节点删除 prometheus 目标
+```
+
+远程 RDS 目标作为 `/etc/prometheus/targets/pgrds/<cls>.yml` 管理。它将由 [`pgsql-monitor.yml`](/zh/pgsql/playbook/#pgsql-monitoryml) playbook 或 `bin/pgmon-add` 脚本创建。
+
+------
+
+## 监控模式 [#monitor-mode]
+
+在 Pigsty 中有三种监控 PostgreSQL 实例的方式：
+
+|        项目 \ 级别        |                              L1                              |                              L2                              |               L3                |
+| :------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :-----------------------------: |
+|            名称            | [远程数据库服务](/zh/pgsql/monitor/#monitor-rds) | [现有部署](/zh/pgsql/monitor/#monitor-existing-cluster) |    完全托管部署     |
+|            简称            |                           **RDS**                            |                         **MANAGED**                          |            **FULL**             |
+|           场景           |                   仅连接字符串 URL                    |                        可 SSH sudo                         |   由 Pigsty 创建的实例   |
+|    PGCAT 功能     |                     ✅ 完全可用                      |                     ✅ 完全可用                      |       ✅ 完全可用       |
+|    PGSQL 功能     |                      ✅ 仅 PG 指标                       |                    ✅ PG 和节点指标                     |         ✅ 完全支持          |
+|  连接池指标   |                       ❌ 不可用                        |                          ⚠️ 可选                          |        ✅ 预配置         |
+|   负载均衡器指标    |                       ❌ 不可用                        |                          ⚠️ 可选                          |        ✅ 预配置         |
+|    PGLOG 功能     |                       ❌ 不可用                        |                          ⚠️ 可选                          |           ⚠️ 可选            |
+|        PG Exporter         |                       ⚠️ 在基础设施节点上                       |                        ✅ 在数据库节点上                         |          ✅ 在数据库节点上          |
+|       Node Exporter        |                        ❌ 未部署                        |                        ✅ 在数据库节点上                         |          ✅ 在数据库节点上          |
+|  对数据库节点的入侵   |                       ✅ 非入侵                        |                    ⚠️ 安装导出器                     |    ⚠️ 完全由 Pigsty 管理    |
+|  实例已存在   |                            ✅ 是                             |                            ✅ 是                             |       ⚠️ 由 Pigsty 创建       |
+| 监控用户和视图 |                       ⚠️ 手动设置                        |                       ⚠️ 手动设置                        |        ✅ 自动配置        |
+| 部署使用 Playbook  |                    `bin/pgmon-add <cls>`                     |              `pgsql.ym`/`node.yml` 的子任务               |           `pgsql.yml`           |
+|    所需权限     |              来自基础设施节点的可连接 PGURL              |               数据库节点 SSH 和 sudo 权限                | 数据库节点 SSH 和 sudo 权限 |
+|     功能概述      |                        PGCAT + PGRDS                         |                      大部分功能                      |       完整功能        |
+
+------
+
+## 监控现有集群 [#monitor-existing-cluster]
+
+假设目标数据库节点可以由 Pigsty 管理（可通过 SSH 访问且 sudo 可用）。在这种情况下，您可以使用 [`pgsql.yml`](/zh/pgsql/playbook/#pgsqlyml) playbook 中的 `pg_exporter` 任务，以与标准部署相同的方式在目标节点上部署监控组件 PG Exporter。
+
+您还可以使用同一 playbook 的 `pgbouncer` 和 `pgbouncer_exporter` 任务在现有实例节点上部署连接池及其监控。此外，您可以使用 [`node.yml`](/zh/node/playbook/#nodeyml) playbook 的 `node_exporter`、`haproxy` 和 `promtail` 任务部署主机监控、负载均衡和日志收集组件，实现与原生 Pigsty 集群相似的用户体验。
+
+现有集群的定义方法与 Pigsty 管理的普通集群非常相似。有选择地运行 `pgsql.yml` playbook 中的某些任务，而不是运行整个 playbook。
+
+```bash
+./node.yml  -l <cls> -t node_repo,node_pkg           # 在主机节点上为基础设施节点添加 YUM 源并安装包。
+./node.yml  -l <cls> -t node_exporter,node_register  # 配置主机监控并添加到 Prometheus。
+./node.yml  -l <cls> -t promtail                     # 配置主机日志收集并发送到 Loki。
+./pgsql.yml -l <cls> -t pg_exporter,pg_register      # 配置 PostgreSQL 监控并注册到 Prometheus/Grafana。
+```
+
+由于目标数据库集群已经存在，您必须在目标数据库集群上手动[设置监控用户、架构和扩展](/zh/pgsql/monitor/#monitor-setup)。
+
+------
+
+## 监控 RDS [#monitor-rds]
+
+如果您**只能通过 PGURL**（数据库连接字符串）访问目标数据库，您可以参考这里的说明进行配置。在此模式下，Pigsty 在[基础设施节点](/zh/node/arch/#infra-node)上部署相应的 PG Exporter 以从远程数据库获取指标，如下所示：
+
+```
+------ infra ------
+|                 |
+|   prometheus    |            v---- pg-foo-1 ----v
+|       ^         |  metrics   |         ^        |
+|   pg_exporter <-|------------|----  postgres    |
+|   (port: 20001) |            | 10.10.10.10:5432 |
+|       ^         |            ^------------------^
+|       ^         |                      ^
+|       ^         |            v---- pg-foo-2 ----v
+|       ^         |  metrics   |         ^        |
+|   pg_exporter <-|------------|----  postgres    |
+|   (port: 20002) |            | 10.10.10.11:5433 |
+-------------------            ^------------------^
+```
+
+监控系统将不再有主机/池化器/负载均衡器指标。但 PostgreSQL 指标和目录信息仍然可用。Pigsty 为此有两个专用仪表板：[PGRDS 集群](https://demo.pigsty.cc/d/pgrds-cluster) 和 [PGRDS 实例](https://demo.pigsty.cc/d/pgrds-instance)。概览和数据库级别仪表板被重用。由于 Pigsty 无法管理您的 RDS，您必须提前在目标数据库上[设置监控](/zh/pgsql/monitor/#monitor-setup)。
+
+下面，我们使用沙箱环境作为示例：现在我们假设 `pg-meta` 集群是要监控的 RDS 实例 `pg-foo-1`，`pg-test` 集群是要监控的 RDS 集群 `pg-bar`：
+
+1. 在目标上创建监控架构、用户和权限。详情请参考[监控设置](/zh/pgsql/monitor/#monitor-setup)。
+
+2. 在配置列表中声明集群。例如，假设我们想要监控"远程" `pg-meta` 和 `pg-test` 集群：
+
+```yaml
+infra:            # 基础设施集群，用于代理、监控、告警等。
+  hosts: { 10.10.10.10: { infra_seq: 1 } }
+  vars:           # 在 'infra' 组上为远程 postgres RDS 安装 pg_exporter
+    pg_exporters: # 在这里列出所有远程实例，为每个分配一个唯一的未使用本地端口
+      20001: { pg_cluster: pg-foo, pg_seq: 1, pg_host: 10.10.10.10 , pg_databases: [{ name: meta }] } # 将 meta 数据库注册为 Grafana 数据源
+      
+      20002: { pg_cluster: pg-bar, pg_seq: 1, pg_host: 10.10.10.11 , pg_port: 5432 } # 几种不同的连接字符串拼接方法
+      20003: { pg_cluster: pg-bar, pg_seq: 2, pg_host: 10.10.10.12 , pg_exporter_url: 'postgres://dbuser_monitor:DBUser.Monitor@10.10.10.12:5432/postgres?sslmode=disable'}
+      20004: { pg_cluster: pg-bar, pg_seq: 3, pg_host: 10.10.10.13 , pg_monitor_username: dbuser_monitor, pg_monitor_password: DBUser.Monitor }
+   ```
+
+在 `pg_databases` 字段中列出的数据库将在 Grafana 中注册为 PostgreSQL 数据源，为 PGCAT 监控面板提供数据支持。如果您不想使用 PGCAT 并在 Grafana 中注册数据库，请将 `pg_databases` 设置为空数组或留空。
+
+![pigsty-monitor.jpg](/img/pigsty/monitor.jpg)
+
+3. 执行命令添加监控：`bin/pgmon-add <clsname>`
+
+```bash
+bin/pgmon-add pg-foo  # 将 pg-foo 集群纳入监控
+bin/pgmon-add pg-bar  # 将 pg-bar 集群纳入监控
+   ```
+
+4. 要从监控中删除远程集群，使用 `bin/pgmon-rm <clsname>`
+
+```bash
+bin/pgmon-rm pg-foo  # 从 Pigsty 监控中删除 pg-foo
+bin/pgmon-rm pg-bar  # 从 Pigsty 监控中删除 pg-bar
+   ```
+
+您可以使用更多参数来覆盖默认的 `pg_exporter` 选项。这里有一个使用 Pigsty 监控阿里云 RDS 和 PolarDB 的示例：
+
+
+------
+
+## 监控设置 [#monitor-setup]
+
+当您想要监控现有实例时，无论是 RDS 还是自建的 PostgreSQL 实例，您都需要在目标数据库上进行一些配置，以便 Pigsty 可以访问它们。
+
+要将外部现有的 PostgreSQL 实例纳入监控，您需要一个可以访问该实例/集群的连接字符串。任何可访问的连接字符串（业务用户、超级用户）都可以使用，但我们建议使用专用的监控用户以避免权限泄露。
+
+-  [监控用户](/zh/pgsql/monitor/#monitor-user)：默认使用的用户名是 `dbuser_monitor`。此用户属于 `pg_monitor` 组，或确保它具有必要的视图权限。
+-  [监控 HBA](/zh/pgsql/monitor/#monitor-hba)：默认密码是 `DBUser.Monitor`。您需要确保 HBA 策略允许监控用户从基础设施节点访问数据库。
+-  [监控架构](/zh/pgsql/monitor/#monitor-schema)：可选但建议为监控视图和扩展创建专用架构 `monitor`。
+-  [监控扩展](/zh/pgsql/monitor/#monitor-extension)：强烈建议启用内置扩展 `pg_stat_statements`。
+-  [监控视图](/zh/pgsql/monitor/#monitor-view)：监控视图是可选的，但可以提供额外的指标。推荐使用。
+
+------
+
+### 监控用户 [#monitor-user]
+
+在目标数据库集群上创建一个监控用户。例如，Pigsty 中默认使用 `dbuser_monitor`。
+
+```sql
+CREATE USER dbuser_monitor;                                       -- 创建监控用户
+COMMENT ON ROLE dbuser_monitor IS 'system monitor user';          -- 为监控用户添加注释
+GRANT pg_monitor TO dbuser_monitor;                               -- 将系统角色 pg_monitor 授予监控用户
+
+ALTER USER dbuser_monitor PASSWORD 'DBUser.Monitor';              -- 为监控用户设置密码
+ALTER USER dbuser_monitor SET log_min_duration_statement = 1000;  -- 设置此值以避免日志洪泛
+ALTER USER dbuser_monitor SET search_path = monitor,public;       -- 设置此值以避免 pg_stat_statements 扩展不工作
+```
+
+这里的监控用户应该与 Pigsty 配置清单中的 [`pg_monitor_username`](/zh/pgsql/param#pg_monitor_username) 和 [`pg_monitor_password`](/zh/pgsql/param#pg_monitor_password) 一致。
+
+------
+
+### 监控 HBA [#monitor-hba]
+
+您还需要配置 `pg_hba.conf` 以允许监控用户从基础设施/管理节点访问。
+
+```ini
+# 允许本地角色监控使用密码
+local   all  dbuser_monitor                    md5
+host    all  dbuser_monitor  127.0.0.1/32      md5
+host    all  dbuser_monitor  <admin_ip>/32     md5
+host    all  dbuser_monitor  <infra_ip>/32     md5
+```
+
+如果您的 RDS 不支持原始 HBA 格式，请将管理/基础设施节点 IP 添加到白名单。
+
+------
+
+### 监控架构 [#monitor-schema]
+
+监控架构是**可选的**，但我们强烈推荐创建一个。
+
+```sql
+CREATE SCHEMA IF NOT EXISTS monitor;               -- 创建专用监控架构
+GRANT USAGE ON SCHEMA monitor TO dbuser_monitor;   -- 允许监控用户使用此架构
+```
+
+------
+
+### 监控扩展 [#monitor-extension]
+
+监控扩展是**可选的**，但我们强烈推荐启用 `pg_stat_statements` 扩展。
+
+请注意，此扩展必须列在 `shared_preload_libraries` 中才能生效，更改此参数需要重启数据库。
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "monitor";
+```
+
+您应该在管理数据库中创建此扩展：`postgres`。如果您的 RDS 不授予数据库 `postgres` 的 `CREATE` 权限，您可以在默认的 `public` 架构中创建该扩展：
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+ALTER USER dbuser_monitor SET search_path = monitor,public;
+```
+
+只要您的监控用户可以在没有架构限定的情况下访问 `pg_stat_statements` 视图，就应该没问题。
+
+------
+
+### 监控视图 [#monitor-view]
+
+建议在所有需要监控的数据库中创建监控视图。
+
+**监控架构和视图定义**
+
+```sql
+----------------------------------------------------------------------
+-- 表膨胀估算：monitor.pg_table_bloat
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_table_bloat CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_table_bloat AS
+SELECT CURRENT_CATALOG AS datname, nspname, relname , tblid , bs * tblpages AS size,
+       CASE WHEN tblpages - est_tblpages_ff > 0 THEN (tblpages - est_tblpages_ff)/tblpages::FLOAT ELSE 0 END AS ratio
+FROM (
+         SELECT ceil( reltuples / ( (bs-page_hdr)*fillfactor/(tpl_size*100) ) ) + ceil( toasttuples / 4 ) AS est_tblpages_ff,
+                tblpages, fillfactor, bs, tblid, nspname, relname, is_na
+         FROM (
+                  SELECT
+                      ( 4 + tpl_hdr_size + tpl_data_size + (2 * ma)
+                          - CASE WHEN tpl_hdr_size % ma = 0 THEN ma ELSE tpl_hdr_size % ma END
+                          - CASE WHEN ceil(tpl_data_size)::INT % ma = 0 THEN ma ELSE ceil(tpl_data_size)::INT % ma END
+                          ) AS tpl_size, (heappages + toastpages) AS tblpages, heappages,
+                      toastpages, reltuples, toasttuples, bs, page_hdr, tblid, nspname, relname, fillfactor, is_na
+                  FROM (
+                           SELECT
+                               tbl.oid AS tblid, ns.nspname , tbl.relname, tbl.reltuples,
+                               tbl.relpages AS heappages, coalesce(toast.relpages, 0) AS toastpages,
+                               coalesce(toast.reltuples, 0) AS toasttuples,
+                               coalesce(substring(array_to_string(tbl.reloptions, ' ') FROM 'fillfactor=([0-9]+)')::smallint, 100) AS fillfactor,
+                               current_setting('block_size')::numeric AS bs,
+                               CASE WHEN version()~'mingw32' OR version()~'64-bit|x86_64|ppc64|ia64|amd64' THEN 8 ELSE 4 END AS ma,
+                               24 AS page_hdr,
+                               23 + CASE WHEN MAX(coalesce(s.null_frac,0)) > 0 THEN ( 7 + count(s.attname) ) / 8 ELSE 0::int END
+                                   + CASE WHEN bool_or(att.attname = 'oid' and att.attnum < 0) THEN 4 ELSE 0 END AS tpl_hdr_size,
+                               sum( (1-coalesce(s.null_frac, 0)) * coalesce(s.avg_width, 0) ) AS tpl_data_size,
+                               bool_or(att.atttypid = 'pg_catalog.name'::regtype)
+                                   OR sum(CASE WHEN att.attnum > 0 THEN 1 ELSE 0 END) <> count(s.attname) AS is_na
+                           FROM pg_attribute AS att
+                                    JOIN pg_class AS tbl ON att.attrelid = tbl.oid
+                                    JOIN pg_namespace AS ns ON ns.oid = tbl.relnamespace
+                                    LEFT JOIN pg_stats AS s ON s.schemaname=ns.nspname AND s.tablename = tbl.relname AND s.inherited=false AND s.attname=att.attname
+                                    LEFT JOIN pg_class AS toast ON tbl.reltoastrelid = toast.oid
+                           WHERE NOT att.attisdropped AND tbl.relkind = 'r' AND nspname NOT IN ('pg_catalog','information_schema')
+                           GROUP BY 1,2,3,4,5,6,7,8,9,10
+                       ) AS s
+              ) AS s2
+     ) AS s3
+WHERE NOT is_na;
+COMMENT ON VIEW monitor.pg_table_bloat IS 'postgres table bloat estimate';
+
+GRANT SELECT ON monitor.pg_table_bloat TO pg_monitor;
+
+----------------------------------------------------------------------
+-- 索引膨胀估算：monitor.pg_index_bloat
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_index_bloat CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_index_bloat AS
+SELECT CURRENT_CATALOG AS datname, nspname, idxname AS relname, tblid, idxid, relpages::BIGINT * bs AS size,
+       COALESCE((relpages - ( reltuples * (6 + ma - (CASE WHEN index_tuple_hdr % ma = 0 THEN ma ELSE index_tuple_hdr % ma END)
+                                               + nulldatawidth + ma - (CASE WHEN nulldatawidth % ma = 0 THEN ma ELSE nulldatawidth % ma END))
+                                  / (bs - pagehdr)::FLOAT  + 1 )), 0) / relpages::FLOAT AS ratio
+FROM (
+         SELECT nspname,idxname,indrelid AS tblid,indexrelid AS idxid,
+                reltuples,relpages,
+                current_setting('block_size')::INTEGER                                                               AS bs,
+                (CASE WHEN version() ~ 'mingw32' OR version() ~ '64-bit|x86_64|ppc64|ia64|amd64' THEN 8 ELSE 4 END)  AS ma,
+                24                                                                                                   AS pagehdr,
+                (CASE WHEN max(COALESCE(pg_stats.null_frac, 0)) = 0 THEN 2 ELSE 6 END)                               AS index_tuple_hdr,
+                sum((1.0 - COALESCE(pg_stats.null_frac, 0.0)) *
+                    COALESCE(pg_stats.avg_width, 1024))::INTEGER                                                     AS nulldatawidth
+         FROM pg_attribute
+                  JOIN (
+             SELECT pg_namespace.nspname,
+                    ic.relname                                                   AS idxname,
+                    ic.reltuples,
+                    ic.relpages,
+                    pg_index.indrelid,
+                    pg_index.indexrelid,
+                    tc.relname                                                   AS tablename,
+                    regexp_split_to_table(pg_index.indkey::TEXT, ' ') :: INTEGER AS attnum,
+                    pg_index.indexrelid                                          AS index_oid
+             FROM pg_index
+                      JOIN pg_class ic ON pg_index.indexrelid = ic.oid
+                      JOIN pg_class tc ON pg_index.indrelid = tc.oid
+                      JOIN pg_namespace ON pg_namespace.oid = ic.relnamespace
+                      JOIN pg_am ON ic.relam = pg_am.oid
+             WHERE pg_am.amname = 'btree' AND ic.relpages > 0 AND nspname NOT IN ('pg_catalog', 'information_schema')
+         ) ind_atts ON pg_attribute.attrelid = ind_atts.indexrelid AND pg_attribute.attnum = ind_atts.attnum
+                  JOIN pg_stats ON pg_stats.schemaname = ind_atts.nspname
+             AND ((pg_stats.tablename = ind_atts.tablename AND pg_stats.attname = pg_get_indexdef(pg_attribute.attrelid, pg_attribute.attnum, TRUE))
+                 OR (pg_stats.tablename = ind_atts.idxname AND pg_stats.attname = pg_attribute.attname))
+         WHERE pg_attribute.attnum > 0
+         GROUP BY 1, 2, 3, 4, 5, 6
+     ) est;
+COMMENT ON VIEW monitor.pg_index_bloat IS 'postgres index bloat estimate (btree-only)';
+
+GRANT SELECT ON monitor.pg_index_bloat TO pg_monitor;
+
+----------------------------------------------------------------------
+-- 关系膨胀：monitor.pg_bloat
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_bloat CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_bloat AS
+SELECT coalesce(ib.datname, tb.datname)                                                   AS datname,
+       coalesce(ib.nspname, tb.nspname)                                                   AS nspname,
+       coalesce(ib.tblid, tb.tblid)                                                       AS tblid,
+       coalesce(tb.nspname || '.' || tb.relname, ib.nspname || '.' || ib.tblid::RegClass) AS tblname,
+       tb.size                                                                            AS tbl_size,
+       CASE WHEN tb.ratio < 0 THEN 0 ELSE round(tb.ratio::NUMERIC, 6) END                 AS tbl_ratio,
+       (tb.size * (CASE WHEN tb.ratio < 0 THEN 0 ELSE tb.ratio::NUMERIC END)) ::BIGINT    AS tbl_wasted,
+       ib.idxid,
+       ib.nspname || '.' || ib.relname                                                    AS idxname,
+       ib.size                                                                            AS idx_size,
+       CASE WHEN ib.ratio < 0 THEN 0 ELSE round(ib.ratio::NUMERIC, 5) END                 AS idx_ratio,
+       (ib.size * (CASE WHEN ib.ratio < 0 THEN 0 ELSE ib.ratio::NUMERIC END)) ::BIGINT    AS idx_wasted
+FROM monitor.pg_index_bloat ib
+         FULL OUTER JOIN monitor.pg_table_bloat tb ON ib.tblid = tb.tblid;
+
+COMMENT ON VIEW monitor.pg_bloat IS 'postgres relation bloat detail';
+GRANT SELECT ON monitor.pg_bloat TO pg_monitor;
+
+----------------------------------------------------------------------
+-- monitor.pg_index_bloat_human
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_index_bloat_human CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_index_bloat_human AS
+SELECT idxname                            AS name,
+       tblname,
+       idx_wasted                         AS wasted,
+       pg_size_pretty(idx_size)           AS idx_size,
+       round(100 * idx_ratio::NUMERIC, 2) AS idx_ratio,
+       pg_size_pretty(idx_wasted)         AS idx_wasted,
+       pg_size_pretty(tbl_size)           AS tbl_size,
+       round(100 * tbl_ratio::NUMERIC, 2) AS tbl_ratio,
+       pg_size_pretty(tbl_wasted)         AS tbl_wasted
+FROM monitor.pg_bloat
+WHERE idxname IS NOT NULL;
+COMMENT ON VIEW monitor.pg_index_bloat_human IS 'postgres index bloat info in human-readable format';
+GRANT SELECT ON monitor.pg_index_bloat_human TO pg_monitor;
+
+
+----------------------------------------------------------------------
+-- monitor.pg_table_bloat_human
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_table_bloat_human CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_table_bloat_human AS
+SELECT tblname                                          AS name,
+       idx_wasted + tbl_wasted                          AS wasted,
+       pg_size_pretty(idx_wasted + tbl_wasted)          AS all_wasted,
+       pg_size_pretty(tbl_wasted)                       AS tbl_wasted,
+       pg_size_pretty(tbl_size)                         AS tbl_size,
+       tbl_ratio,
+       pg_size_pretty(idx_wasted)                       AS idx_wasted,
+       pg_size_pretty(idx_size)                         AS idx_size,
+       round(idx_wasted::NUMERIC * 100.0 / idx_size, 2) AS idx_ratio
+FROM (SELECT datname,
+             nspname,
+             tblname,
+             coalesce(max(tbl_wasted), 0)                         AS tbl_wasted,
+             coalesce(max(tbl_size), 1)                           AS tbl_size,
+             round(100 * coalesce(max(tbl_ratio), 0)::NUMERIC, 2) AS tbl_ratio,
+             coalesce(sum(idx_wasted), 0)                         AS idx_wasted,
+             coalesce(sum(idx_size), 1)                           AS idx_size
+      FROM monitor.pg_bloat
+      WHERE tblname IS NOT NULL
+      GROUP BY 1, 2, 3
+     ) d;
+COMMENT ON VIEW monitor.pg_table_bloat_human IS 'postgres table bloat info in human-readable format';
+GRANT SELECT ON monitor.pg_table_bloat_human TO pg_monitor;
+
+
+----------------------------------------------------------------------
+-- 活动概览：monitor.pg_session
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_session CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_session AS
+SELECT coalesce(datname, 'all') AS datname, numbackends, active, idle, ixact, max_duration, max_tx_duration, max_conn_duration
+FROM (
+         SELECT datname,
+                count(*)                                         AS numbackends,
+                count(*) FILTER ( WHERE state = 'active' )       AS active,
+                count(*) FILTER ( WHERE state = 'idle' )         AS idle,
+                count(*) FILTER ( WHERE state = 'idle in transaction'
+                    OR state = 'idle in transaction (aborted)' ) AS ixact,
+                max(extract(epoch from now() - state_change))
+                FILTER ( WHERE state = 'active' )                AS max_duration,
+                max(extract(epoch from now() - xact_start))      AS max_tx_duration,
+                max(extract(epoch from now() - backend_start))   AS max_conn_duration
+         FROM pg_stat_activity
+         WHERE backend_type = 'client backend'
+           AND pid <> pg_backend_pid()
+         GROUP BY ROLLUP (1)
+         ORDER BY 1 NULLS FIRST
+     ) t;
+COMMENT ON VIEW monitor.pg_session IS 'postgres activity group by session';
+GRANT SELECT ON monitor.pg_session TO pg_monitor;
+
+
+----------------------------------------------------------------------
+-- 顺序扫描：monitor.pg_seq_scan
+----------------------------------------------------------------------
+DROP VIEW IF EXISTS monitor.pg_seq_scan CASCADE;
+CREATE OR REPLACE VIEW monitor.pg_seq_scan AS
+SELECT schemaname                                                        AS nspname,
+       relname,
+       seq_scan,
+       seq_tup_read,
+       seq_tup_read / seq_scan                                           AS seq_tup_avg,
+       idx_scan,
+       n_live_tup + n_dead_tup                                           AS tuples,
+       round(n_live_tup * 100.0::NUMERIC / (n_live_tup + n_dead_tup), 2) AS live_ratio
+FROM pg_stat_user_tables
+WHERE seq_scan > 0
+  and (n_live_tup + n_dead_tup) > 0
+ORDER BY seq_scan DESC;
+COMMENT ON VIEW monitor.pg_seq_scan IS 'table that have seq scan';
+GRANT SELECT ON monitor.pg_seq_scan TO pg_monitor;
+```

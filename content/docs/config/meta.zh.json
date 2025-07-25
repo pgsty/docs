@@ -1,0 +1,14 @@
+{
+  "title": "配置",
+  "description": "使用声明式的配置描述基础设施与数据库集群",
+  "icon": "Code",
+  "defaultOpen": false,
+  "pages": [
+    "inventory",
+    "configure",
+    "tutorial",
+    "template",
+    "security",
+    "cmdb"
+  ]
+}

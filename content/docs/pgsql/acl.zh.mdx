@@ -1,0 +1,238 @@
+---
+title: 权限管理
+description: 使用默认角色和权限进行访问控制
+icon: Fingerprint
+---
+
+Pigsty 具有一套默认的角色系统，包含四个 [默认角色](#default-roles) 和四个 [默认用户](#default-users)：
+
+| 默认用户     | 用户描述   | 默认角色       | 角色描述                     |
+|:-------------|-----------|:---------------|------------------------------|
+| `postgres`       | 系统超级用户   | `dbrole_readonly`  | 全局只读权限角色     |
+| `replicator`     | 系统复制用户  | `dbrole_readwrite` | 全局读写权限角色    |
+| `dbuser_dba`     | PostgreSQL 管理员用户   | `dbrole_admin`     | 对象创建权限角色             |
+| `dbuser_monitor` | PostgreSQL 监控用户 | `dbrole_offline`   | 受限只读权限角色 |
+
+--------
+
+## 概览 [#summary]
+
+| 角色名称          | 属性    | 所属角色                   | 描述                          |
+|---------------------|---------------|-----------------------------|--------------------------------------|
+| `dbrole_readonly`  | `NOLOGIN`     |                             | 全局只读权限角色     |
+| `dbrole_readwrite` | `NOLOGIN`     | dbrole_readonly             | 全局读写权限角色    |
+| `dbrole_admin`     | `NOLOGIN`     | pg_monitor,dbrole_readwrite | 对象创建权限角色             |
+| `dbrole_offline`   | `NOLOGIN`     |                             | 受限只读权限角色 |
+| `postgres`         | `SUPERUSER`   |                             | 系统超级用户                     |
+| `replicator`       | `REPLICATION` | pg_monitor,dbrole_readonly  | 系统复制用户                    |
+| `dbuser_dba`       | `SUPERUSER`   | dbrole_admin                | PostgreSQL 管理员用户                     |
+| `dbuser_monitor`   |               | pg_monitor                  | PostgreSQL 监控用户                   |
+
+```yaml
+pg_default_roles:                 # PostgreSQL 集群中的默认角色和用户
+  - { name: dbrole_readonly  ,login: false ,comment: role for global read-only access     }
+  - { name: dbrole_offline   ,login: false ,comment: role for restricted read-only access }
+  - { name: dbrole_readwrite ,login: false ,roles: [dbrole_readonly] ,comment: role for global read-write access }
+  - { name: dbrole_admin     ,login: false ,roles: [pg_monitor, dbrole_readwrite] ,comment: role for object creation }
+  - { name: postgres     ,superuser: true  ,comment: system superuser }
+  - { name: replicator ,replication: true  ,roles: [pg_monitor, dbrole_readonly] ,comment: system replicator }
+  - { name: dbuser_dba   ,superuser: true  ,roles: [dbrole_admin]  ,pgbouncer: true ,pool_mode: session, pool_connlimit: 16 ,comment: pgsql admin user }
+  - { name: dbuser_monitor ,roles: [pg_monitor] ,pgbouncer: true ,parameters: {log_min_duration_statement: 1000 } ,pool_mode: session ,pool_connlimit: 8 ,comment: pgsql monitor user }
+```
+
+------
+
+## 默认角色 [#default-roles]
+
+Pigsty 中有四个默认角色：
+
+- 只读角色（`dbrole_readonly`）：全局只读权限访问角色
+- 读写角色（`dbrole_readwrite`）：全局读写权限访问角色，继承 `dbrole_readonly`
+- 管理员角色（`dbrole_admin`）：DDL 命令权限角色，继承 `dbrole_readwrite`
+- 离线角色（`dbrole_offline`）：受限只读权限访问角色（[离线](/zh/pgsql/config/#offline) 实例）
+
+默认角色在 [`pg_default_roles`](/zh/pgsql/param#pg_default_roles) 中定义，不建议修改默认角色。
+
+```yaml
+- { name: dbrole_readonly  , login: false , comment: role for global read-only access  }                            # 生产只读角色
+- { name: dbrole_offline ,   login: false , comment: role for restricted read-only access (offline instance) }      # 受限只读角色
+- { name: dbrole_readwrite , login: false , roles: [dbrole_readonly], comment: role for global read-write access }  # 生产读写角色
+- { name: dbrole_admin , login: false , roles: [pg_monitor, dbrole_readwrite] , comment: role for object creation } # 生产 DDL 变更角色
+```
+
+------
+
+## 默认用户 [#default-users]
+
+Pigsty 中也有四个默认用户。
+
+- 超级用户（`postgres`），集群的拥有者和创建者，与操作系统数据库超级用户相同
+- 复制用户（`replicator`），用于主从复制的系统用户
+- 监控用户（`dbuser_monitor`），用于监控数据库和连接池指标的用户
+- 管理员用户（`dbuser_dba`），执行日常操作和数据库变更的管理员用户
+
+默认用户的用户名/密码由专用参数定义（除了数据库超级用户密码）：
+
+- [`pg_dbsu`](/zh/pgsql/param#pg_dbsu) ：操作系统数据库超级用户名称，默认为 postgres，最好不要更改
+- [`pg_replication_username`](/zh/pgsql/param#pg_replication_username) ：PostgreSQL 复制用户名，默认为 `replicator`
+- [`pg_replication_password`](/zh/pgsql/param#pg_replication_password) ：PostgreSQL 复制用户密码，默认为 `DBUser.Replicator`
+- [`pg_admin_username`](/zh/pgsql/param#pg_admin_username) ：PostgreSQL 管理员用户名，默认为 `dbuser_dba`
+- [`pg_admin_password`](/zh/pgsql/param#pg_admin_password) ：PostgreSQL 管理员用户明文密码，默认为 `DBUser.DBA`
+- [`pg_monitor_username`](/zh/pgsql/param#pg_monitor_username) ：PostgreSQL 监控用户名，默认为 `dbuser_monitor`
+- [`pg_monitor_password`](/zh/pgsql/param#pg_monitor_password) ：PostgreSQL 监控用户密码，默认为 `DBUser.Monitor`
+
+!> **请记住在生产部署中更改这些密码！**
+
+```yaml
+pg_dbsu: postgres                             # 数据库的操作系统用户
+pg_replication_username: replicator           # 系统复制用户
+pg_replication_password: DBUser.Replicator    # 系统复制用户密码
+pg_monitor_username: dbuser_monitor           # 系统监控用户
+pg_monitor_password: DBUser.Monitor           # 系统监控用户密码
+pg_admin_username: dbuser_dba                 # 系统管理员用户
+pg_admin_password: DBUser.DBA                 # 系统管理员用户密码
+```
+
+要定义额外选项，请在 [`pg_default_roles`](/zh/pgsql/param#pg_default_roles) 中指定：
+
+```yaml
+- { name: postgres     ,superuser: true                                          ,comment: system superuser }
+- { name: replicator ,replication: true  ,roles: [pg_monitor, dbrole_readonly]   ,comment: system replicator }
+- { name: dbuser_dba   ,superuser: true  ,roles: [dbrole_admin]  ,pgbouncer: true ,pool_mode: session, pool_connlimit: 16 , comment: pgsql admin user }
+- { name: dbuser_monitor   ,roles: [pg_monitor, dbrole_readonly] ,pgbouncer: true ,parameters: {log_min_duration_statement: 1000 } ,pool_mode: session ,pool_connlimit: 8 ,comment: pgsql monitor user }
+```
+
+------
+
+## 权限管理 [#privileges]
+
+Pigsty 具有一套开箱即用的权限模型，与 [默认角色](#default-roles) 配合使用。
+
+- 所有用户都可以访问所有 Schema
+- 只读用户可以从所有表读取数据（SELECT、EXECUTE）
+- 读写用户可以向所有表写入数据并运行 DML（INSERT、UPDATE、DELETE）
+- 管理员用户可以创建对象并运行 DDL（CREATE、USAGE、TRUNCATE、REFERENCES、TRIGGER）
+- 离线用户是在离线实例上具有受限访问权限的只读用户（`pg_role = 'offline'` 或 `pg_offline_query = true`）
+- 由管理员用户创建的对象将具有正确的权限
+- 默认权限安装在所有数据库上，包括模板数据库
+- 数据库连接权限由数据库 [定义](/zh/pgsql/db/#define-database) 覆盖
+- 默认情况下，数据库和 public schema 的 `CREATE` 权限从 `PUBLIC` 撤销
+
+------
+
+## 对象权限 [#object-privilege]
+
+默认对象权限在 [`pg_default_privileges`](/zh/pgsql/param#pg_default_privileges) 中定义。
+
+```yaml
+- GRANT USAGE      ON SCHEMAS   TO dbrole_readonly
+- GRANT SELECT     ON TABLES    TO dbrole_readonly
+- GRANT SELECT     ON SEQUENCES TO dbrole_readonly
+- GRANT EXECUTE    ON FUNCTIONS TO dbrole_readonly
+- GRANT USAGE      ON SCHEMAS   TO dbrole_offline
+- GRANT SELECT     ON TABLES    TO dbrole_offline
+- GRANT SELECT     ON SEQUENCES TO dbrole_offline
+- GRANT EXECUTE    ON FUNCTIONS TO dbrole_offline
+- GRANT INSERT     ON TABLES    TO dbrole_readwrite
+- GRANT UPDATE     ON TABLES    TO dbrole_readwrite
+- GRANT DELETE     ON TABLES    TO dbrole_readwrite
+- GRANT USAGE      ON SEQUENCES TO dbrole_readwrite
+- GRANT UPDATE     ON SEQUENCES TO dbrole_readwrite
+- GRANT TRUNCATE   ON TABLES    TO dbrole_admin
+- GRANT REFERENCES ON TABLES    TO dbrole_admin
+- GRANT TRIGGER    ON TABLES    TO dbrole_admin
+- GRANT CREATE     ON SCHEMAS   TO dbrole_admin
+```
+
+当新创建的对象**由管理员用户创建**时，它们将具有相应的权限。
+
+`\ddp+` 命令的输出可能如下所示：
+
+| 类型     | 访问权限    |
+|----------|----------------------|
+| function | =X                   |
+|          | dbrole_readonly=X    |
+|          | dbrole_offline=X     |
+|          | dbrole_admin=X       |
+| schema   | dbrole_readonly=U    |
+|          | dbrole_offline=U     |
+|          | dbrole_admin=UC      |
+| sequence | dbrole_readonly=r    |
+|          | dbrole_offline=r     |
+|          | dbrole_readwrite=wU  |
+|          | dbrole_admin=rwU     |
+| table    | dbrole_readonly=r    |
+|          | dbrole_offline=r     |
+|          | dbrole_readwrite=awd |
+|          | dbrole_admin=arwdDxt |
+
+------
+
+## 默认权限 [#default-privilege]
+
+[`ALTER DEFAULT PRIVILEGES`](https://www.postgresql.org/docs/current/sql-alterdefaultprivileges.html) 允许您设置将应用于未来创建的对象的权限。它不会影响分配给已存在对象的权限，也不会影响由非管理员用户创建的对象。
+
+Pigsty 将使用以下默认权限：
+
+```sql
+{% for priv in pg_default_privileges %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{ pg_dbsu }} {{ priv }};
+{% endfor %}
+
+{% for priv in pg_default_privileges %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{ pg_admin_username }} {{ priv }};
+{% endfor %}
+
+-- 对于额外的业务管理员，他们可以使用 SET ROLE 切换到 dbrole_admin
+{% for priv in pg_default_privileges %}
+ALTER DEFAULT PRIVILEGES FOR ROLE "dbrole_admin" {{ priv }};
+{% endfor %}
+```
+
+这些权限将在 [`pg-init-template.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-template.sql) 中与管理员用户的 `ALTER DEFAULT PRIVILEGES` 语句一起渲染。
+
+这些 SQL 命令将在集群引导期间在 `postgres` 和 `template1` 上执行，新创建的数据库将默认从 `template1` 继承它们。
+
+也就是说，要维护正确的对象权限，您必须使用**管理员用户**运行 DDL，这些用户可以是：
+
+1. [`{{ pg_dbsu }}`](/zh/pgsql/param#pg_dbsu)，默认为 `postgres`
+2. [`{{ pg_admin_username }}`](/zh/pgsql/param#pg_admin_username)，默认为 `dbuser_dba`
+3. 被授予 `dbrole_admin` 权限的业务管理员用户
+
+明智的做法是使用 `postgres` 作为全局对象拥有者来执行 DDL 变更。
+如果您希望使用业务管理员用户创建对象，您必须在运行该 DDL 之前使用 `SET ROLE dbrole_admin` 来维护正确的权限。
+
+您也可以使用 `ALTER DEFAULT PRIVILEGE FOR ROLE <some_biz_admin> XXX` 来为业务管理员用户授予默认权限。
+
+------
+
+## 数据库权限 [#database-privilege]
+
+数据库权限由 [数据库定义](/zh/pgsql/db/#define-database) 覆盖。
+
+有 3 个数据库级别的权限：`CONNECT`、`CREATE`、`TEMP`，以及一个特殊的"权限"：`OWNERSHIP`。
+
+```yaml
+- name: meta         # 必需，`name` 是数据库定义的唯一必需字段
+  owner: postgres    # 可选，指定数据库拥有者，默认为 {{ pg_dbsu }}
+  allowconn: true    # 可选，允许连接，默认为 true。false 将完全禁用连接
+  revokeconn: false  # 可选，撤销公共连接权限。默认为 false。（将连接权限留给拥有者并授予授权选项）
+```
+
+- 如果 `owner` 存在，它将用作数据库拥有者，而不是默认的 [`{{ pg_dbsu }}`](/zh/pgsql/param#pg_dbsu)
+- 如果 `revokeconn` 为 `false`，所有用户都具有数据库的 `CONNECT` 权限，这是默认行为
+- 如果 `revokeconn` 明确设置为 `true`：
+- 数据库的 `CONNECT` 权限将从 `PUBLIC` 撤销
+- `CONNECT` 权限将授予 `{{ pg_replication_username }}`、`{{ pg_monitor_username }}` 和 `{{ pg_admin_username }}`
+- `CONNECT` 权限将授予数据库拥有者并带有 `GRANT OPTION`
+
+`revokeconn` 标志可用于数据库访问隔离，您可以为每个数据库创建不同的业务用户作为拥有者，并为所有数据库设置 `revokeconn` 选项。
+
+
+--------
+
+## 创建权限 [#create-privilege]
+
+出于安全考虑，Pigsty 默认从 `PUBLIC` 撤销数据库上的 `CREATE` 权限。这也是 PostgreSQL 15 以来的默认行为。
+
+数据库拥有者具有根据需要调整这些权限的完全能力。

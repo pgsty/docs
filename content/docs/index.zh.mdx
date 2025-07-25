@@ -1,87 +1,175 @@
 ---
-title: Pigsty v3.6
-description: 开始您的 PostgreSQL 之旅
-icon: Rocket
+title: Pigsty 文档
+description: Pigsty v3.6 文档
+icon: PiggyBank
 full: true
 ---
 
-import {Database,CpuIcon,SearchIcon,FileCode,AtomIcon,ToyBrickIcon,Server,Landmark,Settings} from 'lucide-react';
-import { DynamicLink } from 'fumadocs-core/dynamic-link';
+import {Database,CpuIcon,Landmark,Settings,FileCode,Server,Container,Leaf,Box,Layers,Rocket,SquareStack,Code} from 'lucide-react';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-## 简介
+<span className="text-sky-700 font-black">P</span>ostgres <span className="text-blue-400 font-black">I</span>n <span className="text-orange-500 font-black">G</span>reat <span className="text-gray-500 font-black">S</span><span className="text-red-700 font-black">T</span><span className="text-green-600 font-black">Y</span>le ——
+<span className="text-sky-700 font-black">P</span>ostgres
+<span className="text-blue-400 font-black">I</span>nfra
+<span className="text-orange-500 font-black">G</span>raphic
+<span className="text-gray-500 font-black">S</span>ervice
+<span className="text-red-700 font-black">T</span>oolbox, 
+<span className="text-green-600 font-black">Y</span>ours
+. 你的图形化 PG 基础设施服务工具箱！
 
-**Pigsty** <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span> 是一个开箱即用，本地优先，开源免费的 <span className="text-blue-500 font-bold">PostgreSQL 数据库发行版</span>。
+## 简介 [#introduction]
+
+<span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
+是一个开箱即用的开源 <a href="/zh/intro/distro"><span className="text-sky-700 font-black">PostgreSQL 发行版</span></a>，
+也是一个本地优先的 <a href="/zh/intro/rds"><span className="text-amber-600 font-black">RDS 替代方案</span></a>。
+
+
 
 <Cards>
-    <Card icon={<Database className="text-blue-300" />} title='企业级 PostgreSQL' href={"/pgsql"}>
-        快速创建高可用、故障自愈的 PostgreSQL 集群。自动预置的 PITR、访问控制、SSL加密。自带本地 CA 与安全最佳实践，确保数据坚如磐石
+
+    <Card icon={<Rocket className="text-blue-300" />} title='价值' href={"/zh/value"}>
+        为什么使用 Pigsty？Pigsty 的 8 条核心价值主张
     </Card>
-    <Card icon={<AtomIcon className="text-green-600" />} title='基础设施即代码' href={"/infra"}>
-        包含整套运行所需的基础设施闭包：声明所需的一切而无需操心实现细节，所有依赖一键拉起，无需K8S与容器的云原生体验，简单易用的最佳实践
+
+    <Card icon={<SquareStack className={"text-red-500"} />} title='特性' href={"/zh/feat"}>
+        核心特性、亮点和技术细节
     </Card>
-    <Card icon={<SearchIcon className={"text-orange-400"} />} title='震撼的可观测性' href={"https://demo.pigsty.cc"}>
-        基于 Prometheus 与 Grafana 现代可观测性技术栈提供无与伦比的可视化面板，与开箱即用的监控最佳实践。可独立部署使用并监控第三方 RDS 服务
+
+    <Card icon={<Code className="text-green-600" />} title='参考' href={"/zh/intro"}>
+        架构、用例、对比和其他参考资料
     </Card>
-    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='极致的可扩展性' href={"/pgsql/extension"}>
-        <span className={"text-red-800 font-bold"}>420+</span> PGSQL 扩展开箱即用，真·遥遥领先！支持 Babelfish, IvorySQL, PolarDB 分叉内核，更有 Supabase，MinIO，Etcd，Redis 等自建支持
+    <Card icon={<Landmark className={"text-orange-400"} />} title='关于' href={"/zh/about"}>
+        许可证、发布、社区、新闻、作者、服务等...
     </Card>
+
 </Cards>
 
-Pigsty 满足您 “一切皆用 PostgreSQL” 的需求，提供 PG 生态中最全面的扩展插件/内核支持；
-整合 PG 生态开源组件与最佳实践，提供了自建企业级 PostgreSQL 服务所需的一切，
-让您无需数据库专家，在几分钟内以云数据库 RDS 1/10 不到的纯硬件成本，自建专业级数据库服务。
+Pigsty 汇聚了 PostgreSQL 和数据库世界的所有超能力，提供构建数据基础设施所需的一切。
+
+> **一切皆用 Postgres！像专家一样自建！**
 
 
-<Callout title="想要了解更多？">
-
-    欢迎阅读关于 [Pigsty是什么](/intro) 的深度介绍。
-
-</Callout>
 
 
 
 --------
 
-## 架构
+## 安装 [#installation]
 
-Pigsty 直接运行于裸 Linux 系统之上，使用 Ansible 实现，采用可扩展的模块化架构。
-
-<Cards>
-    <Card icon={<Database className="text-sky-700" />} title='PGSQL' href={"/pgsql"}>
-        由 Patroni、Pgbouncer、HAproxy、PgBackrest 等驱动的自治高可用 PostgreSQL 集群
-    </Card>
-    <Card icon={<Landmark className="text-orange-400" />} title='INFRA' href={"/infra"}>
-        本地软件仓库、Prometheus、Grafana、Loki、AlertManager、PushGateway、Blackbox Exporter…
-    </Card>
-    <Card icon={<Server className={"text-green-500"} />} title='NODE' href={"/node"}>
-        调整节点到所需状态、名称、时区、NTP、ssh、sudo、haproxy、docker、promtail、keepalived
-    </Card>
-    <Card icon={<Settings className={"text-blue-400"} />} title='ETCD' href={"/etcd"}>
-        分布式键值存储，用作高可用 Postgres 集群的 DCS：共识选主 / 配置管理 / 服务发现。
-    </Card>
-</Cards>
-
-
---------
-
-## 安装
-
-准备一台全新安装 <DynamicLink href="/zh/prepare/linux">兼容Linux系统</DynamicLink> 的节点，然后使用以下命令下载 Pigsty：
+[**快速开始**](/zh/install/start)：[准备](/zh/prepare) 一台具有 [SSH 访问权限](/zh/prepare/admin#check-accessibility) 的 [节点](/zh/prepare/hardware#node)，新安装 [Linux](/zh/prepare/linux) 系统，
+使用具有免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的 [用户](/zh/prepare/admin#user) 运行：
 
 ```bash title="install"
-curl -fsSL https://repo.pigsty.io/get | bash;
-cd ~/pigsty; ./configure; ./install.yml;
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;  # 下载安装 Pigsty
+./configure    # 生成配置文件
+./install.yml  # 执行安装部署
 ```
 
-import { File, Folder, Files } from 'fumadocs-ui/components/files';
+[**下载**](/zh/prepare/software#pigsty)、[**配置**](/zh/config/configure) 和 [**安装**](/zh/install)。Pigsty 会在几分钟内 [**完成安装**](/zh/install)！您可以稍后 [**添加更多节点**](/zh/install/multinode) 与数据库集群。
 
-<Files>
-    <Folder name="pigsty" defaultOpen>
-        <File name="bootstrap" icon={<CpuIcon className="text-orange-400" />} />
-        <File name="configure"  icon={<CpuIcon className="text-orange-400" />} />
-        <File name="install.yml"  icon={<CpuIcon className="text-orange-400" />} />
-        <DynamicLink href="/zh/install"><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></DynamicLink>
-    </Folder>
-</Files>
+接下来，您可以探索 [**用户界面**](/zh/install/interface)，访问 `5432` 端口上的 [Postgres](/zh/pgsql) [服务](/zh/pgsql/service)，以及 `3000` 端口上的 Grafana 监控大盘（用户名/密码：`admin` / `pigsty`）。
 
-Pigsty 单节点安装完毕，你可以通过 `5432` 端口访问 PostgreSQL 服务，或通过 `3000` 端口访问 Grafana 仪表盘。
+<Cards>
+
+    <Card icon={<Rocket className="text-blue-300" />} title='安装' href={"/zh/install"}>
+        在 Linux 服务器上安装 Pigsty
+    </Card>
+
+    <Card icon={<SquareStack className={"text-red-500"} />} title='准备' href={"/zh/prepare"}>
+        为正式部署准备环境
+    </Card>
+
+    <Card icon={<Code className="text-green-600" />} title='配置' href={"/zh/config"}>
+        使用配置清单自定义数据库集群
+    </Card>
+    <Card icon={<Landmark className={"text-orange-400"} />} title='管理' href={"/zh/admin"}>
+        使用 Ansible 剧本管理您的环境
+    </Card>
+
+</Cards>
+
+--------
+
+## 模块 [#modules]
+
+Pigsty 由多个 [**模块**](/zh/intro/module) 组成。其中，`PGSQL` / `INFRA` / `NODE` / `ETCD` （`PINE` 组合） 是自主托管 Postgres RDS 服务的 <span className="text-sky-700 font-black">必需</span> 模块。
+
+<Cards>
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/zh/pgsql"}>
+        具有高可用、PITR、IaC、ACL、监控和 420+ 扩展的 HA PG 集群
+    </Card>
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/zh/infra"}>
+        Nginx、软件仓库、DNS、NTP、Prometheus 和 Grafana 可观测性技术栈
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/zh/node"}>
+        将节点注册到所需状态并监控，以及 VIP、HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/zh/etcd"}>
+        可靠的分布式共识存储（DCS），为 PGSQL 高可用提供支持
+    </Card>
+</Cards>
+
+Pigsty 还提供了一些 <span className="text-emerald-500 font-black">完全可选</span> 的 "福利" 模块，它们与 PostgreSQL 配合良好，并能为您的数据基础设施带来额外价值。
+
+<Cards>
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/zh/minio"}>
+        S3 兼容的对象存储，可选的备份存储
+    </Card>
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/zh/redis"}>
+        高性能内存缓存，可选的数据结构服务器
+    </Card>
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/zh/docker"}>
+        容器运行时，可选，用于运行无状态应用和工具
+    </Card>
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/zh/ferret"}>
+        将你的 PostgreSQL 封装为一套 MongoDB！
+    </Card>
+</Cards>
+
+--------
+
+## 常见问题 [#faq]
+
+<Accordions type="single" orientation={"horizontal"}>
+    <Accordion title="什么是 Pigsty？">
+        Pigsty 是一个 PostgreSQL 发行版——一个开源的、本地优先的托管数据库服务替代方案，如 AWS RDS。它本身不是数据库，而是一个全面的管理解决方案和经过实战检验的最佳实践集合。这样理解：如果数据库是汽车，DBA 是司机，那么 RDS 就像优步，而 Pigsty 是您的个人自动驾驶系统。
+    </Accordion>
+
+    <Accordion title="Pigsty 解决什么问题？">
+        数据库专业知识昂贵且难以找到——您要么雇佣昂贵的 DBA，要么为云 RDS 支付高昂价格。Pigsty 提供第三种选择：在自己的基础设施中运行企业级数据库，无需专门的 DBA，成本不到典型 RDS 的 10%，同时获得更好的性能和灵活性。
+    </Accordion>
+
+    <Accordion title="为什么选择 Pigsty 而不是 RDS？">
+        Pigsty 提供大多数 RDS 提供商无法匹敌的功能：<span className={"text-red-800 font-bold"}>420+</span> PostgreSQL 扩展，支持 8+ Postgres 变体，世界级监控，以及经过苹果、阿里巴巴等公司大规模验证的实战架构。它带着真正的热情构建，达到了典型 RDS 平台根本无法提供的功能深度。
+    </Accordion>
+
+    <Accordion title="使用 Pigsty 能节省多少成本？">
+        显著节省。在 RDS 上每 vCPU 每月花费 $100-200 的成本，使用 Pigsty 在裸机上运行只需每 vCPU 每月 $2——还省下了 DBA 工资。在规模化时，总拥有成本可降低 90% 或更多，释放预算用于对业务真正重要的事情。
+    </Accordion>
+
+    <Accordion title="Pigsty 如何帮助开发者？">
+        凭借 <span className={"text-red-800 font-bold"}>420+</span> 内置 PostgreSQL 扩展，Pigsty 实现了 "一切皆用 Postgres" 的方法。用单一、统一的技术栈替换 Redis、Kafka、MySQL、Elasticsearch、向量数据库，甚至一些 OLAP 工作负载。这减少了复杂性，提高了开发者速度，实现了真正的自服务 DevOps。
+    </Accordion>
+
+    <Accordion title="运维和可靠性如何？">
+        Pigsty 的自愈高可用意味着硬件故障时不再有凌晨 3 点的叫醒电话。高级监控有助于故障排除和性能优化。基础设施即代码自动化大规模集群管理。您的运维团队可以处理 DBA 任务，您的 DBA 可以专注于高价值工作而不是救火。
+    </Accordion>
+
+    <Accordion title="谁在开发 Pigsty？">
+        Pigsty 主要由冯若航（@Vonng）开发，他是拥有十多年开源贡献和在阿里巴巴、探探、苹果生产经验的 PostgreSQL 资深专家。他也是微信上拥有 6 万多粉丝的顶级数据库意见领袖，现在经营一家专注于 PostgreSQL 卓越的咨询公司。
+    </Accordion>
+
+    <Accordion title="Pigsty 支持什么规模？">
+        Pigsty 可扩展从单个开发者设置到大规模企业部署。已知最大的生产部署在六年内处理 2.5 万 vCPU、450 万 QPS。最小的？一个简单的 1 核演示虚拟机。它为企业规模而设计，但为简单性而优化。
+    </Accordion>
+
+    <Accordion title="Pigsty 真的免费吗？">
+        是的，Pigsty 是 AGPLv3 许可下的 100% 自由软件。只要遵守许可证条款，您可以商业使用。我们相信软件自由——对于大多数用例，我们采用类似 Apache 2.0 的方法。对于想要专业支持和额外许可选项的用户，可以购买商业订阅。
+    </Accordion>
+
+    <Accordion title="我可以用 Pigsty 构建 DBaaS 吗？">
+        可以，在 AGPLv3 许可下——这意味着任何衍生作品都必须开源。我们积极防范云提供商的许可违规。如果您不想开源衍生作品，Pigsty 企业订阅为这种场景提供明确的许可和 AGPLv3 豁免。
+    </Accordion>
+</Accordions>
+
+

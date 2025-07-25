@@ -1,0 +1,223 @@
+---
+title: 认证 / HBA
+description: Pigsty 中基于主机的身份验证
+icon: KeySquare
+---
+
+PostgreSQL 有各种[身份验证](https://www.postgresql.org/docs/current/client-authentication.html)方法。您可以使用所有这些方法，而 Pigsty 的开箱即用 ACL 系统专注于 HBA、密码和 SSL 身份验证。
+
+------
+
+## 客户端身份验证 [#client-authentication]
+
+要连接到 PostgreSQL 数据库，用户必须经过身份验证（默认使用密码）。
+
+您可以在连接字符串中提供密码（不安全）或使用 `PGPASSWORD` 环境变量或 `.pgpass` 文件。查看 [`psql`](https://www.postgresql.org/docs/current/app-psql.html#usage) 文档和 [PostgreSQL 连接字符串](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) 了解更多详情。
+
+```bash
+psql 'host=<host> port=<port> dbname=<dbname> user=<username> password=<password>'
+psql postgres://<username>:<password>@<host>:<port>/<dbname>
+PGPASSWORD=<password>; psql -U <username> -h <host> -p <port> -d <dbname>
+```
+
+`meta` 数据库的默认连接字符串：
+
+```bash
+psql 'host=10.10.10.10 port=5432 dbname=meta user=dbuser_dba password=DBUser.DBA'
+psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta
+PGPASSWORD=DBUser.DBA; psql -U dbuser_dba -h 10.10.10.10 -p 5432 -d meta
+```
+
+要使用 SSL 证书连接，您可以使用 `PGSSLCERT` 和 `PGSSLKEY` 环境变量或 `sslkey` 和 `sslcert` 参数。
+
+```bash
+psql 'postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta?sslkey=/path/to/dbuser_dba.key&sslcert=/path/to/dbuser_dba.crt'
+```
+
+而客户端证书（`CN` = 用户名）可以使用本地 CA 和 [cert.yml](https://github.com/pgsty/pigsty/blob/main/cert.yml) 颁发。
+
+------
+
+## 定义 HBA [#define-hba]
+
+Pigsty 中有四个 HBA 规则参数：
+
+- [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules)：postgres 自定义 hba 规则
+- [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules)：postgres 默认 hba 规则
+- [`pgb_hba_rules`](/zh/pgsql/param#pgb_hba_rules)：pgbouncer 自定义 hba 规则
+- [`pgb_default_hba_rules`](/zh/pgsql/param#pgb_default_hba_rules)：pgbouncer 默认 hba 规则
+
+这些是 hba 规则对象的数组，每个 hba 规则是以下形式之一：
+
+### 1. 原始形式
+
+```yaml
+- title: allow intranet password access
+  role: common
+  rules:
+    - host   all  all  10.0.0.0/8      md5
+    - host   all  all  172.16.0.0/12   md5
+    - host   all  all  192.168.0.0/16  md5
+```
+
+在此形式中，`title` 将被渲染为注释行，后面跟着作为 hba 字符串的 `rules`。
+
+当实例的 [`pg_role`](/zh/pgsql/param#pg_role) 与 `role` 相同时，将安装 HBA 规则。
+
+具有 `role: common` 的 HBA 规则将安装在所有实例上。
+
+具有 `role: offline` 的 HBA 规则将安装在 [`pg_role`](/zh/pgsql/param#pg_role) = `offline` 或 [`pg_offline_query`](/zh/pgsql/param#pg_offline_query) = `true` 的实例上。
+
+### 2. 别名形式
+
+别名形式，用 `addr`、`auth`、`user` 和 `db` 字段替换 `rules`。
+
+```yaml
+- addr: 'intra'    # world|intra|infra|admin|local|localhost|cluster|<cidr>
+  auth: 'pwd'      # trust|pwd|ssl|cert|deny|<official auth method>
+  user: 'all'      # all|${dbsu}|${repl}|${admin}|${monitor}|<user>|<group>
+  db: 'all'        # all|replication|....
+  rules: []        # 原始 hba 字符串优先于上述所有字段
+  title: allow intranet password access
+```
+
+- `addr`：在哪里
+  - `world`：所有 IP 地址
+  - `intra`：所有内网 cidr：`'10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'`
+  - `infra`：基础设施节点的 IP 地址
+  - `admin`：`admin_ip` 地址
+  - `local`：本地 unix socket
+  - `localhost`：本地 unix socket + tcp 127.0.0.1/32
+  - `cluster`：pg 集群成员的所有 IP 地址
+  - `<cidr>`：任何标准 CIDR 块或 IP 地址
+
+- `auth`：如何
+  - `deny`：拒绝访问
+  - `trust`：信任身份验证
+  - `pwd`：根据 [`pg_pwd_enc`](/zh/pgsql/param#pg_pwd_enc) 使用 `md5` 或 `scram-sha-256` 密码认证
+  - `sha`/`scram-sha-256`：强制 `scram-sha-256` 密码身份验证
+  - `md5`：`md5` 密码身份验证
+  - `ssl`：除了 `pwd` 认证外强制主机 ssl
+  - `ssl-md5`：除了 `md5` 密码认证外强制主机 ssl
+  - `ssl-sha`：除了 `scram-sha-256` 密码认证外强制主机 ssl
+  - `os`/`ident`：使用 `ident` 操作系统用户身份验证
+  - `peer`：使用 `peer` 身份验证
+  - `cert`：使用基于证书的客户端身份验证
+
+- `user`：谁
+  - `all`：所有用户
+  - `${dbsu}`：由 [`pg_dbsu`](/zh/pgsql/param#pg_dbsu) 指定的数据库超级用户
+  - `${repl}`：由 [`pg_replication_username`](/zh/pgsql/param#pg_replication_username) 指定的复制用户
+  - `${admin}`：由 [`pg_admin_username`](/zh/pgsql/param#pg_admin_username) 指定的管理员用户
+  - `${monitor}`：由 [`pg_monitor_username`](/zh/pgsql/param#pg_monitor_username) 指定的监控用户
+  - 自定义用户和角色。
+
+- `db`：哪个
+  - `all`：所有数据库
+  - `replication`：复制数据库
+  - 自定义数据库名称
+
+### 3. 在哪里定义
+
+通常，全局 HBA 在 all.vars 中定义。如果您想修改全局默认 HBA 规则，可以从 full.yml 模板复制到 all.vars 进行修改。
+
+- [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules)：postgres 全局默认 HBA 规则
+- [`pgb_default_hba_rules`](/zh/pgsql/param#pgb_default_hba_rules)：pgbouncer 全局默认 HBA 规则
+
+集群特定的 HBA 规则在数据库的集群级配置中定义：
+
+- [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules)：集群的 postgres HBA 规则
+- [`pgb_hba_rules`](/zh/pgsql/param#pgb_hba_rules)：集群的 pgbouncer HBA 规则
+
+以下是一些集群 HBA 规则定义的示例。
+
+```yaml
+pg-meta:
+  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-meta
+    pg_hba_rules:
+      - { user: dbuser_view ,db: all    ,addr: infra        ,auth: pwd  ,title: 'allow grafana dashboard access cmdb from infra nodes'}
+      - { user: all         ,db: all    ,addr: 100.0.0.0/8  ,auth: pwd  ,title: 'all user access all db from kubernetes cluster' }
+      - { user: '${admin}'  ,db: world  ,addr: 0.0.0.0/0    ,auth: cert ,title: 'all admin world access with client cert'        }
+```
+
+------
+
+## 重新加载 HBA [#reload-hba]
+
+要重新加载 postgres/pgbouncer hba 规则：
+
+```bash
+bin/pgsql-hba <cls>                 # 重新加载集群 `<cls>` 的 hba 规则
+bin/pgsql-hba <cls> ip1 ip2...      # 重新加载特定实例的 hba 规则
+```
+
+底层命令是：
+
+```bash
+./pgsql.yml -l <cls> -e pg_reload=true -t pg_hba,pg_reload
+./pgsql.yml -l <cls> -e pg_reload=true -t pgbouncer_hba,pgbouncer_reload
+```
+
+------
+
+## 默认 HBA [#default-hba]
+
+Pigsty 有一套默认的 HBA 规则，对于大多数情况来说都是相当安全的。
+
+这些规则在别名形式中是自解释的。
+
+```yaml
+pg_default_hba_rules:             # postgres 默认基于主机的身份验证规则
+  - {user: '${dbsu}'    ,db: all         ,addr: local     ,auth: ident ,title: 'dbsu access via local os user ident'  }
+  - {user: '${dbsu}'    ,db: replication ,addr: local     ,auth: ident ,title: 'dbsu replication from local os ident' }
+  - {user: '${repl}'    ,db: replication ,addr: localhost ,auth: pwd   ,title: 'replicator replication from localhost'}
+  - {user: '${repl}'    ,db: replication ,addr: intra     ,auth: pwd   ,title: 'replicator replication from intranet' }
+  - {user: '${repl}'    ,db: postgres    ,addr: intra     ,auth: pwd   ,title: 'replicator postgres db from intranet' }
+  - {user: '${monitor}' ,db: all         ,addr: localhost ,auth: pwd   ,title: 'monitor from localhost with password' }
+  - {user: '${monitor}' ,db: all         ,addr: infra     ,auth: pwd   ,title: 'monitor from infra host with password'}
+  - {user: '${admin}'   ,db: all         ,addr: infra     ,auth: ssl   ,title: 'admin @ infra nodes with pwd & ssl'   }
+  - {user: '${admin}'   ,db: all         ,addr: world     ,auth: ssl   ,title: 'admin @ everywhere with ssl & pwd'   }
+  - {user: '+dbrole_readonly',db: all    ,addr: localhost ,auth: pwd   ,title: 'pgbouncer read/write via local socket'}
+  - {user: '+dbrole_readonly',db: all    ,addr: intra     ,auth: pwd   ,title: 'read/write biz user via password'     }
+  - {user: '+dbrole_offline' ,db: all    ,addr: intra     ,auth: pwd   ,title: 'allow etl offline tasks from intranet'}
+pgb_default_hba_rules:            # pgbouncer 默认基于主机的身份验证规则
+  - {user: '${dbsu}'    ,db: pgbouncer   ,addr: local     ,auth: peer  ,title: 'dbsu local admin access with os ident'}
+  - {user: 'all'        ,db: all         ,addr: localhost ,auth: pwd   ,title: 'allow all user local access with pwd' }
+  - {user: '${monitor}' ,db: pgbouncer   ,addr: intra     ,auth: pwd   ,title: 'monitor access via intranet with pwd' }
+  - {user: '${monitor}' ,db: all         ,addr: world     ,auth: deny  ,title: 'reject all other monitor access addr' }
+  - {user: '${admin}'   ,db: all         ,addr: intra     ,auth: pwd   ,title: 'admin access via intranet with pwd'   }
+  - {user: '${admin}'   ,db: all         ,addr: world     ,auth: deny  ,title: 'reject all other admin access addr'   }
+  - {user: 'all'        ,db: all         ,addr: intra     ,auth: pwd   ,title: 'allow all user intra access with pwd' }
+```
+
+------
+
+## 安全增强 [#security-enhancement]
+
+对于那些关键情况，我们有一个 [security.yml](https://github.com/pgsty/pigsty/blob/main/conf/safe.yml) 模板，其中包含以下 hba 规则集作为参考：
+
+```yaml
+pg_default_hba_rules:             # postgres 默认基于主机的认证规则
+  - {user: '${dbsu}'    ,db: all         ,addr: local     ,auth: ident ,title: 'dbsu access via local os user ident'  }
+  - {user: '${dbsu}'    ,db: replication ,addr: local     ,auth: ident ,title: 'dbsu replication from local os ident' }
+  - {user: '${repl}'    ,db: replication ,addr: localhost ,auth: ssl   ,title: 'replicator replication from localhost'}
+  - {user: '${repl}'    ,db: replication ,addr: intra     ,auth: ssl   ,title: 'replicator replication from intranet' }
+  - {user: '${repl}'    ,db: postgres    ,addr: intra     ,auth: ssl   ,title: 'replicator postgres db from intranet' }
+  - {user: '${monitor}' ,db: all         ,addr: localhost ,auth: pwd   ,title: 'monitor from localhost with password' }
+  - {user: '${monitor}' ,db: all         ,addr: infra     ,auth: ssl   ,title: 'monitor from infra host with password'}
+  - {user: '${admin}'   ,db: all         ,addr: infra     ,auth: ssl   ,title: 'admin @ infra nodes with pwd & ssl'   }
+  - {user: '${admin}'   ,db: all         ,addr: world     ,auth: cert  ,title: 'admin @ everywhere with ssl & cert'   }
+  - {user: '+dbrole_readonly',db: all    ,addr: localhost ,auth: ssl   ,title: 'pgbouncer read/write via local socket'}
+  - {user: '+dbrole_readonly',db: all    ,addr: intra     ,auth: ssl   ,title: 'read/write biz user via password'     }
+  - {user: '+dbrole_offline' ,db: all    ,addr: intra     ,auth: ssl   ,title: 'allow etl offline tasks from intranet'}
+pgb_default_hba_rules:            # pgbouncer 基于主机的身份验证规则
+  - {user: '${dbsu}'    ,db: pgbouncer   ,addr: local     ,auth: peer  ,title: 'dbsu local admin access with os ident'}
+  - {user: 'all'        ,db: all         ,addr: localhost ,auth: pwd   ,title: 'allow all user local access with pwd' }
+  - {user: '${monitor}' ,db: pgbouncer   ,addr: intra     ,auth: ssl   ,title: 'monitor access via intranet with pwd' }
+  - {user: '${monitor}' ,db: all         ,addr: world     ,auth: deny  ,title: 'reject all other monitor access addr' }
+  - {user: '${admin}'   ,db: all         ,addr: intra     ,auth: ssl   ,title: 'admin access via intranet with pwd'   }
+  - {user: '${admin}'   ,db: all         ,addr: world     ,auth: deny  ,title: 'reject all other admin access addr'   }
+  - {user: 'all'        ,db: all         ,addr: intra     ,auth: ssl   ,title: 'allow all user intra access with pwd' }
+```

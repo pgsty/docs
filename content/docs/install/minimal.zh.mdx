@@ -1,29 +1,29 @@
 ---
-title: Minimal Install
-description: install Postgres with minimal dependencies
+title: 精简安装
+description: 使用最少依赖安装 PostgreSQL
 icon: Download
 ---
 
-If you just want HA PostgreSQL itself, without monitoring, infra, etc..., consider the slim installation.
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-There’s no [**`INFRA`**](/infra/) modules, no monitoring, no [**local repo**](/admin/repo) Just [**`ETCD`**](/etcd/) & [**`PGSQL`**](/pgsql/) and partial of [**`NODE`**](/node/)
+如果您只想要高可用 PostgreSQL 本身，而不需要监控、基础设施等功能，请考虑精简安装。
+
+没有 [**`INFRA`**](/zh/infra/) 模块，没有监控，没有 [**本地仓库**](/zh/admin/repo)，只有 [**`ETCD`**](/zh/etcd/) 和 [**`PGSQL`**](/zh/pgsql/) 以及部分 [**`NODE`**](/zh/node/) 功能
 
 
 ------
 
-## Overview
+## 概述 [#overview]
 
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
-To use slim installation, you need to:
+使用精简安装，您需要：
 
 <Steps>
     <Step>
-      Use the `slim.yml` config template (`configure -c slim`)
+      使用 `slim.yml` 配置模板（`configure -c slim`）
     </Step>
 
     <Step>
-      Run the `slim.yml` playbook instead of `install.yml`
+      运行 `slim.yml` 剧本而不是 `install.yml`
     </Step>
 </Steps>
 
@@ -34,28 +34,28 @@ curl https://repo.pigsty.cc/get | bash
 ```
 
 
-Slim installation only installs these essential components:
+精简安装只安装这些核心组件：
 
-|  Component  |                         Required                          | Description                                          |
-|:-----------:|:---------------------------------------------------------:|------------------------------------------------------|
-|   patroni   | <span className="text-red-500 font-black">REQUIRED</span> | Bootstrap HA PostgreSQL cluster                      |
-|    etcd     | <span className="text-red-500 font-black">REQUIRED</span> | meta database dependency (DCS) for patroni           |
-|  pgbouncer  | <span className="text-blue-500 font-bold">OPTIONAL</span> | Connection pooler for postgres                       |
-| vip-manager | <span className="text-blue-500 font-bold">OPTIONAL</span> | L2 VIP binding to postgres cluster leader            |
-|   haproxy   | <span className="text-blue-500 font-bold">OPTIONAL</span> | Auto-routing [**service**](/pgsql/service/)          |
-|   chronyd   | <span className="text-blue-500 font-bold">OPTIONAL</span> | Time synchronization with NTP server                 |
-|    tuned    | <span className="text-blue-500 font-bold">OPTIONAL</span> | Node tuned template and kernel parameters management |
+|     组件      |                         必需性                         | 描述                                |
+|:-----------:|:---------------------------------------------------:|-----------------------------------|
+|   patroni   | <span className="text-red-500 font-black">必需</span> | 引导高可用 PostgreSQL 集群               |
+|    etcd     | <span className="text-red-500 font-black">必需</span> | Patroni 的元数据库依赖（DCS）              |
+|  pgbouncer  | <span className="text-blue-500 font-bold">可选</span> | PostgreSQL 连接池                    |
+| vip-manager | <span className="text-blue-500 font-bold">可选</span> | L2 VIP 绑定到 PostgreSQL 集群主节点       |
+|   haproxy   | <span className="text-blue-500 font-bold">可选</span> | 自动路由 [**服务**](/zh/pgsql/service/) |
+|   chronyd   | <span className="text-blue-500 font-bold">可选</span> | 与 NTP 服务器的时间同步                    |
+|    tuned    | <span className="text-blue-500 font-bold">可选</span> | 节点调优模板和内核参数管理                     |
 
-You can turn off the optional components, the only two required components are `patroni` and `etcd`.
+您可以关闭可选组件，只有两个必需组件是 `patroni` 和 `etcd`。
 
-Packages are directly installed from the Internet upstream repo, [**offline install**](/install/offline) is not applicable here.
+软件包直接从互联网上游仓库安装，[**离线安装**](/zh/install/offline) 在此处不适用。
 
 
 ------
 
-## Configure
+## 配置 [#configure]
 
-Config file example: [`conf/slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) for slim installation:
+精简安装的配置文件示例：[`conf/slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml)：
 
 ```yaml
 all:
@@ -125,9 +125,9 @@ all:
 
 ------
 
-## Install
+## 安装 [#install]
 
-Use the [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/slim.yml) playbook instead of the [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) playbook:
+使用 [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/slim.yml) 剧本而不是 [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) 剧本：
 
 ```bash
 ./slim.yml
