@@ -1,0 +1,60 @@
+---
+title: 移除
+description: 如何移除 PostgreSQL 扩展
+icon: Trash2
+---
+
+## 移除扩展 [#remove-extension]
+
+要卸载扩展，您通常需要运行 [**`DROP EXTENSION`**](https://www.postgresql.org/docs/current/sql-dropextension.html) SQL 语句：
+
+```sql
+DROP EXTENSION "<extname>";
+```
+
+如果其他扩展或数据库对象依赖于此扩展，您需要先移除这些依赖项才能卸载扩展。
+或者使用 `CASCADE` 选项一次性移除所有依赖：
+
+```sql
+DROP EXTENSION "<extname>" CASCADE;
+```
+
+import { Trash2 } from 'lucide-react';
+
+<Callout title="" type="warning">
+
+    `CASCADE` 选项将删除所有依赖于此扩展的对象，\
+    包括数据库对象、函数、视图等。请谨慎使用！
+
+</Callout>
+
+某些扩展没有 `DDL`，这些扩展不需要 `DROP EXTENSION` 语句来卸载。
+相反，您可以简单地从 `shared_preload_libraries`（如果已配置）中移除扩展并卸载包。
+请参考[**无 DDL 扩展**](/zh/pgsql/extension/config)部分了解更多详细信息。
+
+
+------
+
+## 移除加载 [#remove-loading]
+
+如果您使用的扩展需要[**动态加载**](/zh/pgsql/extension/config)（修改 `shared_preload_libraries` 参数），您需要首先[**重新配置**](/zh/pgsql/admin#config-cluster) `shared_preload_libraries` 参数。
+
+从 `shared_preload_libraries` 中移除扩展名称，并重启数据库集群以使更改生效。
+
+对于需要动态加载的扩展，请参考[**需要加载的扩展**](https://ext.pgsty.com/list/attr#need-loading)列表。
+
+
+
+------
+
+## 卸载包 [#uninstall-package]
+
+在从集群中的**所有数据库**中移除扩展（逻辑对象）后，您可以安全地卸载扩展的软件包。Ansible 命令可以帮助您方便地执行此操作：
+
+```bash
+ansible <cls> -m package -a "name=<extname> state=absent"
+```
+
+您也可以使用 [**`pig`**](https://ext.pgsty.com/pig/)，或直接使用 `apt`/`yum` 命令来卸载。
+
+如果您不知道扩展包名称，可以参考[**扩展列表**](/zh/pgsql/extension/)或查看在 [**`roles/node_id/vars`**](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的扩展包名称映射。

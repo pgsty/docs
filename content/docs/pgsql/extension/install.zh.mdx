@@ -1,0 +1,143 @@
+---
+title: 安装
+description: 安装 PostgreSQL 扩展
+icon: PackagePlus
+---
+
+Pigsty 依托标准的操作系统包管理器（yum/apt）来安装 PostgreSQL 扩展。
+
+------
+
+## 快速开始 [#quick-start]
+
+在安装扩展时，Pigsty 使用与[**下载**](/zh/pgsql/extension/download)部分相同的[**别名映射**](/zh/pgsql/extension/pkg)。
+
+为集群 `pg-meta` 安装在 `pg_extensions` 参数中明确指定的所有扩展：
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_extensions: # 要在此集群上安装的扩展
+          - timescaledb timescaledb_toolkit pg_timeseries periods temporal_tables emaj table_version pg_cron pg_task pg_later pg_background
+          - postgis pgrouting pointcloud pg_h3 q3c ogr_fdw geoip pg_polyline pg_geohash #mobilitydb
+          - pgvector vchord pgvectorscale pg_vectorize pg_similarity smlar pg_summarize pg_tiktoken pg4ml #pgml
+          - pg_search pgroonga pg_bigm zhparser pg_bestmatch vchord_bm25 hunspell
+          - citus hydra pg_analytics pg_duckdb pg_mooncake duckdb_fdw pg_parquet pg_fkpart pg_partman plproxy #pg_strom
+          - age hll rum pg_graphql pg_jsonschema jsquery pg_hint_plan hypopg index_advisor pg_plan_filter imgsmlr pg_ivm pg_incremental pgmq pgq pg_cardano omnigres #rdkit
+          - pg_tle plv8 pllua plprql pldebugger plpgsql_check plprofiler plsh pljava #plr #pgtap #faker #dbt2
+          - pg_prefix pg_semver pgunit pgpdf pglite_fusion md5hash asn1oid roaringbitmap pgfaceting pgsphere pg_country pg_xenophile pg_currency pg_collection pgmp numeral pg_rational pguint pg_uint128 hashtypes ip4r pg_uri pgemailaddr pg_acl timestamp9 chkpass #pg_duration #debversion #pg_rrule
+          - pg_gzip pg_bzip pg_zstd pg_http pg_net pg_curl pgjq pgjwt pg_smtp_client pg_html5_email_address url_encode pgsql_tweaks pg_extra_time pgpcre icu_ext pgqr pg_protobuf envvar floatfile pg_readme ddl_historization data_historization pg_schedoc pg_hashlib pg_xxhash shacrypt cryptint pg_ecdsa pgsparql
+          - pg_idkit pg_uuidv7 permuteseq pg_hashids sequential_uuids topn quantile lower_quantile count_distinct omnisketch ddsketch vasco pgxicor tdigest first_last_agg extra_window_functions floatvec aggs_for_vecs aggs_for_arrays pg_arraymath pg_math pg_random pg_base36 pg_base62 pg_base58 pg_financial
+          - pg_repack pg_squeeze pg_dirtyread pgfincore pg_cooldown pg_ddlx pg_prioritize pg_checksums pg_readonly pg_upless pg_permissions pgautofailover pg_catcheck preprepare pgcozy pg_orphaned pg_crash pg_cheat_funcs pg_fio pg_savior safeupdate pg_drop_events table_log #pgagent #pgpool
+          - pg_profile pg_tracing pg_show_plans pg_stat_kcache pg_stat_monitor pg_qualstats pg_store_plans pg_track_settings pg_wait_sampling system_stats pg_meta pgnodemx pg_sqlog bgw_replstatus pgmeminfo toastinfo pg_explain_ui pg_relusage pagevis powa
+          - passwordcheck supautils pgsodium pg_vault pg_session_jwt pg_anon pg_tde pgsmcrypto pgaudit pgauditlogtofile pg_auth_mon credcheck pgcryptokey pg_jobmon logerrors login_hook set_user pg_snakeoil pgextwlist pg_auditor sslutils pg_noset
+          - wrappers multicorn odbc_fdw jdbc_fdw mysql_fdw tds_fdw sqlite_fdw pgbouncer_fdw mongo_fdw redis_fdw pg_redis_pubsub kafka_fdw hdfs_fdw firebird_fdw aws_s3 log_fdw #oracle_fdw #db2_fdw
+          - documentdb orafce pgtt session_variable pg_statement_rollback pg_dbms_metadata pg_dbms_lock pgmemcache #pg_dbms_job #wiltondb
+          - pglogical pglogical_ticker pgl_ddl_deploy pg_failover_slots db_migrator wal2json wal2mongo decoderbufs decoder_raw mimeo pg_fact_loader pg_bulkload #repmgr
+```
+
+或者通过类别别名全局安装所有扩展：
+
+```yaml
+all:
+  vars:
+    pg_version: 17   # 默认 postgres 版本 17，所以 pgsql-main 等同于 pg17-main
+    pg_extensions: [ pgsql-main ,pgsql-time ,pgsql-gis ,pgsql-rag ,pgsql-fts ,pgsql-olap ,pgsql-feat ,pgsql-lang ,pgsql-type ,pgsql-util ,pgsql-func ,pgsql-admin ,pgsql-stat ,pgsql-sec ,pgsql-fdw ,pgsql-sim ,pgsql-etl]
+```
+
+您也可以在这些别名中明确指定 PG 主版本：
+
+```yaml
+all:
+  vars:
+
+    pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+```
+
+同时安装所有扩展是可行的（除了在 [`olap`](https://ext.pgsty.com/cate/olap/) 类别中的两个冲突）但不推荐。只需在 `pg_extensions` 参数中明确指定您需要的扩展。
+
+------
+
+## 配置 [#configure]
+
+在 PGSQL 集群初始化期间，Pigsty 将自动安装在 [**`pg_packages`**](/zh/pgsql/param#pg_packages) 和 [**`pg_extensions`**](/zh/pgsql/param#pg_extensions) 中指定的包（和别名）。
+
+- [**`pg_packages`**](/zh/pgsql/param#pg_packages)
+- [**`pg_extensions`**](/zh/pgsql/param#pg_extensions)
+
+这两个参数都可以用来安装 PostgreSQL 相关的包。通常，`pg_packages` 用于全局指定应在环境中所有 PostgreSQL 集群上安装的包：如 PostgreSQL 内核、高可用代理（如 Patroni）、连接池（pgBouncer）、监控（pgExporter）等。
+
+默认情况下，Pigsty 还在这里指定了 3 个重要扩展：[`pgvector`](https://ext.pgsty.com/e/vector)、[`pg_repack`](https://ext.pgsty.com/e/pg_repack) 和 [`wal2json`](https://ext.pgsty.com/e/wal2json)，分别用于向量搜索、膨胀管理和 CDC 变更提取。
+
+同时，`pg_extensions` 通常用于为特定集群指定扩展。默认值是一个空列表，表示默认不会安装其他扩展。
+
+```yaml
+pg_packages:                      # 要安装的 pg 包，可以使用别名，状态=present
+  - postgresql
+  - wal2json pg_repack pgvector
+  - patroni pgbouncer pgbackrest pg_exporter pgbadger vip-manager
+pg_extensions: []                 # 要安装的 pg 扩展，可以使用别名，状态=latest
+```
+
+一个重要的区别：通过 `pg_packages` 安装的包只确保存在，而通过 `pg_extensions` 安装的包会自动升级到**最新**可用版本。
+
+当使用本地软件仓库时，这个区别并不重要。但是，当使用上游互联网仓库时，请仔细考虑这一点，并将您不希望自动升级的扩展移至 `pg_packages`。
+
+------
+
+## 安装 [#install]
+
+在 `pg_extensions`（和 `pg_packages`）中预定义的扩展将在集群置备期间安装。
+
+要在已置备的 PostgreSQL 集群上安装新扩展：
+
+首先，将扩展添加到 [**`pg_extensions`**](/zh/pgsql/param#pg_extensions)，然后执行 playbook 子任务：
+
+```bash
+./pgsql.yml -t pg_extension  # 安装在 pg_extensions 中指定的扩展
+```
+
+注意，在 `pg_extension` 任务中指定的扩展插件默认将**升级**到您当前环境中的最新可用版本。
+
+------
+
+## 仓库 [#repo]
+
+要安装扩展，您需要确保满足以下条件之一：
+
+- **本地仓库**：您已配置使用 Pigsty 的本地仓库，并且扩展已经[**下载**](/zh/pgsql/extension/download/)到本地仓库。
+- **在线仓库**：您已在目标节点上直接配置了上游互联网仓库，并且这些节点上有互联网访问。
+
+对于生产环境，我们建议使用 Pigsty 的本地软件仓库来统一管理和安装扩展：首先将扩展[**下载**](/zh/pgsql/extension/download)到本地仓库，然后从那里安装它们。
+这确保了您环境中扩展版本的一致性，并防止数据库节点直接访问互联网。从本地仓库安装时您无需做任何事情，只需确保它们已下载到本地仓库。
+
+对于开发环境，您可以选择直接使用上游互联网仓库以便于操作。使用以下命令在目标集群上添加互联网仓库并直接安装扩展：
+
+```bash
+./node.yml  -l <cls> -t node_repo -e node_repo_modules=local,node,pgsql    # 在目标节点上启用互联网仓库
+./pgsql.yml -l <cls> -t pg_extension                                        # 使用本地+互联网上游仓库安装扩展
+```
+
+------
+
+## 包别名 [#package-alias]
+
+在安装扩展时，用户可以使用[**扩展别名**](/zh/pgsql/extension/pkg)来指定扩展。
+
+别名将被[**转换**](/zh/pgsql/extension/pkg)为当前活跃的 PG 主版本和操作系统环境。
+
+并通过[**别名转换机制**](/zh/pgsql/extension/pkg)转换为相应的 RPM/DEB 包名称。
+
+------
+
+## 注意事项 [#caveats]
+
+- 有两个已知冲突：
+  - [`citus`](https://ext.pgsty.com/e/citus/) 和 [`hydra`](https://ext.pgsty.com/e/columnar) 是互斥的，因为 hydra 是 citus columnar 的分支，未重命名
+  - 只从 [`pg_duckdb`](https://ext.pgsty.com/e/pg_duckdb)、[`pg_mooncake`](https://ext.pgsty.com/e/pg_mooncake)、[`duckdb_fdw`](https://ext.pgsty.com/e/duckdb_fdw) 中安装一个，它们都使用自己的 libduckdb
+- `pgaudit` 在 el 系统的 pg 15- 版本中有不同的命名模式：pg16+ = pgaudit，pg15=pgaudit17，pg14=pgaudit16，pg13=pgaudit15，pg12=pgaudit14
+- `postgis` 在 el 包名中有自己的版本：默认为 postgis35，遗留 el7 为 postgis33

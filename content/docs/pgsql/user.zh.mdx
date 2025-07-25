@@ -1,0 +1,267 @@
+---
+title: 用户角色
+description: 在此上下文中，用户是指通过 SQL `CREATE USER / ROLE` 创建的逻辑对象
+icon: Users
+---
+
+您可以使用 Pigsty 以 IaC 方式管理 PostgreSQL 用户和角色。
+
+
+
+
+------
+
+## 定义用户 [#define-user]
+
+您可以使用以下参数定义角色/用户，它们都是由用户对象组成的数组：
+
+- [`pg_users`](/zh/pgsql/param#pg_users)：在集群级别定义业务用户和角色（**集群定义**）
+- [`pg_default_roles`](/zh/pgsql/param#pg_default_roles)：定义系统范围的角色和全局用户（**全局默认值**）
+
+前者定义整个环境中共享的全局角色和用户，后者定义特定于单个集群的业务角色和用户。
+以下是一些用户定义的示例：
+
+```yaml
+pg-meta:
+  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-meta
+    pg_databases:
+      - {name: dbuser_meta     ,password: DBUser.Meta     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
+      - {name: dbuser_view     ,password: DBUser.Viewer   ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
+      - {name: dbuser_grafana  ,password: DBUser.Grafana  ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for grafana database    }
+      - {name: dbuser_bytebase ,password: DBUser.Bytebase ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for bytebase database   }
+      - {name: dbuser_kong     ,password: DBUser.Kong     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for kong api gateway    }
+      - {name: dbuser_gitea    ,password: DBUser.Gitea    ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for gitea service       }
+      - {name: dbuser_wiki     ,password: DBUser.Wiki     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for wiki.js service     }
+      - {name: dbuser_noco     ,password: DBUser.Noco     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for nocodb service      }
+```
+
+### 用户属性 [#user-attributes]
+
+您可以使用更多属性自定义用户，完整示例如下：
+
+```yaml
+- name: dbuser_meta           # 必需，`name` 是用户定义的唯一必填字段
+  password: DBUser.Meta       # 可选，密码，可以是 scram-sha-256 哈希字符串或明文
+  login: true                 # 可选，可以登录，默认为 true（新业务角色应该为 false）
+  superuser: false            # 可选，是超级用户吗？默认为 false
+  createdb: false             # 可选，可以创建数据库吗？默认为 false
+  createrole: false           # 可选，可以创建角色吗？默认为 false
+  inherit: true               # 可选，此角色可以使用继承的权限吗？默认为 true
+  replication: false          # 可选，此角色可以进行复制吗？默认为 false
+  bypassrls: false            # 可选，此角色可以绕过行级安全吗？默认为 false
+  pgbouncer: true             # 可选，将此用户添加到 pgbouncer 用户列表？默认为 false（生产用户应明确设置为 true）
+  connlimit: -1               # 可选，用户连接限制，默认 -1 禁用限制
+  expire_in: 3650             # 可选，现在 + n 天后此角色过期（覆盖 expire_at）
+  expire_at: '2030-12-31'     # 可选，YYYY-MM-DD '时间戳'，此角色过期时间（被 expire_in 覆盖）
+  comment: pigsty admin user  # 可选，此用户/角色的注释字符串
+  roles: [dbrole_admin]       # 可选，所属角色。默认角色有：dbrole_{admin,readonly,readwrite,offline}
+  parameters: {}              # 可选，使用 `ALTER ROLE SET` 的角色级别参数
+  pool_mode: transaction      # 可选，用户级别的 pgbouncer 池模式，默认为 transaction
+  pool_connlimit: -1          # 可选，用户级别的最大数据库连接数，默认 -1 禁用限制
+  search_path: public         # 键值配置参数，根据 postgresql 文档（例如：使用 pigsty 作为默认 search_path）
+```
+
+- 唯一**必需**的字段是 `name`，它应该是 PostgreSQL 中有效且唯一的用户名。
+- 角色不需要 `password`，但对于可登录用户可能是必需的。
+- `password` 可以是明文或 scram-sha-256 / md5 哈希字符串。
+- 用户/角色定义顺序很重要，[`pg_default_roles`](/zh/pgsql/param#pg_default_roles) 在前，[`pg_users`](/zh/pgsql/param#pg_users) 在后，按顺序排列。
+- 确保角色/组定义在其成员之前。
+- [角色属性](https://www.postgresql.org/docs/current/role-attributes.html)：`login`、`superuser`、`createdb`、`createrole`、`inherit`、`replication`、`bypassrls`
+- `pgbouncer` 默认禁用。明确设置为 `true` 以在 pgbouncer 中启用它。
+
+### ACL 系统 [#acl-system]
+
+Pigsty 具有电池包含的 [ACL](/zh/pgsql/acl) 系统，可以通过将角色分配给用户来轻松使用：
+
+- `dbrole_readonly`：全局只读访问角色
+- `dbrole_readwrite`：全局读写访问角色
+- `dbrole_admin`：对象创建角色
+- `dbrole_offline`：受限只读访问角色（[离线](/zh/pgsql/config/#offline)实例）
+
+如果您希望重新设计您的 [ACL](/zh/pgsql/acl) 系统，请检查以下参数和 SQL 模板。
+
+- [`pg_default_roles`](/zh/pgsql/param#pg_default_roles)：系统范围的角色和全局用户
+- [`pg_default_privileges`](/zh/pgsql/param#pg_default_privileges)：新创建对象的默认权限
+- [`roles/pgsql/templates/pg-init-role.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-role.sql)：角色创建 SQL 模板
+- [`roles/pgsql/templates/pg-init-template.sql`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pg-init-template.sql)：权限 SQL 模板
+
+
+
+
+------
+
+## 创建用户 [#create-user]
+
+在 [`pg_default_roles`](/zh/pgsql/param#pg_default_roles) 和 [`pg_users`](/zh/pgsql/param#pg_users) 中定义的用户和角色将在模块安装期间逐一自动创建。
+它只在集群领导者，即主实例上运行。
+
+要在现有集群上[**创建用户**](/zh/pgsql/admin#create-user)，
+将新用户/角色定义添加到 `all.children.<cls>.pg_users`，并使用 `bin/pgsql-user` 工具或 [`pgsql-user.yml`](/zh/pgsql/playbook#pgsql-useryml) playbook 创建数据库：
+
+```bash tab="utils"
+bin/pgsql-user <cls>   <dbname>         # bin 工具脚本
+bin/pgsql-user pg-meta dbuser_meta      # 示例：在 pg-meta 集群中创建 dbuser_meta 用户
+```
+```bash tab="playbook"
+./pgsql-user.yml -l <cls>   -e username=<dbname> # 实际 playbook
+./pgsql-user.yml -l pg-meta -e username=meta     # 示例：在 pg-meta 集群中创建 dbuser_meta 用户
+```
+
+创建用户是**幂等**操作，意味着可以多次安全运行。
+
+<Callout title="使用 Pigsty 创建用户/角色" type="warning">
+
+    Pigsty 将管理 [pgbouncer 用户列表](#pgbouncer-user)，因此请使用 Pigsty playbook/工具创建业务数据库。
+    查看[创建用户](/zh/pgsql/admin#create-user) SOP 了解详细信息。
+    如果您不使用 pgbouncer 或能够自己维护它，您可以以任何您喜欢的方式创建用户。
+
+</Callout>
+
+
+<Callout title="在创建数据库之前创建所有者用户" type="warn">
+
+    在 PostgreSQL 中，用户属于数据库集群，而不是特定数据库。
+
+    如果您的用户是任何数据库的**所有者**，请确保在创建数据库之前创建用户。
+
+</Callout>
+
+
+
+------
+
+## 修改用户 [#modify-user]
+
+修改 PostgreSQL 用户属性与[**创建用户**](/zh/pgsql/user#create-user)相同。
+通过修改[配置清单](/zh/config/inventory)调整您的用户定义，然后重新运行[`创建用户`](#create-user)。
+
+有两个例外：`name` 和 `roles`，需要手动干预：
+
+<Callout title="Pigsty 不直接支持重命名用户" type="warning">
+
+用户名用作用户的标识，因此如果您真的想这样做，请使用标准 SQL：
+
+```sql
+ALTER USER "old_name" RENAME TO "new_name";
+```
+
+</Callout>
+
+<Callout title="Pigsty 不会撤销成员资格" type="warning">
+
+    请注意，修改用户不会删除用户，而是使用 `ALTER USER` 命令修改用户属性。
+    它也不会撤销用户权限和组成员资格，并使用 `GRANT` 命令授予新角色。
+
+</Callout>
+
+查看 PostgreSQL 文档了解更多关于 [`ALTER USER`](https://www.postgresql.org/docs/current/sql-alteruser.html) 的详细信息。
+
+
+------
+
+## 删除用户 [#delete-user]
+
+出于安全原因，Pigsty 不会自动删除用户，即使您从配置中删除用户定义，Pigsty 也不会删除现有用户。
+
+您需要使用 SQL 命令 `DROP USER` 手动删除用户：
+
+```sql
+DROP USER "<username>";
+```
+
+如果您要删除的角色是一个组（有其他用户属于它），您需要首先从组中删除其他用户，然后再删除组：
+
+```sql
+REVOKE "<rolename>" FROM "<other_user>";
+```
+
+如果您要删除的用户**拥有**数据库对象，您需要首先将这些对象的所有权更改为另一个用户，然后再删除用户：
+
+```sql
+REASSIGN OWNED BY "<username>" TO "<another_user>";
+```
+
+查看 PostgreSQL 文档了解更多关于 [`DROP USER`](https://www.postgresql.org/docs/current/sql-dropuser.html)、[`REASSIGN OWNED`](https://www.postgresql.org/docs/current/sql-reassign-owned.html) 和 [`REVOKE`](https://www.postgresql.org/docs/current/sql-revoke.html) 的详细信息。
+
+
+
+
+------
+
+## Pgbouncer 用户 [#pgbouncer-user]
+
+Pigsty 帮助管理 pgbouncer 用户列表中的用户，并使其与 postgres 保持同步。
+它需要在用户定义中明确设置 `pgbouncer: true` 标志以注册到 pgbouncer 用户列表中。
+
+系统管理员用户（[`pg_admin_username`](/zh/pgsql/param#pg_admin_username)）和监控用户（[`pg_monitor_username`](/zh/pgsql/param#pg_monitor_username)）
+将始终添加到 pgbouncer 用户列表中用于管理和监控。
+
+### 配置文件 [#configuration-files]
+
+Pgbouncer 连接池中的用户列在 `/etc/pgbouncer/userlist.txt` 中，示例：
+
+```ini title="/etc/pgbouncer/userlist.txt"
+"postgres" ""
+"dbuser_wiki" "SCRAM-SHA-256$4096:+77dyhrPeFDT/TptHs7/7Q==$KeatuohpKIYzHPCt/tqBu85vI11o9mar/by0hHYM2W8=:X9gig4JtjoS8Y/o1vQsIX/gY1Fns8ynTXkbWOjUfbRQ="
+"dbuser_view" "SCRAM-SHA-256$4096:DFoZHU/DXsHL8MJ8regdEw==$gx9sUGgpVpdSM4o6A2R9PKAUkAsRPLhLoBDLBUYtKS0=:MujSgKe6rxcIUMv4GnyXJmV0YNbf39uFRZv724+X1FE="
+"dbuser_monitor" "SCRAM-SHA-256$4096:fwU97ZMO/KR0ScHO5+UuBg==$CrNsmGrx1DkIGrtrD1Wjexb/aygzqQdirTO1oBZROPY=:L8+dJ+fqlMQh7y4PmVR/gbAOvYWOr+KINjeMZ8LlFww="
+"dbuser_meta" "SCRAM-SHA-256$4096:leB2RQPcw1OIiRnPnOMUEg==$eyC+NIMKeoTxshJu314+BmbMFpCcspzI3UFZ1RYfNyU=:fJgXcykVPvOfro2MWNkl5q38oz21nSl1dTtM65uYR1Q="
+"dbuser_kong" "SCRAM-SHA-256$4096:bK8sLXIieMwFDz67/0dqXQ==$P/tCRgyKx9MC9LH3ErnKsnlOqgNd/nn2RyvThyiK6e4=:CDM8QZNHBdPf97ztusgnE7olaKDNHBN0WeAbP/nzu5A="
+"dbuser_grafana" "SCRAM-SHA-256$4096:HjLdGaGmeIAGdWyn2gDt/Q==$jgoyOB8ugoce+Wqjr0EwFf8NaIEMtiTuQTg1iEJs9BM=:ed4HUFqLyB4YpRr+y25FBT7KnlFDnan6JPVT9imxzA4="
+"dbuser_gitea" "SCRAM-SHA-256$4096:l1DBGCc4dtircZ8O8Fbzkw==$tpmGwgLuWPDog8IEKdsaDGtiPAxD16z09slvu+rHE74=:pYuFOSDuWSofpD9OZhG7oWvyAR0PQjJBffgHZLpLHds="
+"dbuser_dba" "SCRAM-SHA-256$4096:zH8niABU7xmtblVUo2QFew==$Zj7/pq+ICZx7fDcXikiN7GLqkKFA+X5NsvAX6CMshF0=:pqevR2WpizjRecPIQjMZOm+Ap+x0kgPL2Iv5zHZs0+g="
+"dbuser_bytebase" "SCRAM-SHA-256$4096:OMoTM9Zf8QcCCMD0svK5gg==$kMchqbf4iLK1U67pVOfGrERa/fY818AwqfBPhsTShNQ=:6HqWteN+AadrUnrgC0byr5A72noqnPugItQjOLFw0Wk="
+```
+
+用户级别参数在单独的文件中维护：`/etc/pgbouncer/useropts.txt`，示例：
+
+```ini title="/etc/pgbouncer/useropts.txt"
+dbuser_dba                  = pool_mode=session max_user_connections=16
+dbuser_monitor              = pool_mode=session max_user_connections=8
+```
+
+当您[创建用户](/zh/pgsql/user#create-user)时，`userlist.txt` 和 `useropts.txt` 将自动刷新
+并通过 `systemctl reload pgbouncer` 生效，通常不会影响现有连接。
+
+
+### 重新加载 [#reload]
+
+要重新加载 pgbouncer 配置，您可以使用 ansible playbook 或 systemctl 命令
+
+```bash tab="playbook" title="在管理节点上"
+./pgsql.yml -t pgbouncer_reload
+```
+```bash tab="systemctl" title="在数据库节点上"
+systemctl reload pgbouncer
+```
+
+
+### 管理 [#admin]
+
+Pgbouncer 与 PostgreSQL 使用相同的 `dbsu` 运行，默认为 `postgres` 操作系统用户。
+您可以使用 `pgb` 别名通过 dbsu 访问 pgbouncer 管理功能。
+
+```bash title="postgres"
+sudo su - postgres
+pgb   # 使用管理员用户登录到 pgbouncer 命令行界面
+```
+
+### 删除 Pgbouncer 用户 [#delete-pgbouncer-user]
+
+如果所有数据库用户都由 Pigsty 管理，您可以重新生成 pgbouncer 用户列表（在配置清单的列表中不包含已删除的用户）并重新加载它：
+
+```bash
+./pgsql.yml -t pgbouncer_user,pgbouncer_reload -e pg_reload=true
+```
+
+要手动从 pgbouncer 池中删除用户，只需从 `/etc/pgbouncer/userlist.txt` 中删除相应的行并重新加载 pgbouncer：
+
+```bash
+systemctl reload pgbouncer
+```
+
+### 动态用户认证 [#dynamic-user-authentication]
+
+请注意，[`pgbouncer_auth_query`](/zh/pgsql/param#pgbouncer_auth_query) 参数允许您使用动态查询完成连接池用户认证，这是当您不想在连接池中管理用户时的一种折衷方案。

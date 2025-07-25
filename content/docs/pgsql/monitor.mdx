@@ -64,24 +64,24 @@ Remote RDS targets are managed as `/etc/prometheus/targets/pgrds/<cls>.yml`. It 
 
 There are three ways to monitor PostgreSQL instances in Pigsty:
 
-|        Item \ Level        |                              L1                              |                              L2                              |               L3                |
-| :------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :-----------------------------: |
+|        Item \ Level        |                           L1                           |                               L2                                |               L3                |
+|:--------------------------:|:------------------------------------------------------:|:---------------------------------------------------------------:|:-------------------------------:|
 |            Name            | [Remote Database Service](/pgsql/monitor/#monitor-rds) | [Existing Deployment](/pgsql/monitor/#monitor-existing-cluster) |    Fully Managed Deployment     |
-|            Abbr            |                           **RDS**                            |                         **MANAGED**                          |            **FULL**             |
-|           Scenes           |                   connect string URL only                    |                        ssh-sudo-able                         |   Instances created by Pigsty   |
-|    PGCAT Functionality     |                     ✅ Full Availability                      |                     ✅ Full Availability                      |       ✅ Full Availability       |
-|    PGSQL Functionality     |                      ✅ PG metrics only                       |                    ✅ PG and node metrics                     |         ✅ Full Support          |
-|  Connection Pool Metrics   |                       ❌ Not available                        |                          ⚠️ Optional                          |        ✅ Pre-Configured         |
-|   Load Balancer Metrics    |                       ❌ Not available                        |                          ⚠️ Optional                          |        ✅ Pre-Configured         |
-|    PGLOG Functionality     |                       ❌ Not Available                        |                          ⚠️ Optional                          |           ⚠️ Optional            |
-|        PG Exporter         |                       ⚠️ On infra nodes                       |                        ✅ On DB nodes                         |          ✅ On DB nodes          |
-|       Node Exporter        |                        ❌ Not Deployed                        |                        ✅ On DB nodes                         |          ✅ On DB nodes          |
-|  Intrusion into DB nodes   |                       ✅ Non-Intrusive                        |                    ⚠️ Installing Exporter                     |    ⚠️ Fully Managed by Pigsty    |
-|  Instance Already Exists   |                            ✅ Yes                             |                            ✅ Yes                             |       ⚠️ Created by Pigsty       |
-| Monitoring users and views |                       ⚠️Manually Setup                        |                       ⚠️Manually Setup                        |        ✅ Auto configured        |
-| Deployment Usage Playbook  |                    `bin/pgmon-add <cls>`                     |              subtasks of `pgsql.ym`/`node.yml`               |           `pgsql.yml`           |
-|    Required Privileges     |              connectable PGURL from infra nodes              |               DB node ssh and sudo privileges                | DB node ssh and sudo privileges |
-|     Function Overview      |                        PGCAT + PGRDS                         |                      Most Functionality                      |       Full Functionality        |
+|            Abbr            |                        **RDS**                         |                           **MANAGED**                           |            **FULL**             |
+|           Scenes           |                connect string URL only                 |                          ssh-sudo-able                          |   Instances created by Pigsty   |
+|    PGCAT Functionality     |                  ✅ Full Availability                   |                       ✅ Full Availability                       |       ✅ Full Availability       |
+|    PGSQL Functionality     |                   ✅ PG metrics only                    |                      ✅ PG and node metrics                      |         ✅ Full Support          |
+|  Connection Pool Metrics   |                    ❌ Not available                     |                           ⚠️ Optional                           |        ✅ Pre-Configured         |
+|   Load Balancer Metrics    |                    ❌ Not available                     |                           ⚠️ Optional                           |        ✅ Pre-Configured         |
+|    PGLOG Functionality     |                    ❌ Not Available                     |                           ⚠️ Optional                           |           ⚠️ Optional           |
+|        PG Exporter         |                   ⚠️ On infra nodes                    |                          ✅ On DB nodes                          |          ✅ On DB nodes          |
+|       Node Exporter        |                     ❌ Not Deployed                     |                          ✅ On DB nodes                          |          ✅ On DB nodes          |
+|  Intrusion into DB nodes   |                    ✅ Non-Intrusive                     |                     ⚠️ Installing Exporter                      |   ⚠️ Fully Managed by Pigsty    |
+|  Instance Already Exists   |                         ✅ Yes                          |                              ✅ Yes                              |      ⚠️ Created by Pigsty       |
+| Monitoring users and views |                    ⚠️Manually Setup                    |                        ⚠️Manually Setup                         |        ✅ Auto configured        |
+| Deployment Usage Playbook  |                 `bin/pgmon-add <cls>`                  |                subtasks of `pgsql.ym`/`node.yml`                |           `pgsql.yml`           |
+|    Required Privileges     |           connectable PGURL from infra nodes           |                 DB node ssh and sudo privileges                 | DB node ssh and sudo privileges |
+|     Function Overview      |                     PGCAT + PGRDS                      |                       Most Functionality                        |       Full Functionality        |
 
 ------
 

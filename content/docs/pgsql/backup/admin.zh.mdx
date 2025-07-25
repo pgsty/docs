@@ -1,0 +1,155 @@
+---
+title: 备份管理
+description: 管理备份仓库和备份
+icon: DatabaseBackup
+---
+
+
+## 启用备份 [#enable-backup]
+
+如果您的数据库集群是在 [`pgbackrest_enable`](/zh/pgsql/param/#pgbackrest_enable) 设置为 `true` 的情况下创建的，备份将自动启用。
+
+如果是在 `false` 值下创建的，您可以使用以下命令启用 pgbackrest 组件：
+
+```bash
+./pgsql.yml -t pg_backup    # 运行 pgbackrest 子任务
+```
+
+
+--------
+
+## 移除备份 [#remove-backup]
+
+Pigsty 在移除主实例（[`pg_role`](/zh/pgsql/param/#pg_role) = `primary`）时会移除 pgbackrest 备份 stanza。
+
+```bash
+./pgsql-rm.yml
+./pgsql-rm.yml -e pg_rm_backup=false   # 保持备份完整
+./pgsql-rm.yml -t pg_backup            # 仅移除备份
+```
+
+使用 `pg_backup` 子任务仅移除备份，并使用 [`keep_backup`](/zh/pgsql/param/#keep_backup) 参数保留备份。
+
+如果您的备份仓库被**锁定**（例如，S3 / MinIO 有锁定选项），此操作将失败。
+
+<Callout title="备份移除" type="warn">
+
+    移除备份可能导致永久数据丢失，这是一个危险操作，请极其谨慎地执行。
+
+</Callout>
+
+
+--------
+
+## 列出备份 [#list-backup]
+
+此命令将列出 pgbackrest 仓库中的所有备份（由所有集群共享）
+
+```bash
+pgbackrest info
+```
+
+
+--------
+
+## 手动备份 [#manual-backup]
+
+Pigsty 有一个内置脚本 `/pg/bin/pg-backup`，它封装了 `pgbackrest` 备份命令。
+
+```bash
+pg-backup        # 进行增量备份
+pg-backup full   # 进行全量备份
+pg-backup incr   # 进行增量备份
+pg-backup diff   # 进行差异备份
+```
+
+
+
+--------
+
+## 基础备份 [#base-backup]
+
+Pigsty 有一个替代备份脚本 `/pg/bin/pg-basebackup`，它不依赖 `pgbackrest`，并为您提供数据库集群的物理副本。
+默认备份目录是 `/pg/backup`。
+
+```bash tab="help"
+NAME
+  pg-basebackup  -- make base backup from PostgreSQL instance
+
+SYNOPSIS
+  pg-basebackup -sdfeukr
+  pg-basebackup --src postgres:/// --dst . --file backup.tar.lz4
+
+DESCRIPTION
+-s, --src, --url     Backup source URL, optional, "postgres:///" by default, if password is required, it should be given in url, ENV or .pgpass
+-d, --dst, --dir     Where to put backup files, "/pg/backup" by default
+-f, --file           Overwrite default backup filename, "backup_${tag}_${date}.tar.lz4"
+-r, --remove         .lz4 Files mtime before n minutes ago will be removed, default is 1200 (20hour)
+-t, --tag            Backup file tag, if not set, target cluster_name or local ip address will be used. Also used as part of DEFAULT filename
+-k, --key            Encryption key when --encrypt is specified, default key is ${tag}
+-u, --upload         Upload backup files to cloud storage, (need your own implementation)
+-e, --encryption     Encrypt with RC4 using OpenSSL, if not key is specified, tag is used as key
+-h, --help           Print this message
+```
+```bash tab="backup"
+postgres@pg-meta-1:~$ pg-basebackup
+[2025-07-13 06:16:05][INFO] ================================================================
+[2025-07-13 06:16:05][INFO] [INIT] pg-basebackup begin, checking parameters
+[2025-07-13 06:16:05][DEBUG] [INIT] #====== BINARY
+[2025-07-13 06:16:05][DEBUG] [INIT] pg_basebackup     :   /usr/pgsql/bin/pg_basebackup
+[2025-07-13 06:16:05][DEBUG] [INIT] openssl           :   /usr/bin/openssl
+[2025-07-13 06:16:05][DEBUG] [INIT] #====== PARAMETER
+[2025-07-13 06:16:05][DEBUG] [INIT] filename  (-f)    :   backup_pg-meta_20250713.tar.lz4
+[2025-07-13 06:16:05][DEBUG] [INIT] src       (-s)    :   postgres:///
+[2025-07-13 06:16:05][DEBUG] [INIT] dst       (-d)    :   /pg/backup
+[2025-07-13 06:16:05][DEBUG] [INIT] tag       (-t)    :   pg-meta
+[2025-07-13 06:16:05][DEBUG] [INIT] key       (-k)    :   pg-meta
+[2025-07-13 06:16:05][DEBUG] [INIT] encrypt   (-e)    :   false
+[2025-07-13 06:16:05][DEBUG] [INIT] upload    (-u)    :   false
+[2025-07-13 06:16:05][DEBUG] [INIT] remove    (-r)    :   -mmin +1200
+[2025-07-13 06:16:05][INFO] [LOCK] acquire lock @ /tmp/backup.lock
+[2025-07-13 06:16:05][INFO] [LOCK] lock acquired success on /tmp/backup.lock, pid=107417
+[2025-07-13 06:16:05][INFO] [BKUP] backup begin, from postgres:/// to /pg/backup/backup_pg-meta_20250713.tar.lz4
+[2025-07-13 06:16:05][INFO] [BKUP] backup in normal mode
+pg_basebackup: initiating base backup, waiting for checkpoint to complete
+
+pg_basebackup: checkpoint completed
+pg_basebackup: write-ahead log start point: 0/7000028 on timeline 1
+pg_basebackup: write-ahead log end point: 0/7000FD8
+pg_basebackup: syncing data to disk ...
+pg_basebackup: base backup completed
+[2025-07-13 06:16:06][INFO] [BKUP] backup complete!
+[2025-07-13 06:16:06][INFO] [RMBK] remove local obsolete backup: 1200
+[2025-07-13 06:16:06][INFO] [BKUP] find obsolete backups: find /pg/backup/ -maxdepth 1 -type f -mmin +1200 -name 'backup*.lz4'
+[2025-07-13 06:16:06][WARN] [BKUP] remove obsolete backups:
+[2025-07-13 06:16:06][INFO] [RMBK] remove old backup complete
+[2025-07-13 06:16:06][INFO] [LOCK] release lock @ /tmp/backup.lock
+[2025-07-13 06:16:06][INFO] [DONE] backup procedure complete!
+[2025-07-13 06:16:06][INFO] ================================================================
+```
+
+备份使用 `lz4` 压缩，您可以使用以下命令解压缩和提取 tarball：
+
+```bash
+mkdir -p /tmp/data   # 将备份提取到此目录
+cat /pg/backup/backup_pg-meta_20250713.tar.lz4 | unlz4 -d -c | tar -xC /tmp/data
+```
+
+
+--------
+
+## 逻辑备份 [#logical-backup]
+
+您也可以使用 `pg_dump` 命令执行逻辑备份。
+
+逻辑备份不能用于 PITR（时间点恢复），但它们对于在不同主版本之间迁移数据或实现灵活的数据导出逻辑很有用。
+
+
+
+--------
+
+## 从备份仓库中恢复 [#bootstrap-from-repo]
+
+现在假设您有一个现有集群 `pg-meta`，并且想要**分叉**它作为 `pg-meta2`：
+
+您需要创建新的 `pg-meta2` 集群分叉，然后在其上运行 `pitr`任务，来实现从备份仓库中恢复的效果。

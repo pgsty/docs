@@ -1,0 +1,12 @@
+{
+  "title": "备份",
+  "icon": "DatabaseBackup",
+  "pages": [
+    "mechanism",
+    "repository",
+    "policy",
+    "admin",
+    "restore",
+    "example"
+  ]
+}

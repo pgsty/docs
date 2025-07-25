@@ -17,13 +17,13 @@ import {CpuIcon, FileCode} from 'lucide-react';
 
 ## 简化版本 [#short-version]
 
-[准备](#prepare) 一台具有 [SSH 访问权限](/zh/prepare/admin#check-accessibility) 的 [节点](/zh/prepare/hardware#node) 并安装 [兼容的 Linux 发行版](/zh/prepare/linux)，
-使用免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的用户运行：
+[准备](#prepare) 一台具有 [SSH权限](/zh/prepare/admin#check-accessibility) 的 [节点](/zh/prepare/hardware#node) 并安装 [兼容的Linux发行版](/zh/prepare/linux)，
+使用免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的用户：
 
 <Steps>
     <Step>
 
-        使用以下命令 [**下载**](#download) pigsty：
+        [**下载**](#download) pigsty，它会自动安装至 `~/pigsty` 目录，并安装 [`ansible`](/zh/admin/ansible)：
 
         ```bash
         curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
@@ -31,7 +31,7 @@ import {CpuIcon, FileCode} from 'lucide-react';
 
     </Step>
     <Step>
-        根据您的需求和环境 [**配置**](#configure) [`pigsty.yml`](/zh/config/inventory) 配置清单文件。
+        使用 [`configure`](/config/configure) 生成配置清单文件，或直接根据需求调整 [`pigsty.yml`](/zh/config/inventory)：
 
         ```bash
         ./configure
@@ -40,7 +40,7 @@ import {CpuIcon, FileCode} from 'lucide-react';
     </Step>
     <Step>
 
-        根据您的配置 [**安装**](#install) 所有组件：
+        使用 `install.yml` 剧本，一键 [**安装部署**](#install) 所有组件：
 
         ```bash
         ./install.yml
@@ -61,15 +61,15 @@ import {CpuIcon, FileCode} from 'lucide-react';
 
 查看 [**准备工作**](/zh/prepare) 了解所有详细信息，这里是快速摘要：
 
-|               项目                | 要求                           |                       项目                       | 要求                                          |
-|:---------------------------------:|:--------------------------------------|:------------------------------------------------:|:-----------------------------------------------------|
-|  [节点](/zh/prepare/hardware#node)   | 至少 `1C1G`，推荐 `2C2G`   |          [规格](/zh/prepare/hardware#spec)          | 至少 `1` 个节点，`2` 个用于半高可用，`3+` 个用于真正高可用 |
-|  [磁盘](/zh/prepare/hardware#disk)   | `/data`，主挂载点，`ext4/xfs` |       [网络](/zh/prepare/hardware#network)       | 静态 IPv4 地址                                  |
-|   [VIP](/zh/prepare/hardware#vip)    | 可选的 L2 VIP                       |        [域名](/zh/prepare/hardware#domain)        | 可选的本地/公共域名                 |
-| [内核](/zh/prepare/software#linux) | `Linux`                               |             [发行版](/zh/prepare/linux)             | el8, el9, d12, u22, u24 x `x86_64` / `aarch64`       |
-| [语言环境](/zh/prepare/software#linux) | `C.UTF-8` 或 `C`                      |      [防火墙](/zh/prepare/software#firewall)      | 端口：`80` / `443` / `22` / `5432`                   |
-|    [用户](/zh/prepare/admin#user)    | 避免使用 `root` 和 `postgres`       |      [Sudo](/zh/prepare/admin#sudo-privileges)      | `nopass` sudo 权限                              |
-|     [SSH](/zh/prepare/admin#ssh)     | 通过公钥 `nopass`               | [可访问性](/zh/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` 无错误              |
+|                项目                 | 要求                       |                      项目                      | 要求                                             |
+|:---------------------------------:|:-------------------------|:--------------------------------------------:|:-----------------------------------------------|
+|  [节点](/zh/prepare/hardware#node)  | 至少 `1C1G`，推荐 `2C2G`      |       [规格](/zh/prepare/hardware#spec)        | 至少1个节点，2个为半高可用，3个以上真高可用                        |
+|  [磁盘](/zh/prepare/hardware#disk)  | `/data`，主挂载点，`ext4/xfs`  |      [网络](/zh/prepare/hardware#network)      | 静态 IPv4 地址                                     |
+|  [VIP](/zh/prepare/hardware#vip)  | 可选的 L2 VIP               |      [域名](/zh/prepare/hardware#domain)       | 可选的本地/公共域名                                     |
+| [内核](/zh/prepare/software#linux)  | `Linux`                  |           [发行版](/zh/prepare/linux)           | el8, el9, d12, u22, u24 x `x86_64` / `aarch64` |
+| [本地化](/zh/prepare/software#linux) | `C.UTF-8` 或 `C`          |     [防火墙](/zh/prepare/software#firewall)     | 端口：`80` / `443` / `22` / `5432`                |
+|   [用户](/zh/prepare/admin#user)    | 避免使用 `root` 和 `postgres` |  [Sudo](/zh/prepare/admin#sudo-privileges)   | `nopass` sudo 权限                               |
+|   [SSH](/zh/prepare/admin#ssh)    | 通过公钥 `nopass`            | [可达性](/zh/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` 无错误                  |
 
 
 
@@ -142,7 +142,7 @@ configure pigsty v3.6.0 begin
     (1) 192.168.121.24	inet 192.168.121.24/24 brd 192.168.121.255 scope global dynamic noprefixroute eth0
     (2) 10.10.10.12	    inet 10.10.10.12/24 brd 10.10.10.255 scope global noprefixroute eth1
 [ IN ] INPUT primary_ip address (of current meta node, e.g 10.10.10.10):
-=> 10.10.10.12    # <------- INPUT YOUR PRIMARY IPV4 ADDRESS HERE!
+=> 10.10.10.12    # <------- 在这里输入你的首要 IPv4 地址！
 [ OK ] primary_ip = 10.10.10.12 (from input)
 [ OK ] admin = vagrant@10.10.10.12 ok
 [ OK ] mode = meta (el9)
@@ -364,8 +364,8 @@ all:
     只需在 `pigsty.yml` 中取消注释以下两个参数，使其看起来像这样：
 
 ```yaml
-    repo_extra_packages: [ pg17-main ,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
-    pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+repo_extra_packages: [ pg17-main ,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
+pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
 ```
 
     您可以用配置文件做更多神奇的事情，查看 [**配置**](/zh/config) 了解详情。

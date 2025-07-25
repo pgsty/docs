@@ -1,0 +1,337 @@
+---
+title: 示例
+description: 在沙盒环境中根据提示脚本手动执行 PITR
+icon: DatabaseBackup
+---
+
+您可以使用 `pgsql-pitr` 剧本执行 PITR，但在某些情况下，您可能希望手动执行 PITR。
+我们将使用带有 MinIO 备份仓库的 [4 节点沙盒环境](/zh/prepare/sandbox) 集群来演示该过程。
+
+
+-------
+
+## 初始化沙盒 [#init-sandbox]
+
+使用 [**vagrant**](/zh/prepare/vagrant) 或 [**terraform**](/zh/prepare/terraform) 准备 4 节点沙盒环境，然后：
+
+```bash
+curl https://repo.pigsty.io/get | bash; cd ~/pigsty/
+./configure -c full
+./install
+```
+
+现在在管理节点上以管理员用户（或 dbsu）身份操作以继续。
+
+![pigsty-sandbox.jpg](/img/pigsty/sandbox.jpg)
+
+-------
+
+## 检查备份 [#check-backup]
+
+要检查备份状态，您需要切换到 `postgres` 用户并使用 `pb` 命令：
+
+```bash
+sudo su - postgres    # 切换到 dbsu：postgres 用户
+pb info               # 打印 pgbackrest 备份信息
+```
+
+`pb` 是 `pgbackrest` 的别名，会自动从 pgbackrest 配置中获取 `stanza` 名称。
+
+```bash title="/etc/profile.d/pg-alias.sh"
+function pb() {
+    local stanza=$(grep -o '\[[^][]*]' /etc/pgbackrest/pgbackrest.conf | head -n1 | sed 's/.*\[\([^]]*\)].*/\1/')
+    pgbackrest --stanza=$stanza $@
+}
+```
+
+您可以看到初始备份信息，这是在以下时间创建的全量备份：
+
+```
+root@pg-meta-1:~# pb info
+stanza: pg-meta
+    status: ok
+    cipher: aes-256-cbc
+
+    db (current)
+        wal archive min/max (17): 000000010000000000000001/000000010000000000000007
+
+        full backup: 20250713-022731F
+            timestamp start/stop: 2025-07-13 02:27:31+00 / 2025-07-13 02:27:33+00
+            wal start/stop: 000000010000000000000004 / 000000010000000000000004
+            database size: 44MB, database backup size: 44MB
+            repo1: backup size: 8.4MB
+```
+
+备份完成于 `2025-07-13 02:27:33+00`，这是您可以恢复到的最早时间。
+由于 WAL 归档处于活动状态，您可以恢复到备份后直到 WAL 结束（现在）的任何时间点。
+
+
+-------
+
+## 生成心跳 [#generate-heartbeat]
+
+您可以生成一些心跳来模拟工作负载。`/pg-bin/pg-heartbeat` 就是为此目的，
+它将每秒向 `monitor.heartbeat` 表写入一个心跳时间戳。
+
+```bash tab="alias"
+make rh     # 运行心跳：ssh 10.10.10.10 'sudo -iu postgres /pg/bin/pg-heartbeat'
+```
+```bash tab="pgbench"
+ssh 10.10.10.10 'sudo -iu postgres /pg/bin/pg-heartbeat'
+```
+```bash tab="output"
+   cls   |              ts               |    lsn     |  lsn_int  | txid | status  |       now       |  elapse
+---------+-------------------------------+------------+-----------+------+---------+-----------------+----------
+ pg-meta | 2025-07-13 03:01:20.318234+00 | 0/115BF5C0 | 291239360 | 4812 | leading | 03:01:20.318234 | 00:00:00
+```
+
+您甚至可以为集群添加更多工作负载，让我们使用 `pgbench` 生成一些随机写入：
+
+```bash tab="alias"
+make ri     # 初始化 pgbench
+make rw     # 运行 pgbench 读写工作负载
+```
+```bash tab="pgbench"
+pgbench -is10 postgres://dbuser_meta:DBUser.Meta@10.10.10.10:5433/meta
+while true; do pgbench -nv -P1 -c4 --rate=64 -T10 postgres://dbuser_meta:DBUser.Meta@10.10.10.10:5433/meta; done
+```
+```bash tab="output"
+while true; do pgbench -nv -P1 -c4 --rate=64 -T10 postgres://dbuser_meta:DBUser.Meta@10.10.10.10:5433/meta; done
+pgbench (17.5 (Homebrew), server 17.4 (Ubuntu 17.4-1.pgdg24.04+2))
+progress: 1.0 s, 60.9 tps, lat 7.295 ms stddev 4.219, 0 failed, lag 1.818 ms
+progress: 2.0 s, 69.1 tps, lat 6.296 ms stddev 1.983, 0 failed, lag 1.397 ms
+...
+```
+
+
+--------
+
+## 手动 PITR [#pitr-manual]
+
+现在让我们选择一个恢复的时间点，比如说 `2025-07-13 03:03:03+00`，这是初始备份（和心跳）之后的时间点。
+要执行手动 PITR，请使用 `pg-pitr` 工具：
+
+```bash
+$ pg-pitr -t "2025-07-13 03:03:00+00"
+```
+
+它将为您生成执行恢复的说明，通常需要四个步骤：
+
+```bash
+Perform time PITR on pg-meta
+[1. Stop PostgreSQL] ===========================================
+   1.1 暂停 Patroni（如果有任何副本）
+       $ pg pause <cls>  # 暂停 patroni 自动故障转移
+   1.2 关闭 Patroni
+       $ pt-stop         # sudo systemctl stop patroni
+   1.3 关闭 Postgres
+       $ pg-stop         # pg_ctl -D /pg/data stop -m fast
+
+[2. Perform PITR] ===========================================
+   2.1 恢复备份
+       $ pgbackrest --stanza=pg-meta --type=time --target='2025-07-13 03:03:00+00' restore
+   2.2 启动 PG 以重放 WAL
+       $ pg-start        # pg_ctl -D /pg/data start
+   2.3 验证并提升
+     - 如果数据库内容正确，提升它以完成恢复，否则转到 2.1
+       $ pg-promote      # pg_ctl -D /pg/data promote
+```
+
+```bash
+
+[3. Restore Primary] ===========================================
+   3.1 启用归档模式（需要重启）
+       $ psql -c 'ALTER SYSTEM SET archive_mode = on;'
+   3.1 重启 Postgres 以应用更改
+       $ pg-restart      # pg_ctl -D /pg/data restart
+   3.3 重启 Patroni
+       $ pt-restart      # sudo systemctl restart patroni
+
+[4. Restore Cluster] ===========================================
+   4.1 重新初始化所有**副本**（如果有）
+       - 4.1.1 选项 1：使用相同的 pgbackrest 命令恢复副本（需要中央备份仓库）
+           $ pgbackrest --stanza=pg-meta --type=time --target='2025-07-13 03:03:00+00' restore
+       - 4.1.2 选项 2：清除副本数据目录并重启 patroni（可能需要很长时间恢复）
+           $ rm -rf /pg/data/*; pt-restart
+       - 4.1.3 选项 3：使用 patroni 重新初始化，如果主 lsn < 副本 lsn 可能会失败
+           $ pg reinit pg-meta
+   4.2 恢复 Patroni
+       $ pg resume pg-meta
+   4.3 全量备份（可选）
+       $ pg-backup full      # 建议在 PITR 后进行新的全量备份
+```
+
+
+--------
+
+## 单节点示例 [#single-node-example]
+
+让我们以简单的单节点 `pg-meta` 集群为例开始，这比较简单。
+
+### 关闭数据库 [#shutdown-database]
+
+```bash tab="关闭 patroni"
+pt-stop         # sudo systemctl stop patroni，关闭 patroni（和 postgres）
+```
+```bash tab="关闭 postgres" title="可选，因为如果 patroni 没有暂停，postgres 会被 patroni 关闭"
+$ pg_stop        # pg_ctl -D /pg/data stop -m fast，关闭 postgres
+
+pg_ctl: PID file "/pg/data/postmaster.pid" does not exist
+Is server running?
+
+$ pg-ps           # 打印与 postgres 相关的进程
+
+ UID         PID   PPID  C STIME TTY      STAT   TIME CMD
+postgres  31048      1  0 02:27 ?        Ssl    0:19 /usr/sbin/pgbouncer /etc/pgbouncer/pgbouncer.ini
+postgres  32026      1  0 02:28 ?        Ssl    0:03 /usr/bin/pg_exporter --web.listen-address=:9630 --log.level=info
+postgres  32252      1  0 02:28 ?        Ssl    0:00 /usr/bin/pg_exporter --web.listen-address=:9631 --log.level=info
+postgres  32460      1  0 02:28 ?        Ssl    0:00 /usr/bin/pgbackrest_exporter --log.level=info
+postgres  35480  35479  0 03:00 pts/2    S      0:00 -bash
+postgres  35510  35480  0 03:01 pts/2    S+     0:00 /bin/bash /pg/bin/pg-heartbeat
+postgres  37183  37182  0 03:07 pts/4    S      0:00 -bash
+postgres  38627  35510  0 03:14 pts/2    S+     0:00 sleep 1
+```
+
+确保本地 postgres 没有运行，然后执行手册中给出的恢复命令：
+
+### 恢复备份 [#restore-backup]
+
+```bash tab="恢复"
+pgbackrest --stanza=pg-meta --type=time --target='2025-07-13 03:03:00+00' restore
+```
+```bash tab="输出"
+postgres@pg-meta-1:~$ pgbackrest --stanza=pg-meta --type=time --target='2025-07-13 03:03:00+00' restore
+2025-07-13 03:17:07.443 P00   INFO: restore command begin 2.54.2: --archive-mode=off --delta --exec-id=38997-5c07abb3 --log-level-console=info --log-level-file=info --log-path=/pg/log/pgbackrest --pg1-path=/pg/data --process-max=2 --repo1-cipher-pass=<redacted> --repo1-cipher-type=aes-256-cbc --repo1-path=/pgbackrest --repo1-s3-bucket=pgsql --repo1-s3-endpoint=sss.pigsty --repo1-s3-key=<redacted> --repo1-s3-key-secret=<redacted> --repo1-s3-region=us-east-1 --repo1-s3-uri-style=path --repo1-storage-ca-file=/etc/pki/ca.crt --repo1-storage-port=9000 --repo1-type=s3 --spool-path=/pg/spool --stanza=pg-meta --target="2025-07-13 03:03:00+00" --type=time
+2025-07-13 03:17:07.470 P00   INFO: repo1: restore backup set 20250713-022731F, recovery will start at 2025-07-13 02:27:31
+2025-07-13 03:17:07.471 P00   INFO: remove invalid files/links/paths from '/pg/data'
+2025-07-13 03:17:08.523 P00   INFO: write updated /pg/data/postgresql.auto.conf
+2025-07-13 03:17:08.526 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2025-07-13 03:17:08.527 P00   INFO: restore size = 44MB, file total = 1436
+2025-07-13 03:17:08.527 P00   INFO: restore command end: completed successfully (1087ms)
+```
+
+### 验证数据 [#validate-data]
+
+我们不希望 patroni HA 在确保数据正确之前接管，所以我们手动启动 postgres：
+
+```bash tab="启动 postgres"
+pg-start
+```
+```bash tab="输出"
+waiting for server to start....2025-07-13 03:19:33.133 UTC [39294] LOG:  redirecting log output to logging collector process
+2025-07-13 03:19:33.133 UTC [39294] HINT:  Future log output will appear in directory "/pg/log/postgres".
+ done
+server started
+```
+
+现在您可以检查数据，看看它是否在您想要的时间点。
+您可以通过检查业务表中的一些最新时间戳来验证它，或者在这种情况下，通过心跳表进行检查。
+
+```bash tab="检查数据"
+postgres@pg-meta-1:~$ psql -c 'table monitor.heartbeat'
+   id    |              ts               |    lsn    | txid
+---------+-------------------------------+-----------+------
+ pg-meta | 2025-07-13 03:02:59.214104+00 | 302005504 | 4912
+```
+
+时间戳正好在我们指定的时间点之前！（`2025-07-13 03:03:00+00`）。
+如果这不是您想要的时间点，您可以使用不同的时间点重复恢复。
+由于恢复是以增量和并行方式执行的，所以很快。
+重试直到获得正确的时间点是可以的。
+
+
+### 提升为主节点 [#promote-leader]
+
+恢复的 postgres 集群处于 `recovery` 模式，因此在您将其提升为主节点之前，它将拒绝任何写入操作。
+这些恢复参数由 pgBackRest 在配置文件中生成。
+
+```ini title="/pg/data/postgresql.auto.conf"
+postgres@pg-meta-1:~$ cat /pg/data/postgresql.auto.conf
+# Do not edit this file or use ALTER SYSTEM manually!
+# It is managed by Pigsty & Ansible automatically!
+
+# Recovery settings generated by pgBackRest restore on 2025-07-13 03:17:08
+archive_mode = 'off'
+restore_command = 'pgbackrest --stanza=pg-meta archive-get %f "%p"'
+recovery_target_time = '2025-07-13 03:03:00+00'
+```
+
+如果数据正确，您可以将其**提升**为主节点，将其标记为新的领导者并准备接受写入。
+
+
+```bash tab="提升"
+pg-promote
+waiting for server to promote.... done
+server promoted
+```
+```bash tab="检查"
+psql -c 'SELECT pg_is_in_recovery()'   # 'f' 表示它已提升为主节点
+ pg_is_in_recovery
+-------------------
+ f
+(1 row)
+```
+
+<Callout title="新时间线和脑裂" type="warn">
+
+    一旦提升，数据库集群将进入新的时间线（主节点纪元）。
+    如果有任何写入流量，它将被写入新的时间线。
+
+</Callout>
+
+
+### 恢复集群 [#restore-cluster]
+
+最后，不仅数据需要恢复，集群状态也需要恢复，例如：
+
+- patroni 接管
+- 归档模式
+- 备份集
+- 副本
+
+#### Patroni 接管 [#patroni-takeover]
+
+您的 postgres 直接启动，要恢复 HA 接管；您必须启动 patroni 服务：
+
+```bash tab="启动 patroni"
+pt-start   # sudo systemctl start patroni
+```
+```bash tab="恢复 patroni"
+pg resume pg-meta      # 恢复 patroni 自动故障转移（如果您之前暂停了它）
+````
+
+#### 归档模式 [#archive-mode]
+
+`archive_mode` 在恢复期间被 pgbackrest 禁用。
+如果您希望新主节点的写入被归档到备份仓库中，您还需要启用 `archive_mode` 配置。
+
+```bash tab="检查 archive_mode"
+psql -c 'show archive_mode'
+
+ archive_mode
+--------------
+ off
+```
+```bash tab="重置 archive_mode"
+psql -c 'ALTER SYSTEM RESET archive_mode;'
+psql -c 'SELECT pg_reload_conf();'
+psql -c 'show archive_mode'
+```
+```bash tab="直接编辑"
+# 您也可以直接编辑 postgresql.auto.conf 并使用 pg_ctl 重新加载
+sed -i '/archive_mode/d' /pg/data/postgresql.auto.conf
+pg_ctl -D /pg/data reload
+```
+
+#### 备份集 [#backup-set]
+
+在 PITR 后进行新的全量备份通常是一个好主意，但这是可选的。
+
+#### 副本 [#replicas]
+
+如果您的 postgres 集群有副本，您需要在每个副本上也执行 PITR。
+或者，简单的方法是清除副本数据目录并重启 patroni，这将从主节点重新初始化副本。
+我们将在下一个多节点集群示例中介绍这种情况。
+
+
+

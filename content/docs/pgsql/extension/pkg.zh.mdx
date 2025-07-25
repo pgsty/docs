@@ -1,0 +1,35 @@
+---
+title: 软件包
+description: 扩展包和别名
+icon: Package
+---
+
+
+管理扩展和包并不简单，这里有两个常见的扩展示例：
+
+![](/img/pigsty/ext-mapping.png)
+
+| 实体          | 示例 `pgvector`                            | 示例 `postgis`...                                            |
+|-------------|------------------------------------------|------------------------------------------------------------|
+| **扩展**      | `vector`                                 | `postgis`, `postgis_topology`, `postgis_raster`,...        |
+| **包**       | `pgvector`                               | `postgis`                                                  |
+| **操作系统包**   | pgvector_17                              | postgresql-16-postgis-3                                    |
+| **RPM/DEB** | pgvector_17_0.8.0-1PGDG.rhel8.x86_64.rpm | postgresql-17-postgis-3_3.5.2+dfsg-1.pgdg22.04+1_amd64.deb |
+
+要以最小的努力安装正确的 RPM / DEB，我们需要使用抽象层：**包别名**。
+因此您可以通过指定"标准化"名称（如 `pgvector` 或 `postgis`）来安装这些扩展。
+无需了解 PG 和操作系统版本、架构、扩展版本以及任何其他详细信息。
+
+包别名 `pkg` 用于扩展下载和安装，但在数据库中 `CREATE EXTENSION` 时您必须使用扩展名称 `ext`（如 `meta` 数据库中的 `vector`）。
+请注意，某些扩展需要显式预加载，如上述示例中的 `timescaledb`。
+
+此外，所有扩展都被分类为 16 个主要类别，我们也为整个扩展类别提供别名
+这样您就可以批量下载和安装它们，例如：
+
+```yaml title="将 17 替换为 16,15,14,13,..."
+repo_extra_packages: [ pg17-main ,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
+pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+```
+
+除了 `olap` 类别外，所有扩展**都可以**同时安装，在 `olap` 类别中，`citus` 与 `hydra` 冲突，`pg_duckdb` 与 `pg_mooncake` 冲突。
+所以您可以下载所有扩展，但要一次安装一个。

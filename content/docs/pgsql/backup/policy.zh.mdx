@@ -1,0 +1,133 @@
+---
+title: 备份策略
+description: 根据您的需求设计备份策略。
+icon: DatabaseBackup
+---
+
+
+- 何时：备份策略
+- 何地：备份仓库
+- 如何：备份方法
+
+
+--------
+
+## 何时备份 [#when]
+
+第一个问题是**何时**备份您的数据库——在备份频率和恢复时间之间做权衡。
+由于您需要回放 WAL 日志到从上次备份以来的恢复目标，
+备份越频繁，需要回放的 WAL 日志就越少，恢复就越快。
+
+
+### 每日全量备份 [#everyday-full-backup]
+
+对于生产数据库，建议从最简单的每日全量备份策略开始。
+这是 Pigsty 中的默认备份策略，通过 [crontab](/zh/pgsql/backup/mechanism#crontab) 实现。
+
+```yaml title="每日凌晨1点全量备份"
+node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ]
+pgbackrest_method: local          # 选择备份仓库方法，`local` 或 `minio` 或任何其他用户定义的仓库
+pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/configuration.html#section-repository
+  local:                          # 使用本地 POSIX 文件系统的默认 pgbackrest 仓库
+    path: /pg/backup              # 本地备份目录，默认为 `/pg/backup`
+    retention_full_type: count    # 按数量保留全量备份
+    retention_full: 2             # 保留 2 个，使用本地文件系统仓库时最多 3 个全量备份
+```
+
+当使用默认的 `local` 文件系统备份仓库时，它提供 24~48 小时的恢复窗口。
+
+![](/img/pigsty/pitr-scope.png)
+
+假设您的数据库大小为 100GB，每天写入 10GB，您的备份大小将是：
+
+![](/img/pigsty/pitr-space.png)
+
+它将消耗数据库大小的 `2 ~ 3 倍`，加上 2 天的 WAL。
+因此在实践中，您可能需要准备至少数据库大小 `3 ~ 5 倍` 的备份磁盘
+来使用默认备份策略。
+
+
+### 全量 + 增量备份 [#full-incr-backup]
+
+您可以通过更改这些参数来优化备份空间使用。
+
+如果您使用 MinIO / S3 作为集中式备份仓库，您可以使用比磁盘限制更多的空间。
+那么考虑使用 2 周保留策略的全量 + 增量备份：
+
+```yaml
+node_crontab:  # 周一凌晨 1 点进行全量备份，工作日进行增量备份
+  - '00 01 * * 1 postgres /pg/bin/pg-backup full'
+  - '00 01 * * 2,3,4,5,6,7 postgres /pg/bin/pg-backup'
+pgbackrest_method: minio
+pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/configuration.html#section-repository
+  minio:                          # pgbackrest 的可选 minio 仓库
+    type: s3                      # minio 兼容 s3，所以使用 s3
+    s3_endpoint: sss.pigsty       # minio 端点域名，默认为 `sss.pigsty`
+    s3_region: us-east-1          # minio 区域，默认为 us-east-1，对 minio 无用
+    s3_bucket: pgsql              # minio 存储桶名称，默认为 `pgsql`
+    s3_key: pgbackrest            # pgbackrest 的 minio 用户访问密钥
+    s3_key_secret: S3User.Backup  # pgbackrest 的 minio 用户秘密密钥
+    s3_uri_style: path            # 对 minio 使用路径样式 URI 而不是主机样式
+    path: /pgbackrest             # minio 备份路径，默认为 `/pgbackrest`
+    storage_port: 9000            # minio 端口，默认为 9000
+    storage_ca_file: /etc/pki/ca.crt  # minio ca 文件路径，默认为 `/etc/pki/ca.crt`
+    block: y                      # 启用块增量备份
+    bundle: y                     # 将小文件打包成单个文件
+    bundle_limit: 20MiB           # 文件包的限制，对象存储为 20MiB
+    bundle_size: 128MiB           # 文件包的目标大小，对象存储为 128MiB
+    cipher_type: aes-256-cbc      # 为远程备份仓库启用 AES 加密
+    cipher_pass: pgBackRest       # AES 加密密码，默认为 'pgBackRest'
+    retention_full_type: time     # 在 minio 仓库上按时间保留全量备份
+    retention_full: 14            # 保留最近 14 天的全量备份
+```
+
+当使用内置的 `minio` 文件系统备份仓库时，它提供有保证的 1 周 PITR 窗口。
+
+![](/img/pigsty/pitr-scope2.png)
+
+假设您的数据库大小为 100GB，每天写入 10GB，您的备份大小将如下所示：
+
+![](/img/pigsty/pitr-space2.png)
+
+
+
+
+
+
+
+--------
+
+## 备份位置 [#where]
+
+默认情况下，Pigsty 有两个默认备份仓库定义：`local` 和 `minio` 备份仓库。
+
+- `local`：**默认**，使用本地 `/pg/backup` 目录（软链接指向 [`pg_fs_backup`](/zh/pgsql/param/#pg_fs_backup)：`/data/backups`）
+- `minio`：使用 SNSD 1 节点 MinIO 集群（由 Pigsty 支持，但默认未启用）
+
+```yaml
+pgbackrest_method: local          # 选择备份仓库方法，`local` 或 `minio` 或任何其他用户定义的仓库
+pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/configuration.html#section-repository
+  local:                          # 使用本地 POSIX 文件系统的默认 pgbackrest 仓库
+    path: /pg/backup              # 本地备份目录，默认为 `/pg/backup`
+    retention_full_type: count    # 按数量保留全量备份
+    retention_full: 2             # 保留 2 个，使用本地文件系统仓库时最多 3 个全量备份
+  minio:                          # pgbackrest 的可选 minio 仓库
+    type: s3                      # minio 兼容 s3，所以使用 s3
+    s3_endpoint: sss.pigsty       # minio 端点域名，默认为 `sss.pigsty`
+    s3_region: us-east-1          # minio 区域，默认为 us-east-1，对 minio 无用
+    s3_bucket: pgsql              # minio 存储桶名称，默认为 `pgsql`
+    s3_key: pgbackrest            # pgbackrest 的 minio 用户访问密钥
+    s3_key_secret: S3User.Backup  # pgbackrest 的 minio 用户秘密密钥
+    s3_uri_style: path            # 对 minio 使用路径样式 URI 而不是主机样式
+    path: /pgbackrest             # minio 备份路径，默认为 `/pgbackrest`
+    storage_port: 9000            # minio 端口，默认为 9000
+    storage_ca_file: /etc/pki/ca.crt  # minio ca 文件路径，默认为 `/etc/pki/ca.crt`
+    block: y                      # 启用块增量备份
+    bundle: y                     # 将小文件打包成单个文件
+    bundle_limit: 20MiB           # 文件包的限制，对象存储为 20MiB
+    bundle_size: 128MiB           # 文件包的目标大小，对象存储为 128MiB
+    cipher_type: aes-256-cbc      # 为远程备份仓库启用 AES 加密
+    cipher_pass: pgBackRest       # AES 加密密码，默认为 'pgBackRest'
+    retention_full_type: time     # 在 minio 仓库上按时间保留全量备份
+    retention_full: 14            # 保留最近 14 天的全量备份
+```

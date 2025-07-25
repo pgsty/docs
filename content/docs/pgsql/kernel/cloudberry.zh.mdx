@@ -1,0 +1,90 @@
+---
+title: Cloudberry
+description: Cloudberry 和 Greenplum，MPP 数据仓库
+icon: Cherry
+---
+
+
+您可以部署和监控 Cloudberry 集群，这是 Greenplum 的一个分支。
+
+要定义 Greenplum 集群，您需要指定以下参数：
+
+
+<Callout title="POC" type="info">
+
+    我们正在等待 Apache Cloudberry 2.0 的官方发布，因此现在请勿在生产环境中使用
+
+</Callout>
+
+
+--------
+
+## 安装 [#install]
+
+要安装 cloudberry，您必须启用 `gpsql` 仓库模块：
+
+```bash
+./node.yml -t node_install  -e '{"node_repo_modules":"node,pgsql,gpsql","node_packages":["cloudberrydb"]}'
+```
+
+
+--------
+
+## 配置 [#configure]
+
+设置 [`pg_mode`](/zh/pgsql/param#pg_mode) = `gpsql` 和额外的标识参数 `pg_shard` 和 `gp_role`。
+
+```yaml
+#================================================================#
+#                        GPSQL 集群                              #
+#================================================================#
+
+#----------------------------------#
+# 集群：mx-mdw (gp master)
+#----------------------------------#
+mx-mdw:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary , nodename: mx-mdw-1 }
+  vars:
+    gp_role: master          # 此集群用作 greenplum master
+    pg_shard: mx             # pgsql 分片名称和 gpsql 部署名称
+    pg_cluster: mx-mdw       # 此 master 集群名称为 mx-mdw
+    pg_databases:
+      - { name: matrixmgr , extensions: [ { name: matrixdbts } ] }
+      - { name: meta }
+    pg_users:
+      - { name: meta , password: DBUser.Meta , pgbouncer: true }
+      - { name: dbuser_monitor , password: DBUser.Monitor , roles: [ dbrole_readonly ], superuser: true }
+
+    pgbouncer_enabled: true                # 为 greenplum master 启用 pgbouncer
+    pgbouncer_exporter_enabled: false      # 为 greenplum master 启用 pgbouncer_exporter
+    pg_exporter_params: 'host=127.0.0.1&sslmode=disable'  # 使用 127.0.0.1 作为本地监控主机
+
+#----------------------------------#
+# 集群：mx-sdw (gp master)
+#----------------------------------#
+mx-sdw:
+  hosts:
+    10.10.10.11:
+      nodename: mx-sdw-1        # greenplum 段节点
+      pg_instances:             # greenplum 段实例
+        6000: { pg_cluster: mx-seg1, pg_seq: 1, pg_role: primary , pg_exporter_port: 9633 }
+        6001: { pg_cluster: mx-seg2, pg_seq: 2, pg_role: replica , pg_exporter_port: 9634 }
+    10.10.10.12:
+      nodename: mx-sdw-2
+      pg_instances:
+        6000: { pg_cluster: mx-seg2, pg_seq: 1, pg_role: primary , pg_exporter_port: 9633  }
+        6001: { pg_cluster: mx-seg3, pg_seq: 2, pg_role: replica , pg_exporter_port: 9634  }
+    10.10.10.13:
+      nodename: mx-sdw-3
+      pg_instances:
+        6000: { pg_cluster: mx-seg3, pg_seq: 1, pg_role: primary , pg_exporter_port: 9633 }
+        6001: { pg_cluster: mx-seg1, pg_seq: 2, pg_role: replica , pg_exporter_port: 9634 }
+  vars:
+    gp_role: segment               # 这些是 gp 段的节点
+    pg_shard: mx                   # pgsql 分片名称和 gpsql 部署名称
+    pg_cluster: mx-sdw             # 这些段集群名称为 mx-sdw
+    pg_preflight_skip: true        # 跳过预检查（因为 pg_seq 和 pg_role 和 pg_cluster 不存在）
+    pg_exporter_config: pg_exporter_basic.yml                             # 使用基本配置以避免段服务器崩溃
+    pg_exporter_params: 'options=-c%20gp_role%3Dutility&sslmode=disable'  # 使用 gp_role = utility 连接到段
+```

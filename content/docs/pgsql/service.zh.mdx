@@ -1,0 +1,418 @@
+---
+title: 服务
+description: 通过负载均衡、代理、连接池提供可靠的服务访问
+icon: ConciergeBell
+---
+
+
+
+## 服务实现 [#service-implementation]
+
+在 Pigsty 中，服务通过[节点](/zh/node/)上的 [haproxy](/zh/node/param#haproxy) 实现，通过主机节点上的不同端口来区分。
+
+每个节点都启用了 Haproxy 来暴露服务。从数据库角度来看，集群中的节点可能是主节点或副本节点，但从服务角度来看，所有节点都是相同的。这意味着即使您访问副本节点，只要使用正确的服务端口，您仍然可以使用主节点的读写服务。这种设计封装了复杂性：只要您能访问 PostgreSQL 集群上的任何实例，就可以完全访问所有服务。
+
+这种设计类似于 Kubernetes 中的 NodePort 服务。同样，在 Pigsty 中，每个服务都包含这两个核心元素：
+
+1. 通过 NodePort 暴露的访问端点（端口号，从哪里访问？）
+2. 通过选择器选择的目标实例（实例列表，谁来处理？）
+
+Pigsty 服务交付的边界止于集群的 HAProxy。用户可以通过各种方式访问这些负载均衡器。请参考[访问服务](/zh/pgsql/service#access-service)。
+
+所有服务都通过配置文件声明。例如，默认的 PostgreSQL 服务由 [`pg_default_services`](/zh/pgsql/param#pg_default_services) 参数定义：
+
+```yaml
+- { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
+- { name: replica ,port: 5434 ,dest: default  ,check: /read-only ,selector: "[]" , backup: "[? pg_role == `primary` || pg_role == `offline` ]" }
+- { name: default ,port: 5436 ,dest: postgres ,check: /primary   ,selector: "[]" }
+- { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
+```
+
+您也可以在 [`pg_services`](/zh/pgsql/param#pg_services) 中定义新服务。`pg_default_services` 和 `pg_services` 都是[服务定义](/zh/pgsql/service/#define-service)的数组。
+
+
+
+------
+
+## 定义服务 [#define-service]
+
+默认服务在 [`pg_default_services`](/zh/pgsql/param#pg_default_services) 中定义。
+
+您可以在全局或集群级别使用 [`pg_services`](/zh/pgsql/param#pg_services) 定义额外的 PostgreSQL 服务。
+
+这两个参数都是服务对象的数组。每个服务定义将被渲染为 `/etc/haproxy/<svcname>.cfg` 中的 haproxy 配置，查看 [`service.j2`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/service.j2) 了解详细信息。
+
+这里是一个额外服务定义的示例：`standby`
+
+```yaml
+- name: standby                   # 必需，服务名称，实际服务名称将以 `pg_cluster` 为前缀，例如：pg-meta-standby
+  port: 5435                      # 必需，服务暴露端口（作为 kubernetes 服务节点端口模式工作）
+  ip: "*"                         # 可选，服务绑定 IP 地址，默认为所有 IP 的 `*`
+  selector: "[]"                  # 必需，服务成员选择器，使用 JMESPath 过滤清单
+  dest: default                   # 可选，目标端口，default|postgres|pgbouncer|<port_number>，默认为 'default'
+  check: /sync                    # 可选，健康检查 URL 路径，默认为 /
+  backup: "[? pg_role == `primary`]"  # 备份服务器选择器
+  maxconn: 3000                   # 可选，最大允许前端连接数
+  balance: roundrobin             # 可选，haproxy 负载均衡算法（默认为 roundrobin，其他：leastconn）
+  options: 'inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100'
+```
+
+它将被转换为 haproxy 配置文件 `/etc/haproxy/pg-test-standby.conf`：
+
+```ini
+#---------------------------------------------------------------------
+# service: pg-test-standby @ 10.10.10.11:5435
+#---------------------------------------------------------------------
+# service instances 10.10.10.11, 10.10.10.13, 10.10.10.12
+# service backups   10.10.10.11
+listen pg-test-standby
+    bind *:5435
+    mode tcp
+    maxconn 5000
+    balance roundrobin
+    option httpchk
+    option http-keep-alive
+    http-check send meth OPTIONS uri /sync  # <--- 对主节点和同步备节点为真
+    http-check expect status 200
+    default-server inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100
+    # servers
+    server pg-test-1 10.10.10.11:6432 check port 8008 weight 100 backup   # 主节点用作备份服务器
+    server pg-test-3 10.10.10.13:6432 check port 8008 weight 100
+    server pg-test-2 10.10.10.12:6432 check port 8008 weight 100
+```
+
+
+
+
+------
+
+## 重新加载服务 [#reload-service]
+
+当集群成员发生变化时，如添加/移除副本、切换/故障转移或调整相对权重，您必须[重新加载服务](/zh/pgsql/admin#reload-service)以使更改生效。
+
+```bash
+bin/pgsql-svc <cls> [ip...]         # 为负载均衡集群或负载均衡实例重新加载服务
+# ./pgsql.yml -t pg_service         # 重新加载服务的实际 ansible 任务
+```
+
+------
+
+## 覆盖服务 [#override-service]
+
+您可以通过几种方式覆盖默认服务配置：
+
+**绕过 Pgbouncer**
+
+在定义服务时，如果 `svc.dest='default'`，将使用参数 [`pg_default_service_dest`](/zh/pgsql/param#pg_default_service_dest) 作为默认值。默认使用 `pgbouncer`，您可以改用 `postgres`，这样默认的主节点和副本服务将绕过 pgbouncer 并直接将流量路由到 postgres
+
+如果您完全不需要连接池，可以将 [`pg_default_service_dest`](/zh/pgsql/param#pg_default_service_dest) 更改为 `postgres`，并移除 `default` 和 `offline` 服务。
+
+如果您不需要用于在线流量的只读副本，也可以从 `pg_default_services` 中移除 `replica`。
+
+```yaml
+pg_default_services:
+  - { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
+  - { name: replica ,port: 5434 ,dest: default  ,check: /read-only ,selector: "[]" , backup: "[? pg_role == `primary` || pg_role == `offline` ]" }
+  - { name: default ,port: 5436 ,dest: postgres ,check: /primary   ,selector: "[]" }
+  - { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
+```
+
+------
+
+## 委托服务 [#delegate-service]
+
+Pigsty 在节点上使用 haproxy 暴露 PostgreSQL 服务。集群中的所有 haproxy 实例都配置了相同的服务定义。
+
+然而，您可以将 pg 服务委托给特定的节点组（例如，专用的 haproxy 负载均衡集群）而不是集群成员。
+
+要做到这一点，您需要使用 [`pg_default_services`](/zh/pgsql/param#pg_default_services) 覆盖默认服务定义，并将 [`pg_service_provider`](/zh/pgsql/param#pg_service_provider) 设置为代理组名称。
+
+例如，这个配置将在 haproxy 节点组 `proxy` 上使用端口 10013 暴露 pg 集群主服务。
+
+```yaml
+pg_service_provider: proxy       # 使用组 `proxy` 上的负载均衡器和端口 10013
+pg_default_services:  [{ name: primary ,port: 10013 ,dest: postgres  ,check: /primary   ,selector: "[]" }]
+```
+
+用户有责任确保每个委托服务端口在代理集群中是**唯一的**。
+
+
+
+
+> 分离读写，将流量路由到正确的位置，并实现对 PostgreSQL 集群的稳定可靠访问。
+
+服务是一个抽象，用于封装底层集群的细节，特别是在集群故障转移/切换期间。
+
+------
+
+## 个人用户 [#personal-user]
+
+对于个人用户，服务是没有意义的。您可以使用原始 IP 地址或任何您喜欢的方法访问数据库。
+
+```bash
+psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10/meta     # dbsu 直接连接
+psql postgres://dbuser_meta:DBUser.Meta@10.10.10.10/meta   # 默认业务管理员用户
+psql postgres://dbuser_view:DBUser.View@pg-meta/meta       # 默认只读用户
+```
+
+------
+
+## 服务概述 [#service-overview]
+
+在现实世界的生产环境中，我们利用基于复制的 PostgreSQL 数据库**集群**。在集群内，只有一个实例是可以接受写入的领导者（主节点）。其他实例（副本）持续从领导者获取 WAL 以保持同步。此外，副本可以处理只读查询，并在读取密集、写入较少的场景中为主节点分担负载。因此，区分写入和只读请求是一种常见做法。
+
+此外，我们通过连接池中间件（Pgbouncer）为高频、短期连接池化请求，以减少连接和后端进程创建的开销。而且，对于 ETL 和变更执行等场景，我们需要绕过连接池并直接访问数据库服务器。此外，高可用性集群可能在故障期间发生故障转移，导致集群领导权发生变化。因此，读写请求应该自动重新路由到新的领导者。
+
+这些不同的需求（读写分离、池化与直接连接以及客户端请求故障转移）导致了**服务**概念的抽象。
+
+通常，数据库集群必须提供这个基本服务：
+
+- **读写服务（主节点）**：可以读取和写入数据库。
+
+对于生产数据库集群，至少应该提供这两个服务：
+
+- **读写服务（主节点）**：写入数据：只由主节点承载。
+- **只读服务（副本）**：读取数据：可以由副本承载，但如果没有可用的副本，则回退到主节点。
+
+此外，可能还有其他服务，例如：
+
+- **直接访问服务（默认）**：允许（管理员）用户绕过连接池并直接访问数据库。
+- **离线副本服务（离线）**：专用副本，不处理在线读取流量，用于 ETL 和分析查询。
+- **同步副本服务（备用）**：无复制延迟的只读服务，由[同步备用](/zh/pgsql/config#sync-standby)/主节点处理读取查询。
+- **延迟副本服务（延迟）**：从一定时间前的同一集群访问较旧的数据，由[延迟副本](/zh/pgsql/config#delayed-cluster)处理。
+
+------
+
+## 默认服务 [#default-service]
+
+Pigsty 将为每个 PostgreSQL 集群启用四个默认服务：
+
+| 服务                                    | 端口 | 描述                                           |
+|--------------------------------------------|------|-------------------------------------------------------|
+| [primary](/zh/pgsql/service/#primary-service) | 5433 | pgbouncer 读写，连接到主节点 5432 或 6432 |
+| [replica](/zh/pgsql/service/#replica-service) | 5434 | pgbouncer 只读，连接到副本 5432/6432    |
+| [default](/zh/pgsql/service/#default-service) | 5436 | 管理员或直接访问主节点                     |
+| [offline](/zh/pgsql/service/#offline-service) | 5438 | OLAP、ETL、个人用户、交互式查询         |
+
+以默认的 `pg-meta` 集群为例，您可以通过以下方式访问这些服务：
+
+```bash
+psql postgres://dbuser_meta:DBUser.Meta@pg-meta:5433/meta   # pg-meta-primary : 通过主节点 pgbouncer(6432) 进行生产读写
+psql postgres://dbuser_meta:DBUser.Meta@pg-meta:5434/meta   # pg-meta-replica : 通过副本 pgbouncer(6432) 进行生产只读
+psql postgres://dbuser_dba:DBUser.DBA@pg-meta:5436/meta     # pg-meta-default : 通过主节点 postgres(5432) 直接连接主节点
+psql postgres://dbuser_stats:DBUser.Stats@pg-meta:5438/meta # pg-meta-offline : 通过离线 postgres(5432) 直接连接离线
+```
+
+[![pigsty-ha.png](/img/pigsty/ha.png)](/zh/feat/ha/)
+
+这里 `pg-meta` 域名指向集群的 L2 VIP，进而指向主实例上的 haproxy 负载均衡器。
+它负责将流量路由到不同的实例，查看[访问服务](#access-service)了解详细信息。
+
+------
+
+## 主服务 [#primary-service]
+
+主服务可能是生产使用中最关键的服务。
+
+它将根据 [`pg_default_service_dest`](/zh/pgsql/param/#pg_default_service_dest) 将流量路由到主实例：
+
+- `pgbouncer`：将流量路由到主节点 pgbouncer 端口（6432），这是默认行为
+- `postgres`：如果您不想使用 pgbouncer，直接将流量路由到主节点 postgres 端口（5432）
+
+```yaml
+- { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
+```
+
+这意味着所有集群成员都将包含在主服务中（`selector: "[]"`），但通过健康检查（`check: /primary`）的唯一实例将被用作主实例。Patroni 将保证任何时候只有一个实例是主节点，因此主服务将始终将流量路由到主实例。
+
+```ini
+listen pg-test-primary
+    bind *:5433
+    mode tcp
+    maxconn 5000
+    balance roundrobin
+    option httpchk
+    option http-keep-alive
+    http-check send meth OPTIONS uri /primary
+    http-check expect status 200
+    default-server inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100
+    # servers
+    server pg-test-1 10.10.10.11:6432 check port 8008 weight 100
+    server pg-test-3 10.10.10.13:6432 check port 8008 weight 100
+    server pg-test-2 10.10.10.12:6432 check port 8008 weight 100
+```
+
+------
+
+## 副本服务 [#replica-service]
+
+副本服务用于生产只读流量。
+
+在现实场景中，只读查询可能比读写查询多得多。您可能有许多副本。
+
+副本服务将根据 [`pg_default_service_dest`](/zh/pgsql/param/#pg_default_service_dest) 将流量路由到 Pgbouncer 或 postgres，就像[主服务](/zh/pgsql/service/#primary-service)一样。
+
+```yaml
+- { name: replica ,port: 5434 ,dest: default  ,check: /read-only ,selector: "[]" , backup: "[? pg_role == `primary` || pg_role == `offline` ]" }
+```
+
+`replica` 服务流量将尽量使用 [`pg_role`](/zh/pgsql/param/#pg_role) = `replica` 的普通 pg 实例，以尽可能减轻 `primary` 实例的负载。它将尽量不使用 [`pg_role`](/zh/pgsql/param/#pg_role) = `offline` 的实例，以尽可能避免混合 OLAP 和 OLTP 查询。
+
+所有集群成员将包含在副本服务中（`selector: "[]"`），当它通过只读健康检查（`check: /read-only`）时。`primary` 和 `offline` 实例用作备份服务器，在所有 `replica` 实例都宕机的情况下接管。
+
+
+```ini
+listen pg-test-replica
+    bind *:5434
+    mode tcp
+    maxconn 5000
+    balance roundrobin
+    option httpchk
+    option http-keep-alive
+    http-check send meth OPTIONS uri /read-only
+    http-check expect status 200
+    default-server inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100
+    # servers
+    server pg-test-1 10.10.10.11:6432 check port 8008 weight 100 backup
+    server pg-test-3 10.10.10.13:6432 check port 8008 weight 100
+    server pg-test-2 10.10.10.12:6432 check port 8008 weight 100
+```
+
+
+------
+
+### 默认服务 [#default-service]
+
+默认服务将默认路由到主节点 postgres（5432）。
+
+它非常类似于主服务，除了它将始终绕过 pgbouncer，无论 [`pg_default_service_dest`](/zh/pgsql/param/#pg_default_service_dest) 如何。这对于管理连接、ETL 写入、CDC 变更数据捕获等非常有用…
+
+```yaml
+- { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
+```
+
+```ini
+listen pg-test-default
+    bind *:5436
+    mode tcp
+    maxconn 5000
+    balance roundrobin
+    option httpchk
+    option http-keep-alive
+    http-check send meth OPTIONS uri /primary
+    http-check expect status 200
+    default-server inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100
+    # servers
+    server pg-test-1 10.10.10.11:5432 check port 8008 weight 100
+    server pg-test-3 10.10.10.13:5432 check port 8008 weight 100
+    server pg-test-2 10.10.10.12:5432 check port 8008 weight 100
+```
+
+
+------
+
+### 离线服务 [#offline-service]
+
+离线服务将直接将流量路由到专用的 postgres 实例。
+
+这可能是 [`pg_role`](/zh/pgsql/param/#pg_role) = `offline` 实例，或者是标记了 [`pg_offline_query`](/zh/pgsql/param/#pg_offline_query) 的实例。
+
+如果找不到这样的实例，它将回退到任何副本实例。底线是：它永远不会将流量路由到主实例。
+
+```yaml
+- { name: offline ,port: 5438 ,dest: postgres ,check: /replica   ,selector: "[? pg_role == `offline` || pg_offline_query ]" , backup: "[? pg_role == `replica` && !pg_offline_query]"}
+```
+
+```ini
+listen pg-test-offline
+    bind *:5438
+    mode tcp
+    maxconn 5000
+    balance roundrobin
+    option httpchk
+    option http-keep-alive
+    http-check send meth OPTIONS uri /replica
+    http-check expect status 200
+    default-server inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100
+    # servers
+    server pg-test-3 10.10.10.13:5432 check port 8008 weight 100
+    server pg-test-2 10.10.10.12:5432 check port 8008 weight 100 backup
+```
+
+------
+
+## 访问服务 [#access-service]
+
+Pigsty 使用 haproxy 暴露[服务](/zh/pgsql/service/#service-overview)。默认情况下，所有节点都启用了 haproxy。
+
+默认情况下，haproxy 负载均衡器在同一个 pg 集群中是幂等的，您可以通过任何/所有方式使用它们。
+
+典型的方法是通过集群域名访问，它解析为集群 L2 VIP，或以轮询方式解析为所有实例 IP 地址。
+
+服务可以通过不同的方式实现。您甚至可以实现自己的访问方法，如 L4 LVS、F5 等，而不是 haproxy。
+
+![pigsty-access.jpg](/img/pigsty/access.jpg)
+
+您可以使用主机和端口的不同组合，它们以不同的方式提供 PostgreSQL 服务。
+
+**主机**
+
+| 类型                | 示例        | 描述                                                          |
+|---------------------|---------------|----------------------------------------------------------------------|
+| 集群域名 | `pg-test`     | 通过集群域名（由基础设施节点上的 dnsmasq 解析）          |
+| 集群 VIP 地址 | `10.10.10.3`  | 通过由 `vip-manager` 管理的 L2 VIP 地址，绑定到主节点       |
+| 实例主机名   | `pg-test-1`   | 通过任何实例主机名访问（由基础设施节点上的 dnsmasq 解析） |
+| 实例 IP 地址 | `10.10.10.11` | 访问任何实例 IP 地址                                       |
+
+**端口**
+
+Pigsty 使用不同的**端口**来区分 pg 服务：
+
+| 端口 | 服务   | 类型       | 描述                                           |
+|------|-----------|------------|-------------------------------------------------------|
+| 5432 | postgres  | 数据库   | 直接访问 postgres 服务器                      |
+| 6432 | pgbouncer | 中间件 | 在访问 postgres 之前通过连接池中间件 |
+| 5433 | primary   | 服务    | 访问主节点 pgbouncer（或 postgres）                |
+| 5434 | replica   | 服务    | 访问副本 pgbouncer（或 postgres）                |
+| 5436 | default   | 服务    | 访问主节点 postgres               |
+| 5438 | offline   | 服务    | 访问离线 postgres               |
+
+**组合**
+
+```bash
+# 通过集群域名访问
+postgres://test@pg-test:5432/test # DNS -> L2 VIP -> 主节点直接连接
+postgres://test@pg-test:6432/test # DNS -> L2 VIP -> 主节点连接池 -> 主节点
+postgres://test@pg-test:5433/test # DNS -> L2 VIP -> HAProxy -> 主节点连接池 -> 主节点
+postgres://test@pg-test:5434/test # DNS -> L2 VIP -> HAProxy -> 副本连接池 -> 副本
+postgres://dbuser_dba@pg-test:5436/test # DNS -> L2 VIP -> HAProxy -> 主节点直接连接（管理员）
+postgres://dbuser_stats@pg-test:5438/test # DNS -> L2 VIP -> HAProxy -> 离线直接连接（ETL/个人查询）
+
+# 通过集群 VIP 直接访问
+postgres://test@10.10.10.3:5432/test # L2 VIP -> 主节点直接访问
+postgres://test@10.10.10.3:6432/test # L2 VIP -> 主节点连接池 -> 主节点
+postgres://test@10.10.10.3:5433/test # L2 VIP -> HAProxy -> 主节点连接池 -> 主节点
+postgres://test@10.10.10.3:5434/test # L2 VIP -> HAProxy -> 副本连接池 -> 副本
+postgres://dbuser_dba@10.10.10.3:5436/test # L2 VIP -> HAProxy -> 主节点直接连接（管理员）
+postgres://dbuser_stats@10.10.10.3::5438/test # L2 VIP -> HAProxy -> 离线直接连接（ETL/个人查询）
+
+# 直接指定任何集群实例名称
+postgres://test@pg-test-1:5432/test # DNS -> 数据库实例直接连接（单例访问）
+postgres://test@pg-test-1:6432/test # DNS -> 连接池 -> 数据库
+postgres://test@pg-test-1:5433/test # DNS -> HAProxy -> 连接池 -> 数据库读写
+postgres://test@pg-test-1:5434/test # DNS -> HAProxy -> 连接池 -> 数据库只读
+postgres://dbuser_dba@pg-test-1:5436/test # DNS -> HAProxy -> 数据库直接连接
+postgres://dbuser_stats@pg-test-1:5438/test # DNS -> HAProxy -> 数据库离线读写
+
+# 直接指定任何集群实例 IP 访问
+postgres://test@10.10.10.11:5432/test # 数据库实例直接连接（直接指定实例，无自动流量分发）
+postgres://test@10.10.10.11:6432/test # 连接池 -> 数据库
+postgres://test@10.10.10.11:5433/test # HAProxy -> 连接池 -> 数据库读写
+postgres://test@10.10.10.11:5434/test # HAProxy -> 连接池 -> 数据库只读
+postgres://dbuser_dba@10.10.10.11:5436/test # HAProxy -> 数据库直接连接
+postgres://dbuser_stats@10.10.10.11:5438/test # HAProxy -> 数据库离线读写
+
+# 智能客户端自动读写分离（连接池）
+postgres://test@10.10.10.11:6432,10.10.10.12:6432,10.10.10.13:6432/test?target_session_attrs=primary
+postgres://test@10.10.10.11:6432,10.10.10.12:6432,10.10.10.13:6432/test?target_session_attrs=prefer-standby
+```

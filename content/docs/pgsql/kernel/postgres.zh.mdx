@@ -1,0 +1,69 @@
+---
+title: PostgreSQL
+description: 带有 420+ 扩展的原版 PostgreSQL 内核
+icon: Database
+---
+
+[PostgreSQL](https://www.postgresql.org/) 是世界上最先进和最受欢迎的开源数据库。
+
+Pigsty 支持 PostgreSQL 13 ~ 17，并提供 420+ 扩展。
+
+
+------
+
+## 快速开始 [#get-started]
+
+使用 [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) 配置模板 [**安装**](/zh/install/start) Pigsty。
+
+```bash
+./configure -c pgsql     # 使用 percona postgres 内核
+./install.yml            # 使用 pigsty 设置一切
+```
+
+大多数[配置模板](/zh/config/template)默认使用 PostgreSQL 内核，例如：
+
+- [`meta`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) : **默认**，带有核心扩展（vector、postgis、timescale）的 postgres
+- [`rich`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) : 安装了所有扩展的 postgres
+- [`slim`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) : 仅 postgres，无监控基础设施
+- [`full`](https://github.com/pgsty/pigsty/blob/main/conf/full.yml) : 用于 HA 演示的 4 节点沙盒
+- [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) : 最小的 postgres 内核配置示例
+
+------
+
+## 配置 [#configure]
+
+原版 PostgreSQL 内核不需要特殊调整：
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_users:
+      - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+      - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
+    pg_databases:
+      - { name: meta, baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [ vector ]}
+    pg_hba_rules:
+      - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+    node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # 每天凌晨 1 点进行全量备份
+    pg_packages: [ pgsql-main, pgsql-common ]   # pg 内核和通用工具
+    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ,pg17-olap]
+```
+
+要使用不同的 PostgreSQL 主版本，您可以使用 `-v` 参数进行[配置](/zh/config/configure)：
+
+```bash
+./configure -c pgsql -v 17      # 使用 postgresql 17
+./configure -c pgsql -v 16      # 使用 postgresql 16
+./configure -c pgsql -v 15      # 使用 postgresql 15
+./configure -c pgsql -v 14      # 使用 postgresql 14
+./configure -c pgsql -v 13      # 使用 postgresql 13
+```
+
+如果 PostgreSQL 集群已经安装，您需要在安装新版本之前卸载它
+
+```bash
+./pgsql-rm.yml # -l pg-meta
+```

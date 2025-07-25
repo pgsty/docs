@@ -32,13 +32,13 @@ There are **4** **REQUIRED** parameters to describe a PostgreSQL Cluster:
 
 - [`pg_cluster`](/pgsql/param#pg_cluster): Name of the cluster, configured at the cluster level.
 - [`pg_role`](/pgsql/param#pg_role): Configured at the instance level, identifies the role of the instance.
-- the `primary` role will mark this instance as cluster leader (initially).
-- the `replica` is the default role, which marks this instance as common read-only replica.
-- the `offline` marks this instance as special read-only replica that serves the `offline` service.
+    - the `primary` role will mark this instance as cluster leader (initially).
+    - the `replica` is the default role, which marks this instance as common read-only replica.
+    - the `offline` marks this instance as special read-only replica that serves the `offline` service.
 - [`pg_seq`](/pgsql/param#pg_seq): Used to identify the instance within the cluster, a non-negative integer
-- Start from 0 or 1, incremental allocation in sequence, never change once assigned,
-- `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the instance, i.e. `pg_instance`.
-- `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
+    - Start from 0 or 1, incremental allocation in sequence, never change once assigned,
+    - `{{ pg_cluster }}-{{ pg_seq }}` is used to uniquely identify the instance, i.e. `pg_instance`.
+    - `{{ pg_cluster }}-{{ pg_role }}` is used to identify the services within the cluster, i.e. `pg_service`.
 - [`pg_shard`](/pgsql/param#pg_shard) and [`pg_group`](/pgsql/param#pg_group) are used for horizontally sharding clusters, for citus & greenplum only.
 
 

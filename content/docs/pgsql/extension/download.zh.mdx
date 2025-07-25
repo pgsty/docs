@@ -1,0 +1,125 @@
+---
+title: 下载
+description: 下载 PostgreSQL 扩展
+icon: Download
+---
+
+
+
+在 Pigsty 中，下载和[**安装**](/zh/pgsql/extension/install)扩展是两个独立的步骤。在 [**`INFRA`**](/zh/infra/) 模块安装期间，Pigsty 将所有必需的软件下载到本地机器上，并为整个部署创建本地 YUM/APT 仓库。
+
+这种方法加速了安装过程，消除了冗余下载，移除了数据库节点访问互联网的需求，减少了网络流量，提高了交付可靠性，并确保了环境中版本的一致性——这些都是生产部署的最佳实践。
+
+对于开发环境，直接从互联网仓库安装扩展也是可以接受的
+
+------
+
+## 快速开始 [#quick-start]
+
+在 [**`repo_packages`**](/zh/infra/param/#repo_packages) 和 [**`repo_extra_packages`**](/zh/infra/param/#repo_extra_packages) 中定义的包会在 Pigsty 安装期间自动下载到您的本地仓库。
+
+对于 PostgreSQL 相关的包（内核和扩展），通常将它们放在 [**`repo_extra_packages`**](/zh/infra/param/#repo_extra_packages) 中，而让 `repo_packages` 保持其特定于操作系统的全局默认值。
+
+`repo_extra_packages` 的默认值是 `[pgsql-main]`，这是一个别名，代表当前活跃主版本的核心 PostgreSQL 和关键扩展。
+
+```yaml
+repo_extra_packages: [ pgsql-main ]  # 当前 pg 主版本 17 的主要包（内核 + 3 个扩展）
+```
+
+要添加特定扩展，只需将 Pigsty [**扩展包名称（`pkg`）**](/zh/pgsql/extension/pkg)添加到此参数中。Pigsty 会自动为您的活跃 PG 版本和当前操作系统发行版下载适当的包。
+
+```yaml
+repo_extra_packages: [ pgsql-main, documentdb, citus, postgis, pgvector, pg_cron, rum ]
+```
+
+要下载当前 PG 版本的**所有可用**扩展，添加所有 **16** 个扩展类别别名（如 [`rich`](/zh/config/template) 配置模板中所示）：
+
+```yaml
+repo_extra_packages: [ pgsql-main ,pgsql-time ,pgsql-gis ,pgsql-rag ,pgsql-fts ,pgsql-olap ,pgsql-feat ,pgsql-lang ,pgsql-type ,pgsql-util ,pgsql-func ,pgsql-admin ,pgsql-stat ,pgsql-sec ,pgsql-fdw ,pgsql-sim ,pgsql-etl]
+```
+
+或者，使用特定版本的别名来下载多个 PostgreSQL 版本的扩展：
+
+```yaml
+repo_extra_packages: [
+    pg17-core,pg17-time,pg17-gis,pg17-rag,pg17-fts,pg17-olap,pg17-feat,pg17-lang,pg17-type,pg17-util,pg17-func,pg17-admin,pg17-stat,pg17-sec,pg17-fdw,pg17-sim,pg17-etl,
+    pg16-core,pg16-time,pg16-gis,pg16-rag,pg16-fts,pg16-olap,pg16-feat,pg16-lang,pg16-type,pg16-util,pg16-func,pg16-admin,pg16-stat,pg16-sec,pg16-fdw,pg16-sim,pg16-etl,
+    pg15-core,pg15-time,pg15-gis,pg15-rag,pg15-fts,pg15-olap,pg15-feat,pg15-lang,pg15-type,pg15-util,pg15-func,pg15-admin,pg15-stat,pg15-sec,pg15-fdw,pg15-sim,pg15-etl,
+    pg14-core,pg14-time,pg14-gis,pg14-rag,pg14-fts,pg14-olap,pg14-feat,pg14-lang,pg14-type,pg14-util,pg14-func,pg14-admin,pg14-stat,pg14-sec,pg14-fdw,pg14-sim,pg14-etl,
+    pg13-core,pg13-time,pg13-gis,pg13-rag,pg13-fts,pg13-olap,pg13-feat,pg13-lang,pg13-type,pg13-util,pg13-func,pg13-admin,pg13-stat,pg13-sec,pg13-fdw,pg13-sim,pg13-etl,
+]
+```
+
+要向本地仓库添加新扩展，修改上述参数并运行：
+
+```bash
+./infra.yml -t repo_build   # 重新下载并重建本地仓库
+```
+
+要在您环境中的所有其他节点上刷新仓库元数据，运行：
+
+```bash
+./node.yml  -t node_repo    # [可选] apt update / yum makecache
+```
+
+------
+
+## 别名映射 [#alias-mapping]
+
+PostgreSQL 拥有丰富的开源生态系统，在不同系统和架构中有众多包。
+
+Pigsty 提供了一个抽象层，将 PostgreSQL 包分类为"别名"，隐藏了系统、架构和 PG 版本之间的差异。
+
+在 [**快速开始**](/zh/pgsql/extension/download#quick-start)部分，我们使用了 `pgsql-main` 和 `pgsql-core` 等别名。这些别名根据您的系统和架构转换为特定的包名称。对于 EL 系统，`pgsql-main` 扩展为 `postgresql$v*` 内核包以及 `pgvector_$v*`、`pg_repack_$v*` 和 `wal2json_$v*` 扩展包。
+
+```yaml
+pgsql-main:   "postgresql$v* pg_repack_$v* wal2json_$v* pgvector_$v*"
+```
+
+`$v` 占位符被 **`pg_version`** 值（默认：17）替换以指向正确的版本。`*` 通配符扩展以包括所有包变体（例如 server、libs、contrib、devel）。Pigsty 自动处理这些细节。
+
+可用包和别名的完整列表在 [`roles/node_id/vars/.yml`](https://github.com/pgsty/pigsty/tree/main/roles/node_id/vars) 中。以下是在所有支持的系统中可用的常用别名：
+
+```yaml
+postgresql:   "postgresql$v*"
+pgsql-main:   "postgresql$v* pg_repack_$v* wal2json_$v* pgvector_$v*"
+pgsql-core:   "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-test postgresql$v-devel postgresql$v-llvmjit"
+pgsql-simple: "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl"
+pgsql-client: "postgresql$v"
+pgsql-server: "postgresql$v-server postgresql$v-libs postgresql$v-contrib"
+pgsql-devel:  "postgresql$v-devel"
+pgsql-basic:  "pg_repack_$v* wal2json_$v* pgvector_$v*"
+
+pgsql-time:   "timescaledb-tsl_$v* timescaledb-toolkit_$v pg_timeseries_$v periods_$v* temporal_tables_$v* e-maj_$v table_version_$v pg_cron_$v* pg_task_$v* pg_later_$v pg_background_$v*"
+pgsql-gis:    "postgis35_$v* pgrouting_$v* pointcloud_$v* h3-pg_$v* q3c_$v* ogr_fdw_$v* geoip_$v pg_polyline_$v pg_geohash_$v*"
+pgsql-rag:    "pgvector_$v* vchord_$v pgvectorscale_$v pg_vectorize_$v pg_similarity_$v* smlar_$v* pg_summarize_$v pg_tiktoken_$v pg4ml_$v"
+pgsql-fts:    "pg_search_$v pgroonga_$v* pg_bigm_$v* zhparser_$v* pg_bestmatch_$v vchord_bm25_$v hunspell_cs_cz_$v hunspell_de_de_$v hunspell_en_us_$v hunspell_fr_$v hunspell_ne_np_$v hunspell_nl_nl_$v hunspell_nn_no_$v hunspell_ru_ru_$v hunspell_ru_ru_aot_$v"
+pgsql-olap:   "citus_$v* pg_analytics_$v pg_duckdb_$v* pg_mooncake_$v* duckdb_fdw_$v* pg_parquet_$v pg_fkpart_$v pg_partman_$v* plproxy_$v*" #hydra_$v* #pg_strom_$v*
+pgsql-feat:   "hll_$v* rum_$v pg_graphql_$v pg_jsonschema_$v jsquery_$v* pg_hint_plan_$v* hypopg_$v* index_advisor_$v pg_plan_filter_$v* imgsmlr_$v* pg_ivm_$v* pg_incremental_$v* pgmq_$v pgq_$v* pg_cardano_$v omnigres_$v" #apache-age_$v*
+pgsql-lang:   "pg_tle_$v* plv8_$v* pllua_$v* pldebugger_$v* plpgsql_check_$v* plprofiler_$v* plsh_$v* pljava_$v*" #plprql_$v #plr_$v* #pgtap_$v* #postgresql_faker_$v* #dbt2-pgsql-extensions*
+pgsql-type:   "prefix_$v* semver_$v* postgresql-unit_$v* pgpdf_$v* pglite_fusion_$v md5hash_$v* asn1oid_$v* pg_roaringbitmap_$v* pgfaceting_$v pgsphere_$v* pg_country_$v* pg_xenophile_$v pg_currency_$v* pgcollection_$v* pgmp_$v* numeral_$v* pg_rational_$v* pguint_$v* pg_uint128_$v* hashtypes_$v* ip4r_$v* pg_duration_$v* pg_uri_$v* pg_emailaddr_$v* acl_$v* timestamp9_$v* chkpass_$v*"
+pgsql-util:   "pgsql_gzip_$v* pg_bzip_$v* pg_zstd_$v* pgsql_http_$v* pg_net_$v* pg_curl_$v* pgjq_$v* pgjwt_$v pg_smtp_client_$v pg_html5_email_address_$v url_encode_$v* pgsql_tweaks_$v pg_extra_time_$v pgpcre_$v icu_ext_$v* pgqr_$v* pg_protobuf_$v pg_envvar_$v* floatfile_$v* pg_readme_$v ddl_historization_$v data_historization_$v pg_schedoc_$v pg_hashlib_$v pg_xxhash_$v* postgres_shacrypt_$v* cryptint_$v* pg_ecdsa_$v* pgsparql_$v"
+pgsql-func:   "pg_idkit_$v pg_uuidv7_$v* permuteseq_$v* pg_hashids_$v* sequential_uuids_$v topn_$v* quantile_$v* lower_quantile_$v* count_distinct_$v* omnisketch_$v* ddsketch_$v* vasco_$v* pgxicor_$v* tdigest_$v* first_last_agg_$v extra_window_functions_$v* floatvec_$v* aggs_for_vecs_$v* aggs_for_arrays_$v* pg_arraymath_$v* pg_math_$v* pg_random_$v* pg_base36_$v* pg_base62_$v* pg_base58_$v pg_financial_$v*"
+pgsql-admin:  "pg_repack_$v* pg_squeeze_$v* pg_dirtyread_$v* pgfincore_$v* pg_cooldown_$v* ddlx_$v pg_prioritize_$v* pg_readonly_$v* pg_upless_$v pg_permissions_$v pg_catcheck_$v* preprepare_$v* pgcozy_$v pg_orphaned_$v* pg_crash_$v* pg_cheat_funcs_$v* pg_fio_$v pg_savior_$v* safeupdate_$v* pg_drop_events_$v table_log_$v" #pg_checksums_$v* #pg_auto_failover_$v* #pgagent_$v* #pgpool-II-pgsql-extensions
+pgsql-stat:   "pg_profile_$v* pg_tracing_$v* pg_show_plans_$v* pg_stat_kcache_$v* pg_stat_monitor_$v* pg_qualstats_$v* pg_store_plans_$v* pg_track_settings_$v pg_wait_sampling_$v* system_stats_$v* pg_meta_$v pgnodemx_$v pg_sqlog_$v bgw_replstatus_$v* pgmeminfo_$v* toastinfo_$v* pg_explain_ui_$v pg_relusage_$v pagevis_$v powa_$v*"
+pgsql-sec:    "passwordcheck_cracklib_$v* supautils_$v* pgsodium_$v* vault_$v* pg_session_jwt_$v pg_anon_$v pgsmcrypto_$v pgaudit_$v* pgauditlogtofile_$v* pg_auth_mon_$v* credcheck_$v* pgcryptokey_$v pg_jobmon_$v logerrors_$v* login_hook_$v* set_user_$v* pg_snakeoil_$v* pgextwlist_$v* pg_auditor_$v sslutils_$v* noset_$v*" #pg_tde_$v*
+pgsql-fdw:    "wrappers_$v multicorn2_$v* odbc_fdw_$v* mysql_fdw_$v* tds_fdw_$v* sqlite_fdw_$v* pgbouncer_fdw_$v redis_fdw_$v* pg_redis_pubsub_$v* hdfs_fdw_$v* firebird_fdw_$v aws_s3_$v log_fdw_$v*" #jdbc_fdw_$v* #oracle_fdw_$v* #db2_fdw_$v* #mongo_fdw_$v* #kafka_fdw_$v
+pgsql-sim:    "documentdb_$v* orafce_$v pgtt_$v* session_variable_$v* pg_statement_rollback_$v* pg_dbms_metadata_$v pg_dbms_lock_$v pgmemcache_$v*" #pg_dbms_job_$v #wiltondb
+pgsql-etl:    "pglogical_$v* pglogical_ticker_$v* pgl_ddl_deploy_$v* pg_failover_slots_$v* db_migrator_$v wal2json_$v* postgres-decoderbufs_$v* decoder_raw_$v* mimeo_$v pg_fact_loader_$v* pg_bulkload_$v*" #wal2mongo_$v* #repmgr_$v*
+```
+
+使用这些别名时，`$v` 占位符会被来自 [`pg_version`](/zh/pgsql/param#pg_version)（默认：17）的 PostgreSQL 主版本号替换。
+
+要为不同的 PostgreSQL 版本下载包，可以：
+
+- 更改 [**`pg_version`**](/zh/pgsql/param#pg_version) 参数，或
+- 通过将 `pgsql-` 前缀替换为 `pg17-`、`pg16-`、`pg15-` 等来使用特定版本的别名。
+
+并非所有扩展在所有系统上都可用。某些扩展在别名中被注释掉，因为它们：
+
+- 在特定系统上不可用
+- 具有大量依赖项（如 [**`pl/R`**](https://ext.pgsty.com/e/plr)）
+- 依赖于商业软件（如 [**`oracle_fdw`**](https://ext.pgsty.com/e/oracle_fdw)）
+- 在最新的 PG 17 中不可用但在早期版本中可用
+
+如果需要，您仍然可以手动添加这些扩展。

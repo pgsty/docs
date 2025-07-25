@@ -1,32 +1,32 @@
 ---
-title: 权限管理
-description: 使用默认角色和权限进行访问控制
+title: 权限
+description: 使用默认角色和权限进行数据库访问控制
 icon: Fingerprint
 ---
 
 Pigsty 具有一套默认的角色系统，包含四个 [默认角色](#default-roles) 和四个 [默认用户](#default-users)：
 
-| 默认用户     | 用户描述   | 默认角色       | 角色描述                     |
-|:-------------|-----------|:---------------|------------------------------|
-| `postgres`       | 系统超级用户   | `dbrole_readonly`  | 全局只读权限角色     |
-| `replicator`     | 系统复制用户  | `dbrole_readwrite` | 全局读写权限角色    |
-| `dbuser_dba`     | PostgreSQL 管理员用户   | `dbrole_admin`     | 对象创建权限角色             |
-| `dbuser_monitor` | PostgreSQL 监控用户 | `dbrole_offline`   | 受限只读权限角色 |
+| 默认用户             | 用户描述             | 默认角色               | 角色描述     |
+|:-----------------|------------------|:-------------------|----------|
+| `postgres`       | 系统超级用户           | `dbrole_readonly`  | 全局只读权限角色 |
+| `replicator`     | 系统复制用户           | `dbrole_readwrite` | 全局读写权限角色 |
+| `dbuser_dba`     | PostgreSQL 管理员用户 | `dbrole_admin`     | 对象创建权限角色 |
+| `dbuser_monitor` | PostgreSQL 监控用户  | `dbrole_offline`   | 受限只读权限角色 |
 
 --------
 
 ## 概览 [#summary]
 
-| 角色名称          | 属性    | 所属角色                   | 描述                          |
-|---------------------|---------------|-----------------------------|--------------------------------------|
-| `dbrole_readonly`  | `NOLOGIN`     |                             | 全局只读权限角色     |
-| `dbrole_readwrite` | `NOLOGIN`     | dbrole_readonly             | 全局读写权限角色    |
-| `dbrole_admin`     | `NOLOGIN`     | pg_monitor,dbrole_readwrite | 对象创建权限角色             |
-| `dbrole_offline`   | `NOLOGIN`     |                             | 受限只读权限角色 |
-| `postgres`         | `SUPERUSER`   |                             | 系统超级用户                     |
-| `replicator`       | `REPLICATION` | pg_monitor,dbrole_readonly  | 系统复制用户                    |
-| `dbuser_dba`       | `SUPERUSER`   | dbrole_admin                | PostgreSQL 管理员用户                     |
-| `dbuser_monitor`   |               | pg_monitor                  | PostgreSQL 监控用户                   |
+| 角色名称               | 属性            | 所属角色                        | 描述               |
+|--------------------|---------------|-----------------------------|------------------|
+| `dbrole_readonly`  | `NOLOGIN`     |                             | 全局只读权限角色         |
+| `dbrole_readwrite` | `NOLOGIN`     | dbrole_readonly             | 全局读写权限角色         |
+| `dbrole_admin`     | `NOLOGIN`     | pg_monitor,dbrole_readwrite | 对象创建权限角色         |
+| `dbrole_offline`   | `NOLOGIN`     |                             | 受限只读权限角色         |
+| `postgres`         | `SUPERUSER`   |                             | 系统超级用户           |
+| `replicator`       | `REPLICATION` | pg_monitor,dbrole_readonly  | 系统复制用户           |
+| `dbuser_dba`       | `SUPERUSER`   | dbrole_admin                | PostgreSQL 管理员用户 |
+| `dbuser_monitor`   |               | pg_monitor                  | PostgreSQL 监控用户  |
 
 ```yaml
 pg_default_roles:                 # PostgreSQL 集群中的默认角色和用户

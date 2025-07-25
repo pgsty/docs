@@ -4,7 +4,7 @@ description: Pigsty 中基于主机的身份验证
 icon: KeySquare
 ---
 
-PostgreSQL 有各种[身份验证](https://www.postgresql.org/docs/current/client-authentication.html)方法。您可以使用所有这些方法，而 Pigsty 的开箱即用 ACL 系统专注于 HBA、密码和 SSL 身份验证。
+PostgreSQL 有各种 [身份验证](https://www.postgresql.org/docs/current/client-authentication.html) 方法。您可以使用所有这些方法，而 Pigsty 的开箱即用 ACL 系统专注于 HBA、密码和 SSL 身份验证。
 
 ------
 
@@ -12,7 +12,7 @@ PostgreSQL 有各种[身份验证](https://www.postgresql.org/docs/current/clien
 
 要连接到 PostgreSQL 数据库，用户必须经过身份验证（默认使用密码）。
 
-您可以在连接字符串中提供密码（不安全）或使用 `PGPASSWORD` 环境变量或 `.pgpass` 文件。查看 [`psql`](https://www.postgresql.org/docs/current/app-psql.html#usage) 文档和 [PostgreSQL 连接字符串](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) 了解更多详情。
+您可以在连接字符串中提供密码（不安全）或使用 `PGPASSWORD` 环境变量或 `.pgpass` 文件。查看 [`psql`](https://www.postgresql.org/docs/current/app-psql.html#usage) 文档和 [PostgreSQL 连接字符串](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) 获取更多详细信息。
 
 ```bash
 psql 'host=<host> port=<port> dbname=<dbname> user=<username> password=<password>'
@@ -34,7 +34,7 @@ PGPASSWORD=DBUser.DBA; psql -U dbuser_dba -h 10.10.10.10 -p 5432 -d meta
 psql 'postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta?sslkey=/path/to/dbuser_dba.key&sslcert=/path/to/dbuser_dba.crt'
 ```
 
-而客户端证书（`CN` = 用户名）可以使用本地 CA 和 [cert.yml](https://github.com/pgsty/pigsty/blob/main/cert.yml) 颁发。
+客户端证书（`CN` = 用户名）可以使用本地 CA 和 [cert.yml](https://github.com/pgsty/pigsty/blob/main/cert.yml) 颁发。
 
 ------
 
@@ -42,14 +42,14 @@ psql 'postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta?sslkey=/path/to/dbu
 
 Pigsty 中有四个 HBA 规则参数：
 
-- [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules)：postgres 自定义 hba 规则
-- [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules)：postgres 默认 hba 规则
-- [`pgb_hba_rules`](/zh/pgsql/param#pgb_hba_rules)：pgbouncer 自定义 hba 规则
-- [`pgb_default_hba_rules`](/zh/pgsql/param#pgb_default_hba_rules)：pgbouncer 默认 hba 规则
+- [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules)：PostgreSQL 临时 HBA 规则
+- [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules)：PostgreSQL 默认 HBA 规则
+- [`pgb_hba_rules`](/zh/pgsql/param#pgb_hba_rules)：pgbouncer 临时 HBA 规则
+- [`pgb_default_hba_rules`](/zh/pgsql/param#pgb_default_hba_rules)：pgbouncer 默认 HBA 规则
 
-这些是 hba 规则对象的数组，每个 hba 规则是以下形式之一：
+它们是 HBA 规则对象的数组，每个 HBA 规则是以下形式之一：
 
-### 1. 原始形式
+### 1. 原始形式 [#raw-form]
 
 ```yaml
 - title: allow intranet password access
@@ -60,15 +60,15 @@ Pigsty 中有四个 HBA 规则参数：
     - host   all  all  192.168.0.0/16  md5
 ```
 
-在此形式中，`title` 将被渲染为注释行，后面跟着作为 hba 字符串的 `rules`。
+在这种形式中，`title` 将被渲染为注释行，然后是 `rules` 作为 HBA 字符串逐一显示。
 
-当实例的 [`pg_role`](/zh/pgsql/param#pg_role) 与 `role` 相同时，将安装 HBA 规则。
+当实例的 [`pg_role`](/zh/pgsql/param#pg_role) 与 `role` 相同时，HBA 规则被安装。
 
-具有 `role: common` 的 HBA 规则将安装在所有实例上。
+带有 `role: common` 的 HBA 规则将在所有实例上安装。
 
-具有 `role: offline` 的 HBA 规则将安装在 [`pg_role`](/zh/pgsql/param#pg_role) = `offline` 或 [`pg_offline_query`](/zh/pgsql/param#pg_offline_query) = `true` 的实例上。
+带有 `role: offline` 的 HBA 规则将在 [`pg_role`](/zh/pgsql/param#pg_role) = `offline` 或 [`pg_offline_query`](/zh/pgsql/param#pg_offline_query) = `true` 的实例上安装。
 
-### 2. 别名形式
+### 2. 别名形式 [#alias-form]
 
 别名形式，用 `addr`、`auth`、`user` 和 `db` 字段替换 `rules`。
 
@@ -77,18 +77,18 @@ Pigsty 中有四个 HBA 规则参数：
   auth: 'pwd'      # trust|pwd|ssl|cert|deny|<official auth method>
   user: 'all'      # all|${dbsu}|${repl}|${admin}|${monitor}|<user>|<group>
   db: 'all'        # all|replication|....
-  rules: []        # 原始 hba 字符串优先于上述所有字段
+  rules: []        # 原始 HBA 字符串优先于以上所有
   title: allow intranet password access
 ```
 
-- `addr`：在哪里
+- `addr`：哪里
   - `world`：所有 IP 地址
-  - `intra`：所有内网 cidr：`'10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'`
+  - `intra`：所有内网 CIDR：`'10.0.0.0/8'、'172.16.0.0/12'、'192.168.0.0/16'`
   - `infra`：基础设施节点的 IP 地址
   - `admin`：`admin_ip` 地址
-  - `local`：本地 unix socket
-  - `localhost`：本地 unix socket + tcp 127.0.0.1/32
-  - `cluster`：pg 集群成员的所有 IP 地址
+  - `local`：本地 unix 套接字
+  - `localhost`：本地 unix 套接字 + tcp 127.0.0.1/32
+  - `cluster`：PostgreSQL 集群成员的所有 IP 地址
   - `<cidr>`：任何标准 CIDR 块或 IP 地址
 
 - `auth`：如何
@@ -97,9 +97,9 @@ Pigsty 中有四个 HBA 规则参数：
   - `pwd`：根据 [`pg_pwd_enc`](/zh/pgsql/param#pg_pwd_enc) 使用 `md5` 或 `scram-sha-256` 密码认证
   - `sha`/`scram-sha-256`：强制 `scram-sha-256` 密码身份验证
   - `md5`：`md5` 密码身份验证
-  - `ssl`：除了 `pwd` 认证外强制主机 ssl
-  - `ssl-md5`：除了 `md5` 密码认证外强制主机 ssl
-  - `ssl-sha`：除了 `scram-sha-256` 密码认证外强制主机 ssl
+  - `ssl`：在 `pwd` 认证基础上强制主机 SSL
+  - `ssl-md5`：在 `md5` 密码认证基础上强制主机 SSL
+  - `ssl-sha`：在 `scram-sha-256` 密码认证基础上强制主机 SSL
   - `os`/`ident`：使用 `ident` 操作系统用户身份验证
   - `peer`：使用 `peer` 身份验证
   - `cert`：使用基于证书的客户端身份验证
@@ -110,26 +110,26 @@ Pigsty 中有四个 HBA 规则参数：
   - `${repl}`：由 [`pg_replication_username`](/zh/pgsql/param#pg_replication_username) 指定的复制用户
   - `${admin}`：由 [`pg_admin_username`](/zh/pgsql/param#pg_admin_username) 指定的管理员用户
   - `${monitor}`：由 [`pg_monitor_username`](/zh/pgsql/param#pg_monitor_username) 指定的监控用户
-  - 自定义用户和角色。
+  - 临时用户和角色
 
 - `db`：哪个
   - `all`：所有数据库
   - `replication`：复制数据库
-  - 自定义数据库名称
+  - 临时数据库名称
 
-### 3. 在哪里定义
+### 3. 在哪里定义 [#where-to-define]
 
 通常，全局 HBA 在 all.vars 中定义。如果您想修改全局默认 HBA 规则，可以从 full.yml 模板复制到 all.vars 进行修改。
 
-- [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules)：postgres 全局默认 HBA 规则
+- [`pg_default_hba_rules`](/zh/pgsql/param#pg_default_hba_rules)：PostgreSQL 全局默认 HBA 规则
 - [`pgb_default_hba_rules`](/zh/pgsql/param#pgb_default_hba_rules)：pgbouncer 全局默认 HBA 规则
 
 集群特定的 HBA 规则在数据库的集群级配置中定义：
 
-- [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules)：集群的 postgres HBA 规则
+- [`pg_hba_rules`](/zh/pgsql/param#pg_hba_rules)：集群的 PostgreSQL HBA 规则
 - [`pgb_hba_rules`](/zh/pgsql/param#pgb_hba_rules)：集群的 pgbouncer HBA 规则
 
-以下是一些集群 HBA 规则定义的示例。
+以下是集群 HBA 规则定义的一些示例。
 
 ```yaml
 pg-meta:
@@ -144,13 +144,13 @@ pg-meta:
 
 ------
 
-## 重新加载 HBA [#reload-hba]
+## 重载 HBA [#reload-hba]
 
-要重新加载 postgres/pgbouncer hba 规则：
+要重载 postgres/pgbouncer HBA 规则：
 
 ```bash
-bin/pgsql-hba <cls>                 # 重新加载集群 `<cls>` 的 hba 规则
-bin/pgsql-hba <cls> ip1 ip2...      # 重新加载特定实例的 hba 规则
+bin/pgsql-hba <cls>                 # 重载集群 `<cls>` 的 HBA 规则
+bin/pgsql-hba <cls> ip1 ip2...      # 重载特定实例的 HBA 规则
 ```
 
 底层命令是：
@@ -164,12 +164,12 @@ bin/pgsql-hba <cls> ip1 ip2...      # 重新加载特定实例的 hba 规则
 
 ## 默认 HBA [#default-hba]
 
-Pigsty 有一套默认的 HBA 规则，对于大多数情况来说都是相当安全的。
+Pigsty 有一套默认的 HBA 规则，对大多数情况来说都相当安全。
 
-这些规则在别名形式中是自解释的。
+这些规则以别名形式自解释。
 
 ```yaml
-pg_default_hba_rules:             # postgres 默认基于主机的身份验证规则
+pg_default_hba_rules:             # PostgreSQL 默认基于主机的身份验证规则
   - {user: '${dbsu}'    ,db: all         ,addr: local     ,auth: ident ,title: 'dbsu access via local os user ident'  }
   - {user: '${dbsu}'    ,db: replication ,addr: local     ,auth: ident ,title: 'dbsu replication from local os ident' }
   - {user: '${repl}'    ,db: replication ,addr: localhost ,auth: pwd   ,title: 'replicator replication from localhost'}
@@ -196,10 +196,10 @@ pgb_default_hba_rules:            # pgbouncer 默认基于主机的身份验证�
 
 ## 安全增强 [#security-enhancement]
 
-对于那些关键情况，我们有一个 [security.yml](https://github.com/pgsty/pigsty/blob/main/conf/safe.yml) 模板，其中包含以下 hba 规则集作为参考：
+对于那些关键情况，我们有一个 [security.yml](https://github.com/pgsty/pigsty/blob/main/conf/safe.yml) 模板，以下 HBA 规则集作为参考：
 
 ```yaml
-pg_default_hba_rules:             # postgres 默认基于主机的认证规则
+pg_default_hba_rules:             # PostgreSQL 默认基于主机的认证规则
   - {user: '${dbsu}'    ,db: all         ,addr: local     ,auth: ident ,title: 'dbsu access via local os user ident'  }
   - {user: '${dbsu}'    ,db: replication ,addr: local     ,auth: ident ,title: 'dbsu replication from local os ident' }
   - {user: '${repl}'    ,db: replication ,addr: localhost ,auth: ssl   ,title: 'replicator replication from localhost'}

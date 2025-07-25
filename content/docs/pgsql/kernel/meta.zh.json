@@ -1,0 +1,19 @@
+{
+  "title": "内核",
+  "description": "PostgreSQL 内核分支",
+  "icon": "Cpu",
+  "root": false,
+  "defaultOpen": false,
+  "pages": [
+    "postgres",
+    "citus",
+    "babelfish",
+    "ivorysql",
+    "percona",
+    "polardb",
+    "orioledb",
+    "openhalo",
+    "cloudberry",
+    "supabase"
+  ]
+}

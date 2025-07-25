@@ -1,0 +1,100 @@
+---
+title: 配置
+description: 预加载扩展并配置扩展参数
+icon: FileBox
+---
+
+
+虽然大多数用 SQL 编写的 PostgreSQL 扩展可以使用 `CREATE EXTENSION` [**直接启用**](/zh/pgsql/extension/create)，但一些使用特殊 postgres 钩子的扩展在使用前需要额外的步骤来**预加载**它们。
+
+
+
+------
+
+## 预加载 [#preloading]
+
+
+大多数扩展都有一个或多个对应的动态库（`.so`、`.dylib`、`.dll`），其中一些在使用前需要预加载。
+尝试在没有正确预加载的情况下 `CREATE` 这些扩展将导致错误。
+错误配置的预加载库可能导致数据库重启/启动失败。
+
+一些扩展可以在没有预加载的情况下部分工作，这意味着扩展功能的一部分可以直接使用，其余功能在预加载后可用。
+
+要预加载扩展，将其添加到 [`shared_preload_libraries`](https://www.postgresql.org/docs/current/runtime-config-client.html#Rshared_preload_libraries) 并重启数据库服务器。
+[扩展目录](https://ext.pgsty.com/list/attr#need-loading) 提供了需要动态预加载的扩展的完整列表。
+
+
+
+------
+
+## 配置 [#configure]
+
+要在新 postgres 集群上配置预加载，可以使用 [`pg_libs`](/zh/pgsql/param#pg_libs) 参数。
+它将在 postgres 集群引导期间填充到 `shared_preload_libraries` 参数中。
+
+<Callout title="示例：设置 Supabase 扩展预加载">
+
+此示例展示如何使用 `pg_libs` 参数指定预加载的扩展。
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_libs: 'timescaledb, plpgsql, plpgsql_check, pg_cron, pg_net, pg_stat_statements, auto_explain, pg_tle, plan_filter'
+```
+
+    `shared_preload_libraries` 是一个以逗号分隔的扩展列表。
+
+</Callout>
+
+
+请注意，这仅在[**集群创建**](/zh/pgsql/admin#create-cluster)之前有效。之后，
+您必须[**配置集群**](/zh/pgsql/admin#config-cluster)来更改现有集群上的 `shared_preload_libraries` 参数。（使用 `patronictl`、`ALTER SYSTEM` 等...）
+
+```bash title="将 timescaledb 添加到 shared_preload_libraries"
+pg edit-config pg-meta --force -p shared_preload_libraries='timescaledb, pg_stat_statements, auto_explain'
+pg restart pg-meta    # 重启以应用更改
+````
+
+如果您想手动配置预加载，您可以自己更改 `postgresql.conf`
+
+
+
+--------
+
+## 默认值 [#default]
+
+[`pg_libs`](/zh/pgsql/param#pg_libs) 的默认值是 `pg_stat_statements, auto_explain`，
+它默认预加载这两个 [Contrib 扩展](https://ext.pgsty.com/list/repo#contrib)，这两个扩展提供基本的可观测性：
+
+- [**`auto_explain`**](https://ext.pgsty.com/e/auto_explain): 自动记录慢查询执行计划
+- [**`pg_stat_statements`**](https://ext.pgsty.com/e/pg_stat_statements): 跟踪分组 SQL 语句的规划和执行统计信息
+
+
+--------
+
+## 注意事项 [#caveats]
+
+预加载库是逐个加载的，因此 `shared_preload_libraries` 中扩展的顺序很重要，
+以下是一些需要遵循的已知规则：
+
+- 对于 [**STAT**](https://ext.pgsty.com/cate/stat) 扩展，在 `pg_stat_statements` **之后**添加它们以确保使用相同的 query_id。
+- [`timescaledb`](https://ext.pgsty.com/e/timescaledb) 和 [`citus`](https://ext.pgsty.com/e/citus) 应该放在 `shared_preload_libraries` 的**开头**
+- 如果您同时使用 [`citus`](https://ext.pgsty.com/e/citus) 和 [`timescaledb`](https://ext.pgsty.com/e/timescaledb)，请将 `citus` 放在 `timescaledb` 之前。
+- 对于 [**documentdb**](https://ext.pgsty.com/e/documentdb)，使用 `pg_documentdb` 和 `pg_documentdb_core` 作为库名称。
+- [`pg_search`](https://ext.pgsty.com/e/pg_search) 在 PostgreSQL 17 及更高版本中不需要预加载，但早期版本需要。
+
+-------
+
+## 参数 [#parameter]
+
+一些扩展有可配置的参数，您可以在不同的地方管理它们。
+
+- [`pg_parameters`](/zh/pgsql/param#pg_parameters): 写入 `/pg/data/postgresql.auto.conf`
+- 您也可以在 [patroni 模板](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/oltp.yml#L404) 中自定义它们
+- 或者使用 [**patronictl**](/zh/pgsql/admin#config-cluster) 动态更改它们
+
+有关详细信息，请查阅每个扩展的官方文档。

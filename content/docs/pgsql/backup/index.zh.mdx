@@ -1,0 +1,75 @@
+---
+title: 备份
+description: 备份和时间点恢复
+icon: DatabaseBackup
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+
+Pigsty 使用 [pgBackRest](https://pgbackrest.org/) 管理 PostgreSQL 备份，它可能是生态系统中最强大的开源备份工具。
+具有增量/并行备份和恢复、加密、[MinIO](/zh/minio) / S3 支持以及许多其他功能。
+Pigsty 默认为每个 [PGSQL](/zh/pgsql/) 集群预配置了它。
+
+<Cards>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='策略' href={"/zh/pgsql/backup/mechanism"}>
+        备份脚本、调度、pgbackrest、仓库和管理
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='管理' href={"/zh/pgsql/backup/policy"}>
+        备份策略、磁盘规划、恢复窗口权衡
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='恢复' href={"/zh/pgsql/backup/restore"}>
+        使用 playbook 恢复到特定时间点
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='示例' href={"/zh/pgsql/backup/example"}>
+        沙箱示例：手动执行恢复
+    </Card>
+</Cards>
+
+<Callout title="无保证" type="warn">
+
+    Pigsty 尽力提供可靠的 PITR 解决方案，但我们不对 PITR 操作导致的数据丢失承担任何责任，请自行承担风险使用。
+    如需专业支持，请考虑我们的[专业服务](/zh/about/service)。
+
+</Callout>
+
+
+
+--------
+
+## 快速开始 [#quick-start]
+
+<Steps>
+
+    <Step>
+        [备份策略](/zh/pgsql/backup/mechanism)：使用 Crontab 调度基础备份
+
+    </Step>
+
+    <Step>
+        [WAL 归档](/zh/pgsql/backup/policy)：持续记录写入活动
+
+    </Step>
+
+    <Step>
+        [恢复和还原](/zh/pgsql/backup/restore)：从备份和 WAL 归档中恢复
+    </Step>
+
+</Steps>
+
+```yaml title="每天凌晨 1 点全量备份"
+node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ]
+```
+
+```bash title="恢复到时间点"
+./pgsql-pitr.yml -e '{"pg_pitr": { "time": "2025-07-13 10:00:00+00" }}'
+```

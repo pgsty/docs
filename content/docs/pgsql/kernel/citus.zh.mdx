@@ -1,0 +1,222 @@
+---
+title: Citus
+description: PostgreSQL 分片的原生分布式扩展
+icon: DatabaseBackup
+---
+
+
+Citus 是一个 PostgreSQL 扩展，它将 PostgreSQL 转换为分布式数据库，能够跨多个节点水平扩展以处理大量数据和查询。
+
+自 Patroni v3.0 以来，已原生支持 Citus 高可用性，简化了 Citus 集群的设置。Pigsty 也为此提供原生支持。
+
+- [什么是 Citus](https://docs.citusdata.com/en/stable/get_started/what_is_citus.html)
+- [Patroni Citus 支持](https://patroni.readthedocs.io/en/latest/citus.html)
+
+> 注意：最新版本的 Citus（12.1.6）支持 PostgreSQL 版本 16、15 和 14，但不支持 PostgreSQL 17，也缺乏官方 ARM64 支持。Pigsty 的扩展仓库为 Citus 提供 ARM64 包，但在 ARM 架构上使用时请谨慎。
+
+------
+
+## Citus 集群 [#citus-cluster]
+
+Pigsty 原生支持 Citus。参考 [`conf/citus.yml`](https://github.com/pgsty/pigsty/blob/main/conf/citus.yml)。
+
+此示例使用四节点沙盒，包含一个名为 `pg-citus` 的 Citus 集群，由一个双节点协调器集群 `pg-citus0` 和两个工作节点集群 `pg-citus1` 和 `pg-citus2` 组成。
+
+```yaml
+pg-citus:
+  hosts:
+    10.10.10.10: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.2/24 ,pg_seq: 1, pg_role: primary }
+    10.10.10.11: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.2/24 ,pg_seq: 2, pg_role: replica }
+    10.10.10.12: { pg_group: 1, pg_cluster: pg-citus1 ,pg_vip_address: 10.10.10.3/24 ,pg_seq: 1, pg_role: primary }
+    10.10.10.13: { pg_group: 2, pg_cluster: pg-citus2 ,pg_vip_address: 10.10.10.4/24 ,pg_seq: 1, pg_role: primary }
+  vars:
+    pg_mode: citus                            # pgsql 集群模式：citus
+    pg_version: 16                            # Citus 暂不支持 pg16
+    pg_shard: pg-citus                        # Citus 分片名称：pg-citus
+    pg_primary_db: citus                      # Citus 使用的主数据库
+    pg_vip_enabled: true                      # 为 Citus 集群启用 VIP
+    pg_vip_interface: eth1                    # 所有成员的 VIP 接口
+    pg_dbsu_password: DBUser.Postgres         # Citus 集群的所有 DBSU 密码
+    pg_extensions: [ citus, postgis, pgvector, topn, pg_cron, hll ]  # 安装这些扩展
+    pg_libs: 'citus, pg_cron, pg_stat_statements' # Citus 将由 Patroni 自动添加
+    pg_users: [{ name: dbuser_citus ,password: DBUser.Citus ,pgbouncer: true ,roles: [ dbrole_admin ]    }]
+    pg_databases: [{ name: citus ,owner: dbuser_citus ,extensions: [ citus, vector, topn, pg_cron, hll ] }]
+    pg_parameters:
+      cron.database_name: citus
+      citus.node_conninfo: 'sslmode=require sslrootcert=/pg/cert/ca.crt sslmode=verify-full'
+    pg_hba_rules:
+      - { user: 'all' ,db: all  ,addr: 127.0.0.1/32  ,auth: ssl   ,title: 'all user ssl access from localhost' }
+      - { user: 'all' ,db: all  ,addr: intra         ,auth: ssl   ,title: 'all user ssl access from intranet'  }
+```
+
+与标准 PostgreSQL 集群相比，Citus 集群配置有一些特定要求。首先，确保 Citus 扩展被下载、安装、加载和启用。这涉及以下四个参数：
+
+- [`repo_packages`](/zh/infra/param/#repo_packages)：必须包含 `citus` 扩展，或者您需要使用带有 Citus 扩展的 PostgreSQL 离线包。
+- [`pg_extensions`](/zh/pgsql/param/#pg_extensions)：必须包含 `citus` 扩展，意味着您需要在每个节点上安装 `citus` 扩展。
+- [`pg_libs`](/zh/pgsql/param/#pg_libs)：必须包含 `citus` 扩展，且必须在列表中排第一，但现在 Patroni 会自动处理。
+- [`pg_databases`](/zh/pgsql/param/#pg_databases)：定义安装了 `citus` 扩展的主数据库。
+
+另外，确保 Citus 集群的配置正确：
+
+- [`pg_mode`](/zh/pgsql/param/#pg_mode)：必须设置为 `citus` 以告知 Patroni 使用 Citus 模式。
+- [`pg_primary_db`](/zh/pgsql/param/#pg_primary_db)：指定主数据库名称，该数据库必须安装 `citus` 扩展（此处命名为 `citus`）。
+- [`pg_shard`](/zh/pgsql/param/#pg_shard)：指定统一名称作为所有水平分片 PG 集群的前缀（例如，`pg-citus`）。
+- [`pg_group`](/zh/pgsql/param/#pg_group)：指定分片编号，协调器集群从零开始，工作节点集群递增。
+- [`pg_cluster`](/zh/pgsql/param/#pg_cluster)：必须匹配 [`pg_shard`] 和 [`pg_group`] 的组合。
+- [`pg_dbsu_password`](/zh/pgsql/param/#pg_dbsu_password)：设置非空明文密码以确保 Citus 正常运行。
+- [`pg_parameters`](/zh/pgsql/param/#pg_parameters)：建议设置 `citus.node_conninfo` 参数，强制 SSL 访问并要求节点间客户端证书验证。
+
+配置完成后，使用 `pgsql.yml` 部署 Citus 集群，就像常规 PostgreSQL 集群一样。
+
+------
+
+## 管理 Citus 集群 [#managing-citus-clusters]
+
+定义 Citus 集群后，使用相同的剧本 `pgsql.yml` 部署 Citus 集群：
+
+```bash
+./pgsql.yml -l pg-citus    # 部署 Citus 集群 pg-citus
+```
+
+任何 DBSU 用户（`postgres`）都可以使用 `patronictl`（别名：`pg`）列出 Citus 集群的状态：
+
+```bash
+$ pg list
++ Citus cluster: pg-citus ----------+---------+-----------+----+-----------+--------------------+
+| Group | Member      | Host        | Role    | State     | TL | Lag in MB | Tags               |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     0 | pg-citus0-1 | 10.10.10.10 | Leader  | running   |  1 |           | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 20C.40G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     1 | pg-citus1-1 | 10.10.10.11 | Leader  | running   |  1 |           | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 10C.20G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     2 | pg-citus2-1 | 10.10.10.12 | Leader  | running   |  1 |           | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 10C.20G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+|     2 | pg-citus2-2 | 10.10.10.13 | Replica | streaming |  1 |         0 | clonefrom: true    |
+|       |             |             |         |           |    |           | conf: tiny.yml     |
+|       |             |             |         |           |    |           | spec: 10C.20G.125G |
+|       |             |             |         |           |    |           | version: '16'      |
++-------+-------------+-------------+---------+-----------+----+-----------+--------------------+
+```
+
+每个水平分片集群都可以作为单独的 PGSQL 集群处理，使用 `pg`（`patronictl`）命令管理。注意使用 `pg` 管理 Citus 集群时，必须使用 `--group` 参数指定集群分片编号：
+
+```bash
+pg list pg-citus --group 0   # 使用 --group 0 指定分片编号
+```
+
+Citus 有一个名为 `pg_dist_node` 的系统表来记录节点信息，Patroni 会自动维护。
+
+```bash
+PGURL=postgres://postgres:DBUser.Postgres@10.10.10.10/citus
+
+psql $PGURL -c 'SELECT * FROM pg_dist_node;'       # 查看节点信息
+```
+
+另外，您可以查看用户认证信息（仅限超级用户）：
+
+```bash
+$ psql $PGURL -c 'SELECT * FROM pg_dist_authinfo;'   # 查看节点认证信息（仅超级用户）
+```
+
+然后您可以使用常规业务用户（例如，具有 DDL 权限的 `dbuser_citus`）访问 Citus 集群：
+
+```bash
+psql postgres://dbuser_citus:DBUser.Citus@10.10.10.10/citus -c 'SELECT * FROM pg_dist_node;'
+```
+
+------
+
+## 使用 Citus 集群 [#using-the-citus-cluster]
+
+使用 Citus 集群时，我们强烈建议阅读 [Citus 官方文档](https://docs.citusdata.com/en/stable/get_started/concepts.html) 了解其架构和核心概念。
+
+关键是理解 Citus 中五种类型的表、它们的特征和用例：
+
+- 分布式表
+- 引用表
+- 本地表
+- 本地管理表
+- 模式表
+
+在协调器节点上，您可以创建分布式表和引用表，并从任何数据节点查询它们。自版本 11.2 以来，任何 Citus 数据库节点都可以充当协调器。
+
+我们可以使用 `pgbench` 创建一些表，将主表（`pgbench_accounts`）分布到各个节点，并将其他较小的表用作引用表：
+
+```bash
+PGURL=postgres://dbuser_citus:DBUser.Citus@10.10.10.10/citus
+pgbench -i $PGURL
+
+psql $PGURL <<-EOF
+SELECT create_distributed_table('pgbench_accounts', 'aid'); SELECT truncate_local_data_after_distributing_table('public.pgbench_accounts');
+SELECT create_reference_table('pgbench_branches')         ; SELECT truncate_local_data_after_distributing_table('public.pgbench_branches');
+SELECT create_reference_table('pgbench_history')          ; SELECT truncate_local_data_after_distributing_table('public.pgbench_history');
+SELECT create_reference_table('pgbench_tellers')          ; SELECT truncate_local_data_after_distributing_table('public.pgbench_tellers');
+EOF
+```
+
+运行读写基准测试：
+
+```bash
+pgbench -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.10/citus      # 直连协调器 5432 端口
+pgbench -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.10:6432/citus # 通过连接池，减少客户端连接数压力，可以有效提高整体吞吐。
+pgbench -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.13/citus      # 任意 primary 节点都可以作为 coordinator
+pgbench --select-only -nv -P1 -c10 -T500 postgres://dbuser_citus:DBUser.Citus@10.10.10.11/citus # 可以发起只读查询
+```
+
+------
+
+## 生产部署 [#production-deployment]
+
+生产环境的 Citus 部署通常需要为协调器和每个工作节点集群提供物理复制。
+
+例如，在 [`simu.yml`](https://github.com/pgsty/pigsty/blob/main/conf/simu.yml) 中有一个 10 节点集群：
+
+```yaml
+pg-citus: # citus 组
+  hosts:
+    10.10.10.50: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.60/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.51: { pg_group: 0, pg_cluster: pg-citus0 ,pg_vip_address: 10.10.10.60/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.52: { pg_group: 1, pg_cluster: pg-citus1 ,pg_vip_address: 10.10.10.61/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.53: { pg_group: 1, pg_cluster: pg-citus1 ,pg_vip_address: 10.10.10.61/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.54: { pg_group: 2, pg_cluster: pg-citus2 ,pg_vip_address: 10.10.10.62/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.55: { pg_group: 2, pg_cluster: pg-citus2 ,pg_vip_address: 10.10.10.62/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.56: { pg_group: 3, pg_cluster: pg-citus3 ,pg_vip_address: 10.10.10.63/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.57: { pg_group: 3, pg_cluster: pg-citus3 ,pg_vip_address: 10.10.10.63/24 ,pg_seq: 1, pg_role: replica }
+    10.10.10.58: { pg_group: 4, pg_cluster: pg-citus4 ,pg_vip_address: 10.10.10.64/24 ,pg_seq: 0, pg_role: primary }
+    10.10.10.59: { pg_group: 4, pg_cluster: pg-citus4 ,pg_vip_address: 10.10.10.64/24 ,pg_seq: 1, pg_role: replica }
+  vars:
+    pg_mode: citus                            # pgsql 集群模式：citus
+    pg_version: 16                            # citus 没有 pg16 可用
+    pg_shard: pg-citus                        # citus 分片名称：pg-citus
+    pg_primary_db: citus                      # citus 使用的主数据库
+    pg_vip_enabled: true                      # 为 citus 集群启用 vip
+    pg_vip_interface: eth1                    # 所有成员的 vip 接口
+    pg_dbsu_password: DBUser.Postgres         # 为 citus 启用 dbsu 密码访问
+    pg_extensions: [ citus, postgis, pgvector, topn, pg_cron, hll ]  # 安装这些扩展
+    pg_libs: 'citus, pg_cron, pg_stat_statements' # citus 将由 patroni 自动添加
+    pg_users: [{ name: dbuser_citus ,password: DBUser.Citus ,pgbouncer: true ,roles: [ dbrole_admin ]    }]
+    pg_databases: [{ name: citus ,owner: dbuser_citus ,extensions: [ citus, vector, topn, pg_cron, hll ] }]
+    pg_parameters:
+      cron.database_name: citus
+      citus.node_conninfo: 'sslrootcert=/pg/cert/ca.crt sslmode=verify-full'
+    pg_hba_rules:
+      - { user: 'all' ,db: all  ,addr: 127.0.0.1/32  ,auth: ssl   ,title: 'all user ssl access from localhost' }
+      - { user: 'all' ,db: all  ,addr: intra         ,auth: ssl   ,title: 'all user ssl access from intranet'  }
+```
+
+我们将在后续教程中涵盖一系列高级主题：
+
+- 读写分离
+- 故障转移处理
+- 一致性备份和恢复
+- 高级监控和故障排除
+- 连接池

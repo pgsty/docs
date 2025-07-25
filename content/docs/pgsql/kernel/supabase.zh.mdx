@@ -1,0 +1,354 @@
+---
+title: Supabase
+description: 在您的 Postgres 上自托管 BaaS
+icon: Zap
+---
+
+
+Supabase 很棒，拥有自己的 supabase 更棒。
+Pigsty 帮助您在自己的服务器上自托管 supabase，
+具有更好的控制、更多扩展、更低成本和企业级功能。
+
+> 一小时内迁移，扩展到数十亿！
+
+--------
+
+## 简化版本 [#short-version]
+
+这里是在本地/云 VM/BM 上自托管生产级 supabase 的综合教程。
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+./bootstrap                # 安装 ansible
+./configure -c app/supa    # 使用 supabase 配置（请在 pigsty.yml 中更改凭据）
+vi pigsty.yml              # 编辑域名、密码、密钥...
+./install.yml              # 安装 pigsty
+./docker.yml               # 安装 docker compose
+./app.yml                  # 使用 docker 启动 supabase 无状态部分
+```
+
+------
+
+## 什么是 Supabase？ [#what-is-supabase]
+
+[Supabase](https://supabase.com/) 是一个开源的 Firebase 替代品，是一个后端即服务（BaaS）。
+
+Supabase 包装了 PostgreSQL 内核和向量扩展，以及身份验证、实时订阅、边缘函数、对象存储，以及从您的 postgres 模式生成的即时 REST 和 GraphQL API。它让您跳过大部分后端工作，只需要数据库设计和前端技能即可快速交付。
+
+目前，Supabase 可能是 PostgreSQL 生态系统中[最受欢迎](https://ossrank.com/cat/368-postgresql-extension-ecosystem)的开源项目，在 GitHub 上拥有超过 80,000 个星标。并且在开发者和初创公司中变得相当受欢迎，因为他们有一个[慷慨的免费计划](https://supabase.com/pricing)，就像 cloudflare 和 neon 一样。
+
+
+
+
+------
+
+## 为什么要自托管？ [#why-self-hosting]
+
+Supabase 的口号是："**周末构建，扩展到数百万**"。它在小规模（4c8g）确实具有很好的成本效益。但毫无疑问，当您真正增长到数百万用户时，一些人可能会选择自托管自己的 Supabase——出于功能、性能、成本和其他原因。
+
+这就是 Pigsty 的用武之地。Pigsty 为 Supabase 提供完整的一键自托管解决方案。自托管的 Supabase 可以享受完整的 PostgreSQL 监控、IaC、PITR 和高可用性能力。
+
+您可以运行最新的 PostgreSQL 17（,16,15）内核，（supabase 目前使用 15），以及[423](/zh/pgsql/extension/) 个开箱即用的 PostgreSQL 扩展。运行在[主流](/zh/prepare/linux/) Linux 操作系统发行版上，
+具有生产级[HA](/zh/feat/ha/) [PostgreSQL](/zh/pgsql/)、[MinIO](/zh/minio/)、Prometheus & Grafana 堆栈用于可观测性，以及 Nginx 用于反向代理。
+
+由于大多数 supabase 维护的扩展在官方 PGDG 仓库中不可用，我们已经为这些扩展编译了所有 RPM/DEB 并将它们放在 [Pigsty 仓库](/zh/pgsql/extension/)中：
+
+- [pg_graphql](https://ext.pgsty.com/e/pg_graphql): PostgreSQL 中的 GraphQL 支持（通过 PIGSTY 提供的 Rust 扩展）
+- [pg_jsonschema](https://ext.pgsty.com/e/pg_jsonschema): JSON Schema 验证（通过 PIGSTY 提供的 Rust 扩展）
+- [wrappers](https://ext.pgsty.com/e/wrappers): Supabase 的外部数据源包装器包（通过 PIGSTY 提供的 Rust 扩展）
+- [index_advisor](https://ext.pgsty.com/e/index_advisor): 查询索引顾问（通过 PIGSTY 提供的 SQL 扩展）
+- [pg_net](https://ext.pgsty.com/e/pg_net): SQL 中的异步非阻塞 HTTP/HTTPS 请求（通过 PIGSTY 提供的 C 扩展）
+- [vault](https://ext.pgsty.com/e/supabase_vault): 在 Vault 中存储加密凭据（通过 PIGSTY 提供的 C 扩展）
+- [pgjwt](https://ext.pgsty.com/e/pgjwt): JSON Web Token API 的 PostgreSQL 实现（通过 PIGSTY 提供的 SQL 扩展）
+- [pgsodium](https://ext.pgsty.com/e/pgsodium): 表数据加密存储 TDE（通过 PIGSTY 提供的 C 扩展）
+- [supautils](https://ext.pgsty.com/e/supautils): 在云环境中保护数据库集群（通过 PIGSTY 提供的 C 扩展）
+- [pg_plan_filter](https://ext.pgsty.com/e/plan_filter): 使用执行计划成本过滤阻止特定查询（通过 PIGSTY 提供的 C 扩展）
+
+一切都在您的控制之下，您有能力和自由扩展 PGSQL、MinIO 和 Supabase 本身。并充分利用现代硬件如 Gen5 NVMe SSD 的性能和成本优势。
+
+您所需要的就是准备一个 VM，运行几个命令并等待 10 分钟……
+
+------
+
+## 快速开始 [#get-started]
+
+首先，像往常一样下载并[安装](/zh/install/) pigsty，使用 `supa` 配置模板：
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+./bootstrap                # 安装 ansible
+./configure -c app/dify    # 使用 dify 配置（请在 pigsty.yml 中更改凭据）
+vi pigsty.yml              # 编辑配置文件
+./install.yml              # 安装 pigsty
+```
+
+> 在部署 Supabase 之前，请根据您的需要更改 `pigsty.yml` 配置文件。（**凭据**）出于开发/测试/演示目的，我们将跳过这个，稍后再回来。
+
+然后，运行 [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml) 和 [`app.yml`](https://github.com/pgsty/pigsty/blob/main/app.yml) 启动 supabase 的无状态部分。
+
+```bash
+./docker.yml               # 安装 docker compose
+./app.yml                  # 使用 docker 启动 dify 无状态部分
+```
+
+您可以直接通过 `8000/8443` 访问 supabase API / Web UI。
+
+通过配置的 DNS 或本地 `/etc/hosts` 条目，您也可以通过 80/443 基础设施门户使用默认的 `supa.pigsty` 域名。
+
+> Supabase Studio 的凭据：`supabase` : `pigsty`
+
+[![supabase](/img/asciinema/supabase.svg)](https://asciinema.org/a/692194)
+
+------
+
+## 架构 [#architecture]
+
+Pigsty 的 supabase 基于 [Supabase Docker Compose 模板](https://supabase.com/docs/guides/self-hosting/docker)，进行了一些轻微修改以适应 Pigsty 的默认 [ACL](/zh/pgsql/acl/) 模型。
+
+此模板的有状态部分被 Pigsty 管理的 PostgreSQL 集群和 MinIO 集群所替代。容器部分是无状态的，因此您可以在同一个有状态的 PGSQL / MINIO 集群上同时启动/销毁/运行多个 supabase 容器以进行扩展。
+
+![img](/img/pigsty/supa-arch.svg)
+
+内置的 [`supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml) [配置](/zh/app/supabase)模板将创建单节点 supabase，具有[单例 PostgreSQL](/zh/pgsql/) 和 SNSD [MinIO](/zh/minio/) 服务器。您可以在生产中使用[多节点 PostgreSQL 集群](/zh/pgsql/config/#replica)和 [MNMD MinIO 集群](/zh/minio/config/#multi-node-multi-drive) / 外部 S3 服务，我们稍后会介绍。
+
+------
+
+## 配置详情 [#config-detail]
+
+这里是自托管的清单
+
+-  [**硬件**](/zh/prepare/hardware#node)：必要的 VM/BM 资源，至少一个节点，建议 3-4 个用于 HA。
+-  [**Linux 操作系统**](/zh/prepare/linux)：带有新安装 Linux 的 Linux x86_64 服务器，[检查兼容发行版](/zh/prepare/linux)
+-  [**网络**](/zh/prepare/hardware#network)：可用作节点标识的静态 IPv4 地址
+-  [**管理员用户**](/zh/prepare/admin#user)：建议为管理员用户使用无密码 ssh 和 sudo
+-  [**配置模板**](/zh/config/template)：如果您不知道如何手动配置 pigsty，请使用 [`supabase`](/zh/config/template) 配置模板
+
+内置的 [`conf/app/supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml) 配置模板如下所示。
+
+
+对于高级主题，我们可能需要修改配置文件以满足我们的需求。
+
+- [安全增强](/zh/app/supabase/#security-enhancement)
+- [域名和 HTTPS](/zh/app/supabase/#domain-name-and-https)
+- [使用 SMTP 发送邮件](/zh/app/supabase/#sending-mail-with-smtp)
+- [MinIO 或外部 S3](/zh/app/supabase/#minio-or-external-s3)
+- [真正的高可用性](/zh/app/supabase/#true-high-availability)
+
+------
+
+## 安全增强 [#security-enhancement]
+
+出于安全原因，您应该在 `pigsty.yml` 配置文件中更改默认密码。
+
+- [`grafana_admin_password`](/zh/infra/param/#grafana_admin_password): `pigsty`, Grafana 管理员密码
+- [`pg_admin_password`](/zh/pgsql/param/#pg_admin_password): `DBUser.DBA`, PGSQL 超级用户密码
+- [`pg_monitor_password`](/zh/pgsql/param/#pg_monitor_password): `DBUser.Monitor`, PGSQL 监控用户密码
+- [`pg_replication_password`](/zh/pgsql/param/#pg_replication_password): `DBUser.Replicator`, PGSQL 复制用户密码
+- [`patroni_password`](/zh/pgsql/param/#patroni_password): `Patroni.API`, Patroni HA 代理密码
+- [`haproxy_admin_password`](/zh/node/param/#haproxy_admin_password): `pigsty`, 负载均衡器管理员密码
+- [`minio_access_key`](/zh/minio/param/#minio_access_key): `minioadmin`, MinIO root 用户名
+- [`minio_secret_key`](/zh/minio/param/#minio_secret_key): `minioadmin`, MinIO root 密码
+
+Supabase 将使用 PostgreSQL 和 MinIO 作为其后端，因此也要更改 supabase 业务用户的以下密码：
+
+- [`pg_users`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L49): postgres 中 supabase 业务用户的密码
+- [`minio_users`](/zh/minio/param/#minio_secret_key): `minioadmin`, MinIO 业务用户的密码
+
+pgbackrest 将备份和 WAL 发送到 MinIO，因此也要更改以下密码引用
+
+- [`pgbackrest_repo`](/zh/pgsql/param/#pgbackrest_repo): 参考
+
+请查看 [Supabase 自托管：生成 API 密钥](https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys) 生成 supabase 凭据：
+
+- [`jwt_secret`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L114): 至少 40 个字符的密钥
+- [`anon_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L115): 基于 `jwt_secret` 为匿名用户生成的 jwt 令牌
+- [`service_role_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L116): 基于 `jwt_secret` 为提升服务角色生成的 jwt 令牌
+- [`dashboard_username`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L117): supabase studio web 门户用户名，默认为 `supabase`
+- [`dashboard_password`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L128): supabase studio web 门户密码，默认为 `pigsty`
+
+如果您已更改 PostgreSQL 和 MinIO 的默认密码，您还必须更新以下参数：
+
+- [`postgres_password`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#L126)，根据 [`pg_users`](/zh/pgsql/user/)
+- [`s3_access_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#136) 和 [`s3_secret_key`](https://github.com/pgsty/pigsty/blob/main/conf/supa.yml#137)，根据 [`minio_users`](/zh/minio/param/#minio_users)
+
+------
+
+## 域名和 HTTPS [#domain-name-and-https]
+
+如果您在本地机器或局域网内使用 Supabase，您可以通过 Kong 暴露的 HTTP 端口 8000 直接通过 IP:Port 连接到 Supabase。
+
+您可以使用本地解析的域名，但对于严肃的生产部署，我们建议使用真实域名 + HTTPS 访问 Supabase。在这种情况下，您通常需要准备以下内容：
+
+- 您的服务器应该有一个公共 IP 地址
+- 购买域名，使用云/DNS/CDN 提供商提供的 DNS 解析服务将其指向您的安装节点的公共 IP（较低替代方案：本地 `/etc/hosts`）
+- 申请证书，使用 Let's Encrypt 等证书颁发机构颁发的免费 HTTPS 证书进行加密通信（较低替代方案：默认自签名证书，手动信任）
+
+您可以[参考 certbot 教程](/zh/admin/cert)申请免费 HTTPS 证书。这里我们假设您的自定义域名是：`supa.pigsty.cc`，然后您应该在 [`infra_portal`](/zh/infra/param/#infra_portal) 中修改 `supa` 域，如下所示：
+
+```yaml
+all:
+  vars:
+    infra_portal:
+      supa :
+        domain: supa.pigsty.cc        # 用您自己的域名替换！
+        endpoint: "10.10.10.10:8000"
+        websocket: true
+        certbot: supa.pigsty.cc       # 证书名称，通常与域名相同
+```
+
+如果域名已解析到您服务器的公共 IP，那么您可以通过在 Pigsty 目录中执行以下命令自动完成证书申请和应用：
+
+```bash
+make cert
+```
+
+除了 Pigsty 组件密码外，您还需要[修改 Supabase 的域名相关配置](https://supabase.com/docs/guides/self-hosting/docker#securing-your-services)，包括：
+
+- [`SITE_URL`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml#L50)
+- [`API_EXTERNAL_URL`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml#L51)
+- [`SUPABASE_PUBLIC_URL`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml#L52):
+
+将它们配置为您的自定义域名，例如：`supa.pigsty.cc`，然后重新应用配置：
+
+```bash
+./app.yml -t app_config,app_launch
+```
+
+作为较低替代方案，您可以使用本地域名访问 Supabase。使用本地域名时，您可以在浏览器的 `/etc/hosts` 或 LAN DNS 中配置 `supa.pigsty` 的解析，将其指向安装节点的公共 IP 地址。Pigsty 管理节点上的 Nginx 将为此域名申请自签名证书（浏览器将显示 `不安全`），并将请求转发到 Kong 的 8000 端口，由 Supabase 处理。
+
+------
+
+## MinIO 或外部 S3 [#minio-or-external-s3]
+
+Pigsty 的自托管 supabase 将使用本地 [SNSD MinIO](/zh/minio/config/#single-node-single-drive) 服务器，Supabase 本身用于对象存储，PostgreSQL 用于备份。对于生产使用，您应该考虑使用 HA [MNMD MinIO](/zh/minio/config/#multi-node-multi-drive) 集群或外部 S3 兼容服务。
+
+我们建议在以下情况下使用外部 S3：
+
+- 您只有一台可用的服务器，那么外部 s3 为您提供最小的灾难恢复保证，RTO 以小时计，RPO 以 MB 计。
+- 您在云中运营，那么直接使用 S3 比用昂贵的 EBS 包装 MinIO 更推荐
+
+> [`terraform/spec/aliyun-meta-s3.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-meta-s3.tf) 提供了如何与 S3 存储桶一起配置单个节点的示例。
+
+要使用外部 S3 兼容服务，您必须在 `pigsty.yml` 配置中更新两个相关引用。
+
+首先，让我们更新 `all.children.supa.vars.apps.[supabase].conf` 中的 S3 相关配置，将其指向外部 S3 兼容服务：
+
+```yaml
+# 如果使用 s3/minio 作为文件存储
+S3_BUCKET: supa
+S3_ENDPOINT: https://sss.pigsty:9000
+S3_ACCESS_KEY: supabase
+S3_SECRET_KEY: S3User.Supabase
+S3_FORCE_PATH_STYLE: true
+S3_PROTOCOL: https
+S3_REGION: stub
+MINIO_DOMAIN_IP: 10.10.10.10  # sss.pigsty 域名将静态解析到此 ip
+```
+
+然后，使用以下命令重新加载 supabase 服务：
+
+```bash
+./app.yml -t app_config,app_launch
+```
+
+您还可以将 S3 用作 PostgreSQL 的备份仓库，在 `all.vars.pgbackrest_repo` 中添加新的 `aliyun` 备份仓库定义：
+
+```yaml
+all:
+  vars:
+    pgbackrest_method: aliyun          # pgbackrest 备份方法：local,minio,[其他用户定义的仓库...]
+    pgbackrest_repo:                   # pgbackrest 备份仓库：https://pgbackrest.org/configuration.html#section-repository
+      aliyun:                          # 定义新的备份仓库 aliyun
+        type: s3                       # 阿里云 oss 是 s3 兼容的对象存储
+        s3_endpoint: oss-cn-beijing-internal.aliyuncs.com
+        s3_region: oss-cn-beijing
+        s3_bucket: pigsty-oss
+        s3_key: xxxxxxxxxxxxxx
+        s3_key_secret: xxxxxxxx
+        s3_uri_style: host
+
+        path: /pgbackrest
+        bundle: y
+        cipher_type: aes-256-cbc
+        cipher_pass: PG.${pg_cluster}   # 设置绑定到集群名称的密码
+        retention_full_type: time
+        retention_full: 14
+```
+
+然后，在 `all.vars.pgbackrest_mehod` 中指定使用 `aliyun` 备份仓库，并重置 pgBackrest 备份：
+
+```bash
+./pgsql.yml -t pgbackrest
+```
+
+Pigsty 将切换备份仓库到外部对象存储。
+
+------
+
+## 使用 SMTP 发送邮件 [#sending-mail-with-smtp]
+
+一些 Supabase 功能需要电子邮件。对于生产使用，我建议使用外部 SMTP 服务。因为自托管 SMTP 服务器经常导致被拒绝或标记为垃圾邮件的电子邮件。
+
+要做到这一点，修改 Supabase 配置并添加 SMTP 凭据：
+
+```yaml
+all:
+  children:
+    supa:            # supa 组
+      vars:          # supa 组变量
+        apps:        # supa 组应用列表
+          supabase:  # supabase 应用
+            conf:    # supabase 应用配置条目
+              SMTP_HOST: smtpdm.aliyun.com:80
+              SMTP_PORT: 80
+              SMTP_USER: no_reply@mail.your.domain.com
+              SMTP_PASS: your_email_user_password
+              SMTP_SENDER_NAME: MySupabase
+              SMTP_ADMIN_EMAIL: adminxxx@mail.your.domain.com
+              ENABLE_ANONYMOUS_USERS: false
+```
+
+不要忘记使用 `./app.yml -t app_config,app_launch` 重新加载 supabase 服务
+
+------
+
+## 备份策略 [#backup-strategy]
+
+在 supabase 模板中，Pigsty 已经使用凌晨 01:00 的每日全量备份，您可以参考[备份/恢复](/zh/pgsql/backup/)修改备份策略。
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta  # 凌晨 01:00 每日全量备份
+        node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ]
+```
+
+然后，使用以下命令将 Crontab 配置应用到节点：
+
+```bash
+./node.yml -t node_crontab
+```
+
+有关备份策略的更多信息，请参考[**备份策略**](/zh/pgsql/backup/)
+
+------
+
+## 真正的高可用性 [#true-high-availability]
+
+默认的单节点部署（使用外部 S3）提供最小的灾难恢复保证，RTO 以小时计，RPO 以 MB 计。
+
+要实现 RTO < 30s 和零数据丢失，您需要至少 3 节点的多节点高可用性集群。
+
+这涉及这些组件的高可用性：
+
+- [ETCD](/zh/etcd/)：DCS 需要至少三个节点来容忍一个节点故障。
+- [PGSQL](/zh/pgsql/)：PGSQL 同步提交模式建议至少三个节点。
+- [INFRA](/zh/infra/)：最好有两到三个可观测性堆栈的副本。
+- Supabase 本身也可以有多个副本来实现高可用性。
+
+我们建议您参考 [trio](/zh/config/template) 和 [safe](/zh/config/template) 配置将您的集群升级到三个或更多节点。
+
+在这种情况下，您还需要修改 PostgreSQL 和 MinIO 的访问点以使用 DNS / L2 VIP / HAProxy [HA 访问点](/zh/pgsql/service/)。

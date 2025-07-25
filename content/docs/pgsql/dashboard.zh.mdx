@@ -1,5 +1,5 @@
 ---
-title: 监控面板
+title: 面板
 description: 查看可视化信息
 icon: CircleGauge
 ---
@@ -11,17 +11,17 @@ icon: CircleGauge
 
 共有 26 个关于 PostgreSQL 的默认 Grafana 监控面板，分为 4 个层级，并按数据源分为 [PGSQL](/zh/pgsql/dashboard/#overview)、[PGCAT](/zh/pgsql/dashboard/#pgcat) 和 [PGLOG](/zh/pgsql/dashboard/#pglog)。
 
-|                         概览                          |                             集群                             |                          实例                           |                         数据库                          |
-|:---------------------------------------------------------:|:---------------------------------------------------------------:|:-----------------------------------------------------------:|:---------------------------------------------------------:|
-| [PGSQL 概览](https://demo.pigsty.cc/d/pgsql-overview) |     [PGSQL 集群](https://demo.pigsty.cc/d/pgsql-cluster)     |  [PGSQL 实例](https://demo.pigsty.cc/d/pgsql-instance)  | [PGSQL 数据库](https://demo.pigsty.cc/d/pgsql-database) |
-|    [PGSQL 告警](https://demo.pigsty.cc/d/pgsql-alert)    |     [PGRDS 集群](https://demo.pigsty.cc/d/pgrds-cluster)     |  [PGRDS 实例](https://demo.pigsty.cc/d/pgrds-instance)  | [PGCAT 数据库](https://demo.pigsty.cc/d/pgcat-database) |
-|    [PGSQL 分片](https://demo.pigsty.cc/d/pgsql-shard)    |    [PGSQL 活动](https://demo.pigsty.cc/d/pgsql-activity)    |  [PGCAT 实例](https://demo.pigsty.cc/d/pgcat-instance)  |   [PGSQL 表](https://demo.pigsty.cc/d/pgsql-tables)   |
-|                                                           | [PGSQL 复制](https://demo.pigsty.cc/d/pgsql-replication) |   [PGSQL 持久化](https://demo.pigsty.cc/d/pgsql-persist)   |    [PGSQL 表详情](https://demo.pigsty.cc/d/pgsql-table)    |
-|                                                           |     [PGSQL 服务](https://demo.pigsty.cc/d/pgsql-service)     |     [PGSQL 代理](https://demo.pigsty.cc/d/pgsql-proxy)     |    [PGCAT 表详情](https://demo.pigsty.cc/d/pgcat-table)    |
-|                                                           |   [PGSQL 数据库集](https://demo.pigsty.cc/d/pgsql-databases)   | [PGSQL Pgbouncer](https://demo.pigsty.cc/d/pgsql-pgbouncer) |    [PGSQL 查询](https://demo.pigsty.cc/d/pgsql-query)    |
-|                                                           |     [PGSQL Patroni](https://demo.pigsty.cc/d/pgsql-patroni)     |   [PGSQL 会话](https://demo.pigsty.cc/d/pgsql-session)   |    [PGCAT 查询](https://demo.pigsty.cc/d/pgcat-query)    |
-|                                                           |        [PGSQL PITR](https://demo.pigsty.cc/d/pgsql-pitr)        |     [PGSQL 事务](https://demo.pigsty.cc/d/pgsql-xacts)     |    [PGCAT 锁](https://demo.pigsty.cc/d/pgcat-locks)    |
-|                                                           |                                                                 |  [PGSQL 导出器](https://demo.pigsty.cc/d/pgsql-exporter)  |   [PGCAT 模式](https://demo.pigsty.cc/d/pgcat-schema)   |
+|                         概览                          |                           集群                            |                             实例                              |                         数据库                          |
+|:---------------------------------------------------:|:-------------------------------------------------------:|:-----------------------------------------------------------:|:----------------------------------------------------:|
+| [PGSQL 概览](https://demo.pigsty.cc/d/pgsql-overview) |   [PGSQL 集群](https://demo.pigsty.cc/d/pgsql-cluster)    |     [PGSQL 实例](https://demo.pigsty.cc/d/pgsql-instance)     | [PGSQL 数据库](https://demo.pigsty.cc/d/pgsql-database) |
+|  [PGSQL 告警](https://demo.pigsty.cc/d/pgsql-alert)   |   [PGRDS 集群](https://demo.pigsty.cc/d/pgrds-cluster)    |     [PGRDS 实例](https://demo.pigsty.cc/d/pgrds-instance)     | [PGCAT 数据库](https://demo.pigsty.cc/d/pgcat-database) |
+|  [PGSQL 分片](https://demo.pigsty.cc/d/pgsql-shard)   |   [PGSQL 活动](https://demo.pigsty.cc/d/pgsql-activity)   |     [PGCAT 实例](https://demo.pigsty.cc/d/pgcat-instance)     |   [PGSQL 表](https://demo.pigsty.cc/d/pgsql-tables)   |
+|                                                     | [PGSQL 复制](https://demo.pigsty.cc/d/pgsql-replication)  |     [PGSQL 持久化](https://demo.pigsty.cc/d/pgsql-persist)     |  [PGSQL 表详情](https://demo.pigsty.cc/d/pgsql-table)   |
+|                                                     |   [PGSQL 服务](https://demo.pigsty.cc/d/pgsql-service)    |      [PGSQL 代理](https://demo.pigsty.cc/d/pgsql-proxy)       |  [PGCAT 表详情](https://demo.pigsty.cc/d/pgcat-table)   |
+|                                                     | [PGSQL 数据库集](https://demo.pigsty.cc/d/pgsql-databases)  | [PGSQL Pgbouncer](https://demo.pigsty.cc/d/pgsql-pgbouncer) |   [PGSQL 查询](https://demo.pigsty.cc/d/pgsql-query)   |
+|                                                     | [PGSQL Patroni](https://demo.pigsty.cc/d/pgsql-patroni) |     [PGSQL 会话](https://demo.pigsty.cc/d/pgsql-session)      |   [PGCAT 查询](https://demo.pigsty.cc/d/pgcat-query)   |
+|                                                     |    [PGSQL PITR](https://demo.pigsty.cc/d/pgsql-pitr)    |      [PGSQL 事务](https://demo.pigsty.cc/d/pgsql-xacts)       |   [PGCAT 锁](https://demo.pigsty.cc/d/pgcat-locks)    |
+|                                                     |                                                         |    [PGSQL 导出器](https://demo.pigsty.cc/d/pgsql-exporter)     |  [PGCAT 模式](https://demo.pigsty.cc/d/pgcat-schema)   |
 
 **概览**
 

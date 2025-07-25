@@ -1,0 +1,195 @@
+---
+title: PolarDB
+description: PolarDB for PostgreSQL，带有 aurora 风格的 RAC
+icon: PawPrint
+---
+
+
+[PolarDB](https://openpolardb.com/home) 是一个由阿里云开发并开源的 aurora RAC 风格"云原生"数据库系统。
+
+
+
+
+------
+
+## 快速开始 [#get-started]
+
+使用 [`polar`](https://github.com/pgsty/pigsty/blob/main/conf/polar.yml) 配置模板 [**安装**](/zh/install/start) Pigsty。
+
+```bash
+./configure -c polar     # 使用 polar（PolarDB）模板
+./install.yml            # 运行部署剧本
+```
+
+
+
+------
+
+## 配置 [#configure]
+
+需要调整以下参数来部署 PolarDB 集群：
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_users:
+      - {name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
+      - {name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
+    pg_databases:
+      - {name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty]}
+    pg_hba_rules:
+      - {user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes'}
+    node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # 每天凌晨 1 点进行全量备份
+
+    # PolarDB 临时设置
+    pg_version: 15                            # PolarDB PG 基于 PG 15
+    pg_mode: polar                            # PolarDB PG 兼容模式
+    pg_packages: [ polardb, pgsql-common ]    # 用 PolarDB 内核替换 PG 内核
+    pg_exporter_exclude_database: 'template0,template1,postgres,polardb_admin'
+    pg_default_roles:                         # PolarDB 要求 replicator 为超级用户
+      - { name: dbrole_readonly  ,login: false ,comment: role for global read-only access     }
+      - { name: dbrole_offline   ,login: false ,comment: role for restricted read-only access }
+      - { name: dbrole_readwrite ,login: false ,roles: [dbrole_readonly] ,comment: role for global read-write access }
+      - { name: dbrole_admin     ,login: false ,roles: [pg_monitor, dbrole_readwrite] ,comment: role for object creation }
+      - { name: postgres     ,superuser: true  ,comment: system superuser }
+      - { name: replicator   ,superuser: true  ,replication: true ,roles: [pg_monitor, dbrole_readonly] ,comment: system replicator } # <- 复制需要超级用户权限
+      - { name: dbuser_dba   ,superuser: true  ,roles: [dbrole_admin]  ,pgbouncer: true ,pool_mode: session, pool_connlimit: 16 ,comment: pgsql admin user }
+      - { name: dbuser_monitor ,roles: [pg_monitor] ,pgbouncer: true ,parameters: {log_min_duration_statement: 1000 } ,pool_mode: session ,pool_connlimit: 8 ,comment: pgsql monitor user }
+
+```
+
+------
+
+## 客户端访问 [#client-access]
+
+PolarDB for PostgreSQL 本质上等价于 PostgreSQL 11，任何与 PostgreSQL 线协议兼容的客户端工具都可以访问 PolarDB 集群。
+
+------
+
+## 安装 [#installation]
+
+如果您的环境有互联网访问权限，您可以直接将 PolarDB 仓库添加到节点并作为节点包安装：
+
+```yaml
+node_repo_modules: local,node,pgsql
+node_packages: [ polardb ]
+```
+
+然后使用以下命令安装 PolarDB 内核包：
+
+```bash
+./node.yml -t node_repo,node_pkg
+```
+
+------
+
+## 扩展 [#extensions]
+
+**PGSQL** 模块的大多数[**扩展**](/zh/pgsql/extension/)（非纯 SQL）不能直接在 PolarDB 内核上使用。如果您需要使用它们，您需要为新内核从源代码重新编译和安装。
+
+目前，PolarDB 内核附带以下 **61** 个扩展插件。除了 Contrib 扩展外，提供的附加扩展包括：
+
+- `polar_csn` 1.0 : polar_csn
+- `polar_monitor` 1.2 : 检查 polardb 信息
+- `polar_monitor_preload` 1.1 : 检查 polardb 信息
+- `polar_parameter_check` 1.0 : 参数验证的内核扩展
+- `polar_px` 1.0 : 并行执行扩展
+- `polar_stat_env` 1.0 : PolarDB 的环境统计函数
+- `polar_stat_sql` 1.3 : 内核统计收集和 sql 计划节点信息收集
+- `polar_tde_utils` 1.0 : TDE 的内部扩展
+- `polar_vfs` 1.0 : polar_vfs
+- `polar_worker` 1.0 : polar_worker
+- `timetravel` 1.0 : 实现时间旅行的函数
+- `vector` 0.5.1 : 向量数据类型和 ivfflat 及 hnsw 访问方法
+- `smlar` 1.0 : 计算任何一维数组的相似性
+
+这是 PolarDB 内核提供的扩展列表：
+
+| 名称                   | 版本 | 注释                                                               |
+|-----------------------|---------|-----------------------------------------------------------------------|
+| hstore_plpython2u     | 1.0     | hstore 和 plpython2u 之间的转换                               |
+| dict_int              | 1.0     | 整数的文本搜索字典模板                          |
+| adminpack             | 2.0     | PostgreSQL 的管理函数                               |
+| hstore_plpython3u     | 1.0     | hstore 和 plpython3u 之间的转换                               |
+| amcheck               | 1.1     | 验证关系完整性的函数                            |
+| hstore_plpythonu      | 1.0     | hstore 和 plpythonu 之间的转换                                |
+| autoinc               | 1.0     | 自动递增字段的函数                                 |
+| insert_username       | 1.0     | 跟踪谁更改了表的函数                            |
+| bloom                 | 1.0     | bloom 访问方法 - 基于签名文件的索引                      |
+| file_fdw              | 1.0     | 平面文件访问的外部数据包装器                             |
+| dblink                | 1.2     | 从数据库内连接到其他 PostgreSQL 数据库          |
+| btree_gin             | 1.3     | 在 GIN 中索引常见数据类型的支持                          |
+| fuzzystrmatch         | 1.1     | 确定字符串之间的相似性和距离                   |
+| lo                    | 1.1     | 大对象维护                                              |
+| intagg                | 1.1     | 整数聚合器和枚举器（已过时）                          |
+| btree_gist            | 1.5     | 在 GiST 中索引常见数据类型的支持                         |
+| hstore                | 1.5     | 存储（键，值）对集合的数据类型                      |
+| intarray              | 1.2     | 1-D 整数数组的函数、操作符和索引支持    |
+| citext                | 1.5     | 不区分大小写字符串的数据类型                      |
+| cube                  | 1.4     | 多维立方体的数据类型                                  |
+| hstore_plperl         | 1.0     | hstore 和 plperl 之间的转换                                   |
+| isn                   | 1.2     | 国际产品编号标准的数据类型              |
+| jsonb_plperl          | 1.0     | jsonb 和 plperl 之间的转换                                    |
+| dict_xsyn             | 1.0     | 扩展同义词处理的文本搜索字典模板       |
+| hstore_plperlu        | 1.0     | hstore 和 plperlu 之间的转换                                  |
+| earthdistance         | 1.1     | 计算地球表面的大圆距离          |
+| pg_prewarm            | 1.2     | 预热关系数据                                                 |
+| jsonb_plperlu         | 1.0     | jsonb 和 plperlu 之间的转换                                   |
+| pg_stat_statements    | 1.6     | 跟踪所有已执行 SQL 语句的执行统计             |
+| jsonb_plpython2u      | 1.0     | jsonb 和 plpython2u 之间的转换                                |
+| jsonb_plpython3u      | 1.0     | jsonb 和 plpython3u 之间的转换                                |
+| jsonb_plpythonu       | 1.0     | jsonb 和 plpythonu 之间的转换                                 |
+| pg_trgm               | 1.4     | 基于三元组的文本相似度测量和索引搜索     |
+| pgstattuple           | 1.5     | 显示元组级统计信息                                           |
+| ltree                 | 1.1     | 分层树状结构的数据类型                       |
+| ltree_plpython2u      | 1.0     | ltree 和 plpython2u 之间的转换                                |
+| pg_visibility         | 1.2     | 检查可见性映射（VM）和页面级可见性信息        |
+| ltree_plpython3u      | 1.0     | ltree 和 plpython3u 之间的转换                                |
+| ltree_plpythonu       | 1.0     | ltree 和 plpythonu 之间的转换                                 |
+| seg                   | 1.3     | 表示线段或浮点区间的数据类型  |
+| moddatetime           | 1.0     | 跟踪最后修改时间的函数                         |
+| pgcrypto              | 1.3     | 加密函数                                               |
+| pgrowlocks            | 1.2     | 显示行级锁定信息                                    |
+| pageinspect           | 1.7     | 在低级别检查数据库页面的内容                 |
+| pg_buffercache        | 1.3     | 检查共享缓冲区缓存                                       |
+| pg_freespacemap       | 1.2     | 检查空闲空间映射（FSM）                                      |
+| tcn                   | 1.0     | 触发的更改通知                                        |
+| plperl                | 1.0     | PL/Perl 过程语言                                           |
+| uuid-ossp             | 1.1     | 生成通用唯一标识符（UUID）                       |
+| plperlu               | 1.0     | PL/PerlU 不受信任的过程语言                                |
+| refint                | 1.0     | 实现引用完整性的函数（已过时）           |
+| xml2                  | 1.1     | XPath 查询和 XSLT                                               |
+| plpgsql               | 1.0     | PL/pgSQL 过程语言                                          |
+| plpython3u            | 1.0     | PL/Python3U 不受信任的过程语言                             |
+| pltcl                 | 1.0     | PL/Tcl 过程语言                                            |
+| pltclu                | 1.0     | PL/TclU 不受信任的过程语言                                 |
+| polar_csn             | 1.0     | polar_csn                                                             |
+| sslinfo               | 1.2     | SSL 证书信息                                    |
+| polar_monitor         | 1.2     | 检查 polardb 信息                                       |
+| polar_monitor_preload | 1.1     | 检查 polardb 信息                                       |
+| polar_parameter_check | 1.0     | 参数验证的内核扩展                             |
+| polar_px              | 1.0     | 并行执行扩展                                          |
+| tablefunc             | 1.0     | 操作整个表的函数，包括交叉表            |
+| polar_stat_env        | 1.0     | PolarDB 的环境统计函数                                        |
+| smlar                 | 1.0     | 计算任何一维数组的相似性                        |
+| timetravel            | 1.0     | 实现时间旅行的函数                                |
+| tsm_system_rows       | 1.0     | 接受行数作为限制的 TABLESAMPLE 方法            |
+| polar_stat_sql        | 1.3     | 内核统计收集和 sql 计划节点信息收集 |
+| tsm_system_time       | 1.0     | 接受毫秒时间作为限制的 TABLESAMPLE 方法      |
+| polar_tde_utils       | 1.0     | TDE 的内部扩展                                            |
+| polar_vfs             | 1.0     | polar_vfs                                                             |
+| polar_worker          | 1.0     | polar_worker                                                          |
+| unaccent              | 1.1     | 去除重音符号的文本搜索字典                           |
+| postgres_fdw          | 1.0     | 远程 PostgreSQL 服务器的外部数据包装器                    |
+
+
+--------
+
+## PolarDB for Oracle [#polardb-for-oracle]
+
+还有 PolarDB 的第二个分支，即 [PolarDB for Oracle](https://www.alibabacloud.com/product/polardb-for-oracle)，它不是开源的。
+
+Pigsty Pro 支持将 PolarDB for Oracle 作为 RDS 运行。

@@ -1,0 +1,133 @@
+---
+title: 快速开始
+description: 安装、加载、创建、更新 PostgreSQL 扩展
+icon: Package
+---
+
+import {Step, Steps} from 'fumadocs-ui/components/steps';
+
+Pigsty 为 10 个主流 [Linux 发行版](/zh/prepare/linux)提供了无与伦比的 [**420+**](/zh/pgsql/extension) 扩展。
+
+--------
+
+## 概述 [#overview]
+
+交付扩展需要 4 个步骤：[**下载**](/zh/pgsql/extension/download)、[**安装**](/zh/pgsql/extension/install)、[**配置**](/zh/pgsql/extension/config)和[**创建**](/zh/pgsql/extension/create)：
+
+<Steps>
+    <Step>
+
+        [**下载**](#download-extension)：要下载哪些扩展包
+
+        ```yaml tab="config" title="定义要下载的扩展"
+        repo_extra_packages: [ postgis, timescaledb, vector ]
+        ```
+        ```bash tab="apply" title="下载包"
+        make repo
+        ```
+
+    </Step>
+    <Step>
+        [**安装**](#install-extension)：要安装哪些扩展
+
+        ```yaml tab="config"
+        pg_extensions: [ postgis, pgvector, timescaledb ]
+        ```
+        ```bash tab="apply"
+        ./pgsql.yml -t pg_ext     # 安装扩展
+        ```
+
+    </Step>
+
+    <Step>
+        [**加载**](#load-extension)：要预加载哪些扩展
+
+        ```yaml tab="config"
+        pg_libs: 'timescaledb, pg_stat_statements, auto_explain'  # 将扩展添加到预加载库（并非所有扩展都需要此操作）
+        ```
+        ```bash tab="apply" title="编辑现有集群配置并重新加载"
+        pg edit-config --force -p shared_preload_libraries='timescaledb, pg_stat_statements, auto_explain'
+        ```
+
+
+    </Step>
+    <Step>
+
+        [**创建**](#create-extension)：在[数据库](/zh/pgsql/db)中创建扩展
+
+        ```yaml tab="config"
+        pg_databases:
+        - { name: meta ,extensions: [ postgis, timescaledb, vector ] }
+        ```
+        ```sql tab="apply" title="在现有数据库中创建扩展"
+        CREATE EXTENSION postgis CASCADE;
+        ```
+    </Step>
+
+
+</Steps>
+
+--------
+
+## 快速开始 [#quick-start]
+
+您可以在[**配置清单**](/zh/config/inventory)中描述扩展，Pigsty 将为您下载、安装、配置和启用扩展。
+此示例使 `postgis`、`pgvector`、`timescaledb` 开箱即用：
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts: {10.10.10.10: { pg_seq: 1, pg_role: primary }}
+      vars:
+        pg_cluster: pg-meta
+        pg_databases: {name: meta, extensions: [ postgis, vector ]} # 创建（在数据库中）
+        pg_extensions: [ postgis, pgvector ]                        # 安装（在集群中）
+  vars:
+    repo_extra_packages: [ postgis, timescaledb, vector ]           # 下载（全局）
+```
+
+当您初始化此 PG 集群时，这些扩展将在 `pg-meta` 集群中为您提供。
+
+
+这里是一个更复杂的示例：启动 Postgres 并带有[自托管 supabase](/zh/app/supabase) 所需的扩展：
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_databases:
+          - name: postgres
+            baseline: supabase.sql
+            schemas: [ extensions ,auth ,realtime ,storage ,graphql_public ,supabase_functions ,_analytics ,_realtime ]
+            extensions:                                 # 在 postgres 数据库中启用的扩展
+              - { name: pgcrypto  ,schema: extensions } # 加密函数
+              - { name: pg_net    ,schema: extensions } # 异步 HTTP
+              - { name: pgjwt     ,schema: extensions } # PostgreSQL 的 JSON Web Token API
+              - { name: uuid-ossp ,schema: extensions } # 生成通用唯一标识符 (UUIDs)
+              - { name: pgsodium        }               # PostgreSQL 的现代密码学
+              - { name: supabase_vault  }               # Supabase Vault 扩展
+              - { name: pg_graphql      }               # GraphQL 支持
+              - { name: pg_jsonschema   }               # JSON 模式验证
+              - { name: wrappers        }               # 外部数据包装器集合
+              - { name: http            }               # 数据库内网页检索
+              - { name: pg_cron         }               # PostgreSQL 的作业调度器
+              - { name: timescaledb     }               # 时间序列数据支持
+              - { name: pg_tle          }               # PostgreSQL 的可信语言扩展
+              - { name: vector          }               # 向量相似性搜索
+              - { name: pgmq            }               # 轻量级消息队列
+        # supabase 加载所需扩展
+        pg_libs: 'timescaledb, plpgsql, plpgsql_check, pg_cron, pg_net, pg_stat_statements, auto_explain, pg_tle, plan_filter'
+        pg_parameters:
+          cron.database_name: postgres
+          pgsodium.enable_event_trigger: off
+  vars:
+    pg_version: 17
+    repo_extra_packages: [pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ]
+    pg_extensions:                  [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+```
+
+下载并安装了 PG 17 的所有可用扩展，并加载和启用了所需的扩展。

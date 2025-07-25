@@ -1,0 +1,65 @@
+---
+title: 更新
+description: 如何将 PostgreSQL 扩展更新到新版本
+icon: RefreshCcw
+---
+
+要更新现有扩展，您需要首先使用操作系统的包管理器更新 RPM/DEB 包，
+然后在 PostgreSQL 中使用 `ALTER EXTENSION ... UPDATE` 将扩展更改为新版本。
+
+您可以使用以下命令升级扩展包
+
+```bash tab="pig"
+pig ext update extname...
+```
+```bash tab="yum"
+yum upgrade extname...
+```
+```bash tab="apt"
+apt upgrade extname...
+```
+```bash tab="pigsty"
+./pgsql.yml -t pg_ext   # -l cls
+```
+
+在 [`pg_extensions`](/zh/pgsql/param#pg_extensions) 中列出的所有扩展将在 [`pgsql.yml`](/zh/pgsql/playbook#pgsqlyml) playbook 执行期间升级。
+
+
+
+------
+
+## 升级包 [#upgrade-packages]
+
+在 [`pg_extensions`](/zh/pgsql/param#pg_extensions) 中列出的扩展（[包别名](/zh/pgsql/extension/pkg)）将通过 [`pgsql.yml`](/zh/pgsql/admin/) 的 `pg_ext` 子任务升级：
+
+```bash title="~/pigsty"
+./pgsql.yml -t pg_ext
+```
+
+此 playbook 将自动安装您当前环境中可用的最新版本的扩展 RPM/DEB 包。
+（从构建的本地仓库或直接通过互联网）。
+您也可以直接使用 Linux 系统的 `yum/apt upgrade` 命令升级扩展，但您需要指定完整的包名称：
+
+```bash
+yum upgrade extname...
+apt upgrade extname...
+```
+
+Pigsty 的 [`pig`](https://ext.pgsty.com/pig/) CLI 也可以帮助您完成此操作，无需指定完整包名称的负担：
+
+```bash
+pig ext update extname|pkgalias
+```
+
+
+------
+
+## 更改扩展 [#alter-extension]
+
+执行 [`ALTER EXTENSION ... UPDATE`](https://www.postgresql.org/docs/current/sql-alterextension.html) SQL 命令将扩展更新到新版本：
+
+```sql
+ALTER EXTENSION name UPDATE [ TO new_version ]
+```
+
+如果省略 `TO new_version` 子句，扩展将更新到可用的最新版本。

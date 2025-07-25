@@ -1,0 +1,161 @@
+---
+title: 创建
+description: 创建和启用 PostgreSQL 扩展
+icon: PackageOpen
+---
+
+
+## 快速开始 [#quick-start]
+
+您可以使用 [**`CREATE EXTENSION`**](https://www.postgresql.org/docs/current/sql-createextension.html) 语句启用（创建）扩展：
+
+```sql tab="vector"
+CREATE EXTENSION vector; -- 无需显式加载
+```
+```sql tab="timescaledb"
+CREATE EXTENSION timescaledb; -- 需要显式加载
+```
+
+扩展需要首先[**安装**](/zh/pgsql/extension/install)，一些扩展还需要在使用前进行[**预加载**](/zh/pgsql/extension/config)。
+
+一些扩展依赖于其他扩展。
+在这种情况下，您可以先安装依赖项
+或使用 `CASCADE` 子句一次安装所有依赖项。
+
+```sql
+CREATE EXTENSION documentdb CASCADE; -- 创建 documentdb 扩展及其所有依赖项
+```
+
+您也可以使用 Pigsty 配置扩展，它会自动为您创建扩展。
+
+
+------
+
+## 配置 [#configure]
+
+扩展（数据库逻辑对象）在逻辑上是 [**PostgreSQL 数据库**](/zh/pgsql/db) 的一部分。
+在 Pigsty 中，您可以使用 [**`pg_databases`**](/zh/pgsql/param#pg_databases) 参数指定在数据库中创建哪些扩展。
+
+```yaml
+pg_databases:
+  - { name: meta ,extensions: [ vector, postgis, timescaledb ] }
+```
+
+但您可以使用 `object` 格式显式指定扩展详细信息，比如在特定模式中创建它们。
+或安装特定版本。这里是一个完整的示例（[自托管 supabase](/zh/app/supabase)）：
+
+```yaml
+pg_databases:
+  - name: postgres
+    baseline: supabase.sql
+    schemas: [ extensions ,auth ,realtime ,storage ,graphql_public ,supabase_functions ,_analytics ,_realtime ]
+    extensions:                                 # 在 postgres 数据库中启用的扩展
+      - { name: pgcrypto  ,schema: extensions } # 加密函数
+      - { name: pg_net    ,schema: extensions } # 异步 HTTP
+      - { name: pgjwt     ,schema: extensions } # postgres 的 json web token API
+      - { name: uuid-ossp ,schema: extensions } # 生成通用唯一标识符 (UUID)
+      - { name: pgsodium        }               # pgsodium 是 Postgres 的现代密码学库
+      - { name: supabase_vault  }               # Supabase Vault 扩展
+      - { name: pg_graphql      }               # pg_graphql：GraphQL 支持
+      - { name: pg_jsonschema   }               # pg_jsonschema：验证 json schema
+      - { name: wrappers        }               # wrappers：FDW 集合
+      - { name: http            }               # http：允许在数据库内检索网页
+      - { name: pg_cron         }               # pg_cron：PostgreSQL 的作业调度器
+      - { name: timescaledb     }               # timescaledb：为时间序列数据启用可扩展插入和复杂查询
+      - { name: pg_tle          }               # pg_tle：PostgreSQL 的受信任语言扩展
+      - { name: vector          }               # pgvector：向量相似性搜索
+      - { name: pgmq            }               # pgmq：类似 AWS SQS 和 RSMQ 的轻量级消息队列
+```
+
+--------
+
+## 定义扩展 [#define-extension]
+
+`extensions` 字段是要在数据库中创建的扩展（名称或对象）列表。
+它将在 dbsu 的 search_path 中的第一个模式下创建（通常是 `public` 模式）。
+
+这里，数据库对象中的 `extensions` 是一个列表，其中每个元素可以是：
+
+- 表示扩展名称的简单字符串，如 `vector`
+- 或者，可以使用包含以下字段的字典：
+  - `name`：扩展名称，**必需**，注意它可能与[**扩展包名称**](/zh/pgsql/extension/pkg)不同。
+  - `schema`：安装扩展的模式，**可选**，默认为当前 dbsu search_path 中的第一个模式，通常是默认的 `public`。
+  - `version`：指定扩展版本，**可选**，默认为最新版本，很少使用。
+
+如果数据库尚不存在，这里定义的扩展将在通过 Pigsty [**创建集群**](/zh/pgsql/admin#create-cluster)或[**创建数据库**](/zh/pgsql/admin#create-database)时自动创建。
+
+重新创建具有非平凡基线模式的数据库可能很危险（如果您在那里放置一些 `DROP`）
+因此，对于现有集群/数据库，建议使用您自己的模式迁移工具来管理扩展。（pgadmin、psql、bytebase、flyway、sqlitch...）
+但将它们列在[配置清单](/zh/config/inventory)中用于记录保存目的是有帮助的。（这样如果您想分叉这个集群，它包含这些扩展）
+
+
+
+------
+
+## 默认扩展 [#default-extension]
+
+Pigsty 默认创建一些内置扩展和一个特殊的 [`pg_repack`](https://ext.pgsty.com/e/pg_repack)。
+
+这些扩展由 [**`pg_default_extensions`**](/zh/pgsql/param#pg_default_extensions) 定义，默认在 `template1` 数据库和 `postgres` 数据库中创建。
+新创建的数据库将从 `template1` 继承这些扩展，因此您无需再次创建它们。
+
+```yaml
+pg_default_extensions:
+  - { name: pg_stat_statements ,schema: monitor }
+  - { name: pgstattuple        ,schema: monitor }
+  - { name: pg_buffercache     ,schema: monitor }
+  - { name: pageinspect        ,schema: monitor }
+  - { name: pg_prewarm         ,schema: monitor }
+  - { name: pg_visibility      ,schema: monitor }
+  - { name: pg_freespacemap    ,schema: monitor }
+  - { name: postgres_fdw       ,schema: public  }
+  - { name: file_fdw           ,schema: public  }
+  - { name: btree_gist         ,schema: public  }
+  - { name: btree_gin          ,schema: public  }
+  - { name: pg_trgm            ,schema: public  }
+  - { name: intagg             ,schema: public  }
+  - { name: intarray           ,schema: public  }
+  - { name: pg_repack } # <-- 默认创建的唯一第三方扩展
+```
+
+由 [`pg_default_schemas`](/zh/pgsql/param#pg_default_schemas) 定义的一个额外默认模式 `monitor` 也默认创建。
+它用于包含监控相关的扩展、表、函数和视图。
+
+在 Pigsty 中默认可用的有三个**第三方**扩展：
+
+|                    扩展                      | 作用                          | 位置                                                                                                                      |
+|:------------------------------------------------:|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| [`pg_repack`](https://ext.pgsty.com/e/pg_repack) | 在线膨胀控制工具               | 在 [`pg_default_extensions`](/zh/pgsql/param#pg_default_extensions) 中                                                    |
+|  [`wal2json`](https://ext.pgsty.com/e/wal2json)  | JSON 格式的变更数据捕获        | [无 DDL](https://ext.pgsty.com/list/attr#without-ddl) 扩展，[安装](/zh/pgsql/extension/install)意味着可用                |
+|    [`vector`](https://ext.pgsty.com/e/vector)    | 向量数据类型和索引             | 在 [`pg_databases`](/zh/pgsql/param#pg_databases) 中作为示例                                                              |
+
+[`pg_repack`](https://ext.pgsty.com/e/pg_repack) 扩展是在线维护膨胀表的重要工具。
+
+[**`vector`**](https://ext.pgsty.com/e/vector) 是用于 RAG 的非常流行的扩展，
+它默认[**安装**](/zh/pgsql/extension/install)（在 `pgsql-main` [别名](/zh/pgsql/extension/pkg)中）并在大多数[配置模板](/zh/config/template)的占位符 `meta` 数据库中创建。
+
+[`wal2json`](https://ext.pgsty.com/e/wal2json) 是用于变更数据捕获（CDC）的另一个重要扩展。它默认[安装](/zh/pgsql/extension/install)，但它是一个[**无 DDL 的扩展**](#extension-without-ddl)，
+因此您无需显式 `CREATE` 它。
+
+
+------
+
+## 无 DDL 扩展 [#extension-without-ddl]
+
+[无 DDL 扩展](https://ext.pgsty.com/list/attr#without-ddl)不需要 `CREATE EXTENSION` 命令即可工作
+
+PostgreSQL 扩展通常由三部分组成：必需的控制文件、可选的 SQL 文件和可选的库。
+如果扩展没有 SQL 文件，则不需要 `CREATE EXTENSION` 命令。
+
+| 组件     | 描述                                           | 必需     |
+|--------------|-------------------------------------------------------|:------------:|
+| 控制文件 | 关键元数据，名称、依赖项、模式、版本... | **必需** |
+| SQL 文件     | SQL DDL 语句、类型、函数等...          | **可选** |
+| 库文件 | 二进制共享库（`.so`、`.dylib`、`.dll`）     | **可选** |
+
+由于 SQL / LIB 文件是可选的，有四种可能的扩展类型组合：
+
+| **[LOAD](/zh/pgsql/extension/config) / DDL** | 需要 `CREATE EXTENSION` | 不需要 `CREATE EXTENSION` |
+|-------------------------------------------|-----------------------------|------------------------------------|
+| **需要 `LOAD`**                       | 使用钩子的扩展      | 无头扩展                |
+| **不需要 `LOAD`**                | 不使用钩子的扩展  | 逻辑解码输出插件    |

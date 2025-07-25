@@ -1,0 +1,55 @@
+---
+title: Percona
+description: 支持 TDE 的 Percona Postgres 发行版
+icon: Pyramid
+---
+
+
+[Percona Postgres](https://www.percona.com/postgresql/software/postgresql-distribution) 是一个带有 [`pg_tde`](https://docs.percona.com/pg-tde/index.html)（透明数据加密）扩展的补丁 Postgres 内核。
+
+它与 PostgreSQL 17.5 兼容，在所有支持的平台上都可用。
+
+- [Percona 透明数据加密（TDE）性能测试](https://andreas.scherbaum.la/post/2025-06-30_performance-test-for-percona-transparent-data-encryption-tde/)
+
+------
+
+## 快速开始 [#get-started]
+
+使用 [`pgtde`](https://github.com/pgsty/pigsty/blob/main/conf/pgtde.yml) 配置模板 [**安装**](/zh/install/start) Pigsty。
+
+```bash
+./configure -c pgtde     # 使用 percona postgres 内核
+./install.yml            # 使用 pigsty 设置一切
+```
+
+
+
+------
+
+## 配置 [#configure]
+
+需要调整以下参数来部署 PolarDB 集群：
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_users:
+      - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+      - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
+    pg_databases:
+      - name: meta
+        baseline: cmdb.sql
+        comment: pigsty tde database
+        schemas: [pigsty]
+        extensions: [ vector, postgis, pg_tde ,pgaudit, { name: pg_stat_monitor, schema: monitor } ]
+    pg_hba_rules:
+      - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+    node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # 每天凌晨 1 点进行全量备份
+
+    # Percona PostgreSQL TDE 临时设置
+    pg_packages: [ percona-main, pgsql-common ]  # 安装 percona postgres 包
+    pg_libs: 'pg_tde, pgaudit, pg_stat_statements, pg_stat_monitor, auto_explain'
+```

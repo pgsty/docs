@@ -1,27 +1,27 @@
 ---
-title: FAQ
+title: 答疑
 description: 常见问题解答
 icon: MessageCircleQuestion
 ---
 
-## 由于 postgres 存在而中止 [#abort-due-to-postgres-exists]
+## 因 postgres 存在而中止 [#abort-due-to-postgres-exists]
 
-当您在运行 postgres 的节点上运行 `pgsql.yml` 时会发生这种情况。
-如果有正在运行的 postgres 实例，您可以使用 `pgsql-rm.yml` playbook 显式删除它：
+当您在运行 PostgreSQL 的节点上运行 `pgsql.yml` 时会发生这种情况。
+如果有正在运行的 PostgreSQL 实例，您可以使用 `pgsql-rm.yml` 剧本显式移除它：
 
 ```bash
-./pgsql-rm.yml -l <cls_to_remove>    # 删除集群 'cls_to_remove'
+./pgsql-rm.yml -l <cls_to_remove>    # 移除集群 'cls_to_remove'
 ```
 
 ------
 
-## 由于启用了 pg_safeguard 而中止 [#abort-due-to-pg_safeguard-enabled]
+## 因启用 pg_safeguard 而中止 [#abort-due-to-pg_safeguard-enabled]
 
-> 禁用 `pg_safeguard` 以删除 Postgres 实例。
+> 禁用 `pg_safeguard` 以移除 PostgreSQL 实例。
 
-如果启用了 [`pg_safeguard`](/zh/pgsql/param#pg_safeguard)，您无法使用 `bin/pgsql-rm` 和 `pgsql-rm.yml` playbook 删除正在运行的 pgsql 实例。
+如果启用了 [`pg_safeguard`](/zh/pgsql/param#pg_safeguard)，您无法使用 `bin/pgsql-rm` 和 `pgsql-rm.yml` 剧本移除正在运行的 PostgreSQL 实例。
 
-要禁用 `pg_safeguard`，您可以在清单中将 `pg_safeguard` 设置为 `false`，或将 `-e pg_safeguard=false` 作为 CLI 参数传递给 playbook：
+要禁用 `pg_safeguard`，您可以在配置清单中将 `pg_safeguard` 设置为 `false`，或将 `-e pg_safeguard=false` 作为命令行参数传递给剧本：
 
 ```bash
 ./pgsql-rm.yml -e pg_safeguard=false -l <cls_to_remove>    # 强制覆盖 pg_safeguard
@@ -29,35 +29,35 @@ icon: MessageCircleQuestion
 
 ------
 
-## 等待 postgres/patroni 主实例失败 [#fail-to-wait-for-postgres-patroni-primary]
+## 等待 postgres/patroni 主库失败 [#fail-to-wait-for-postgres-patroni-primary]
 
-这个错误有几个可能的原因，您需要[检查](https://github.com/pgsty/pigsty/discussions/338)系统日志来确定实际原因。
+这个错误有几个可能的原因，您需要 [检查](https://github.com/pgsty/pigsty/discussions/338) 系统日志来确定实际原因。
 
-这通常发生在集群配置错误，或者之前的主实例被不当删除时。（例如，DCS 中存在相同集群名称的垃圾元数据）。
+这通常发生在集群配置错误，或者之前的主库被不当移除时（例如，DCS 中有相同集群名称的垃圾元数据）。
 
-您必须检查 `/pg/log/*` 来找出原因。
+您必须检查 `/pg/log/*` 以找到原因。
 
-要从 etcd 删除垃圾元数据，您可以使用 `etcdctl del --prefix /pg/<cls>`，请谨慎操作！
+要从 etcd 删除垃圾元数据，您可以使用 `etcdctl del --prefix /pg/<cls>`，操作时请谨慎！
 
-- 1：配置错误。识别错误的参数，修改它们，并应用更改。
+- 1：配置错误。识别不正确的参数，修改它们并应用更改。
 - 2：部署中已存在同名的另一个集群
-- 3：节点上的之前集群，或同名的之前集群没有正确删除。
-- 要删除过时的集群元数据，您可以使用 `etcdctl del --prefix /pg/<cls>` 手动删除残留数据。
-- 4：与您的 PostgreSQL 或节点相关的 RPM 包没有成功安装。
-- 5：您的 Watchdog 内核模块没有正确启用或加载，但它是必需的。
-- 6：指定的区域设置或字符类型 `pg_lc_collate` 和 `pg_lc_ctype` 在操作系统中不存在
+- 3：节点上的之前集群，或同名的之前集群未正确移除。
+- 要移除过时的集群元数据，您可以使用 `etcdctl del --prefix /pg/<cls>` 手动删除残留数据。
+- 4：与您的 PostgreSQL 或节点相关的 RPM 包未成功安装。
+- 5：您的 Watchdog 内核模块未正确启用或加载，但是必需的。
+- 6：指定的语言环境或字符类型 `pg_lc_collate` 和 `pg_lc_ctype` 在操作系统中不存在
 
-请随时提交问题或从社区寻求帮助。
+请随时提交问题或寻求社区帮助。
 
 ------
 
-## 等待 postgres/patroni 副本失败 [#fail-to-wait-for-postgres-patroni-replica]
+## 等待 postgres/patroni 从库失败 [#fail-to-wait-for-postgres-patroni-replica]
 
-**立即失败**：通常，这是由于配置错误、网络问题、损坏的 DCS 元数据等原因造成的...，您必须检查 `/pg/log` 以找出实际原因。
+**立即失败**：通常，这是由于配置错误、网络问题、DCS 元数据损坏等导致的，您必须检查 `/pg/log` 以找出实际原因。
 
-**一段时间后失败**：这可能是由于源实例数据损坏。查看 PGSQL FAQ：数据损坏时如何创建副本？
+**一段时间后失败**：这可能是由于源实例数据损坏。查看 PGSQL 常见问题：数据损坏时如何创建从库？
 
-**超时**：如果 `等待 postgres 副本` 任务耗时 30 分钟或更长时间并由于超时而失败，这对于巨大的集群（例如 1TB+，可能需要数小时来创建副本）是常见的。在这种情况下，底层创建副本过程仍在进行。您可以使用 `pg list <cls>` 检查集群状态，并等到副本赶上主实例。然后继续以下任务：
+**超时**：如果 `wait for postgres replica` 任务需要 30 分钟或更长时间并因超时而失败，这对于大型集群（例如 1TB+，可能需要数小时才能创建从库）是常见的。在这种情况下，底层创建从库过程仍在进行。您可以使用 `pg list <cls>` 检查集群状态，等待从库追上主库。然后继续以下任务：
 
 ```bash
 ./pgsql.yml -t pg_hba,pg_param,pg_backup,pgbouncer,pg_vip,pg_dns,pg_service,pg_exporter,pg_register -l <problematic_replica>
@@ -67,65 +67,65 @@ icon: MessageCircleQuestion
 
 ## 安装 PostgreSQL 13 - 17 [#install-postgresql-13-17]
 
-要安装 PostgreSQL 13 ~ 16，您必须在清单中将 `pg_version` 设置为 `13`、`14`、`15` 或 `16`。（通常在集群级别）
+要安装 PostgreSQL 13 ~ 16，您必须在配置清单中将 `pg_version` 设置为 `13`、`14`、`15` 或 `16`。（通常在集群级别）
 
 ```yaml
-pg_version: 16                    # 在此模板中安装 pg 16
+pg_version: 16                    # 在此模板中安装 PostgreSQL 16
 ```
 
 
 ------
 
-## 如何为 PostgreSQL 启用大页？ [#how-enable-hugepage-for-postgresql]
+## 如何为 PostgreSQL 启用大页面？ [#how-enable-hugepage-for-postgresql]
 
 > 使用 `node_hugepage_count` 和 `node_hugepage_ratio` 或 `/pg/bin/pg-tune-hugepage`
 
-如果您计划启用大页，请考虑使用 `node_hugepage_count` 和 `node_hugepage_ratio` 并使用 `./node.yml -t node_tune` 应用。
+如果您计划启用大页面，请考虑使用 `node_hugepage_count` 和 `node_hugepage_ratio` 并使用 `./node.yml -t node_tune` 应用。
 
-最好在 postgres 启动之前分配**足够**的大页，并使用 `pg_tune_hugepage` 稍后缩减它们。
+在 PostgreSQL 启动之前分配**足够的**大页面是好的做法，然后使用 `pg_tune_hugepage` 稍后缩减它们。
 
-如果您的 postgres 已经在运行，您可以使用 `/pg/bin/pg-tune-hugepage` 动态启用大页。请注意，这只在 PostgreSQL 15+ 上工作
+如果您的 PostgreSQL 已经在运行，您可以使用 `/pg/bin/pg-tune-hugepage` 即时启用大页面。请注意，这仅适用于 PostgreSQL 15+
 
 ```bash
-sync; echo 3 > /proc/sys/vm/drop_caches   # 清除系统缓存（准备好承受性能影响）
+sync; echo 3 > /proc/sys/vm/drop_caches   # 丢弃系统缓存（准备承受性能影响）
 sudo /pg/bin/pg-tune-hugepage             # 将 nr_hugepages 写入 /etc/sysctl.d/hugepage.conf
-pg restart <cls>                          # 重启 postgres 以使用大页
+pg restart <cls>                          # 重启 PostgreSQL 以使用大页面
 ```
 
 ------
 
 ## 如何在故障转移期间保证零数据丢失？ [#how-to-guarantee-zero-data-loss-during-failover]
 
-> 使用 `crit.yml` 模板，或设置 `pg_rpo` 为 `0`，或使用同步模式[配置集群](/zh/pgsql/admin#config-cluster)。
+> 使用 `crit.yml` 模板，或设置 `pg_rpo` 为 `0`，或使用同步模式 [配置集群](/zh/pgsql/admin#config-cluster)。
 
-考虑使用[同步备库](/zh/pgsql/config/#sync-standby)和[仲裁提交](/zh/pgsql/config/#quorum-commit)来保证故障转移期间的零数据丢失。
+考虑使用 [同步从库](/zh/pgsql/config/#sync-standby) 和 [法定人数提交](/zh/pgsql/config/#quorum-commit) 来保证故障转移期间 0 数据丢失。
 
 ------
 
-## 如何从磁盘满中幸存？ [#how-to-survive-from-disk-full]
+## 如何从磁盘满的情况中恢复？ [#how-to-survive-from-disk-full]
 
 > `rm -rf /pg/dummy` 将释放一些紧急空间。
 
 [`pg_dummy_filesize`](/zh/pgsql/param#pg_dummy_filesize) 默认设置为 `64MB`。考虑在生产环境中将其增加到 `8GB` 或更大。
 
-它将被放置在与 PGSQL 主数据磁盘相同的磁盘上的 `/pg/dummy`。您可以删除该文件以释放一些紧急空间。至少您可以在该节点上运行一些 shell 脚本。
+它将被放置在与 PGSQL 主数据磁盘相同的磁盘上的 `/pg/dummy` 中。您可以删除该文件以释放一些紧急空间。至少您可以在该节点上运行一些 shell 脚本。
 
 ------
 
-## 数据损坏时如何创建副本？ [#how-to-create-replicas-when-data-is-corrupted]
+## 数据损坏时如何创建从库？ [#how-to-create-replicas-when-data-is-corrupted]
 
 > 在坏实例上禁用 `clonefrom` 并重新加载 patroni 配置。
 
-Pigsty 在所有实例的 patroni 配置上设置 `cloneform: true` 标签，这标记实例可用于克隆副本。
+Pigsty 在所有实例的 patroni 配置上设置 `cloneform: true` 标签，这标记实例可用于克隆从库。
 
-如果此实例有损坏的数据文件，您可以设置 `clonefrom: false` 以避免从恶意实例拉取数据。为此：
+如果此实例有损坏的数据文件，您可以设置 `clonefrom: false` 以避免从有问题的实例拉取数据。具体操作如下：
 
 ```bash
 $ vi /pg/bin/patroni.yml
 
 tags:
   nofailover: false
-  clonefrom: true      # ----------> 更改为 false
+  clonefrom: true      # ----------> 改为 false
   noloadbalance: false
   nosync: false
   version:  '15'
@@ -137,20 +137,20 @@ $ systemctl reload patroni
 
 ------
 
-## 数据损坏时如何创建副本？ [#how-to-create-replicas-when-data-is-corrupted-1]
+## 数据损坏时如何创建从库？ [#how-to-create-replicas-when-data-is-corrupted-2]
 
 > 在坏实例上禁用 `clonefrom` 并重新加载 patroni 配置。
 
-Pigsty 在所有实例的 patroni 配置上设置 `cloneform: true` 标签，这标记实例可用于克隆副本。
+Pigsty 在所有实例的 patroni 配置上设置 `cloneform: true` 标签，这标记实例可用于克隆从库。
 
-如果此实例有损坏的数据文件，您可以设置 `clonefrom: false` 以避免从恶意实例拉取数据。为此：
+如果此实例有损坏的数据文件，您可以设置 `clonefrom: false` 以避免从有问题的实例拉取数据。具体操作如下：
 
 ```bash
 $ vi /pg/bin/patroni.yml
 
 tags:
   nofailover: false
-  clonefrom: true      # ----------> 更改为 false
+  clonefrom: true      # ----------> 改为 false
   noloadbalance: false
   nosync: false
   version:  '15'
@@ -164,26 +164,26 @@ $ systemctl reload patroni
 
 ## 监控导出器的性能影响 [#performance-impact-of-monitoring-exporter]
 
-不是很大，每 10 ~ 15 秒 200ms，不会影响数据库性能。
+影响不大，每 10 ~ 15 秒 200ms，不会影响数据库性能。
 
-Pigsty 中 prometheus 的默认抓取间隔是 10 秒，确保导出器可以在此期间内完成抓取。
+Pigsty 中 prometheus 的默认抓取间隔为 10 秒，确保导出器可以在该时间段内完成抓取。
 
 ------
 
 ## 如何监控现有的 PostgreSQL 实例？ [#how-to-monitor-an-existing-postgresql-instance]
 
-查看 [PGSQL 监控](/zh/pgsql/monitor/) 了解详情。
+详情请查看 [PGSQL 监控](/zh/pgsql/monitor/)。
 
 ------
 
-## 如何从 prometheus 中删除监控目标？ [#how-to-remove-monitor-targets-from-prometheus]
+## 如何从 prometheus 中移除监控目标？ [#how-to-remove-monitor-targets-from-prometheus]
 
 ```bash
-./pgsql-rm.yml -t prometheus -l <cls>     # 删除集群 'cls' 的 prometheus 目标
+./pgsql-rm.yml -t prometheus -l <cls>     # 移除集群 'cls' 的 prometheus 目标
 ```
 
 或者
 
 ```bash
-bin/pgmon-rm <ins>     # 删除 pgsql 实例 'ins' 的 prometheus 目标的快捷方式
+bin/pgmon-rm <ins>     # 移除 PostgreSQL 实例 'ins' 的 prometheus 目标的快捷方式
 ```

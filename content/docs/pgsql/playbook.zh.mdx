@@ -1,6 +1,6 @@
 ---
-title: Playbook
-description: 控制原语
+title: 剧本
+description: Pigsty 提供的 Ansible 剧本
 icon: ScrollText
 ---
 
@@ -10,8 +10,9 @@ Pigsty 有一系列 PostgreSQL playbook：
 
 - [`pgsql.yml`](/zh/pgsql/playbook/#pgsqlyml)：初始化 HA PostgreSQL 集群或添加新副本。
 - [`pgsql-rm.yml`](/zh/pgsql/playbook/#pgsql-rmyml)：删除 PostgreSQL 集群，或删除副本
-- [`pgsql-user.yml`](/zh/pgsql/playbook/#pgsql-useryml)：向现有 PostgreSQL 集群添加新业务用户
 - [`pgsql-db.yml`](/zh/pgsql/playbook/#pgsql-dbyml)：向现有 PostgreSQL 集群添加新业务数据库
+- [`pgsql-user.yml`](/zh/pgsql/playbook/#pgsql-useryml)：向现有 PostgreSQL 集群添加新业务用户
+- [`pgsql-pitr.yml`](/zh/pgsql/playbook/#pgsql-pitryml)：将一个 PostgreSQL 回滚至特定时间点
 - [`pgsql-monitor.yml`](/zh/pgsql/playbook/#pgsql-monitoryml)：使用本地导出器监控远程 PostgreSQL 实例
 - [`pgsql-migration.yml`](/zh/pgsql/playbook/#pgsql-migrationyml)：为现有 PostgreSQL 生成迁移手册和脚本
 
@@ -62,7 +63,6 @@ pg_bootstrap            : # 引导 postgres 集群
   - pg_config           : # 生成 postgres 配置
     - pg_conf           : # 生成 patroni 配置
     - pg_key            : # 生成 pgsodium 密钥
-    - pg_pitr_conf      : # 生成可选的 pitr 配置
   - pg_cert             : # 为 postgres 颁发证书
     - pg_cert_private   : # 检查 pg 私钥是否存在
     - pg_cert_issue     : # 签署 pg 服务器证书
@@ -217,40 +217,49 @@ pg_pkg                   : # 卸载 pg 包（使用 `pg_rm_pkg=false` 禁用）
 </Callout>
 
 
-
-
-
-
 - 删除副本时，它仍然在 haproxy 负载均衡器的配置文件中。
 
-------
 
-## `pgsql-user.yml` [#pgsql-useryml]
-
-playbook [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) 可以向现有 PostgreSQL 集群添加新业务用户。
-
-查看管理 SOP：[`创建用户`](/zh/pgsql/admin#create-user)
 
 ------
 
 ## `pgsql-db.yml` [#pgsql-dbyml]
 
-playbook [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) 可以向现有 PostgreSQL 集群添加新业务数据库。
+剧本 [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) 可以向现有 PostgreSQL 集群添加新业务数据库。
 
-查看管理 SOP：[`创建数据库`](/zh/pgsql/admin#create-database)
+查看管理 SOP：[**创建数据库**](/zh/pgsql/admin#create-database)
+
+
+------
+
+## `pgsql-user.yml` [#pgsql-useryml]
+
+剧本 [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) 可以向现有 PostgreSQL 集群添加新业务用户。
+
+查看管理 SOP：[**创建用户**](/zh/pgsql/admin#create-user)
+
+------
+
+## `pgsql-pitr.yml` [#pgsql-pitryml]
+
+剧本 [`pgsql-pitr.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-pitr.yml) 可以向现有 PostgreSQL 集群添加新业务用户。
+
+查看管理 SOP：[**时间点恢复**](/zh/pgsql/backup/restore)
+
 
 ------
 
 ## `pgsql-monitor.yml` [#pgsql-monitoryml]
 
-playbook [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml) 可以使用本地导出器监控远程 postgres 实例。
+剧本 [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml) 可以将现有/远程 postgres / RDS 实例纳入监控。
 
-查看管理 SOP：[`监控 Postgres`](/zh/pgsql/monitor/#monitor-rds)
+查看管理 SOP：[监控 Postgres](/zh/pgsql/monitor/#monitor-rds)
+
 
 ------
 
 ## `pgsql-migration.yml` [#pgsql-migrationyml]
 
-playbook [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) 可以为现有 PostgreSQL 集群生成迁移手册和脚本。
+剧本 [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) 可以为现有 PostgreSQL 集群生成迁移手册和脚本。
 
-查看管理 SOP：[迁移](/zh/pgsql/migration/)
+查看管理 SOP：[数据库迁移](/zh/pgsql/migration/)

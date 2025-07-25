@@ -1,0 +1,72 @@
+---
+title: IvorySQL
+description: 具有 Oracle（语法）兼容性的 PostgreSQL 分支
+icon: Target
+---
+
+
+[IvorySQL](https://www.ivorysql.org/) 是一个开源的"Oracle 兼容"PostgreSQL 内核，由 [**HighGo**](https://www.highgo.com/) 开发，采用 Apache 2.0 许可证。
+
+这里的 Oracle 兼容性是指在 PL/SQL、语法、内置函数、数据类型、系统视图、MERGE 和 GUC 参数级别的兼容性。它不是像 [**Babelfish**](/zh/pgsql/kernel/babelfish)、[**openHalo**](/zh/pgsql/kernel/openhalo/) 或 [**FerretDB**](/zh/ferret/) 那样的线协议兼容性，不能使用原始客户端驱动程序。用户仍需要使用 PostgreSQL 客户端工具访问 IvorySQL，但可以使用 Oracle 兼容的语法。
+
+
+目前，IvorySQL 的最新版本 **4.4** 与 PostgreSQL 的最新次要版本 17.4 保持兼容，并为主流 Linux 发行版提供二进制 RPM/DEB 包。Pigsty 提供了在 PG RDS 中用 IvorySQL 内核替换原生 PostgreSQL 的选项。
+
+------
+
+## 快速开始 [#quick-start]
+
+使用标准流程以 [`ivory`](https://github.com/pgsty/pigsty/blob/main/conf/ivory.yml) 配置模板 [**安装**](/zh/install/start) Pigsty：
+
+```bash
+./configure -c ivory     # 使用 IvorySQL 配置模板
+./install.yml            # 运行安装剧本
+```
+
+对于生产部署，您应该编辑自动生成的 `pigsty.yml` 配置文件，在执行 `./install.yml` 进行部署之前修改密码等参数。
+
+
+最新的 IvorySQL 4.5 等价于 PostgreSQL 17.5。任何与 PostgreSQL 线协议兼容的客户端工具都可以访问 IvorySQL 集群。
+
+默认情况下，您可以使用 PostgreSQL 客户端通过替代的 `1521` 端口访问，该端口默认启用 Oracle 兼容模式。
+
+
+------
+
+## 配置说明 [#configuration-instructions]
+
+要在 Pigsty 中使用 IvorySQL 内核，请修改以下四个配置参数：
+
+- [`pg_mode`](/zh/pgsql/param/#pg_mode)：使用 `ivory` 兼容模式
+- [`repo_extra_packages`](/zh/pgsql/param/#pg_mode)：下载 `ivorysql` 包
+- [`pg_packages`](/zh/pgsql/param/#pg_mode)：安装 `ivorysql` 包
+- [`pg_libs`](/zh/pgsql/param/#pg_mode)：加载 Oracle 语法兼容性扩展
+
+就这么简单——只需在配置文件的全局变量中添加这四行，Pigsty 就会用 IvorySQL 替换原生 PostgreSQL 内核：
+
+```yaml
+pg_mode: ivory                           # IvorySQL 兼容模式，使用 IvorySQL 二进制文件
+pg_packages: [ ivorysql, pgsql-common ]  # 安装 ivorysql，替换 pgsql-main 内核
+pg_libs: 'liboracle_parser, pg_stat_statements, auto_explain'  # 加载 Oracle 兼容性扩展
+repo_extra_packages: [ ivorysql ]        # 下载 ivorysql 包
+```
+
+IvorySQL 还提供了一系列[新的 GUC 参数](https://docs.ivorysql.org/cn/ivorysql-doc/v4.4/v4.4/15#新增变量目前)，可以在 [`pg_parameters`](/zh/pgsql/param/#pg_parameters) 中指定。
+
+------
+
+## 扩展 [#extensions]
+
+**PGSQL** 模块的大多数[**扩展**](/zh/pgsql/extension/)（非 SQL 类）不能直接在 IvorySQL 内核上使用。
+如果您需要使用它们，您需要为新内核从源代码重新编译和安装。
+
+
+------
+
+## 注意事项 [#caveats]
+
+- IvorySQL 软件包位于 `pigsty-infra` 仓库中，而不在 `pigsty-pgsql` 或 `pigsty-ivory` 仓库中。
+- IvorySQL 4.4 的默认 FHS 已更改，请注意从旧版本升级的用户。
+- IvorySQL 4.4 需要 gibc 版本 >= 2.17，目前由 Pigsty 支持。
+- 支持 EL7 的最后一个 IvorySQL 版本是 3.3，对应 PostgreSQL 16.3，IvorySQL 4.x 不再支持 EL7。
+- Pigsty 不为使用 IvorySQL 内核承担任何保证，任何问题或请求应联系制造商。

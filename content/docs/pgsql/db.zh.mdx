@@ -1,16 +1,16 @@
 ---
 title: 数据库
-description: 在此上下文中，数据库是指通过 SQL `CREATE DATABASE` 创建的对象。
+description: 在此上下文中，数据库是指由 SQL `CREATE DATABASE` 创建的对象。
 icon: Database
 ---
 
-PostgreSQL 服务器可以同时服务多个数据库。您可以使用 Pigsty 管理它们。
+一个 PostgreSQL 服务器可以同时服务多个数据库。您可以使用 Pigsty 来管理它们。
 
 ------
 
 ## 定义数据库 [#define-database]
 
-业务数据库由 [`pg_databases`](/zh/pgsql/param#pg_databases) 定义，这是一个集群级别的参数。
+业务数据库由 [`pg_databases`](/zh/pgsql/param#pg_databases) 定义，这是一个集群级参数。
 
 例如，默认的 `meta` 数据库在 `pg-meta` 集群中定义：
 
@@ -29,41 +29,41 @@ pg-meta:
       - { name: noco     ,owner: dbuser_noco     ,revokeconn: true ,comment: nocodb database }
 ```
 
-每个数据库定义是一个具有以下字段的字典：
+每个数据库定义是一个包含以下字段的字典：
 
 ```yaml
-- name: meta                      # 必填，`name` 是数据库定义的唯一必填字段
-  baseline: cmdb.sql              # 可选，数据库 SQL 基线路径，（ansible 搜索路径中的相对路径，例如 files/）
-  pgbouncer: true                 # 可选，将此数据库添加到 pgbouncer 数据库列表吗？默认为 true
+- name: meta                      # 必需，`name` 是数据库定义的唯一必需字段
+  baseline: cmdb.sql              # 可选，数据库 SQL 基线路径（ansible 搜索路径中的相对路径，例如 files/）
+  pgbouncer: true                 # 可选，将此数据库添加到 pgbouncer 数据库列表？默认为 true
   schemas: [pigsty]               # 可选，要创建的额外模式，模式名称数组
   extensions:                     # 可选，要安装的额外扩展：`{name[,schema]}` 数组
     - { name: postgis , schema: public }
     - { name: timescaledb }
   comment: pigsty meta database   # 可选，此数据库的注释字符串
-  owner: postgres                 # 可选，数据库所有者，默认为 postgres
+  owner: postgres                 # 可选，数据库拥有者，默认为 postgres
   template: template1             # 可选，使用哪个模板，默认为 template1
-  encoding: UTF8                  # 可选，数据库编码，默认为 UTF8。（必须与模板数据库相同）
-  locale: C                       # 可选，数据库区域设置，默认为 C。（必须与模板数据库相同）
-  lc_collate: C                   # 可选，数据库排序规则，默认为 C。（必须与模板数据库相同）
-  lc_ctype: C                     # 可选，数据库字符类型，默认为 C。（必须与模板数据库相同）
-  tablespace: pg_default          # 可选，默认表空间，默认为 'pg_default'。
+  encoding: UTF8                  # 可选，数据库编码，默认为 UTF8（必须与模板数据库相同）
+  locale: C                       # 可选，数据库区域设置，默认为 C（必须与模板数据库相同）
+  lc_collate: C                   # 可选，数据库排序规则，默认为 C（必须与模板数据库相同）
+  lc_ctype: C                     # 可选，数据库字符分类，默认为 C（必须与模板数据库相同）
+  tablespace: pg_default          # 可选，默认表空间，默认为 'pg_default'
   allowconn: true                 # 可选，允许连接，默认为 true。false 将完全禁用连接
-  revokeconn: false               # 可选，撤销公共连接权限。默认为 false。（为所有者保留带授权选项的连接权限）
-  register_datasource: true       # 可选，将此数据库注册到 grafana 数据源吗？默认为 true
+  revokeconn: false               # 可选，撤销公共连接权限。默认为 false（将连接权限留给拥有者并授予授权选项）
+  register_datasource: true       # 可选，将此数据库注册到 grafana 数据源？默认为 true
   connlimit: -1                   # 可选，数据库连接限制，默认 -1 禁用限制
-  pool_auth_user: dbuser_meta     # 可选，所有到此 pgbouncer 数据库的连接都将通过此用户进行身份验证
-  pool_mode: transaction          # 可选，数据库级别的 pgbouncer 池模式，默认 transaction
-  pool_size: 64                   # 可选，数据库级别的 pgbouncer 池大小，默认 64
-  pool_size_reserve: 32           # 可选，数据库级别的 pgbouncer 池保留大小，默认 32
-  pool_size_min: 0                # 可选，数据库级别的 pgbouncer 池最小大小，默认 0
-  pool_max_db_conn: 100           # 可选，数据库级别的最大数据库连接数，默认 100
+  pool_auth_user: dbuser_meta     # 可选，所有到此 pgbouncer 数据库的连接都将由此用户认证
+  pool_mode: transaction          # 可选，数据库级别的 pgbouncer 池模式，默认为 transaction
+  pool_size: 64                   # 可选，数据库级别的 pgbouncer 池大小，默认为 64
+  pool_size_reserve: 32           # 可选，数据库级别的 pgbouncer 池保留大小，默认为 32
+  pool_size_min: 0                # 可选，数据库级别的 pgbouncer 池最小大小，默认为 0
+  pool_max_db_conn: 100           # 可选，数据库级别的最大数据库连接数，默认为 100
 ```
 
-唯一必填字段是 `name`，它应该是 PostgreSQL 中有效且唯一的数据库名称。
+唯一必需的字段是 `name`，它应该是 PostgreSQL 中有效且唯一的数据库名称。
 
-新创建的数据库默认从 `template1` 数据库派生。该模板在集群引导期间由 [`PG_PROVISION`](/zh/pgsql/param#pg_provision) 定制。
+新创建的数据库默认从 `template1` 数据库分叉。该模板在集群引导期间由 [`PG_PROVISION`](/zh/pgsql/param#pg_provision) 自定义。
 
-有关数据库级别权限的详细信息，请查看 [ACL：数据库权限](/zh/pgsql/acl#database-privilege)。
+有关数据库级权限的详细信息，请查看 [ACL：数据库权限](/zh/pgsql/acl#database-privilege)。
 
 
 
@@ -71,36 +71,36 @@ pg-meta:
 
 ## 创建数据库 [#create-database]
 
-在 [`pg_databases`](/zh/pgsql/param#pg_databases) 中[定义](#define-database)的数据库将在模块安装期间自动创建。
-如果您希望在现有集群上[创建数据库](/zh/pgsql/admin#create-database)，可以使用 `bin/pgsql-db` 工具。
+在 [`pg_databases`](/zh/pgsql/param#pg_databases) 中 [定义](#define-database) 的数据库将在模块安装期间自动创建。
+如果您希望在现有集群上 [创建数据库](/zh/pgsql/admin#create-database)，可以使用 `bin/pgsql-db` 工具。
 
-将新的数据库定义添加到 `all.children.<cls>.pg_databases`，并使用以下命令创建该数据库：
+将新的数据库定义添加到 `all.children.<cls>.pg_databases`，然后使用以下命令创建该数据库：
 
 ```bash tab="utils"
 bin/pgsql-db <cls> <dbname>    # bin 工具脚本
 bin/pgsql-db pg-meta meta      # 示例：在 pg-meta 集群中创建 meta 数据库
 ```
 ```bash tab="playbook"
-./pgsql-db.yml -l <cls> -e dbname=<dbname>    # 实际的 playbook
+./pgsql-db.yml -l <cls> -e dbname=<dbname>    # 实际的剧本
 ./pgsql-db.yml -l pg-meta -e dbname=meta      # 示例：在 pg-meta 集群中创建 meta 数据库
 ```
 
-此 playbook 通常是幂等的，可以安全地重复运行以刷新数据库定义。
-但如果您有复杂的 `baseline` 模式（如删除操作），您**不应该**在现有数据库上重新运行此操作。
+此剧本通常是幂等的，可以重新运行以刷新数据库定义。
+但如果您有复杂的 `baseline` 模式（如删除操作），则**不应**在现有数据库上重新运行此剧本。
 
-<Callout title="使用 Pigsty 创建 PostgreSQL 数据库" type="warn">
+<Callout title="使用 pigsty 创建 postgres 数据库" type="warn">
 
-    Pigsty 将管理 [pgbouncer 数据库列表](#pgbouncer-database)，因此请使用 Pigsty playbook/工具创建业务数据库。
-    查看[创建数据库](/zh/pgsql/admin#create-database) SOP 了解详情。
-    如果您没有使用 pgbouncer 或能够自己维护它，您可以以任何方式创建数据库。
+    Pigsty 将管理 [pgbouncer 数据库列表](#pgbouncer-database)，因此请使用 Pigsty 剧本/工具创建业务数据库。
+    详情请查看 [创建数据库](/zh/pgsql/admin#create-database) 标准操作程序。
+    如果您不使用 pgbouncer 或能够自己维护它，可以使用任何方式创建数据库。
 
 </Callout>
 
 
-<Callout title="在创建数据库之前创建所有者" type="warn">
+<Callout title="创建数据库前先创建拥有者" type="warn">
 
-    如果您的数据库有非默认的 `owner`（默认为 dbsu `postgres`），请确保在创建数据库之前所有者用户存在。
-    简而言之，始终在创建数据库之前[创建](/zh/pgsql/admin#create-user)[用户](/zh/pgsql/user)。
+    如果您的数据库有非默认的 `owner`（默认为数据库超级用户 `postgres`），请确保拥有者用户在创建数据库之前已存在。
+    简而言之，始终在创建数据库之前 [创建](/zh/pgsql/admin#create-user) [用户](/zh/pgsql/user)。
 
 </Callout>
 
@@ -111,14 +111,14 @@ bin/pgsql-db pg-meta meta      # 示例：在 pg-meta 集群中创建 meta 数�
 
 ## Pgbouncer 数据库 [#pgbouncer-database]
 
-Pgbouncer 默认启用并用作连接池中间件。
+Pgbouncer 默认启用并充当连接池中间件。
 
-Pigsty 默认会将 [`pg_databases`](/zh/pgsql/param#pg_databases) 中的所有数据库添加到 pgbouncer 数据库列表中。
-您可以通过在数据库[定义](#define-database)中设置 `pgbouncer: false` 来禁用特定数据库的 pgbouncer 代理。
+Pigsty 默认将 [`pg_databases`](/zh/pgsql/param#pg_databases) 中的所有数据库添加到 pgbouncer 数据库列表。
+您可以通过在数据库 [定义](#define-database) 中设置 `pgbouncer: false` 来禁用特定数据库的 pgbouncer 代理。
 
 
-当使用 Pigsty 工具和 playbook [创建数据库](#create-database) 时，Pgbouncer 数据库列表将被更新。
-数据库列在 `/etc/pgbouncer/database.txt` 中，包含额外的数据库级别参数：
+使用 Pigsty 工具和剧本 [创建数据库](#create-database) 时，Pgbouncer 数据库列表将被更新。
+数据库在 `/etc/pgbouncer/database.txt` 中列出，带有额外的数据库级参数：
 
 ```ini title="/etc/pgbouncer/database.txt"
 meta     = host=/var/run/postgresql mode=session
@@ -131,18 +131,18 @@ noco     = host=/var/run/postgresql
 mongo    = host=/var/run/postgresql
 ```
 
-当您[创建数据库](/zh/pgsql/db#create-database)时，Pgbouncer 数据库列表定义文件将被刷新并通过在线配置重新加载生效，不会影响现有连接。
+当您 [创建数据库](/zh/pgsql/db#create-database) 时，Pgbouncer 数据库列表定义文件将被刷新并通过在线配置重载生效，不会影响现有连接。
 
 
-要访问 pgbouncer 管理功能，您可以使用 `pgb` 别名作为 dbsu (`postgres`)。
-查看 [pgbouncer 使用说明](https://www.pgbouncer.org/usage.html) 了解可用命令：
+要访问 pgbouncer 管理功能，您可以以数据库超级用户（`postgres`）身份使用 `pgb` 别名。
+查看 [pgbouncer 使用方法](https://www.pgbouncer.org/usage.html) 了解可用命令：
 
 ```bash title="postgres"
-sudo su - postgres  # 切换到 postgres dbsu
+sudo su - postgres  # 切换到 postgres 数据库超级用户
 pgb                 # 访问 pgbouncer 管理虚拟数据库
 ```
 
-在 `/etc/profile.d/pg-alias.sh` 中定义了一个工具函数，允许您快速将 pgbouncer 数据库流量重新路由到新主机，这可以在零宕机迁移期间使用。
+在 `/etc/profile.d/pg-alias.sh` 中定义了一个工具函数，允许您快速将 pgbouncer 数据库流量重新路由到新主机，可用于零停机时间迁移。
 
 ```bash title="/etc/profile.d/pg-alias.sh"
 # 将 pgbouncer 流量路由到另一个集群成员
