@@ -1,0 +1,152 @@
+---
+title: Pigsty v3.5
+description: Pigsty v3.5 发布注记与特性介绍
+icon: ClipboardList
+---
+
+
+
+## v3.5.0
+
+### 亮点特性
+
+- 支持 PG 18 (Beta)，扩展更新，总数达到 421 个
+- OrioleDB 与 OpenHalo 内核在全平台上可用
+- 可使用 `pig do` 子命令代替 `bin` 脚本
+- Supabase 自建加强，解决若干遗留问题，例如复制延迟与密钥分发
+- 代码重构与架构优化，优化了 Postgres 与 Pgbouncer 默认参数
+- 更新了 Grafana 12, pg_exporter 1.0 与相关插件，翻修面板
+
+```bash
+curl https://repo.pigsty.cc/get | bash -s v3.5.0
+```
+
+### 主要改进
+
+- 支持 PostgreSQL 18
+- 通过 pg_exporter 1.0.0 支持 PG18 监控指标
+- 通过 pig 0.4.1 支持 PG18 安装 Alias。
+- 提供 `pg18` 配置模板
+- 重构 `pgsql` 模块
+- PGSQL 重构，将 PG 监控抽离为单独的 `pg_monitor` 角色，移除 `clean` 逻辑
+- 去除冗余重复的任务，合并同类项，精简配置。移除 `dir/utils` 任务块
+- 所有扩展默认安装至 `extensions` 模式中（与 supabase 安全实践保持一致）
+- 重命名模板文件，移除所有 `.j2` 后缀
+- 为所有模板中的 `monitor` 函数添加 `SET` 命令清空 `search_path`，遵循 Supabase 安全最佳实践。
+- 调整 pgbouncer 默认参数，增大默认链接池大小，设置链接池清理查询。
+- 新增参数 `pgbouncer_ignore_param` ，允许配置 pgbouncer 忽略的参数列表
+- 新增任务 `pg_key` 用于生成 `pgsodium` 所需的服务端密钥
+- 针对 PG 17 默认启用 `sync_replication_slots`
+- 重新调整了子任务标签，使其更符合配置小节的拆分逻辑
+- 重构 `pg_remove` 模块
+- 重命名参数：`pg_rm_data`, `pg_rm_bkup`, `pg_rm_pkg` 用于控制删除的内容
+- 重新调整角色代码结构，使用更清楚的标签进行划分
+- 新增 `pg_monitor` 模块
+- `pgbouncer_exporter` 现在不再和 `pg_exporter` 共享配置文件
+- 新增了 TimescaleDB， Citus，pg_wait_event 的监控指标。
+- 使用 `pg_exporter` 1.0.0 ，更新了 PG16/17/18 相关监控指标。
+- 使用更为紧凑，全新设计的指标收集器配置文件。
+- Supabase 加强 (感谢来自 [@lawso017](https://github.com/lawso017) 的贡献！)
+- 将 Supabase 容器镜像与数据库模式更新至最新版本
+- 现在默认支持 `pgsodium` 服务端密钥加载
+- 通过 supa-kick 定时任务解决 logflare 无法及时更新复制进度的问题
+- 为 monitor 模式中的函数添加 `set search_path` 子句以遵循安全最佳实践
+- CLI 新增 `pig do` 命令，允许通过命令行工具替代 `bin/` 中的 Shell 脚本
+- 监控系统更新
+- 更新 Grafana 大版本至 12.0.0，更新相关插件/数据源软件包
+- 更新 Postgres 数据源 uid 命名方式（以适应新的 `uid` 长度限制与字符限制）
+- 新增了 Static Datasource
+- 更新了现有 Dashboard，修复若干遗留问题
+
+**基础设施软件包更新**
+
+- pig 0.4.2
+- duckdb 1.3.0
+- etcd 3.6.0
+- vector 0.47.0
+- minio 20250422221226
+- mcli 20250416181326
+- pev 1.5.0
+- rclone 1.69.3
+- mtail 3.0.8 (new)
+
+### 可观测性软件包更新
+
+- grafana 12.0.0
+- grafana-victorialogs-ds 0.16.3
+- grafana-victoriametrics-ds 0.15.1
+- grafana-infinity-ds 3.2.1
+- grafana_plugins 12.0.0
+- prometheus 3.4.0
+- pushgateway 1.11.1
+- nginx_exporter 1.4.2
+- pg_exporter [1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0)
+- pgbackrest_exporter 0.20.0
+- redis_exporter 1.72.1
+- keepalived_exporter 1.6.2
+- victoriametrics 1.117.1
+- victoria_logs 1.22.2
+
+### 数据库软件包更新
+
+- PostgreSQL 17.5, 16.9, 15.13, 14.18, 13.21
+- PostgreSQL 18beta1 支持
+- pgbouncer 1.24.1
+- pgbackrest 2.55
+- pgbadger 13.1
+
+### PG扩展包更新
+
+- spat [0.1.0a4](https://github.com/Florents-Tselai/spat) 新扩展
+- pgsentinel [1.1.0](https://github.com/pgsentinel/pgsentinel/releases/tag/v1.1.0) 新扩展
+- pgdd [0.6.0](https://github.com/rustprooflabs/pgdd) (pgrx 0.14.1) 新扩展
+- convert [0.0.4](https://github.com/rustprooflabs/convert) (pgrx 0.14.1) 新扩展
+- pg_tokenizer.rs [0.1.0](https://github.com/tensorchord/pg_tokenizer.rs) (pgrx 0.13.1)
+- pg_render [0.1.2](https://github.com/mkaski/pg_render) (pgrx 0.12.8)
+- pgx_ulid [0.2.0](https://github.com/pksunkara/pgx_ulid) (pgrx 0.12.7)
+- pg_idkit [0.3.0](https://github.com/VADOSWARE/pg_idkit) (pgrx 0.14.1)
+- pg_ivm [1.11.0](https://github.com/sraoss/pg_ivm)
+- orioledb [1.4.0 beta11](https://github.com/orioledb/orioledb) 新增 debian/ubuntu 支持
+- openhalo [14.10](https://github.com/HaloTech-Co-Ltd/openHalo) 新增 debian/ubuntu 支持
+- omnigres 20250507 (在 d12/u22 编译最新版本失败)
+- citus [12.0.3](https://github.com/citusdata/citus/releases/tag/v13.0.3)
+- timescaledb [2.20.0](https://github.com/timescale/timescaledb/releases/tag/2.20.0) (移除 PG14 支持)
+- supautils [2.9.2](https://github.com/supabase/supautils/releases/tag/v2.9.2)
+- pg_envvar [1.0.1](https://github.com/theory/pg-envvar/releases/tag/v1.0.1)
+- pgcollection [1.0.0](https://github.com/aws/pgcollection/releases/tag/v1.0.0)
+- aggs_for_vecs [1.4.0](https://github.com/pjungwir/aggs_for_vecs/releases/tag/1.4.0)
+- pg_tracing [0.1.3](https://github.com/DataDog/pg_tracing/releases/tag/v0.1.3)
+- pgmq [1.5.1](https://github.com/pgmq/pgmq/releases/tag/v1.5.1)
+- tzf-pg [0.2.0](https://github.com/ringsaturn/tzf-pg/releases/tag/v0.2.0) (pgrx 0.14.1)
+- pg_search [0.15.18](https://github.com/paradedb/paradedb/releases/tag/v0.15.18) (pgrx 0.14.1)
+- anon [2.1.1](https://gitlab.com/dalibo/postgresql_anonymizer/-/tree/latest/debian?ref_type=heads) (pgrx 0.14.1)
+- pg_parquet [0.4.0](https://github.com/CrunchyData/pg_parquet/releases/tag/v0.3.2) (0.14.1)
+- pg_cardano [1.0.5](https://github.com/Fell-x27/pg_cardano/commits/master/) (pgrx 0.12) -> 0.14.1
+- pglite_fusion [0.0.5](https://github.com/frectonz/pglite-fusion/releases/tag/v0.0.5) (pgrx 0.12.8) -> 14.1
+- vchord_bm25 [0.2.1](https://github.com/tensorchord/VectorChord-bm25/releases/tag/0.2.1) (pgrx 0.13.1)
+- vchord [0.3.0](https://github.com/tensorchord/VectorChord/releases/tag/0.3.0) (pgrx 0.13.1)
+- pg_vectorize [0.22.1](https://github.com/ChuckHend/pg_vectorize/releases/tag/v0.22.1) (pgrx 0.13.1)
+- wrappers [0.4.6](https://github.com/supabase/wrappers/releases/tag/v0.4.6) (pgrx 0.12.9)
+- timescaledb-toolkit [1.21.0](https://github.com/timescale/timescaledb-toolkit/releases/tag/1.21.0) (pgrx 0.12.9)
+- pgvectorscale [0.7.1](https://github.com/timescale/pgvectorscale/releases/tag/0.7.1) (pgrx 0.12.9)
+- pg_session_jwt [0.3.1](https://github.com/neondatabase/pg_session_jwt/releases/tag/v0.3.1) (pgrx 0.12.6) -> 0.12.9
+- pg_timetable 5.13.0
+- ferretdb 2.2.0
+- documentdb [0.103.0](https://github.com/FerretDB/documentdb/releases/tag/v0.103.0-ferretdb-2.2.0) (新增 aarch64
+支持)
+- pgml [2.10.0](https://github.com/postgresml/postgresml/releases/tag/v2.10.0) (pgrx 0.12.9)
+- sqlite_fdw [2.5.0](https://github.com/pgspider/sqlite_fdw/releases/tag/v2.5.0) (fix pg17 deb)
+- tzf [0.2.2](https://github.com/ringsaturn/pg-tzf/releases/tag/v0.2.2) 0.14.1 (rename src)
+- pg_vectorize [0.22.2](https://github.com/ChuckHend/pg_vectorize/releases/tag/v0.22.2) (pgrx 0.13.1)
+- wrappers [0.5.0](https://github.com/supabase/wrappers/releases/tag/v0.5.0) (pgrx 0.12.9)
+
+### 校验和
+
+```bash
+df30f2599a6416eea11acfd0f05ee14b pigsty-v3.5.0.tgz
+4c9fabc2d1f0ed733145af2b6aff2f48 pigsty-pkg-v3.5.0.d12.x86_64.tgz
+796d47de12673b2eb9882e527c3b6ba0 pigsty-pkg-v3.5.0.el8.x86_64.tgz
+a53ef2cede1363f11e9faaaa43718fdc pigsty-pkg-v3.5.0.el9.x86_64.tgz
+36da28f97a845fdc0b7bbde2d3812a67 pigsty-pkg-v3.5.0.u22.x86_64.tgz
+8551b3e04b38af382163e6857778437d pigsty-pkg-v3.5.0.u24.x86_64.tgz
+```

@@ -1,0 +1,128 @@
+---
+title: Pigsty v3.6
+description: Pigsty v3.6 release note
+icon: ClipboardList
+---
+
+
+## v3.6.0
+
+```bash
+curl https://repo.pigsty.cc/beta | bash -s v3.6.0
+```
+
+### 亮点特性
+
+- 全新文档站： https://doc.pgsty.com
+- 新增 `pgsql-pitr` 剧本与备份/恢复教程，改善 PITR 体验，
+- 新增内核支持：Percona PG TDE (PG17)
+- 优化 Supabase 自建体验，更新至最新版本，并解决了一系列官方模板的问题
+- 简化安装步骤，默认使用在线安装，更加高效简单，bootstrap 过程（安装ansible）嵌入安装脚本中
+
+### 设计改进
+
+- 改善了 Etcd 模块的实现，新增独立的 `etcd-rm.yml` 剧本与扩缩容 SOP 脚本。
+- 改善了 MinIO 模块的实现，支持 HTTP 模式，创建不同属性的三个桶供开箱即用
+- 重新调整梳理了所有配置模板，使用更为便利
+- 针对中国大陆使用速度更快的 Docker Registry 镜像站
+- 优化了 tuned 操作系统参数模板，针对现代硬件与 NVMe 磁盘优化
+- 新增扩展 `pgactive` 用于多主复制与亚秒级故障切换
+- 调整 `pg_fs_main` / `pg_fs_backup` 默认值，简化文件目录结构设计
+
+### 问题修复
+
+- 修复了 pgbouncer 配置文件的错误 by @housei-zzy
+- 修复了 OrioleDB 在 Debian 平台上的问题
+- 修复了 tuned shm 配置参数的问题
+- 离线软件包直接使用 PGDG 源，避免使用断开同步的镜像站点
+- 修复了 IvorySQL libxcrypt 依赖的问题
+- 替换了破损与缓慢的 EPEL 软件仓库站点
+
+### 可观测性软件包更新
+
+新增 Victoria Metrics / Victoria Logs 相关包
+
+- genai-toolbox 0.9.0 (new)
+- victoriametrics 1.120.0 -> 1.121.0 (refactor)
+- vmutils 1.121.0 (rename from victoria-metrics-utils)
+- grafana-victoriametrics-ds 0.15.1 -> 0.17.0
+- victorialogs 1.24.0 -> 1.25.1 (refactor)
+- vslogcli 1.24.0 -> 1.25.1
+- vlagent 1.25.1 (new)
+- grafana-victorialogs-ds 0.16.3 -> 0.18.1
+- prometheus 3.4.1 -> 3.5.0
+- grafana 12.0.0 -> 12.0.2
+- vector 0.47.0 -> 0.48.0
+- grafana-infinity-ds 3.2.1 -> 3.3.0
+- keepalived_exporter 1.7.0
+- blackbox_exporter 0.26.0 -> 0.27.0
+- redis_exporter 1.72.1 -> 1.77.0
+- rclone 1.69.3 -> 1.70.3
+
+### 数据库软件包更新
+
+- PostgreSQL 18 Beta2 更新
+- pg_exporter 1.0.1，更新至最新依赖并提供 Docker 镜像
+- pig 0.6.0，更新了最新扩展与仓库列表，带有 `pig install` 子命令
+- vip-manager 3.0.0 -> 4.0.0
+- ferretdb 2.2.0 -> 2.3.1
+- dblab 0.32.0 -> 0.33.0
+- duckdb 1.3.1 -> 1.3.2
+- ferretdb 2.2.0 -> 2.4.0
+- etcd 3.6.1 -> 3.6.2
+- juicefs 1.2.3 -> 1.3.0
+- tigerbeetle 0.16.41 -> 0.16.50
+- pev2 1.15.0 -> 1.16.0
+
+### PG扩展包更新
+
+- OriolePG beta12
+- plv8 3.2.4
+- postgresql_anonymizer 2.3.0
+- pgvectorscale 0.8.0
+- wrappers 0.5.3
+- citus 13.0.3 -> 13.1.0
+- timescaledb 2.20.0 -> 2.21.1
+- vchord 0.3.0 -> [0.4.3](https://github.com/tensorchord/VectorChord/releases/tag/0.4.3)
+- pgactive 2.1.5
+- documentdb 0.105.0
+- pgdd [0.6.0](https://github.com/rustprooflabs/pgdd) (pgrx 0.14.1)
+- convert [0.0.4](https://github.com/rustprooflabs/convert) (pgrx 0.14.1)
+- pg_idkit [0.3.0](https://github.com/VADOSWARE/pg_idkit) (pgrx 0.14.1)
+- pg_tokenizer.rs [0.1.0](https://github.com/tensorchord/pg_tokenizer.rs) (pgrx 0.13.1)
+- pg_render [0.1.2](https://github.com/mkaski/pg_render) (pgrx 0.12.8)
+- pgx_ulid [0.2.0](https://github.com/pksunkara/pgx_ulid) (pgrx 0.12.7)
+- pgmq, pg_later, pg_vectorize owner change
+
+### API变更
+
+* `pg_fs_backup`： 重命名为 `pg_fs_backup`，默认值为 `/data/backups`。
+* `pg_rm_bkup`： 重命名为 `pg_rm_backup`，默认值为 `true`。
+* `pg_fs_main`： 现在默认值调整为 `/data/postgres`。
+* `nginx_cert_validity`： 新增参数，控制 Nginx 自签名证书有效期，默认为 `397d`。
+* `minio_buckets`： 的默认值调整为创建名为 `pgsql`, `meta`, `data` 的三个桶。
+* `minio_users`： 移除 `dba` 用户，新增 `s3user_meta`  与 `s3user_data` 用户，分别对应 `meta` 与 `data` 桶。
+* `minio_https`： 新增参数，允许配置 MinIO 使用 HTTP 模式。
+* `minio_provision`： 新增参数，允许跳过 MinIO 置备阶段（跳过桶，用户创建）
+* `minio_safeguard`： New parameter, abort `minio-rm.yml` when enabled
+* `minio_rm_data`：New parameter, whether to remove minio data directory during `minio-rm.yml`
+* `minio_rm_pkg`： New parameter, whether to uninstall minio package during `minio-rm.yml`
+* `etcd_learner`： 新增参数，允许 etcd 以学习者的身份初始化
+* `etcd_rm_data`： New parameter, whether to remove etcd data directory during `etcd-rm.yml`
+* `etcd_rm_pkg`: New parameter, whether to uninstall etcd package during `etcd-rm.yml`
+
+### 校验和
+
+```bash
+df64ac0c2b5aab39dd29698a640daf2e  pigsty-v3.6.0.tgz
+cea861e2b4ec7ff5318e1b3c30b470cb  pigsty-pkg-v3.6.0.d12.aarch64.tgz
+2f253af87e19550057c0e7fca876d37c  pigsty-pkg-v3.6.0.d12.x86_64.tgz
+0158145b9bbf0e4a120b8bfa8b44f857  pigsty-pkg-v3.6.0.el8.aarch64.tgz
+07330d687d04d26e7d569c8755426c5a  pigsty-pkg-v3.6.0.el8.x86_64.tgz
+311df5a342b39e3288ebb8d14d81e0d1  pigsty-pkg-v3.6.0.el9.aarch64.tgz
+92aad54cc1822b06d3e04a870ae14e29  pigsty-pkg-v3.6.0.el9.x86_64.tgz
+c4fadf1645c8bbe3e83d5a01497fa9ca  pigsty-pkg-v3.6.0.u22.aarch64.tgz
+5477ed6be96f156a43acd740df8a9b9b  pigsty-pkg-v3.6.0.u22.x86_64.tgz
+196169afc1be02f93fcc599d42d005ca  pigsty-pkg-v3.6.0.u24.aarch64.tgz
+dbe5c1e8a242a62fe6f6e1f6e6b6c281  pigsty-pkg-v3.6.0.u24.x86_64.tgz
+```

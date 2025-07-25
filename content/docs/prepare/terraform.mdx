@@ -13,7 +13,7 @@ Aliyun & AWS templates are used as example providers. You can take [`terraform.t
 
 ## Get Started
 
-You can install terraform with [**homebrew**](https://brew.sh/) on MacOS
+You can install terraform with [**homebrew**](https://brew.sh/) on macOS
 
 ```bash title="install homebrew and terraform"
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -81,19 +81,19 @@ Example config files:
 - [spec/aliyun-oss.tf](https://github.com/pgsty/pigsty/tree/main/terraform/spec/aliyun-oss.tf) : Aliyun 5-node building template for all distro & amd/arm.
 
 
-Here's example ECS OS images used in Aliyun:
+Here are example [ECS public OS images](https://help.aliyun.com/zh/ecs/user-guide/public-mirroring-overview) used in Aliyun:
 
-| Distribution | Image Prefix                                     |
-|--------------|--------------------------------------------------|
-| CentOS 7.9   | `centos_7_9_x64_20G_alibase_20240628.vhd`        |
-| Rocky 8.10   | `rockylinux_8_10_x64_20G_alibase_20240923.vhd`   |
-| Rocky 9.5    | `rockylinux_9_5_x64_20G_alibase_20240925.vhd`    |
-| Ubuntu 20.04 | `ubuntu_20_04_x64_20G_alibase_20240925.vhd`      |
-| Ubuntu 22.04 | `ubuntu_22_04_x64_20G_alibase_20240926.vhd`      |
-| Ubuntu 24.04 | `ubuntu_24_04_x64_20G_alibase_20240923.vhd`      |
-| Debian 11.11 | `debian_11_11_x64_20G_alibase_20240923.vhd`      |
-| Debian 12.7  | `debian_12_7_x64_20G_alibase_20240927.vhd`       |
-| Anolis 8.8   | `anolisos_8_9_x64_20G_rhck_alibase_20240724.vhd` |
+| Distribution | Image Prefix          | Image Prefix           |
+|--------------|-----------------------|------------------------|
+| CentOS 7.9   | `centos_7_9_x64`      | `rockylinux_8_10_arm6` |
+| Rocky 8.10   | `rockylinux_8_10_x64` | `rockylinux_9_6_arm64` |
+| Rocky 9.6    | `rockylinux_9_5_x64`  |                        |
+| Debian 11.11 | `debian_11_11_x64`    |                        |
+| Debian 12.11 | `debian_12_11_x64`    | `debian_12_11_arm64`   |
+| Ubuntu 20.04 | `ubuntu_20_04_x64`    |                        |
+| Ubuntu 22.04 | `ubuntu_22_04_x64`    | `ubuntu_22_04_arm64`   |
+| Ubuntu 24.04 | `ubuntu_24_04_x64`    | `ubuntu_24_04_arm64`   |
+| Anolis 8.8   | `anolisos_8_9_x64`    |                        |
 
 
 --------

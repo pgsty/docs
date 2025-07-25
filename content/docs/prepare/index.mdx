@@ -54,13 +54,13 @@ You can leverage IaC tools such as [**Terraform**](/prepare/terraform) and [**Va
 
 Here's a checklist to help you prepare the environment for a serious Pigsty deployment in production environment.
 
-|                  Item                  | Requirement                                         |                         Item                          | Requirement                                                 |
-|:--------------------------------------:|:----------------------------------------------------|:-----------------------------------------------------:|:------------------------------------------------------------|
+|               Item                | Requirement                                         |                       Item                       | Requirement                                                 |
+|:---------------------------------:|:----------------------------------------------------|:------------------------------------------------:|:------------------------------------------------------------|
 |  [Node](/prepare/hardware#node)   | `1C1G` at least, `2C2G` recommended, no upper limit |          [Spec](/prepare/hardware#spec)          | `1` node at least, `2` for semi-HA, `3+` for real HA        |
-|  [Disk](/prepare/hardware#disk)   | `/data`, main mount point                           |       [Network](/prepare/hardware#network)       | static intranet, IPv4 address, nice to have Internet access |
+|  [Disk](/prepare/hardware#disk)   | `/data`, main mount point, `ext4` or `xfs`          |       [Network](/prepare/hardware#network)       | static intranet, IPv4 address, nice to have Internet access |
 |   [VIP](/prepare/hardware#vip)    | Reserve an L2 IP for VIP (**OPTIONAL**)             |        [Domain](/prepare/hardware#domain)        | Use local / public domain names (**OPTIONAL**)              |
 | [Kernel](/prepare/software#linux) | `Linux`, MacOS can be used as admin controller      |             [Distro](/prepare/linux)             | EL (8/9), Debian (12), Ubuntu (22/24), `x86_64` / `aarch64` |
 | [Locale](/prepare/software#linux) | `C.UTF-8` or `C`                                    |      [Firewall](/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                          |
 |    [User](/prepare/admin#user)    | avoid using `root` & `postgres`                     |      [Sudo](/prepare/admin#sudo-privileges)      | `nopass` sudo privilege                                     |
-|     [SSH](/prepare/admin#ssh)     | `nopass` via public key                             | [Accessible](/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` works                                |
+|     [SSH](/prepare/admin#ssh)     | `nopass` via public key                             | [Accessible](/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` works                             |
 

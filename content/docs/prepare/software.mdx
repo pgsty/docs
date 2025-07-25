@@ -11,7 +11,7 @@ icon: Disc
 
 Pigsty runs on <span className="text-xl text-amber-500 font-black">Linux</span> Operating System, it supports **10** mainstream Linux distros: [**Compatible OS List**](/prepare/linux)
 
-We recommend using **RockyLinux 9.5**, **Debian 12.10**, or **Ubuntu 24.04.5** as the default OS options.
+We recommend using **RockyLinux 9.6**, **Debian 12.11**, or **Ubuntu 24.04.5** as the default OS options.
 
 <Callout title="Run pigsty on macOS?" type={"info"}>
 
@@ -92,11 +92,14 @@ You don't need to care about details, ansible is installed during the [**Bootstr
 
 <Callout title="Install Ansible Manually" type="info">
 
-    ```bash tab="EL 8/9"
-    sudo dnf install -y ansible python3.12-jmespath
-    ```
     ```bash tab="Debian / Ubuntu"
     sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 9"
+    sudo dnf install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 8"
+    sudo dnf install -y ansible python3.12-jmespath
     ```
     ```bash tab="EL 7"
     sudo yum install -y ansible python-jmespath
@@ -129,10 +132,10 @@ curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # china mirror
 To install a specific version, pass the version string as the first parameter:
 
 ```bash tab="Default"
-curl -fsSL https://repo.pigsty.io/get | bash -s v3.5.0; cd ~/pigsty
+curl -fsSL https://repo.pigsty.io/get | bash -s v3.6.0; cd ~/pigsty
 ```
 ```bash tab="Mirror"
-curl -fsSL https://repo.pigsty.cc/get | bash -s v3.5.0; cd ~/pigsty # china mirror
+curl -fsSL https://repo.pigsty.cc/get | bash -s v3.6.0; cd ~/pigsty # china mirror
 ```
 
 You can also use `git` to clone the Pigsty source repo from [GitHub](https://github.com/pgsty/pigsty):
@@ -143,49 +146,49 @@ git clone https://github.com/pgsty/pigsty.git; cd ~/pigsty
 
 <Callout title="Checkout a specific version before using" type="warn">
 
-    The default `main` branch may in an unstable development status, `git checkout <version>` before using.
+    The default `main` branch may in an unstable development status, `git checkout v3.6.0` before using.
 
 </Callout>
 
+```bash
+$ curl -fssL https://repo.pigsty.cc/get | bash -s v3.6.0
+[v3.6.0] ===========================================
+$ curl -fsSL https://repo.pigsty.cc/get | bash
+[Docs] https://doc.pgsty.com
+[Demo] https://demo.pigsty.cc
+[Repo] https://github.com/pgsty/pigsty
+[Download] ===========================================
+[ OK ] version = v3.6.0 (from arg)
+curl -fSL https://repo.pigsty.cc/src/pigsty-v3.6.0.tgz -o /tmp/pigsty-v3.6.0.tgz
+[WARN] tarball = /tmp/pigsty-v3.6.0.tgz exists, size = 1472486, use it
+[ OK ] md5sums = df64ac0c2b5aab39dd29698a640daf2e  /tmp/pigsty-v3.6.0.tgz
+[Install] ===========================================
+[ OK ] install = /home/vagrant/pigsty, from /tmp/pigsty-v3.6.0.tgz
+[Bootstrap] ===========================================
+[ OK ] ansible = ready
+[ OK ] bootstrap = skip
+you can run ./bootstrap to extrac offline package and install ansible
+[TodoList] ===========================================
+cd /home/vagrant/pigsty
+./configure      # [OPTIONAL] preflight-check and config generation
+./install.yml    # deployment everything described by your config
+```
 
 You can also download the pigsty src (`pigsty-<version>.tar.gz`) from [GitHub Release Page](https://github.com/pgsty/pigsty/releases/latest) manually:
 
 ```bash tab="Default"
-wget https://repo.pigsty.io/src/pigsty-v3.5.0.tgz
+wget https://repo.pigsty.io/src/pigsty-v3.6.0.tgz
 ```
 ```bash tab="Mirror"
-wget https://pigsty.cc/pgsty/pigsty/releases/download/v3.5.0/pigsty-v3.5.0.tgz
+wget https://pigsty.cc/pgsty/pigsty/releases/download/v3.6.0/pigsty-v3.6.0.tgz
 ```
 ```bash tab="GitHub"
-wget https://github.com/pgsty/pigsty/releases/download/v3.5.0/pigsty-v3.5.0.tgz
+wget https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-v3.6.0.tgz
 ```
 
-```bash
-[vagrant@node-1 ~]$ curl https://repo.pigsty.cc/get | bash -s v3.5.0
-% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-Dload  Upload   Total   Spent    Left  Speed
-100  5541  100  5541    0     0  11890      0 --:--:-- --:--:-- --:--:-- 11916
-[v3.5.0] ===========================================
-$ curl -fsSL https://repo.pigsty.cc/get | bash
-[Site] https://pigsty.cc
-[Demo] https://demo.pigsty.cc
-[Repo] https://github.com/pgsty/pigsty
-[Docs] /install
-[Download] ===========================================
-[ OK ] version = v3.5.0 (from arg)
-curl -fSL https://repo.pigsty.cc/src/pigsty-v3.5.0.tgz -o /tmp/pigsty-v3.5.0.tgz
-######################################################################## 100.0%
-[ OK ] md5sums = df30f2599a6416eea11acfd0f05ee14b  /tmp/pigsty-v3.5.0.tgz
-[Install] ===========================================
-[ OK ] install = /home/vagrant/pigsty, from /tmp/pigsty-v3.5.0.tgz
-[TodoList] ===========================================
-cd /home/vagrant/pigsty
-./bootstrap      # [OPTIONAL] install ansible & use offline package
-./configure      # [OPTIONAL] preflight-check and config generation
-./install.yml    # install pigsty modules according to your config.
-[Complete] ===========================================
-```
 
-If your environment does not have Internet access, consider downloading offline packages along with source tarball
-and upload them to your nodes. check [Offline Installation](/install/offline) for details.
+
+If your environment does not have Internet access, consider downloading offline packages along with source tarball and upload them to your nodes.
+
+Check [Offline Installation](/install/offline) for details.
 

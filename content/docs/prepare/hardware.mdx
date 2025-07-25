@@ -112,6 +112,12 @@ If you are mounting it elsewhere, you'll have to change the following parameters
 
 </Callout>
 
+We recommend using `ext4` or `xfs` as the filesystem for data disks. They have the best performance for PostgreSQL.
+
+While `ext4` has more tools for data recovery, `xfs` is more efficient for small files.
+If you are running MinIO, It's recommended to use `xfs`, otherwise, `ext4` is recommended as the default option.
+
+
 
 
 --------

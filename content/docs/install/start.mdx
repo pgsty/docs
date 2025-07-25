@@ -31,14 +31,6 @@ run as user with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#
 
     </Step>
     <Step>
-        [Bootstrap](#bootstrap) pigsty with required dependencies (`ansible`):
-
-        ```bash
-        ./bootstrap
-        ```
-    </Step>
-
-    <Step>
         [**Configure**](#configure) the [`pigsty.yml`](/config/inventory) inventory file according to
         your need and environment.
 
@@ -70,15 +62,15 @@ run as user with nopass [`ssh`](/prepare/admin#ssh) and [`sudo`](/prepare/admin#
 
 Check [**Preparation**](/prepare) for all the details, here's a quick summary:
 
-|                  Item                  | Requirement                         |                         Item                          | Requirement                                          |
-|:--------------------------------------:|:------------------------------------|:-----------------------------------------------------:|:-----------------------------------------------------|
-|  [Node](/prepare/hardware#node)   | `1C1G` at least, `2C2G` recommended |          [Spec](/prepare/hardware#spec)          | `1` node at least, `2` for semi-HA, `3+` for real HA |
-|  [Disk](/prepare/hardware#disk)   | `/data`, main mount point           |       [Network](/prepare/hardware#network)       | static IPv4 address                                  |
-|   [VIP](/prepare/hardware#vip)    | Optional L2 VIP                     |        [Domain](/prepare/hardware#domain)        | Optional local / public domain names                 |
-| [Kernel](/prepare/software#linux) | `Linux`                             |             [Distro](/prepare/linux)             | el8, el9, d12, u22, u24 x `x86_64` / `aarch64`       |
-| [Locale](/prepare/software#linux) | `C.UTF-8` or `C`                    |      [Firewall](/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                   |
-|    [User](/prepare/admin#user)    | avoid using `root` & `postgres`     |      [Sudo](/prepare/admin#sudo-privileges)      | `nopass` sudo privilege                              |
-|     [SSH](/prepare/admin#ssh)     | `nopass` via public key             | [Accessible](/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` without error               |
+|               Item                | Requirement                                |                       Item                       | Requirement                                          |
+|:---------------------------------:|:-------------------------------------------|:------------------------------------------------:|:-----------------------------------------------------|
+|  [Node](/prepare/hardware#node)   | `1C1G` at least, `2C2G` recommended        |          [Spec](/prepare/hardware#spec)          | `1` node at least, `2` for semi-HA, `3+` for real HA |
+|  [Disk](/prepare/hardware#disk)   | `/data`, main mount point, `ext4/xfs` |       [Network](/prepare/hardware#network)       | static IPv4 address                                  |
+|   [VIP](/prepare/hardware#vip)    | Optional L2 VIP                            |        [Domain](/prepare/hardware#domain)        | Optional local / public domain names                 |
+| [Kernel](/prepare/software#linux) | `Linux`                                    |             [Distro](/prepare/linux)             | el8, el9, d12, u22, u24 x `x86_64` / `aarch64`       |
+| [Locale](/prepare/software#linux) | `C.UTF-8` or `C`                           |      [Firewall](/prepare/software#firewall)      | port: `80` / `443` / `22` / `5432`                   |
+|    [User](/prepare/admin#user)    | avoid using `root` & `postgres`            |      [Sudo](/prepare/admin#sudo-privileges)      | `nopass` sudo privilege                              |
+|     [SSH](/prepare/admin#ssh)     | `nopass` via public key                    | [Accessible](/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` without error              |
 
 
 

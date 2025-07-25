@@ -1,4 +1,5 @@
 {
+  "title": "ETCD",
   "description": "Meta database for PG HA DCS",
   "icon": "Settings",
   "root": false,

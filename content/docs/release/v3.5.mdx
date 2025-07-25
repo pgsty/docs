@@ -1,0 +1,149 @@
+---
+title: Pigsty v3.5
+description: Pigsty v3.5 release note
+icon: ClipboardList
+---
+
+
+
+## v3.5.0
+
+### **Highlights**
+
+- New website: https://pgsty.com
+- **PostgreSQL 18 (Beta) support**: monitoring via `pg_exporter 1.0.0`, installer alias via `pig 0.4.2`, and a `pg18` template
+- **421 bundled extensions**, now including OrioleDB and OpenHalo kernels on all platforms
+- **`pig do` CLI** replaces legacy `bin/` scripts
+- **Hardening for self-hosted Supabase** (replication lag, key distribution, etc.)
+- **Code & architecture refactor** — slimmer tasks, cleaner defaults for Postgres & PgBouncer
+- **Monitoring stack refresh** — Grafana 12, `pg_exporter 1.0`, new panels & plugins
+- **Run vagrant on Apple Silicon**
+
+```bash
+curl https://repo.pigsty.io/get | bash -s v3.5.0
+```
+
+### **Module Changes**
+
+- Add PostgreSQL 18 support
+- PG18 metrics support with pg_exporter 1.0.0+
+- PG18 install support with pig 0.4.1+
+- New config template `pg18.yml`
+- Refactored `pgsql` module
+- Split monitoring into a new **`pg_monitor`** role; removed `clean` logic
+- Pruned duplicate tasks, dropped `dir/utils` block, renamed templates (no `.j2`)
+- All extensions install in **`extensions`** schema (Supabase best-practice)
+- Added `SET search_path=''` to every monitoring function
+- Tuned PgBouncer defaults (larger pool, cleanup query); new `pgbouncer_ignore_param`
+- New `pg_key` task to generate `pgsodium` master keys
+- Enabled `sync_replication_slots` by default on PG 17
+- Retagged subtasks for clearer structure
+- Refactored `pg_remove` module
+- New flags `pg_rm_data`, `pg_rm_bkup`, `pg_rm_pkg` control what gets wiped
+- Clearer role layout & tagging
+- Added new `pg_monitor` module
+- pgbouncer_exporter no longer shares configuration files with `pg_exporter`
+- Added monitoring metrics for TimescaleDB and Citus
+- Using `pg_exporter` 0.9.0 with updated replication slot metrics for PG16/17
+- Using more compact, newly designed collector configuration files
+- Supabase Enhancement (thanks [@lawso017](https://github.com/lawso017) for the contribution)
+- update supabase containers and schemas to the latest version
+- Support `pgsodium` server key loading
+- fix logflare lag issue with `supa-kick` crontab
+- add `set search_path` clause for monitor functions
+- Added new `pig do` command to CLI, allowing command-line tool to replace Shell scripts in `bin/`
+
+### **Infra Package Updates**
+
+- pig 0.4.2
+- duckdb 1.3.0
+- etcd 3.6.0
+- vector 0.47.0
+- minio 20250422221226
+- mcli 20250416181326
+- pev 1.5.0
+- rclone 1.69.3
+- mtail 3.0.8 (new)
+
+### **Observability Package Updates**
+
+- grafana 12.0.0
+- grafana-victorialogs-ds 0.16.3
+- grafana-victoriametrics-ds 0.15.1
+- grafana-infinity-ds 3.2.1
+- grafana_plugins 12.0.0
+- prometheus 3.4.0
+- pushgateway 1.11.1
+- nginx_exporter 1.4.2
+- pg_exporter [1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0)
+- pgbackrest_exporter 0.20.0
+- redis_exporter 1.72.1
+- keepalived_exporter 1.6.2
+- victoriametrics 1.117.1
+- victoria_logs 1.22.2
+
+### **Database Package Updates**
+
+- PostgreSQL 17.5, 16.9, 15.13, 14.18, 13.21
+- PostgreSQL 18beta1 support
+- pgbouncer 1.24.1
+- pgbackrest 2.55
+- pgbadger 13.1
+
+### **Extension Package Updates**
+
+- spat [0.1.0a4](https://github.com/Florents-Tselai/spat) new extension
+- pgsentinel [1.1.0](https://github.com/pgsentinel/pgsentinel/releases/tag/v1.1.0) new extension
+- pgdd [0.6.0](https://github.com/rustprooflabs/pgdd) (pgrx 0.14.1) new extension add back
+- convert [0.0.4](https://github.com/rustprooflabs/convert) (pgrx 0.14.1) new extension
+- pg_tokenizer.rs [0.1.0](https://github.com/tensorchord/pg_tokenizer.rs) (pgrx 0.13.1)
+- pg_render [0.1.2](https://github.com/mkaski/pg_render) (pgrx 0.12.8)
+- pgx_ulid [0.2.0](https://github.com/pksunkara/pgx_ulid) (pgrx 0.12.7)
+- pg_idkit [0.3.0](https://github.com/VADOSWARE/pg_idkit) (pgrx 0.14.1)
+- pg_ivm [1.11.0](https://github.com/sraoss/pg_ivm)
+- orioledb [1.4.0 beta11](https://github.com/orioledb/orioledb) rpm & add debian/ubuntu support
+- openhalo [14.10](https://github.com/HaloTech-Co-Ltd/openHalo) add debian/ubuntu support
+- omnigres 20250507 (miss on d12/u22)
+- citus [12.0.3](https://github.com/citusdata/citus/releases/tag/v13.0.3)
+- timescaledb [2.20.0](https://github.com/timescale/timescaledb/releases/tag/2.20.0) (DROP PG14 support)
+- supautils [2.9.2](https://github.com/supabase/supautils/releases/tag/v2.9.2)
+- pg_envvar [1.0.1](https://github.com/theory/pg-envvar/releases/tag/v1.0.1)
+- pgcollection [1.0.0](https://github.com/aws/pgcollection/releases/tag/v1.0.0)
+- aggs_for_vecs [1.4.0](https://github.com/pjungwir/aggs_for_vecs/releases/tag/1.4.0)
+- pg_tracing [0.1.3](https://github.com/DataDog/pg_tracing/releases/tag/v0.1.3)
+- pgmq [1.5.1](https://github.com/pgmq/pgmq/releases/tag/v1.5.1)
+- tzf-pg [0.2.0](https://github.com/ringsaturn/tzf-pg/releases/tag/v0.2.0) (pgrx 0.14.1)
+- pg_search [0.15.18](https://github.com/paradedb/paradedb/releases/tag/v0.15.18) (pgrx 0.14.1)
+- anon [2.1.1](https://gitlab.com/dalibo/postgresql_anonymizer/-/tree/latest/debian?ref_type=heads) (pgrx 0.14.1)
+- pg_parquet [0.4.0](https://github.com/CrunchyData/pg_parquet/releases/tag/v0.3.2) (0.14.1)
+- pg_cardano [1.0.5](https://github.com/Fell-x27/pg_cardano/commits/master/) (pgrx 0.12) -> 0.14.1
+- pglite_fusion [0.0.5](https://github.com/frectonz/pglite-fusion/releases/tag/v0.0.5) (pgrx 0.12.8) -> 14.1
+- vchord_bm25 [0.2.1](https://github.com/tensorchord/VectorChord-bm25/releases/tag/0.2.1) (pgrx 0.13.1)
+- vchord [0.3.0](https://github.com/tensorchord/VectorChord/releases/tag/0.3.0) (pgrx 0.13.1)
+- pg_vectorize [0.22.1](https://github.com/ChuckHend/pg_vectorize/releases/tag/v0.22.1) (pgrx 0.13.1)
+- wrappers [0.4.6](https://github.com/supabase/wrappers/releases/tag/v0.4.6) (pgrx 0.12.9)
+- timescaledb-toolkit [1.21.0](https://github.com/timescale/timescaledb-toolkit/releases/tag/1.21.0) (pgrx 0.12.9)
+- pgvectorscale [0.7.1](https://github.com/timescale/pgvectorscale/releases/tag/0.7.1) (pgrx 0.12.9)
+- pg_session_jwt [0.3.1](https://github.com/neondatabase/pg_session_jwt/releases/tag/v0.3.1) (pgrx 0.12.6) -> 0.12.9
+- pg_timetable 5.13.0
+- ferretdb 2.2.0
+- documentdb [0.103.0](https://github.com/FerretDB/documentdb/releases/tag/v0.103.0-ferretdb-2.2.0) (+aarch64 support)
+- pgml [2.10.0](https://github.com/postgresml/postgresml/releases/tag/v2.10.0) (pgrx 0.12.9)
+- sqlite_fdw [2.5.0](https://github.com/pgspider/sqlite_fdw/releases/tag/v2.5.0) (fix pg17 deb)
+- tzf [0.2.2](https://github.com/ringsaturn/pg-tzf/releases/tag/v0.2.2) 0.14.1 (rename src)
+- pg_vectorize [0.22.2](https://github.com/ChuckHend/pg_vectorize/releases/tag/v0.22.2) (pgrx 0.13.1)
+- wrappers [0.5.0](https://github.com/supabase/wrappers/releases/tag/v0.5.0) (pgrx 0.12.9)
+
+### **Checksums**
+
+```bash
+c7e5ce252ddf848e5f034173e0f29345  pigsty-v3.5.0.tgz
+ba31f311a16d615c1ee1083dc5a53566  pigsty-pkg-v3.5.0.d12.aarch64.tgz
+3aa5c56c8f0de53303c7100f2b3934f4  pigsty-pkg-v3.5.0.d12.x86_64.tgz
+a098cb33822633357e6880eee51affd6  pigsty-pkg-v3.5.0.el8.x86_64.tgz
+63723b0aeb4d6c02fff0da2c78e4de31  pigsty-pkg-v3.5.0.el9.aarch64.tgz
+eb91c8921d7b8a135d8330c77468bfe7  pigsty-pkg-v3.5.0.el9.x86_64.tgz
+87ff25e14dfb9001fe02f1dfbe70ae9e  pigsty-pkg-v3.5.0.u22.x86_64.tgz
+18be503856f6b39a59efbd1d0a8556b6  pigsty-pkg-v3.5.0.u24.aarch64.tgz
+2bbef6a18cfa99af9cd175ef0adf873c  pigsty-pkg-v3.5.0.u24.x86_64.tgz
+```
