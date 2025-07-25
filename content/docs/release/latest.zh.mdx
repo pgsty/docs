@@ -1,14 +1,14 @@
 ---
 title: Pigsty v3.6
 description: Pigsty v3.6 release note
-icon: ClipboardList
+icon: Sparkle
 ---
 
 
 ## v3.6.0
 
 ```bash
-curl https://repo.pigsty.cc/beta | bash -s v3.6.0
+curl https://repo.pigsty.cc/get | bash -s v3.6.0
 ```
 
 ### 亮点特性
@@ -37,18 +37,19 @@ curl https://repo.pigsty.cc/beta | bash -s v3.6.0
 - 离线软件包直接使用 PGDG 源，避免使用断开同步的镜像站点
 - 修复了 IvorySQL libxcrypt 依赖的问题
 - 替换了破损与缓慢的 EPEL 软件仓库站点
+- 修复了 `haproxy_enabled` 标记位的功能
 
-### 可观测性软件包更新
+### 基础设施软件包更新
 
 新增 Victoria Metrics / Victoria Logs 相关包
 
 - genai-toolbox 0.9.0 (new)
-- victoriametrics 1.120.0 -> 1.121.0 (refactor)
-- vmutils 1.121.0 (rename from victoria-metrics-utils)
+- victoriametrics 1.120.0 -> 1.121.0 (重构)
+- vmutils 1.121.0 (重命名 victoria-metrics-utils)
 - grafana-victoriametrics-ds 0.15.1 -> 0.17.0
-- victorialogs 1.24.0 -> 1.25.1 (refactor)
+- victorialogs 1.24.0 -> 1.25.1 (重构)
 - vslogcli 1.24.0 -> 1.25.1
-- vlagent 1.25.1 (new)
+- vlagent 1.25.1 (新增)
 - grafana-victorialogs-ds 0.16.3 -> 0.18.1
 - prometheus 3.4.1 -> 3.5.0
 - grafana 12.0.0 -> 12.0.2
@@ -68,48 +69,44 @@ curl https://repo.pigsty.cc/beta | bash -s v3.6.0
 - ferretdb 2.2.0 -> 2.3.1
 - dblab 0.32.0 -> 0.33.0
 - duckdb 1.3.1 -> 1.3.2
+- etcd 3.6.1 -> 3.6.3
 - ferretdb 2.2.0 -> 2.4.0
-- etcd 3.6.1 -> 3.6.2
 - juicefs 1.2.3 -> 1.3.0
 - tigerbeetle 0.16.41 -> 0.16.50
 - pev2 1.15.0 -> 1.16.0
 
 ### PG扩展包更新
 
-- OriolePG beta12
-- plv8 3.2.4
-- postgresql_anonymizer 2.3.0
-- pgvectorscale 0.8.0
-- wrappers 0.5.3
+- OrioleDB 1.5 beta12
+- OriolePG 17.11
+- plv8 3.2.3 -> 3.2.4
+- postgresql_anonymizer 2.1.1 -> 2.3.0
+- pgvectorscale 0.7.1 -> 0.8.0
+- wrappers 0.5.0 -> 0.5.3
+- supautils 2.9.1 -> 2.10.0
 - citus 13.0.3 -> 13.1.0
 - timescaledb 2.20.0 -> 2.21.1
 - vchord 0.3.0 -> [0.4.3](https://github.com/tensorchord/VectorChord/releases/tag/0.4.3)
-- pgactive 2.1.5
-- documentdb 0.105.0
-- pgdd [0.6.0](https://github.com/rustprooflabs/pgdd) (pgrx 0.14.1)
-- convert [0.0.4](https://github.com/rustprooflabs/convert) (pgrx 0.14.1)
-- pg_idkit [0.3.0](https://github.com/VADOSWARE/pg_idkit) (pgrx 0.14.1)
-- pg_tokenizer.rs [0.1.0](https://github.com/tensorchord/pg_tokenizer.rs) (pgrx 0.13.1)
-- pg_render [0.1.2](https://github.com/mkaski/pg_render) (pgrx 0.12.8)
-- pgx_ulid [0.2.0](https://github.com/pksunkara/pgx_ulid) (pgrx 0.12.7)
-- pgmq, pg_later, pg_vectorize owner change
+- pgactive 2.1.5 (new)
+- documentdb 0.103.0 -> 0.105.0
+- pg_search 0.17.0
 
 ### API变更
 
-* `pg_fs_backup`： 重命名为 `pg_fs_backup`，默认值为 `/data/backups`。
-* `pg_rm_bkup`： 重命名为 `pg_rm_backup`，默认值为 `true`。
-* `pg_fs_main`： 现在默认值调整为 `/data/postgres`。
-* `nginx_cert_validity`： 新增参数，控制 Nginx 自签名证书有效期，默认为 `397d`。
-* `minio_buckets`： 的默认值调整为创建名为 `pgsql`, `meta`, `data` 的三个桶。
-* `minio_users`： 移除 `dba` 用户，新增 `s3user_meta`  与 `s3user_data` 用户，分别对应 `meta` 与 `data` 桶。
-* `minio_https`： 新增参数，允许配置 MinIO 使用 HTTP 模式。
-* `minio_provision`： 新增参数，允许跳过 MinIO 置备阶段（跳过桶，用户创建）
-* `minio_safeguard`： New parameter, abort `minio-rm.yml` when enabled
-* `minio_rm_data`：New parameter, whether to remove minio data directory during `minio-rm.yml`
-* `minio_rm_pkg`： New parameter, whether to uninstall minio package during `minio-rm.yml`
-* `etcd_learner`： 新增参数，允许 etcd 以学习者的身份初始化
-* `etcd_rm_data`： New parameter, whether to remove etcd data directory during `etcd-rm.yml`
-* `etcd_rm_pkg`: New parameter, whether to uninstall etcd package during `etcd-rm.yml`
+* `pg_fs_backup`：重命名为 `pg_fs_backup`，默认值为 `/data/backups`。
+* `pg_rm_bkup`：重命名为 `pg_rm_backup`，默认值为 `true`。
+* `pg_fs_main`：现在默认值调整为 `/data/postgres`。
+* `nginx_cert_validity`：新增参数，用于控制 Nginx 自签名证书的有效期，默认为 `397d`。
+* `minio_buckets`：默认值调整为创建名为 `pgsql`、`meta`、`data` 的三个桶。
+* `minio_users`：移除 `dba` 用户，新增 `s3user_meta` 和 `s3user_data` 用户，分别对应 `meta` 和 `data` 桶。
+* `minio_https`：新增参数，允许配置 MinIO 使用 HTTP 模式。
+* `minio_provision`：新增参数，允许跳过 MinIO 置备阶段（跳过桶和用户的创建）。
+* `minio_safeguard`：新增参数，启用后会在执行 `minio-rm.yml` 时中止操作。
+* `minio_rm_data`：新增参数，控制在执行 `minio-rm.yml` 时是否删除 minio 数据目录。
+* `minio_rm_pkg`：新增参数，控制在执行 `minio-rm.yml` 时是否卸载 minio 软件包。
+* `etcd_learner`：新增参数，允许 etcd 以学习者身份初始化。
+* `etcd_rm_data`：新增参数，控制在执行 `etcd-rm.yml` 时是否删除 etcd 数据目录。
+* `etcd_rm_pkg`：新增参数，控制在执行 `etcd-rm.yml` 时是否卸载 etcd 软件包。
 
 ### 校验和
 

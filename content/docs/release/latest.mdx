@@ -1,14 +1,14 @@
 ---
-title: Pigsty v3.6
-description: Pigsty v3.6 release note
-icon: ClipboardList
+title: Latest Release
+description: The latest stable version of Pigsty —— v3.6
+icon: Sparkle
 ---
 
 
 ## v3.6.0
 
 ```bash
-curl https://repo.pigsty.cc/beta | bash -s v3.6.0
+curl https://repo.pigsty.cc/get | bash -s v3.6.0
 ```
 
 ### **Highlights**
@@ -19,7 +19,7 @@ curl https://repo.pigsty.cc/beta | bash -s v3.6.0
 - Optimized self-hosted Supabase experience, updated to the latest version, and fixed issues with the official template
 - Simplified installation steps, online install by default, bootstrap now part of install script
 
-### **Design Improvements**
+### **Improvements**
 
 - Refactored `ETCD` module with dedicate remove playbook and bin utils
 - Refactored `MinIO` module with plain HTTP mode, better bucket provisioning options.
@@ -33,14 +33,13 @@ curl https://repo.pigsty.cc/beta | bash -s v3.6.0
 
 - Fixed pgbouncer configuration file error by @housei-zzy
 - Fixed OrioleDB issues on Debian platform
-- Used Telemetry interface provided by TimescaleDB 2.20+ to obtain metrics
 - Fixed tuned shm configuration parameter issue
-- Offline packages now use PGDG source directly, avoiding out-of-sync mirror sites
+- Offline packages now use the PGDG source directly, avoiding out-of-sync mirror sites
 - Fix ivorysql [libxcrypt](https://github.com/IvorySQL/IvorySQL/issues/826) dependencies issus
 - Fix Replace the slow and broken epel mirror
 - Fix `haproxy_enabled` flag not working
 
-### **Observability Package Updates**
+### **Infra Package Updates**
 
 Added Victoria Metrics / Victoria Logs related packages
 
@@ -71,21 +70,22 @@ Added Victoria Metrics / Victoria Logs related packages
 - dblab 0.32.0 -> 0.33.0
 - duckdb 1.3.1 -> 1.3.2
 - etcd 3.6.1 -> 3.6.3
-- ferretdb 2.2 -> 2.4
+- ferretdb 2.2.0 -> 2.4.0
 - juicefs 1.2.3 -> 1.3.0
 - tigerbeetle 0.16.41 -> 0.16.50
 - pev2 1.15.0 -> 1.16.0
 
-### **Postgres Extension Package Updates**
+### **Extension Package Updates**
 
-- OrioleDB 1.5 beta12 with Patched PG 17.11
+- OrioleDB 1.5 beta12
+- OriolePG 17.11
 - plv8 3.2.3 -> 3.2.4
 - postgresql_anonymizer 2.1.1 -> 2.3.0
 - pgvectorscale 0.7.1 -> 0.8.0
 - wrappers 0.5.0 -> 0.5.3
 - supautils 2.9.1 -> 2.10.0
 - citus 13.0.3 -> 13.1.0
-- timescaledb 2.20.0 -> 2.21.0
+- timescaledb 2.20.0 -> 2.21.1
 - vchord 0.3.0 -> [0.4.3](https://github.com/tensorchord/VectorChord/releases/tag/0.4.3)
 - pgactive 2.1.5 (new)
 - documentdb 0.103.0 -> 0.105.0
