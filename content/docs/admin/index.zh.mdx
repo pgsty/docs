@@ -1,0 +1,81 @@
+---
+title: 管理
+description: 管理您的部署
+icon: Landmark
+---
+
+
+import {
+    TerminalIcon,
+    PlayIcon,
+    LayoutDashboardIcon, 
+    ActivityIcon,
+    GlobeIcon,
+    ShieldCheckIcon,
+    Warehouse,
+    DoorOpen,
+    Database,
+    Landmark,
+    CpuIcon,
+    Settings,
+    Box,
+    Layers,
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<TerminalIcon className="text-black"/>} title='Ansible' href={"/zh/admin/ansible"}>
+        使用 ansible 运行管理命令
+    </Card>
+    <Card icon={<PlayIcon className="text-blue-500"/>} title='剧本' href={"/zh/admin/playbook"}>
+        Pigsty 中的内置剧本
+    </Card>
+    <Card icon={<LayoutDashboardIcon className="text-purple-600"/>} title='仪表板' href={"/zh/pgsql/dashboard"}>
+        grafana 仪表板介绍
+    </Card>
+    <Card icon={<ActivityIcon className="text-orange-500"/>} title='监控' href={"/zh/pgsql/monitor"}>
+        prometheus 和 alertmanager 介绍
+    </Card>
+</Cards>
+
+--------
+
+
+<Cards>
+    <Card icon={<DoorOpen className="text-violet-500"/>} title='Nginx 门户' href={"/zh/admin/portal"}>
+        WebUI 服务的 Nginx 门户
+    </Card>
+    <Card icon={<Warehouse className="text-amber-500"/>} title='本地仓库' href={"/zh/admin/repo"}>
+        管理本地 APT / YUM 仓库
+    </Card>
+    <Card icon={<GlobeIcon className="text-cyan-500"/>} title='域名' href={"/zh/admin/domain"}>
+        使用本地 / 公共域名
+    </Card>
+    <Card icon={<ShieldCheckIcon className="text-rose-500"/>} title='CA 和证书' href={"/zh/admin/cert"}>
+        使用自签名或真实 HTTPS 证书
+    </Card>
+</Cards>
+
+
+--------
+
+<Cards>
+    <Card icon={<Database className="text-sky-600"/>} title='PGSQL' href={"/zh/pgsql/admin"}>
+        具有 HA、PITR、IaC、ACL、监控、连接池的 PostgreSQL 集群
+    </Card>
+    <Card icon={<Landmark className="text-green-700"/>} title='INFRA' href={"/zh/infra/admin"}>
+        用于可观测性的 Nginx、仓库、DNS、NTP、Prometheus 和 Grafana 技术栈
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"}/>} title='NODE' href={"/zh/node/admin"}>
+        将节点注册到期望状态并监控它，以及 VIP、HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"}/>} title='ETCD' href={"/zh/etcd/admin"}>
+        可靠的分布式共识存储 (DCS)，为 PGSQL HA 提供支持
+    </Card>
+    <Card icon={<Box className="text-red-800"/>} title='MINIO' href={"/zh/minio/admin"}>
+        兼容 S3 的对象存储，可选备份存储
+    </Card>
+    <Card icon={<Layers className="text-red-400"/>} title='REDIS' href={"/zh/redis/admin"}>
+        高性能内存缓存，可选数据结构服务器
+    </Card>
+
+</Cards>

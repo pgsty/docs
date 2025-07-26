@@ -45,6 +45,19 @@ Pigsty **DOES NOT** use containers, main components are packed for specific dist
 
 --------
 
+## File System
+
+Pigsty suggests using `ext4` or `xfs` file systems, both of which have the best performance for PostgreSQL use cases.
+If you know what you are doing, you can also consider using file systems like `zfs`, but never run database services on network file systems like `nfs`.
+
+If you need to use MinIO, it is recommended to use the `xfs` file system, which is the only file system recommended by MinIO.
+It performs better in scenarios with a large number of small files, but the tool ecosystem (e.g., data recovery) is slightly inferior to `ext4`.
+
+The default recommendation for running standard PostgreSQL services is to use the Linux `ext4` file system.
+
+
+--------
+
 ## Firewall
 
 Your security policy and firewall setup should allow access to the required ports.

@@ -1,0 +1,65 @@
+---
+title: 准备
+description: 为严肃的部署准备资源
+icon: SquareStack
+full: true
+---
+
+
+import {
+    CpuIcon,
+    Cloud,
+    Laptop,
+    Cog,
+    Landmark,
+    PackageOpenIcon
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<CpuIcon className="text-indigo-600"/>} title='硬件' href={"/zh/prepare/hardware"}>
+        节点、规格、磁盘、网络、VIP、域名...
+    </Card>
+    <Card icon={<Cog className="text-rose-500"/>} title='Linux 操作系统' href={"/zh/prepare/linux"}>
+        支持的 Linux 操作系统发行版列表
+    </Card>
+    <Card icon={<CpuIcon className="text-indigo-600"/>} title='软件' href={"/zh/prepare/software"}>
+        区域设置、防火墙、Ansible、Pigsty...
+    </Card>
+    <Card icon={<Landmark className="text-amber-500"/>} title='管理员' href={"/zh/prepare/admin"}>
+        用户、Sudo、SSH、可访问性...
+    </Card>
+
+</Cards>
+
+--------
+
+您可以利用 IaC 工具如 [**Terraform**](/zh/prepare/terraform) 和 [**Vagrant**](/zh/prepare/vagrant) 来帮助您准备环境并完成繁重的工作。
+
+<Cards>
+    <Card icon={<PackageOpenIcon className="text-black"/>} title='Ansible' href={"/zh/admin/ansible"}>
+        Ansible 101，pigsty 用户的基础知识
+    </Card>
+    <Card icon={<PackageOpenIcon className="text-emerald-500"/>} title='沙盒' href={"/zh/prepare/sandbox"}>
+        用于学习和测试的四节点沙盒
+    </Card>
+    <Card icon={<Laptop className="text-violet-500"/>} title='Vagrant' href={"/zh/prepare/vagrant"}>
+        使用 vagrant 置备本地虚拟机
+    </Card>
+    <Card icon={<Cloud className="text-cyan-500"/>} title='Terraform' href={"/zh/prepare/terraform"}>
+        使用 terraform 置备云服务器
+    </Card>
+</Cards>
+
+--------
+
+这里有一个检查清单，帮助您为生产环境中的严肃 Pigsty 部署准备环境。
+
+|               项目                | 要求                                           |                       项目                       | 要求                                                     |
+|:---------------------------------:|:----------------------------------------------|:------------------------------------------------:|:--------------------------------------------------------|
+|  [节点](/zh/prepare/hardware#node)   | 至少 `1C1G`，推荐 `2C2G`，无上限                |          [规格](/zh/prepare/hardware#spec)          | 至少 `1` 个节点，`2` 个用于半高可用，`3+` 个用于真正的高可用        |
+|  [磁盘](/zh/prepare/hardware#disk)   | `/data`，主挂载点，`ext4` 或 `xfs`               |       [网络](/zh/prepare/hardware#network)       | 静态内网，IPv4 地址，最好有互联网访问                          |
+|   [VIP](/zh/prepare/hardware#vip)    | 为 VIP 保留一个 L2 IP （**可选**）                |        [域名](/zh/prepare/hardware#domain)        | 使用本地 / 公共域名（**可选**）                            |
+| [内核](/zh/prepare/software#linux) | `Linux`，MacOS 可用作管理控制器                  |             [发行版](/zh/prepare/linux)             | EL (8/9)、Debian (12)、Ubuntu (22/24)、`x86_64` / `aarch64` |
+| [区域设置](/zh/prepare/software#linux) | `C.UTF-8` 或 `C`                            |      [防火墙](/zh/prepare/software#firewall)      | 端口：`80` / `443` / `22` / `5432`                      |
+|    [用户](/zh/prepare/admin#user)    | 避免使用 `root` 和 `postgres`                  |      [Sudo](/zh/prepare/admin#sudo-privileges)      | `nopass` sudo 权限                                     |
+|     [SSH](/zh/prepare/admin#ssh)     | 通过公钥 `nopass`                             | [可访问](/zh/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` 有效                         |

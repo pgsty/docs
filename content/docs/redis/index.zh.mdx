@@ -1,0 +1,35 @@
+---
+title: Redis
+description: 开源内存数据结构存储
+icon: Layers
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/redis/config"}>
+        配置 redis 模块，并使用多个 redis 节点。
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/redis/param"}>
+        使用 21 个参数自定义 redis 组件
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/redis/admin"}>
+        创建、移除、扩展 redis 集群
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/redis/playbook"}>
+        可在此模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/redis/monitor"}>
+        仪表板、指标、记录和告警规则。
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='常见问题' href={"/zh/redis/faq"}>
+        关于 redis 模块的常见问题
+    </Card>
+</Cards>

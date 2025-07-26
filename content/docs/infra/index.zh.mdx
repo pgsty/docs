@@ -1,0 +1,39 @@
+---
+title: 基础设施
+description: 门户和可观测性技术栈
+icon: Landmark
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    Blocks
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<Blocks className="text-red-600"/>} title='架构' href={"/zh/infra/arch"}>
+        架构、核心概念、身份管理
+    </Card>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/infra/config"}>
+        配置基础设施模块，并使用多个基础设施节点。
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/infra/param"}>
+        使用 57+ 参数自定义基础设施组件
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/infra/admin"}>
+        管理本地仓库、nginx 门户、域名、证书等
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/infra/playbook"}>
+        可在此模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/infra/monitor"}>
+        仪表板、指标、记录和告警规则。
+    </Card>
+    <Card icon={<Blocks className="text-emerald-600"/>} title='常见问题' href={"/zh/infra/faq"}>
+        关于基础设施模块的常见问题
+    </Card>
+</Cards>

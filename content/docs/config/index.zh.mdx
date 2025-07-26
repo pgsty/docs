@@ -1,0 +1,79 @@
+---
+title: 配置
+description: 使用配置描述您的环境
+icon: Landmark
+---
+
+import {
+    Database,
+    CpuIcon,
+    Landmark,
+    FileCode,
+    Settings,
+    FileJson,
+    Shield,
+    GraduationCap,
+    Box,
+    Layers,
+    Container,
+    Leaf,
+} from 'lucide-react';
+
+**Pigsty 将基础设施和数据库视为代码。** 您可以使用声明式配置 [**清单**](/zh/config/inventory) 描述一切。
+通常是 YAML 格式的 [**Ansible 清单**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html)：`pigsty.yml`。
+但 [CMDB](/zh/config/cmdb) 也可以用作动态清单。
+
+[`configure`](/zh/config/configure) 过程将根据您的环境和输入生成配置。
+但这是 **可选的**：您始终可以直接编辑 `pigsty.yml` 文件，如 [**教程**](/zh/config/tutorial) 所示。
+并且有大量的 [**模板**](/zh/config/template) 供您参考。
+
+
+<Cards>
+    <Card icon={<FileJson className="text-orange-600"/>} title='清单' href={"/zh/config/inventory"}>
+        Pigsty 的主配置文件，描述您的整个部署
+    </Card>
+    <Card icon={<CpuIcon className="text-green-700"/>} title='配置' href={"/zh/config/configure"}>
+        根据您的输入和环境生成配置文件
+    </Card>
+    <Card icon={<GraduationCap className={"text-yellow-600"}/>} title='教程' href={"/zh/config/tutorial"}>
+        根据业务需求规划您的部署
+    </Card>
+    <Card icon={<FileCode className="text-blue-500"/>} title='模板' href={"/zh/config/template"}>
+        可用的配置模板和示例
+    </Card>
+    <Card icon={<Shield className="text-red-500"/>} title='安全' href={"/zh/config/security"}>
+        生产部署的安全考虑和最佳实践
+    </Card>
+    <Card icon={<Database className="text-sky-600"/>} title='CMDB' href={"/zh/config/cmdb"}>
+        使用 PostgreSQL 作为 CMDB 而不是本地 YAML 配置文件
+    </Card>
+</Cards>
+
+
+
+--------
+
+<Cards>
+    <Card icon={<Database className="text-sky-600"/>} title='PGSQL' href={"/zh/pgsql/config"}>
+        具有 HA、PITR、IaC、ACL、监控、连接池的 PostgreSQL 集群
+    </Card>
+    <Card icon={<Landmark className="text-green-700"/>} title='INFRA' href={"/zh/infra/config"}>
+        用于可观测性的 Nginx、仓库、DNS、NTP、Prometheus 和 Grafana 技术栈
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"}/>} title='NODE' href={"/zh/node/config"}>
+        将节点注册到期望状态并监控它，以及 VIP、HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"}/>} title='ETCD' href={"/zh/etcd/config"}>
+        可靠的分布式共识存储 (DCS)，为 PGSQL HA 提供支持
+    </Card>
+    <Card icon={<Box className="text-red-800"/>} title='MINIO' href={"/zh/minio/config"}>
+        兼容 S3 的对象存储，可选备份存储
+    </Card>
+    <Card icon={<Layers className="text-red-400"/>} title='REDIS' href={"/zh/redis/config"}>
+        高性能内存缓存，可选数据结构服务器
+    </Card>
+</Cards>
+
+| [<span className={"text-sky-600 font-bold"}>PGSQL</span>](/zh/pgsql/param) | [<span className={"text-green-700 font-bold"}>INFRA</span>](/zh/infra/param) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/zh/node/param)   |   [<span className={"text-sky-400 font-bold"}>ETCD</span>](/zh/etcd/param)    |
+|:----------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
+| [<span className={"text-red-800 font-bold"}>MINIO</span>](/zh/minio/param) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/zh/redis/param)  | [<span className={"text-blue-500 font-bold"}>DOCKER</span>](/zh/docker/param) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/zh/ferret/param) |

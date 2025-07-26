@@ -1,0 +1,110 @@
+---
+title: PostgreSQL
+description: 世界上最先进的开源关系型数据库！
+icon: Database
+---
+
+
+> **世界上最先进的开源关系型数据库！**
+>
+> 由 Pigsty 提供电池级可观测性、可靠性和可维护性支持
+
+## 概念 [#concept]
+
+> Pigsty 中的 PostgreSQL 概述
+
+- [架构](/zh/pgsql/arch/)
+- [配置](/zh/pgsql/config/)
+- [扩展](/zh/pgsql/extension/)
+- [数据库](/zh/pgsql/db/)
+- [用户](/zh/pgsql/user/)
+- [服务](/zh/pgsql/service/)
+- [HBA 规则](/zh/pgsql/hba/)
+- [访问控制](/zh/pgsql/acl)
+- [管理](/zh/pgsql/admin/)
+- [备份与 PITR](/zh/pgsql/backup/)
+- [监控](/zh/pgsql/monitor/)
+- [迁移](/zh/pgsql/migration/)
+
+------
+
+## 配置 [#configuration]
+
+> [描述](/zh/pgsql/config/) 您想要的集群
+
+- [身份](/zh/pgsql/config/#identity-parameters)：用于描述 PostgreSQL 集群的参数
+- [主库](/zh/pgsql/config/#primary)：定义单实例集群
+- [从库](/zh/pgsql/config/#replica)：定义具有一个主库和一个从库的基本 HA 集群
+- [离线](/zh/pgsql/config/#offline)：定义用于 OLAP/ETL/交互式查询的专用实例。
+- [同步备库](/zh/pgsql/config/#sync-standby)：启用同步提交以确保无数据丢失
+- [仲裁提交](/zh/pgsql/config/#quorum-commit)：使用仲裁同步提交以获得更高的一致性级别
+- [备库集群](/zh/pgsql/config/#standby-cluster)：克隆现有集群并跟随它
+- [延迟集群](/zh/pgsql/config/#delayed-cluster)：克隆现有集群以进行紧急数据恢复
+- [Citus 集群](/zh/pgsql/config/#citus-cluster)：定义 Citus 分布式数据库集群
+
+------
+
+## 管理 [#administration]
+
+> [管理](/zh/pgsql/admin/) 您现有的集群
+
+- [`管理备忘单`](/zh/pgsql/admin#cheatsheet)
+- [`创建集群`](/zh/pgsql/admin#create-cluster)
+- [`创建用户`](/zh/pgsql/admin#create-user)
+- [`创建数据库`](/zh/pgsql/admin#create-database)
+- [`重载服务`](/zh/pgsql/admin#reload-service)
+- [`重载 HBA 规则`](/zh/pgsql/admin#reload-hbarule)
+- [`配置集群`](/zh/pgsql/admin#config-cluster)
+- [`添加从库`](/zh/pgsql/admin#append-replica)
+- [`移除从库`](/zh/pgsql/admin#remove-replica)
+- [`移除集群`](/zh/pgsql/admin#remove-cluster)
+- [`切换集群`](/zh/pgsql/admin#switchover)
+- [`备份集群`](/zh/pgsql/admin#backup-cluster)
+- [`恢复集群`](/zh/pgsql/admin#restore-cluster)
+
+------
+
+## 剧本 [#playbook]
+
+> 使用幂等 [剧本](/zh/pgsql/playbook/) 实现集群
+
+- [`pgsql.yml`](/zh/pgsql/playbook/#pgsqlyml) ：初始化 HA PostgreSQL 集群或添加新的从库。
+- [`pgsql-rm.yml`](/zh/pgsql/playbook/#pgsql-rmyml) ：移除 PostgreSQL 集群，或移除从库
+- [`pgsql-user.yml`](/zh/pgsql/playbook/#pgsql-useryml) ：向现有 PostgreSQL 集群添加新的业务用户
+- [`pgsql-db.yml`](/zh/pgsql/playbook/#pgsql-dbyml) ：向现有 PostgreSQL 集群添加新的业务数据库
+- [`pgsql-monitor.yml`](/zh/pgsql/playbook/#pgsql-monitoryml) ：使用本地导出器监控远程 PostgreSQL 实例
+- [`pgsql-migration.yml`](/zh/pgsql/playbook/#pgsql-migrationyml) ：为现有 PostgreSQL 生成迁移手册和脚本
+
+
+------
+
+## 仪表板 [#dashboard]
+
+关于 PostgreSQL 有 26 个默认的 grafana 仪表板，分为 4 个层级。查看 [仪表板](/zh/pgsql/dashboard/) 了解详情。
+
+|                         概览                          |                             集群                             |                          实例                           |                         数据库                          |
+|:---------------------------------------------------------:|:---------------------------------------------------------------:|:-----------------------------------------------------------:|:---------------------------------------------------------:|
+| [PGSQL Overview](https://demo.pigsty.cc/d/pgsql-overview) |     [PGSQL Cluster](https://demo.pigsty.cc/d/pgsql-cluster)     |  [PGSQL Instance](https://demo.pigsty.cc/d/pgsql-instance)  | [PGSQL Database](https://demo.pigsty.cc/d/pgsql-database) |
+|    [PGSQL Alert](https://demo.pigsty.cc/d/pgsql-alert)    |     [PGRDS Cluster](https://demo.pigsty.cc/d/pgrds-cluster)     |  [PGRDS Instance](https://demo.pigsty.cc/d/pgrds-instance)  | [PGCAT Database](https://demo.pigsty.cc/d/pgcat-database) |
+|    [PGSQL Shard](https://demo.pigsty.cc/d/pgsql-shard)    |    [PGSQL Activity](https://demo.pigsty.cc/d/pgsql-activity)    |  [PGCAT Instance](https://demo.pigsty.cc/d/pgcat-instance)  |   [PGSQL Tables](https://demo.pigsty.cc/d/pgsql-tables)   |
+|                                                           | [PGSQL Replication](https://demo.pigsty.cc/d/pgsql-replication) |   [PGSQL Persist](https://demo.pigsty.cc/d/pgsql-persist)   |    [PGSQL Table](https://demo.pigsty.cc/d/pgsql-table)    |
+|                                                           |     [PGSQL Service](https://demo.pigsty.cc/d/pgsql-service)     |     [PGSQL Proxy](https://demo.pigsty.cc/d/pgsql-proxy)     |    [PGCAT Table](https://demo.pigsty.cc/d/pgcat-table)    |
+|                                                           |   [PGSQL Databases](https://demo.pigsty.cc/d/pgsql-databases)   | [PGSQL Pgbouncer](https://demo.pigsty.cc/d/pgsql-pgbouncer) |    [PGSQL Query](https://demo.pigsty.cc/d/pgsql-query)    |
+|                                                           |     [PGSQL Patroni](https://demo.pigsty.cc/d/pgsql-patroni)     |   [PGSQL Session](https://demo.pigsty.cc/d/pgsql-session)   |    [PGCAT Query](https://demo.pigsty.cc/d/pgcat-query)    |
+|                                                           |        [PGSQL PITR](https://demo.pigsty.cc/d/pgsql-pitr)        |     [PGSQL Xacts](https://demo.pigsty.cc/d/pgsql-xacts)     |    [PGCAT Locks](https://demo.pigsty.cc/d/pgcat-locks)    |
+|                                                           |                                                                 |  [PGSQL Exporter](https://demo.pigsty.cc/d/pgsql-exporter)  |   [PGCAT Schema](https://demo.pigsty.cc/d/pgcat-schema)   |
+
+## 教程 [#tutorials]
+
+- 分叉现有的 PostgreSQL 集群。
+- 创建现有 PostgreSQL 集群的备库集群。
+- 创建另一个 pgsql 集群的延迟集群？
+- 监控现有的 postgres 实例？
+- 使用逻辑复制从外部 PostgreSQL 迁移？
+- 使用 MinIO 作为中央 pgBackRest 仓库。
+- 为 DCS 使用专用的 etcd 集群？
+- 使用专用的 haproxy 暴露 PostgreSQL 服务。
+- 部署多节点 MinIO 集群？
+- 使用 CMDB 而不是配置作为清单。
+- 使用 PostgreSQL 作为 grafana 后端存储？
+- 使用 PostgreSQL 作为 prometheus 后端存储？

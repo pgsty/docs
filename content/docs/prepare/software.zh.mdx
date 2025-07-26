@@ -1,12 +1,11 @@
 ---
-title: 软件
+title: 软件置备
 description: 区域设置、防火墙、Ansible、Pigsty...
 icon: Disc
 ---
 
-------
 
-## Linux [#linux]
+## Linux
 
 Pigsty 运行在 <span className="text-xl text-amber-500 font-black">Linux</span> 操作系统上，它支持 **10** 种主流 Linux 发行版：[**兼容操作系统列表**](/zh/prepare/linux)
 
@@ -39,6 +38,21 @@ Pigsty **不**使用容器，主要组件针对特定发行版主版本打包。
     请在单个部署中的所有节点上使用相同的操作系统主版本和次版本。
 
 </Callout>
+
+--------
+
+## 文件系统 [#file-system]
+
+Pigsty 建议使用 `ext4` 或 `xfs` 文件系统，两者在 PostgreSQL 用例上都有最好的性能表现。
+如果您清楚知道自己在做什么，也可以考虑使用 `zfs` 这样的文件系统，但切勿使用 `nfs` 等网络文件系统运行数据库服务。
+
+如果您需要使用到 MinIO，建议使用 `xfs` 文件系统，这是 MinIO 唯一推荐使用到文件系统。
+它在大量小文件的场景中有更好的性能表现，但工具生态（例如数据恢复）略逊于 `ext4`。
+
+如果您只是运行标准 PostgreSQL 服务，我们建议您默认使用 Linux `ext4` 文件系统。
+
+
+
 
 --------
 

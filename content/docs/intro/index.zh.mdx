@@ -1,0 +1,42 @@
+---
+title: 参考
+description: 架构、用例、比较等...
+icon: BookMarked
+---
+
+import {
+    Database,
+    SearchIcon,
+    AtomIcon,
+    ToyBrickIcon,
+} from 'lucide-react';
+
+
+<span className="text-black font-black">Pigsty</span> <span className="text-fd-muted-foreground text-sm">(/ˈpɪɡ staɪ/)</span>
+是一个电池级、FOSS <a href="/zh/intro/distro"><span className="text-sky-700 font-black">PostgreSQL 发行版</span></a>
+作为本地优先的 <a href="/zh/intro/rds"><span className="text-amber-600 font-black">RDS 替代方案</span></a>。
+
+
+<Cards>
+    <Card icon={<Database className="text-blue-300" />} title='PostgreSQL 企业版' href={"/zh/pgsql"}>
+        轻松创建自愈的高可用 PG 集群，预配置时间点恢复、ACL、CA、SSL...
+    </Card>
+    <Card icon={<AtomIcon className="text-green-600" />} title='基础设施即代码' href={"/zh/infra"}>
+        用代码声明您的整个基础设施，并从裸机操作系统设置 PG 需要的一切：LB、Nginx、NTP、DNS、本地仓库等...
+    </Card>
+    <Card icon={<SearchIcon className={"text-orange-400"} />} title='令人惊叹的可观测性'>
+        基于现代 Prometheus 和 Grafana 可观测性技术栈的无与伦比的监控最佳实践，开箱即用
+    </Card>
+    <Card icon={<ToyBrickIcon className={"text-red-500"} />} title='扩展和分支'>
+        <span className={"text-red-800 font-bold"}>420+</span> PGSQL 扩展电池级内置！还有分支：Babelfish、Oriole、IvorySQL、OpenHalo、PolarDB、Supabase...
+    </Card>
+</Cards>
+
+Pigsty 提供了自托管企业级 PostgreSQL 服务所需的一切，即使没有专业知识也能做到。
+
+只需将 PostgreSQL 用于 **一切**，并像专家一样自托管 PostgreSQL！
+
+<Callout title="想要了解更多？">
+    阅读我们深入的 [什么是 Pigsty](/zh/intro) 介绍。
+
+</Callout>

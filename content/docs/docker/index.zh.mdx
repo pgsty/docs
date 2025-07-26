@@ -1,0 +1,39 @@
+---
+title: Docker
+description: Docker，开源容器服务
+icon: Container
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+Docker 是 Pigsty 中的一个 [可选模块](/zh/intro/module#extra-modules)，默认已下载但未安装。
+您必须在使用前显式 [启用](/zh/docker/config) 它。
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/docker/config"}>
+        配置 docker 注册中心、代理、镜像等...
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/docker/param"}>
+        使用 8 个参数自定义 docker 组件
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/docker/admin"}>
+        管理 docker 镜像、容器等...
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/docker/playbook"}>
+        可在 docker 模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/docker/monitor"}>
+        仪表板、指标、记录和告警规则。
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='常见问题' href={"/zh/docker/faq"}>
+        关于 docker 模块的常见问题
+    </Card>
+</Cards>

@@ -1,0 +1,46 @@
+---
+title: FERRET
+description: Ferret，基于 postgres 的 mongo
+icon: Citrus
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+MongoDB 已经失去了其开源吸引力，不再适合许多用例。
+相比之下，PostgreSQL 提供强大的原生 JSON 支持，作为文档数据库的性能超越了 MongoDB。
+
+因此，FerretDB 在 postgres 之上提供了与 mongo 线协议兼容的层，使 MongoDB 用户能够平滑迁移到 PostgreSQL 的优越平台。
+[**FERRET**](/zh/ferret) 是 Pigsty 中的一个 <a href="/zh/intro/module#extra-modules"><span className="text-emerald-500 font-black">可选</span></a> 模块。
+自 v2.0 以来，它需要 `documentdb` 扩展才能工作。
+
+Pigsty 已经打包了这个扩展，并提供了一个 [`mongo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/mongo.yml) 模板，帮助您轻松部署 FerretDB 集群。
+
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/ferret/config"}>
+        配置 ferret 模块，并使用多个 ferret 节点。
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/ferret/param"}>
+        使用 9 个参数自定义 ferret 组件
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/ferret/admin"}>
+        创建、移除、扩展、收缩、升级 ferret 集群
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/ferret/playbook"}>
+        可在此模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/ferret/monitor"}>
+        仪表板、指标、记录和告警规则。
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='使用' href={"/zh/ferret/usage"}>
+        如何使用 mcli 和配置备份仓库
+    </Card>
+</Cards>

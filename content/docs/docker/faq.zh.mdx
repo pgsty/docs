@@ -1,8 +1,9 @@
 ---
-title: 常见问题
+title: FAQ
 description: 常见问题解答
 icon: MessageCircleQuestion
 ---
+
 
 ## 谁可以运行 Docker 命令？ [#who-can-run-docker-commands]
 
@@ -25,17 +26,21 @@ sudo usermod -aG docker <username>
 
 **提示：** 使用 `-x` 标志运行 `configure` 剧本会自动捕获当前 shell 的代理变量并将它们注入到 `proxy_env` 中。
 
+
+
 ------
 
 ## 使用镜像注册中心 [#using-mirror-registries]
 
-在中国大陆，您可能会遇到防火长城限制。历史上，可以使用诸如 **quay.io** 等镜像：
+在中国大陆，您可能会遇到 GFW 限制。可以使用诸如 **quay.io** 等镜像：
 
 ```bash
 docker login quay.io   # 输入您的凭据登录
 ```
 
 > **更新（2024年6月）：** 中国所有以前可访问的 Docker 镜像现在都已被阻止。请通过代理拉取镜像。
+
+
 
 ------
 

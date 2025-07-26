@@ -4,10 +4,10 @@ description: 分布式元数据存储
 icon: HandCoins
 ---
 
-ETCD is a distributed, reliable key-value store for the most critical data of a distributed system.
-[**etcd**](https://etcd.io/) is used as [**DCS**](https://patroni.readthedocs.io/en/latest/dcs_failsafe_mode.html) (Distributed configuration storage) for patroni, the PostgreSQL HA Agent for config management and leader election.
+ETCD 是一个分布式、可靠的键值存储，用于分布式系统的最关键数据。
+[**etcd**](https://etcd.io/) 被用作 patroni 的 [**DCS**](https://patroni.readthedocs.io/en/latest/dcs_failsafe_mode.html)（分布式配置存储），为 PostgreSQL 高可用代理提供配置管理和领导者选举功能。
 
-In short, [`PGSQL`](/pgsql) depends on a global [`ETCD`](/etcd) module, and ETCD depends on [`NODE`](/node) module to work properly (use the node CA).
+简而言之，[`PGSQL`](/zh/pgsql) 依赖于全局的 [`ETCD`](/zh/etcd) 模块，而 ETCD 依赖于 [`NODE`](/zh/node) 模块才能正常工作（使用节点 CA）。
 
 
 import {
@@ -21,22 +21,22 @@ import {
 
 
 <Cards>
-    <Card icon={<CodeXml className="text-sky-700"/>} title='Configuration' href={"/etcd/config"}>
-        Define etcd cluster at different size
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/etcd/config"}>
+        定义不同规模的 etcd 集群
     </Card>
-    <Card icon={<Variable className="text-amber-500"/>} title='Parameters' href={"/etcd/param"}>
-        Customize etcd components with 10 parameters
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/etcd/param"}>
+        使用 10 个参数自定义 etcd 组件
     </Card>
-    <Card icon={<Wrench className={"text-violet-500"}/>} title='Administration' href={"/etcd/admin"}>
-        Adding / Removing etcd members, refresh endpoints...
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/etcd/admin"}>
+        添加/删除 etcd 成员，刷新端点...
     </Card>
-    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbooks' href={"/etcd/playbook"}>
-        Ansible playbooks that can be used in etcd module
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/etcd/playbook"}>
+        可在 etcd 模块中使用的 Ansible 剧本
     </Card>
-    <Card icon={<Telescope className="text-orange-600"/>} title='Monitoring' href={"/etcd/monitor"}>
-        Dashboards, metrics, record & alerting rules.
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/etcd/monitor"}>
+        仪表板、指标、记录和告警规则
     </Card>
-    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='FAQ' href={"/etcd/faq"}>
-        Frequently Asked Questions about etcd module
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='常见问题' href={"/zh/etcd/faq"}>
+        关于 etcd 模块的常见问题
     </Card>
 </Cards>

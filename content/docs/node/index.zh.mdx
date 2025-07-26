@@ -1,0 +1,43 @@
+---
+title: 节点
+description: 将 Linux 机器主机注册到期望状态
+icon: Server
+full: true
+---
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    Blocks
+} from 'lucide-react';
+
+要部署 [模块](/zh/intro/module)，您必须通过在 Linux 服务器上安装 [NODE](/zh/node) 模块将它们注册到 pigsty 中。
+
+
+<Cards>
+    <Card icon={<Blocks className="text-red-600"/>} title='架构' href={"/zh/node/arch"}>
+        架构、核心概念、身份管理
+    </Card>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/node/config"}>
+        配置节点身份
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/node/param"}>
+        使用 64 个参数自定义节点组件
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/node/admin"}>
+        设置 VIP，管理监控节点目标
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/node/playbook"}>
+        可在节点模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/node/monitor"}>
+        仪表板、指标、记录和告警规则。
+    </Card>
+
+    <Card icon={<Blocks className="text-emerald-600"/>} title='常见问题' href={"/zh/node/faq"}>
+        关于节点模块的常见问题
+    </Card>
+</Cards>

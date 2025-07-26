@@ -1,0 +1,45 @@
+---
+title: MinIO
+description: 开源对象存储服务
+icon: Box
+---
+
+
+[Min.IO](https://min.io/docs/minio/linux/reference/minio-mc/mc-mb.html)：兼容 S3 的开源多云对象存储服务，设计为可扩展、安全且便捷。
+它具有原生的多节点多驱动器 HA 支持，可以存储文档、图片、视频和备份。它是 Pigsty 中的一个 [可选模块](/zh/intro/module)。
+
+您可以使用 MinIO 作为可选的 PostgreSQL [备份](/zh/pgsql/backup) 存储仓库，除了默认的本地 posix FS 仓库之外。如果使用 MinIO 仓库，
+`MINIO` 模块应该在任何 [`PGSQL`](/zh/pgsql/) 模块之前安装。MinIO 需要受信任的 CA 才能工作，所以您必须在 [`NODE`](/zh/node/) 之后安装它。
+
+--------
+
+import {
+    CodeXml,
+    Variable,
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/minio/config"}>
+        配置 minio 模块，并使用多个 minio 节点。
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/minio/param"}>
+        使用 22 个参数自定义 minio 组件
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/minio/admin"}>
+        创建、移除、扩展、收缩、升级 minio 集群
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/minio/playbook"}>
+        可在此模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/minio/monitor"}>
+        仪表板、指标、记录和告警规则。
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='使用' href={"/zh/minio/usage"}>
+        如何使用 mcli 和配置备份仓库
+    </Card>
+</Cards>

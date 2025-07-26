@@ -1,0 +1,60 @@
+---
+title: 关键特性
+description: 关键特性和亮点
+icon: Feather
+---
+
+import {Boxes, SquareCode, Telescope, Zap, FileJson, DatabaseBackup, Cpu, Infinity, BookDashed} from 'lucide-react';
+
+
+
+<Cards>
+
+    <Card icon={<FileJson className="text-orange-600"/>} title='面向开发者的 Postgres 发行版'
+          href={"/zh/intro/distro"}>
+        将 PostgreSQL 用于一切！ \
+        用组装的超能力构建数据基础设施！
+    </Card>
+
+    <Card icon={<FileJson className="text-orange-600"/>} title='面向运维的 RDS 解决方案' href={"/zh/intro/rds"}>
+        像专家一样自托管 PostgreSQL！ \
+        无需专业知识即可运营生产级服务
+    </Card>
+
+</Cards>
+
+--------
+
+<Cards>
+
+    <Card icon={<Boxes className="text-sky-700"/>} title='Postgres 扩展' href={"/zh/feat/ext"}>
+        开箱即用地获得 **420+** PG 扩展的超能力
+    </Card>
+
+    <Card icon={<Infinity className="text-orange-600"/>} title='高可用性' href={"/zh/feat/ha"}>
+        自愈架构和无忧服务访问
+    </Card>
+    <Card icon={<Cpu className={"text-yellow-600"}/>} title='内核替换' href={"/zh/feat/kernel"}>
+        在 PGSQL 之上模拟 MySQL、Mongo、Oracle、SQL Server
+    </Card>
+
+    <Card icon={<DatabaseBackup className="text-sky-600"/>} title='灾难恢复' href={"/zh/feat/pitr"}>
+        自动配置备份和简化的 PITR
+    </Card>
+
+    <Card icon={<SquareCode className="text-red-500"/>} title='基础设施即代码' href={"/zh/feat/iac"}>
+        用代码 / 数据描述和实现一切
+    </Card>
+
+    <Card icon={<Telescope className="text-blue-500"/>} title='内置监控' href={"/zh/feat/infra"}>
+        使用 Grafana 和 Prometheus 技术栈的预配置仪表板
+    </Card>
+
+    <Card icon={<Zap className="text-emerald-500"/>} title='自托管 Supabase' href={"/zh/app/supabase"}>
+        将 Postgres 转变为全功能的后端即服务
+    </Card>
+
+    <Card icon={<BookDashed className="text-sky-600"/>} title='应用模板' href={"/zh/feat/app"}>
+        使用 HA PG 强化软件：Gitlab、Odoo、Dify 等
+    </Card>
+</Cards>
