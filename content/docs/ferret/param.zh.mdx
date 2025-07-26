@@ -1,0 +1,131 @@
+---
+title: 参数
+description: 使用 9 个参数自定义 FerretDB
+icon: Variable
+---
+
+[`FERRET`](/zh/ferret) 模块中有 9 个参数。
+
+| 参数                    |  类型   | 层级  | 注释                                        |
+|-----------------------|:-----:|:---:|--------------------------------------------|
+| `mongo_seq`           |  int  |  I  | mongo 实例标识符，必需                           |
+| `mongo_cluster`       | string |  C  | mongo 集群名称，默认为 MONGO                     |
+| `mongo_pgurl`         | pgurl | C/I | ferretdb 的底层 postgres URL                 |
+| `mongo_ssl_enabled`   | bool  |  C  | mongo/ferretdb ssl 启用，默认为 false           |
+| `mongo_listen`        |  ip   |  C  | mongo 监听地址，为空时监听所有地址                     |
+| `mongo_port`          | port  |  C  | mongo 服务端口，默认为 27017                     |
+| `mongo_ssl_port`      | port  |  C  | mongo tls 监听端口，默认为 27018                 |
+| `mongo_exporter_port` | port  |  C  | mongo exporter 端口，默认为 9216                |
+| `mongo_extra_vars`    | string |  C  | MONGO 服务器的额外环境变量                         |
+
+------
+
+## 默认值 [#defaults]
+
+默认参数定义在 [`roles/ferret/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/ferret/defaults/main.yml) 中
+
+```yaml
+# mongo_cluster:        #CLUSTER  # mongo 集群名称，必需的身份参数
+# mongo_seq: 0          #INSTANCE # mongo 实例序列号，必需的身份参数
+# mongo_pgurl: 'postgres:///'     # mongo/ferretdb 底层 postgresql url，必需
+mongo_ssl_enabled: false          # mongo/ferretdb ssl 启用，默认为 false
+mongo_listen: ''                  # mongo/ferretdb 监听地址，'' 表示所有地址
+mongo_port: 27017                 # mongo/ferretdb 监听端口，默认为 27017
+mongo_ssl_port: 27018             # mongo/ferretdb tls 监听端口，默认为 27018
+mongo_exporter_port: 9216         # mongo/ferretdb exporter 端口，默认为 9216
+mongo_extra_vars: ''              # mongo/ferretdb 的额外环境变量
+```
+
+------
+
+## `mongo_cluster`
+
+名称：`mongo_cluster`，类型：`string`，层级：`C`
+
+mongo 集群名称，必需的身份参数。
+
+默认值为 `MONGO`，但您应该为生产使用显式定义它。
+
+符合正则表达式 `[a-z][a-z0-9-]*`，建议使用描述性名称并以 `mongo-` 开头
+
+------
+
+## `mongo_seq`
+
+名称：`mongo_seq`，类型：`int`，层级：`I`
+
+mongo 实例序列号，mongo 集群中需要唯一整数
+
+您必须为每个 mongo 实例显式定义序列号。整数从 0 或 1 开始。
+
+------
+
+## `mongo_pgurl`
+
+名称：`mongo_pgurl`，类型：`pgurl`，层级：`C/I`
+
+ferretdb 连接的底层 postgres URL。
+
+没有默认值，您必须显式定义它。这是 FerretDB 将用作其后端存储的 PostgreSQL 数据库 URL。
+
+格式：`postgres://username:password@host:port/database`
+
+------
+
+## `mongo_ssl_enabled`
+
+名称：`mongo_ssl_enabled`，类型：`bool`，层级：`C`
+
+mongo/ferretdb ssl 启用标志。
+
+默认值为 `false`。设置为 `true` 以启用 mongo 连接的 SSL/TLS 加密。
+
+------
+
+## `mongo_listen`
+
+名称：`mongo_listen`，类型：`ip`，层级：`C`
+
+mongo 绑定的监听地址。
+
+默认值为空字符串 `''`，这意味着监听所有可用地址。您可以指定特定的 IP 地址进行绑定。
+
+------
+
+## `mongo_port`
+
+名称：`mongo_port`，类型：`port`，层级：`C`
+
+mongo 客户端连接的服务端口。
+
+默认值为 `27017`，这是标准的 MongoDB 端口。如果您需要避免端口冲突，请更改此端口。
+
+------
+
+## `mongo_ssl_port`
+
+名称：`mongo_ssl_port`，类型：`port`，层级：`C`
+
+mongo 加密连接的 tls 监听端口。
+
+默认值为 `27018`。当为安全连接启用 SSL/TLS 时，使用此端口。
+
+------
+
+## `mongo_exporter_port`
+
+名称：`mongo_exporter_port`，类型：`port`，层级：`C`
+
+mongo 指标收集的 exporter 端口。
+
+默认值为 `9216`。此端口由监控 exporter 使用，向 Prometheus 暴露指标。
+
+------
+
+## `mongo_extra_vars`
+
+名称：`mongo_extra_vars`，类型：`string`，层级：`C`
+
+MONGO 服务器的额外环境变量。
+
+默认值为空字符串 `''`。您可以指定将传递给 FerretDB 进程的额外环境变量。

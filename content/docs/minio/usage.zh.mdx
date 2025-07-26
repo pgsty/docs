@@ -1,0 +1,158 @@
+---
+title: 使用
+description: MinIO 与 mcli 使用入门，如何访问 MinIO 服务？
+icon: Rocket
+---
+
+MinIO 集群 [配置](/zh/minio/config/) 并通过 [剧本](/zh/minio/playbook/) 部署完成后，您可以按照以下说明开始使用和访问 MinIO 集群。
+
+------
+
+## 部署集群 [#deploy-cluster]
+
+使用 Pigsty 部署单节点 MinIO 实例非常简单。
+
+```yaml
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+```
+
+在 [配置清单](/zh/config/inventory) 中定义它，然后运行剧本：
+
+```bash
+./minio.yml -l minio
+```
+
+[`install.yml`](/zh/admin/playbook#deployment) 剧本将自动创建清单中定义的 MinIO 集群，因此如果您选择默认的一次性安装，无需手动运行 `minio.yml` 剧本。
+
+如果您计划部署生产级大规模多节点 MinIO 集群，我们 **强烈** 建议您在开始之前阅读 Pigsty MinIO [配置文档](/zh/minio/config) 和 MinIO [官方文档](https://min.io/docs/minio/linux/operations/concepts.html)。
+
+------
+
+## 访问集群 [#access-cluster]
+
+您必须通过 HTTPS 访问 MinIO，因此请确保默认的 minio 服务域名（`sss.pigsty`）指向正确的位置：
+
+1. 您可以在 [`node_etc_hosts`](/zh/node/param#node_etc_hosts) 中添加静态解析记录或手动修改 `/etc/hosts` 文件
+2. 如果您正在使用 DNS 服务，可以在内部 DNS 服务器上添加记录
+3. 如果您正在使用基础设施节点上的 DNSMASQ，可以在 [`dns_records`](/zh/infra/param#dns_records) 中添加记录
+
+建议使用第一种方法：静态 DNS 解析记录，以避免 MinIO 在生产环境中对 DNS 的额外依赖。
+
+您必须将 MinIO 服务域名指向 MinIO 服务器节点的 IP 地址和服务端口，或负载均衡器的 IP 地址和服务端口。Pigsty 将使用默认域名 `sss.pigsty` 和默认端口 `9000`。
+
+例如，如果您使用 haproxy 来暴露 MinIO 服务 [像这样](/zh/minio/config#expose-service)，端口可能是 `9002`。
+
+------
+
+## 添加别名 [#adding-alias]
+
+要使用 `mcli` 客户端访问 MinIO 服务器集群，您需要首先配置服务器别名：
+
+```bash
+mcli alias ls  # 列出 minio 别名（默认是 sss）
+mcli alias set sss https://sss.pigsty:9000 minioadmin minioadmin              # root 用户
+mcli alias set sss https://sss.pigsty:9002 minioadmin minioadmin              # root 用户，在负载均衡器端口 9002 上
+
+mcli alias set pgbackrest https://sss.pigsty:9000 pgbackrest S3User.Backup    # 使用其他用户
+```
+
+在管理节点的管理用户上有一个预配置的名为 `sss` 的 MinIO 别名，您可以直接使用它。
+
+关于 MinIO 客户端工具 `mcli` 的完整功能，请参考文档：[MinIO Client](https://min.io/docs/minio/linux/reference/minio-mc.html)。
+
+------
+
+## 管理用户 [#manage-user]
+
+您可以使用 `mcli` 在 MinIO 中管理业务用户，例如，您可以使用命令行创建两个默认业务用户：
+
+```bash
+mcli admin user list sss     # 列出所有用户
+set +o history               # 隐藏 shell 历史
+mcli admin user add sss dba S3User.DBA
+mcli admin user add sss pgbackrest S3User.Backup
+set -o history
+```
+
+------
+
+## 管理桶 [#manage-bucket]
+
+您可以使用 mcli 管理桶：
+
+```bash
+mcli ls sss/                         # 列出 'sss' 上的所有桶
+mcli mb --ignore-existing sss/hello  # 创建名为 'hello' 的桶
+mcli rb --force sss/hello            # 删除 'hello' 桶
+```
+
+------
+
+## 管理对象 [#mange-object]
+
+您可以使用 cli 执行对象 CRUD 操作，例如：
+
+```bash
+mcli cp /www/pigsty/* sss/infra/     # 将本地仓库内容上传到 infra 桶
+mcli cp sss/infra/plugins.tgz /tmp/  # 从 minio 下载文件到本地
+mcli ls sss/infra                    # 列出 infra 桶中的所有文件
+mcli rm sss/infra/plugins.tgz        # 删除 infra 桶中的文件
+mcli cat sss/infra/repo_complete     # 输出文件内容
+```
+
+详细信息请查看 [教程：对象管理](https://min.io/docs/minio/linux/administration/object-management.html)
+
+------
+
+## 使用 rclone [#use-rclone]
+
+Pigsty 仓库中提供了 [rclone](https://rclone.org/)，这是一个方便的云对象存储客户端，您可以使用它来访问 MinIO 服务。
+
+```bash
+yum install rclone; # el 兼容
+dnf install rclone; # debian/ubuntu
+
+mkdir -p ~/.config/rclone/;
+tee ~/.config/rclone/rclone.conf > /dev/null <<EOF
+[sss]
+type = s3
+access_key_id = minioadmin
+secret_access_key = minioadmin
+endpoint = sss.pigsty:9000
+EOF
+
+rclone ls sss:/
+```
+
+------
+
+## 备份仓库 [#backup-repo]
+
+在 Pigsty 中，MinIO 默认用作 pgBackRest 的备份仓库。当您将 [`pgbackrest_method`](/zh/pgsql/param#pgbackrest_method) 修改为 `minio` 时，PGSQL 模块将自动将备份仓库切换到 MinIO。
+
+```yaml
+pgbackrest_method: local          # pgbackrest 仓库方法：local,minio,[用户定义...]
+pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/configuration.html#section-repository
+  local:                          # 使用本地 posix fs 的默认 pgbackrest 仓库
+    path: /pg/backup              # 本地备份目录，默认为 `/pg/backup`
+    retention_full_type: count    # 按数量保留完整备份
+    retention_full: 2             # 使用本地 fs 仓库时保留 2 个，最多 3 个完整备份
+  minio:                          # pgbackrest 可选的 minio 仓库
+    type: s3                      # minio 兼容 s3，因此使用 s3
+    s3_endpoint: sss.pigsty       # minio 端点域名，默认为 `sss.pigsty`
+    s3_region: us-east-1          # minio 区域，默认为 us-east-1，对 minio 无用
+    s3_bucket: pgsql              # minio 桶名，默认为 `pgsql`
+    s3_key: pgbackrest            # pgbackrest 的 minio 用户访问密钥
+    s3_key_secret: S3User.Backup  # pgbackrest 的 minio 用户密钥
+    s3_uri_style: path            # 对 minio 使用路径样式 uri 而不是主机样式
+    path: /pgbackrest             # minio 备份路径，默认为 `/pgbackrest`
+    storage_port: 9000            # minio 端口，默认为 9000
+    storage_ca_file: /pg/cert/ca.crt  # minio ca 文件路径，默认为 `/pg/cert/ca.crt`
+    bundle: y                     # 将小文件打包成单个文件
+    cipher_type: aes-256-cbc      # 为远程备份仓库启用 AES 加密
+    cipher_pass: pgBackRest       # AES 加密密码，默认为 'pgBackRest'
+    retention_full_type: time     # 在 minio 仓库上按时间保留完整备份
+    retention_full: 14            # 保留最近 14 天的完整备份
+```
+
+请注意，如果您通过负载均衡器使用 MinIO，您应该在此处使用相应的域名和端口号。

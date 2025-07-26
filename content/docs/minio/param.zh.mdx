@@ -1,0 +1,347 @@
+---
+title: 参数
+description: 自定义 MinIO 参数
+icon: Variable
+---
+
+MinIO 是一个兼容 S3 的对象存储服务。它被用作 PostgreSQL 的可选中央备份存储仓库。
+
+您也可以将其用于其他目的，例如存储大文件、文档、图片和视频。
+
+------
+
+## 参数 [#parameters]
+
+MinIO 模块中有 **23** 个相关参数，其中 `MINIO` 19 个，`MINIO_REMOVE` 3 个。
+
+| 参数                                      |    类型    |  层级   | 注释                              |
+|:----------------------------------------|:--------:|:-----:|---------------------------------|
+| [`minio_seq`](#minio_seq)               |   int    |   I   | minio 实例标识符，必需                  |
+| [`minio_cluster`](#minio_cluster)       |  string  |   C   | minio 集群名称，默认为 minio            |
+| [`minio_clean`](#minio_clean)           |   bool   | G/C/A | 在初始化期间清理 minio？默认为 false        |
+| [`minio_user`](#minio_user)             | username |   C   | minio 操作系统用户，默认为 `minio`        |
+| [`minio_https`](#minio_https)           |   bool   |   G   | 为 minio 使用 https，默认为 true       |
+| [`minio_node`](#minio_node)             |  string  |   C   | minio 节点名称模式                    |
+| [`minio_data`](#minio_data)             |   path   |   C   | minio 数据目录，使用 `{x...y}` 指定多个驱动器 |
+| [`minio_volumes`](#minio_volumes)       |  string  |   C   | minio 核心参数，指定节点和磁盘，默认自动生成       |
+| [`minio_domain`](#minio_domain)         |  string  |   G   | minio 外部域名，默认为 `sss.pigsty`     |
+| [`minio_port`](#minio_port)             |   port   |   C   | minio 服务端口，默认为 9000             |
+| [`minio_admin_port`](#minio_admin_port) |   port   |   C   | minio 控制台端口，默认为 9001            |
+| [`minio_access_key`](#minio_access_key) | username |   C   | root 访问密钥，默认为 `minioadmin`      |
+| [`minio_secret_key`](#minio_secret_key) | password |   C   | root 密钥，默认为 `minioadmin`        |
+| [`minio_extra_vars`](#minio_extra_vars) |  string  |   C   | minio 服务器的额外环境变量                |
+| [`minio_provision`](#minio_provision)   |   bool   |  G/C  | 运行 minio 置备任务？                  |
+| [`minio_alias`](#minio_alias)           |  string  |   G   | 本地 minio 部署的别名                  |
+| [`minio_endpoint`](#minio_endpoint)     |  string  |   C   | 上述 minio 别名对应的 host:port        |
+| [`minio_buckets`](#minio_buckets)       | bucket[] |   C   | 要创建的 minio 桶列表                  |
+| [`minio_users`](#minio_users)           |  user[]  |   C   | 要创建的 minio 用户列表                 |
+
+| 参数                                    |  类型  |  层级   | 注释                        |
+|:--------------------------------------|:----:|:-----:|---------------------------|
+| [`minio_safeguard`](#minio_safeguard) | bool | G/C/A | 防止意外移除？（默认：false）         |
+| [`minio_rm_data`](#minio_rm_data)     | bool | G/C/A | 移除期间删除 minio 数据？（默认：true） |
+| [`minio_rm_pkg`](#minio_rm_pkg)       | bool | G/C/A | 移除期间卸载 minio 包？（默认：false） |
+
+[`minio_volumes`](#minio_volumes) 和 [`minio_endpoint`](#minio_endpoint) 是自动生成的参数，但您可以显式覆盖这两个参数。
+
+------
+
+## 默认值 [#defaults]
+
+`MINIO` 共有 19 个参数，定义于 [`roles/minio/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/minio/defaults/main.yml) 中
+
+```yaml
+#-----------------------------------------------------------------
+# MINIO
+#-----------------------------------------------------------------
+#minio_seq: 1                     # minio 实例标识符，必需
+minio_cluster: minio              # minio 集群标识符，必需
+minio_clean: false                # 在初始化期间清理 minio？默认为 false
+minio_user: minio                 # minio 操作系统用户，默认为 `minio`
+minio_https: true                 # 为 minio 使用 https，默认为 true
+minio_node: '${minio_cluster}-${minio_seq}.pigsty' # minio 节点名称模式
+minio_data: '/data/minio'         # minio 数据目录，使用 {x...y} 指定多个驱动器
+#minio_volumes:                   # minio 数据卷，如果指定则覆盖默认值
+minio_domain: sss.pigsty          # minio 外部域名，默认为 `sss.pigsty`
+minio_port: 9000                  # minio 服务端口，默认为 9000
+minio_admin_port: 9001            # minio 控制台端口，默认为 9001
+minio_access_key: minioadmin      # root 访问密钥，默认为 `minioadmin`
+minio_secret_key: minioadmin      # root 密钥，默认为 `minioadmin`
+minio_extra_vars: ''              # 额外环境变量
+minio_provision: true             # 运行 minio 置备任务？
+minio_alias: sss                  # 本地 minio 部署的别名
+#minio_endpoint: https://sss.pigsty:9000 # 如果未指定，由默认值覆盖
+minio_buckets:                    # 要创建的 minio 桶列表
+  - { name: pgsql }
+  - { name: meta ,versioning: true }
+  - { name: data }
+minio_users:                      # 要创建的 minio 用户列表
+  - { access_key: pgbackrest  ,secret_key: S3User.Backup ,policy: pgsql }
+  - { access_key: s3user_meta ,secret_key: S3User.Meta   ,policy: meta  }
+  - { access_key: s3user_data ,secret_key: S3User.Data   ,policy: data  }
+
+```
+
+`MINIO_REMOVE` 共有 3 个参数，定义于 [`roles/minio_remove/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/minio_remove/defaults/main.yml) 中：
+
+```yaml
+#-----------------------------------------------------------------
+# MINIO_REMOVE
+#-----------------------------------------------------------------
+minio_safeguard: false            # 防止意外移除？
+minio_rm_data: true               # 移除期间删除 minio 数据？
+minio_rm_pkg: false               # 移除期间卸载 minio 包？
+```
+
+------
+
+## `minio_seq`
+
+名称：`minio_seq`，类型：`int`，层级：`I`
+
+minio 实例标识符，必需的身份参数。没有默认值，您必须手动分配它
+
+------
+
+## `minio_cluster`
+
+名称：`minio_cluster`，类型：`string`，层级：`C`
+
+minio 集群名称，默认为 `minio`。这在部署多个 MinIO 集群时很有用
+
+------
+
+## `minio_clean`
+
+名称：`minio_clean`，类型：`bool`，层级：`G/C/A`
+
+在初始化期间清理 minio？默认为 `false`
+
+<Callout title="已弃用：Pigsty v3.6+" type="warning">
+
+自 Pigsty v3.6+ 起，主 minio.yml 剧本中的 `minio_clean` 功能已弃用。请使用专用的 minio-rm.yml 剧本和 minio_remove 角色进行集群移除操作。
+
+</Callout>
+
+------
+
+## `minio_user`
+
+名称：`minio_user`，类型：`username`，层级：`C`
+
+minio 操作系统用户名，默认为 `minio`
+
+------
+
+## `minio_https`
+
+名称：`minio_https`，类型：`bool`，层级：`G`
+
+为 MinIO 服务使用 HTTPS 还是 HTTP，默认为 `true`，表示使用 HTTPS。
+
+请注意，pgbackrest 需要 MinIO HTTPS 才能正常工作，但如果您不将 minio 用于此目的，并且不想为 MinIO 使用 HTTPS，您可以将其设置为 `false`。
+
+------
+
+## `minio_node`
+
+名称：`minio_node`，类型：`string`，层级：`C`
+
+minio 节点名称模式，这用于 [多节点](/zh/minio/config/#multi-node) 部署
+
+默认值：`${minio_cluster}-${minio_seq}.pigsty`
+
+------
+
+## `minio_data`
+
+名称：`minio_data`，类型：`path`，层级：`C`
+
+minio 数据目录
+
+默认值：`/data/minio`，这是 [单节点](/zh/minio/config/#single-node-single-drive) 部署的通用目录。
+
+对于 [多驱动器](/zh/minio/config/#single-node-multi-drive) 部署，您可以使用 `{x...y}` 概念来指定多个驱动器。
+
+------
+
+## `minio_volumes`
+
+名称：`minio_volumes`，类型：`string`，层级：`C`
+
+MinIO 的唯一核心参数，如果未指定，将按以下规则自动生成：
+
+```yaml
+minio_volumes: "{% if minio_cluster_size|int > 1 %}https://{{ minio_node|replace('${minio_cluster}', minio_cluster)|replace('${minio_seq}',minio_seq_range) }}:{{ minio_port|default(9000) }}{% endif %}{{ minio_data }}"
+```
+
+- 在 [SNSD](/zh/minio/config/) 或 [SNMD](/zh/minio/config/) 部署的情况下，`minio_volumes` 直接使用 [`minio_data`](#minio_data) 的值
+- 在 [MNMD](/zh/minio/config/) 部署的情况下，`minio_volumes` 使用 `minio_node`、`minio_port`、`minio_data` 的值来生成此参数：
+- 在多个存储池的情况下，您必须覆盖 `minio_volumes` 来显式指定多个节点池。
+
+用户有责任确保 `minio_volumes` 中使用的参数与 `minio_node`、`minio_port`、`minio_data` 一致。
+
+------
+
+## `minio_domain`
+
+名称：`minio_domain`，类型：`string`，层级：`G`
+
+minio 服务域名，默认为 `sss.pigsty`。
+
+客户端可以通过此域名访问 minio S3 服务。此名称将注册到本地 DNSMASQ 并包含在 SSL 证书中。
+
+------
+
+## `minio_port`
+
+名称：`minio_port`，类型：`port`，层级：`C`
+
+minio 服务端口，默认为 `9000`
+
+------
+
+## `minio_admin_port`
+
+名称：`minio_admin_port`，类型：`port`，层级：`C`
+
+minio 控制台端口，默认为 `9001`
+
+------
+
+## `minio_access_key`
+
+名称：`minio_access_key`，类型：`username`，层级：`C`
+
+root 访问密钥，默认为 `minioadmin`
+
+------
+
+## `minio_secret_key`
+
+名称：`minio_secret_key`，类型：`password`，层级：`C`
+
+root 密钥，默认为 `minioadmin`
+
+默认值：`minioadmin`
+
+<Callout title="更改密码！" type="warning">
+
+在您的部署中更改此密码非常重要！
+
+</Callout>
+
+------
+
+## `minio_extra_vars`
+
+名称：`minio_extra_vars`，类型：`string`，层级：`C`
+
+minio 服务器的额外环境变量。查看 [Minio Server](https://min.io/docs/minio/linux/reference/minio-server/minio-server.html) 获取完整列表。
+
+默认值为空字符串，您可以使用多行字符串传递多个环境变量。
+
+------
+
+## `minio_alias`
+
+名称：`minio_alias`，类型：`string`，层级：`G`
+
+本地 MinIO 集群的 MinIO 别名
+
+默认值：`sss`，将写入基础设施节点/管理用户的客户端别名配置文件。
+
+------
+
+## `minio_endpoint`
+
+名称：`minio_endpoint`，类型：`string`，层级：`C`
+
+上述 MinIO 别名对应的 host:port。此参数默认未定义。
+
+如果未定义，将被以下默认值覆盖：
+
+```bash
+mcli alias set {{ minio_alias }} {% if minio_endpoint is defined and minio_endpoint != '' %}{{ minio_endpoint }}{% else %}https://{{ minio_domain }}:{{ minio_port }}{% endif %} {{ minio_access_key }} {{ minio_secret_key }}
+```
+
+此别名和端点将添加到管理节点上的管理用户。
+
+------
+
+## `minio_buckets`
+
+名称：`minio_buckets`，类型：`bucket[]`，层级：`C`
+
+默认要创建的 minio 桶列表：
+
+```yaml
+minio_buckets:                    # 要创建的 minio 桶列表
+  - { name: pgsql }
+  - { name: meta ,versioning: true }
+  - { name: data }
+```
+
+默认创建三个桶，具有不同的策略。
+
+`pgsql` 桶默认用于 PostgreSQL 备份。而 `meta` 和 `data` 是用于其他目的的开放桶。
+例如，supabase 模板可能使用 `data` 桶来存储业务数据。
+
+如果您有需要版本控制的重要元数据，可以开箱即用地使用 `meta` 桶。
+
+每个桶都有相应的策略，名称与桶名相同。例如，`pgsql` 策略对 `pgsql` 桶有所有权限，等等。
+
+您还可以在桶定义中添加 `lock` 标志，这将启用对象锁定功能，以防止意外删除桶中的对象。
+
+------
+
+## `minio_users`
+
+名称：`minio_users`，类型：`user[]`，层级：`C`
+
+要创建的 minio 用户列表，默认值：
+
+```yaml
+minio_users:                      # 要创建的 minio 用户列表
+  - { access_key: pgbackrest  ,secret_key: S3User.Backup ,policy: pgsql }
+  - { access_key: s3user_meta ,secret_key: S3User.Meta   ,policy: meta  }
+  - { access_key: s3user_data ,secret_key: S3User.Data   ,policy: data  }
+```
+
+为 PostgreSQL DBA 和 pgBackREST 创建默认用户。
+
+<Callout title="更改密码！" type="warning">
+
+请在严肃的生产部署中更改这些密码。
+
+</Callout>
+
+------
+
+## `minio_safeguard`
+
+名称：`minio_safeguard`，类型：`bool`，层级：`G/C/A`
+
+防止意外移除？默认值为 `false`
+
+如果启用，[`minio-rm.yml`](/zh/minio/playbook/#minio-rmyml) 剧本将中止并拒绝移除 MinIO 集群，提供防止意外删除的保护。
+
+------
+
+## `minio_rm_data`
+
+名称：`minio_rm_data`，类型：`bool`，层级：`G/C/A`
+
+移除期间删除 minio 数据？默认值为 `true`
+
+启用时，[`minio-rm.yml`](/zh/minio/playbook/#minio-rmyml) 剧本将在集群移除期间删除 MinIO 数据目录和配置文件。
+
+------
+
+## `minio_rm_pkg`
+
+名称：`minio_rm_pkg`，类型：`bool`，层级：`G/C/A`
+
+移除期间卸载 minio 包？默认值为 `false`
+
+启用时，[`minio-rm.yml`](/zh/minio/playbook/#minio-rmyml) 剧本将在集群移除期间卸载 MinIO 包。默认禁用此功能，以保留 MinIO 安装以供将来可能使用。

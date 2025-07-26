@@ -1,0 +1,128 @@
+---
+title: 参数
+description: 使用 8 个参数自定义 docker
+icon: Variable
+---
+
+Docker 模块有 **8** 个参数：
+
+| 名称                                                                      | 类型        | 层级    | 注释                                         |
+|-------------------------------------------------------------------------|-----------|-------|-------------------------------------------|
+| [`docker_enabled`](/zh/docker/param#docker_enabled)                   | `bool`    | G/C/I | 在此节点上启用 docker？                          |
+| [`docker_data`](/zh/docker/param#docker_data)                         | `path`    | G/C/I | Docker 数据目录，默认为 `/var/lib/docker`        |
+| [`docker_storage_driver`](/zh/docker/param#docker_storage_driver)     | `enum`    | G/C/I | Docker 存储驱动程序，默认为 `overlay2`            |
+| [`docker_cgroups_driver`](/zh/docker/param#docker_cgroups_driver)     | `enum`    | G/C/I | docker cgroup fs 驱动程序：cgroupfs,systemd   |
+| [`docker_registry_mirrors`](/zh/docker/param#docker_registry_mirrors) | `string[]` | G/C/I | docker 注册中心镜像列表                          |
+| [`docker_exporter_port`](/zh/docker/param#docker_exporter_port)       | `port`    | G     | Docker 指标导出器端口，默认为 `9323`               |
+| [`docker_image`](/zh/docker/param#docker_image)                       | `path[]`  | G/C/I | 要拉取的 docker 镜像，默认为 []                   |
+| [`docker_image_cache`](/zh/docker/param#docker_image_cache)           | `path`    | G/C/I | docker 镜像缓存压缩包通配符，默认为 `/tmp/docker`    |
+
+------
+
+## 默认值 [#defaults]
+
+Docker 的默认参数定义在 [`roles/docker/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/docker/defaults/main.yml) 中
+
+```yaml
+docker_enabled: false             # 在此节点上启用 docker？
+docker_data: /var/lib/docker      # docker 数据目录，默认为 /var/lib/docker
+docker_storage_driver: overlay2   # docker 存储驱动程序，可以是 zfs, btrfs
+docker_cgroups_driver: systemd    # docker cgroup fs 驱动程序：cgroupfs,systemd
+docker_registry_mirrors: []       # docker 注册中心镜像列表
+docker_exporter_port: 9323        # docker 指标导出器端口，默认为 9323
+docker_image: []                  # 引导后要拉取的 docker 镜像
+docker_image_cache: /tmp/docker/*.tgz # docker 镜像缓存通配符模式
+```
+
+------
+
+## `docker_enabled`
+
+名称：`docker_enabled`，类型：`bool`，层级：`G/C/I`
+
+在此节点上启用 docker？默认值为 `false`
+
+------
+
+## `docker_data`
+
+名称：`docker_data`，类型：`path`，层级：`C`
+
+Docker 数据目录，默认为 `/var/lib/docker`。
+
+------
+
+## `docker_storage_driver`
+
+名称：`docker_storage_driver`，类型：`enum`，层级：`C`
+
+Docker 存储驱动程序，默认为 `overlay2`。
+
+请参考：https://docs.docker.com/engine/storage/drivers/select-storage-driver/
+
+- `overlay2`
+- `fuse-overlayfs`
+- `brtfs`
+- `zfs`
+- `vfs`
+
+------
+
+## `docker_cgroups_driver`
+
+名称：`docker_cgroups_driver`，类型：`enum`，层级：`G/C/I`
+
+docker cgroup fs 驱动程序，可以是 `cgroupfs` 或 `systemd`，默认值：`systemd`
+
+------
+
+## `docker_registry_mirrors`
+
+名称：`docker_registry_mirrors`，类型：`string[]`，层级：`G/C/I`
+
+docker 注册中心镜像列表，默认值：`[]`，示例：
+
+以下是使用各云厂商内网镜像的一些示例：
+
+```yaml
+["https://docker.m.daocloud.io"]                # 国内 DaoCloud 镜像站点
+["https://docker.1ms.run"]                      # 国内毫秒镜像站点
+["https://mirror.ccs.tencentyun.com"]           # 腾讯云内网镜像站点
+["https://registry.cn-hangzhou.aliyuncs.com"]   # 阿里云内网镜像站点，需要登录
+```
+
+考虑使用 Cloudflare Worker [Docker Proxy](https://github.com/cmliu/CF-Workers-docker.io)
+
+如果拉取速度太慢，您也可以考虑：`docker login quay.io` 使用其他注册中心。
+
+------
+
+## `docker_exporter_port`
+
+名称：`docker_exporter_port`，类型：`port`，层级：`G`
+
+Docker 指标导出器端口，默认为 `9323`。
+
+------
+
+## `docker_image`
+
+名称：`docker_image`，类型：`string[]`，层级：`G/C/I`
+
+要拉取的 docker 镜像，默认为 `[]`
+
+这里列出的镜像将在 docker 置备期间被拉取。
+
+------
+
+## `docker_image_cache`
+
+名称：`docker_image_cache`，类型：`path`，层级：`G/C/I`
+
+docker 镜像缓存压缩包通配符列表，默认为 `"/tmp/docker/*.tgz"`。
+
+匹配此通配符列表的带有 `.tgz` 后缀的本地 docker 镜像缓存将逐一加载到 docker 中：
+
+```bash
+cat *.tgz | gzip -d -c - | docker load
+```

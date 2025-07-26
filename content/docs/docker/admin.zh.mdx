@@ -1,0 +1,102 @@
+---
+title: 管理
+description: Docker 管理任务
+full: false
+icon: Wrench
+---
+
+--------
+
+## 安装 [#install]
+
+要在节点上安装和启用 docker，请 [配置](/zh/docker/config) [`docker_enabled`](/zh/docker/param#docker_enabled) 参数为 `true`。
+
+```yaml
+all:
+  vars:
+
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1, nodename: infra-1 }
+        10.10.10.11: { infra_seq: 2, nodename: infra-2 }
+      vars:
+        docker_enabled: true  # 在此组上安装 Docker
+```
+
+然后运行 `docker.yml` 剧本（在目标主机/组上）：
+
+```bash
+./docker.yml -l infra
+```
+
+Docker 将安装在该 `infra` 组上。
+
+<Callout title="infra 是占位符" type="warn">
+
+我们在这里使用 `infra` 组作为示例，您可以在其他地方定义它，只要它适用于预期的主机。
+
+</Callout>
+
+--------
+
+## 仓库 [#repository]
+
+Docker 仓库是 `infra` 仓库模块的一部分，将在 [仓库](/zh/infra) 构建期间自动添加。
+
+```yaml tab="EL"
+- name: docker-ce
+  description: 'Docker CE'
+  module: infra
+  releases: [7,8,9]
+  arch: [x86_64, aarch64]
+  baseurl:
+    default: 'https://download.docker.com/linux/centos/$releasever/$basearch/stable'
+    europe:  'https://mirrors.xtom.de/docker-ce/linux/centos/$releasever/$basearch/stable'
+    china:   'https://mirrors.aliyun.com/docker-ce/linux/centos/$releasever/$basearch/stable'
+```
+```yaml tab="Debian/Ubuntu"
+- name: docker-ce
+  description: 'Docker CE'
+  module: infra
+  releases: [11,12,20,22,24]
+  arch: [x86_64, aarch64]
+  baseurl:
+    default: 'https://download.docker.com/linux/${distro_name} ${distro_codename} stable'
+    china: 'https://mirrors.aliyun.com/docker-ce/linux/${distro_name} ${distro_codename} stable'
+```
+
+您可以使用以下命令将此仓库添加到您的节点：
+
+```bash
+./node.yml -t node_repo -e node_repo_modules=infra -l infra
+```
+
+--------
+
+## 升级 [#upgrade]
+
+要升级 Docker 守护进程，使用 [`ansible`](/zh/admin/ansible) 命令，添加 docker [仓库](#repository)，然后：
+
+```bash title="~/pigsty"
+ansible infra -m package -b -a 'name=docker-ce state=latest'
+```
+
+它将把 `docker-ce` 包升级到您配置的仓库中可用的最新版本。
+
+--------
+
+## 移除 [#remove]
+
+要移除 Docker 守护进程，使用 [`ansible`](/zh/admin/ansible) 命令运行：
+
+```bash title="~/pigsty"
+ansible infra -m package -b -a 'name=docker-ce state=absent'
+```
+
+它将使用您的操作系统包管理器移除 `docker-ce` 包。
+
+--------
+
+## 应用程序 [#applications]
+
+Pigsty 提供基于 Docker Compose 的即用型 **软件模板**，用于部署与 Pigsty 管理的数据库集群无缝集成的外部应用程序。

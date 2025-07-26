@@ -1,0 +1,89 @@
+---
+title: 剧本
+description: 控制原语
+icon: ScrollText
+---
+
+您必须在运行剧本之前在 [配置清单](/zh/config/inventory) 中 [配置](/zh/minio/config/) minio 集群。
+
+------
+
+## 剧本 [#playbook]
+
+有两个内置的 MinIO 集群管理剧本：
+
+- [`minio.yml`](/zh/minio/playbook/#minioyml) 用于安装 MinIO 集群
+- [`minio-rm.yml`](/zh/minio/playbook/#minio-rmyml) 用于移除 MinIO 集群
+
+### `minio.yml`
+
+[`minio.yml`](https://github.com/pgsty/pigsty/blob/main/minio.yml)
+
+- `minio-id` : 生成 minio 身份
+- `minio_install` : 安装 minio/mcli
+    - `minio_os_user` : 创建操作系统用户 minio
+    - `minio_pkg` : 安装 minio/mcli 包
+    - `minio_clean` : 移除 minio 数据（非默认）- **v3.6+ 中已弃用**
+    - `minio_dir` : 创建 minio 目录
+- `minio_config` : 生成 minio 配置
+    - `minio_conf` : minio 主配置
+    - `minio_cert` : minio ssl 证书
+    - `minio_dns` : 写入 minio dns 记录
+- `minio_launch` : 启动 minio 服务
+- `minio_register` : 将 minio 注册到 prometheus
+- `minio_provision` : 创建 minio 别名/桶/用户
+    - `minio_alias` : 创建 minio 客户端别名
+    - `minio_bucket` : 创建 minio 桶
+    - `minio_user` : 创建 minio 业务用户
+
+<Callout title="架构变更：Pigsty v3.6+" type="info">
+
+自 Pigsty v3.6+ 起，**minio.yml** 剧本和 **minio** 角色专注于集群安装。所有移除操作已移至专用的 **minio-rm.yml** 剧本，使用 **minio_remove** 角色。
+
+</Callout>
+
+您应该在 Pigsty 管理的节点上安装 [`MINIO`](/zh/minio/) 模块（即，首先安装 [`NODE`](/zh/node/)）。
+
+受信任的 ca 文件：`/etc/pki/ca.crt` 应该已经存在于所有节点上。它在 `role: ca` 中生成，并在 `role: node` 中默认加载和信任。
+
+
+
+------
+
+## `minio-rm.yml`
+
+要 [移除 MinIO 集群](/zh/minio/admin/#remove-cluster)，运行以下剧本：
+
+```bash
+./minio-rm.yml    # 移除 MinIO 集群
+```
+
+以下是可用的子任务：
+
+- `minio_id` : 为移除操作生成 minio 身份
+- `prometheus` : 从 prometheus 移除 minio 目标注册
+- `minio_stop` : 使用 systemd 停止并禁用 minio 服务
+- `minio_data` : 移除 minio 数据（使用 `minio_rm_data=false` 禁用）
+- `minio_pkg` : 卸载 minio 包（使用 `minio_rm_pkg=true` 启用）
+
+移除剧本使用新的 **minio_remove** 角色，带有可配置参数：
+
+- [`minio_safeguard`](/zh/minio/param#minio_safeguard)：设置为 `true` 时防止意外移除
+- [`minio_rm_data`](/zh/minio/param#minio_rm_data)：控制是否删除 MinIO 数据（默认为 `true`）
+- [`minio_rm_pkg`](/zh/minio/param#minio_rm_pkg)：控制是否卸载 MinIO 包（默认为 `false`）
+
+
+------
+
+## 命令 [#commands]
+
+MINIO 剧本备忘单和常用命令
+
+```bash
+./minio.yml -l <cls>                      # 在组 <cls> 上初始化 MINIO 模块
+./minio.yml -l minio -e minio_clean=true  # 初始化 MINIO，并移除现有的 MinIO 和数据（已弃用！）
+./minio-rm.yml -l minio                   # 使用专用移除剧本移除 MinIO 集群
+./minio.yml -l minio -t minio_install     # 安装 MinIO，设置目录，不进行配置和启动
+./minio.yml -l minio -t minio_config      # 生成 MinIO 配置和证书
+./minio.yml -l minio -t minio_launch      # 重启 MinIO 集群
+```

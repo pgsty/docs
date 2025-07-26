@@ -75,7 +75,7 @@ There are **120** parameters about the `PGSQL` module.
 | Name                                                | Type       | Level | Comment                                                                       |
 |-----------------------------------------------------|------------|-------|-------------------------------------------------------------------------------|
 | [`pg_data`](#pg_data)                               | `path`     | C     | postgres data directory, `/pg/data` by default                                |
-| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C     | postgres backup data directory, `/data/backups` by default                    |
+| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C     | postgres backup data directory, `/data/postgres` by default                    |
 | [`pg_fs_backup`](#pg_fs_backup)                     | `path`     | C     | mountpoint/path for pg backup data, `/data/backup` by default                 |
 | [`pg_storage_type`](#pg_storage_type)               | `enum`     | C     | storage type for pg main data, SSD,HDD, SSD by default                        |
 | [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C     | size of `/pg/dummy`, hold 64MB disk space for emergency use                   |
@@ -815,7 +815,7 @@ It also init cluster template databases with default roles, schemas & extensions
 ```yaml
 pg_data: /pg/data                 # postgres data directory, `/pg/data` by default
 pg_fs_main: /data/postgres        # postgres main data directory, `/data/postgres` by default
-pg_fs_backup: /data/backups         # postgres backup data directory, `/data/backups` by default
+pg_fs_backup: /data/backups       # postgres backup data directory, `/data/backups` by default
 pg_storage_type: SSD              # storage type for pg main data, SSD,HDD, SSD by default
 pg_dummy_filesize: 64MiB          # size of `/pg/dummy`, hold 64MB disk space for emergency use
 pg_listen: '0.0.0.0'              # postgres/pgbouncer listen addresses, comma separated list

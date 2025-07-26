@@ -1,0 +1,44 @@
+---
+title: 剧本
+description: 控制原语
+icon: ScrollText
+---
+
+redis 有两个剧本：
+
+- [`redis.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml)：创建 redis 集群 / 节点 / 实例
+- [`redis-rm.yml`](https://github.com/pgsty/pigsty/blob/main/redis-rm.yml)：移除 redis 集群 / 节点 / 实例
+
+## `redis.yml`
+
+剧本 [`redis.yml`](https://github.com/pgsty/pigsty/blob/main/redis.yml) 将初始化 redis 集群/节点/实例：
+
+```yaml
+redis_node        : init redis node
+  - redis_install : install redis & redis_exporter
+  - redis_user    : create os user redis
+  - redis_dir     : create redis redis fhs
+redis_exporter    : config and launch redis_exporter
+  - redis_exporter_config  : generate redis_exporter config
+  - redis_exporter_launch  : launch redis_exporter
+redis_instance    : config and launch redis cluster/node/instance
+  - redis_check   : check redis instance existence
+  - redis_clean   : purge existing redis instance
+  - redis_config  : generate redis instance config
+  - redis_launch  : launch redis instance
+redis_register    : register redis to prometheus
+redis_ha          : setup redis sentinel
+redis_join        : join redis cluster
+```
+
+## `redis-rm.yml`
+
+剧本 [`redis-rm.yml`](https://github.com/pgsty/pigsty/blob/main/redis-rm.yml) 将移除 redis 集群/节点/实例：
+
+```bash
+- register       : remove monitor target from prometheus
+- redis_exporter : stop and disable redis_exporter
+- redis          : stop and disable redis cluster/node/instance
+- redis_data     : remove redis data (rdb, aof)
+- redis_pkg      : uninstall redis & redis_exporter packages
+```

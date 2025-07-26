@@ -75,7 +75,7 @@ icon: Variable
 | 名称                                                  | 类型         | 级别  | 注释                                           |
 |-----------------------------------------------------|------------|-----|----------------------------------------------|
 | [`pg_data`](#pg_data)                               | `path`     | C   | postgres 数据目录，默认为 `/pg/data`                 |
-| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C   | postgres 备份数据目录，默认为 `/data/backups`          |
+| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C   | postgres 备份数据目录，默认为 `/data/postgres`         |
 | [`pg_fs_backup`](#pg_fs_backup)                     | `path`     | C   | pg 备份数据的挂载点/路径，默认为 `/data/backup`            |
 | [`pg_storage_type`](#pg_storage_type)               | `enum`     | C   | pg 主数据的存储类型，SSD,HDD，默认为 SSD                  |
 | [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C   | `/pg/dummy` 的大小，为紧急使用保留 64MB 磁盘空间            |
@@ -753,8 +753,8 @@ pg_extensions: []
 pg_safeguard: false               # 保护正在运行的 postgres 实例不被清除？默认值为 `false`
 pg_clean: true                    # 在 pgsql 初始化期间清除现有的 PG 实例？默认值为 `true`
 pg_data: /pg/data                 # postgres 数据目录，默认值为 `/pg/data`
-pg_fs_main: /data                 # postgres 主数据盘挂载点/路径，默认值为 `/data`
-pg_fs_bkup: /data/backups         # postgres 备份数据盘挂载点/路径，默认值为 `/data/backup`
+pg_fs_main: /data/postgres        # postgres 主数据盘挂载点/路径，默认值为 `/data/postgres`
+pg_fs_bkup: /data/backups         # postgres 备份数据盘挂载点/路径，默认值为 `/data/backups`
 pg_storage_type: SSD              # postgres 主数据盘存储介质类型，默认值为 `SSD`
 pg_dummy_filesize: 64MiB          # 紧急情况下占位符文件 `/pg/dummy` 的大小，默认值为 `64MiB`
 pg_listen: '0.0.0.0'              # postgres/pgbouncer 监听地址，默认值为 `0.0.0.0`
@@ -831,13 +831,14 @@ Postgres 数据目录，默认为 `/pg/data`。
 
 参数名称： `pg_fs_main`， 类型： `path`， 层次：`C`
 
-PostgreSQL 主数据盘的挂载点/文件系统路径，默认为`/data`。
+PostgreSQL 主数据盘的挂载点/文件系统路径，默认为`/data/postgres`。
 
-默认值：`/data`，它将被用作 PostgreSQL 主数据目录（`/data/postgres`）的父目录。
+默认值：`/data/postgres`，它将被用作 PostgreSQL 主数据目录。
 
 建议使用 NVME SSD 作为 PostgreSQL 主数据存储，Pigsty默认为SSD存储进行了优化，但是也支持HDD。
 
 您可以更改[`pg_storage_type`](https://pigsty.cc/docs/pgsql/param/#pg_storage_type)为`HDD`以针对HDD存储进行优化。
+
 
 ------
 

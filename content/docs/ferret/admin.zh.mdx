@@ -1,0 +1,27 @@
+---
+title: 管理
+description: 运行管理任务
+icon: Wrench
+---
+
+------
+
+## 创建 FerretDB 集群 [#create-ferretdb-cluster]
+
+在 [清单](/zh/config/inventory) 中 [定义](/zh/ferret/config/) FerretDB 集群后，您可以使用以下命令安装它：
+
+```bash
+./mongo.yml -l ferret   # 在 ferret 组上安装 MongoDB/FerretDB
+```
+
+由于 FerretDB 使用 PostgreSQL 作为其底层存储，多次运行此剧本通常是安全的。
+
+------
+
+## 移除 FerretDB 集群 [#remove-ferretdb-cluster]
+
+要移除 Mongo/FerretDB 集群，请使用 `mongo_purge` 参数运行 [`mongo.yml`](/zh/ferret/playbook) 剧本的 `mongo_purge` 子任务：
+
+```bash
+./mongo.yml -e mongo_purge=true -t mongo_purge
+```

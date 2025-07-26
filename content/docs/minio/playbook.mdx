@@ -42,6 +42,13 @@ Since Pigsty v3.6+, the **minio.yml** playbook and **minio** role are focused so
 
 </Callout>
 
+Trusted ca file: `/etc/pki/ca.crt` should exist on all nodes already. which is generated in `role: ca` and loaded & trusted by default in `role: node`.
+
+You should install [`MINIO`](/minio/) module on Pigsty-managed nodes (i.e., Install [`NODE`](/node/) first)
+
+
+
+
 ------
 
 ## `minio-rm.yml`
@@ -54,23 +61,19 @@ To [remove the MinIO cluster](/minio/admin/#remove-cluster), run the following p
 
 Here are available sub tasks:
 
-- `minio_id` : generate minio identity for removal operations
+- `minio-id` : generate minio identity for removal operations
+- `minio_safeguard` : safeguard against accidental removal (default: `false`)
 - `prometheus` : remove minio targets registration from prometheus
-- `minio_stop` : stop and disable minio service with systemd
+- `minio_svc` : stop and disable minio service with systemd
 - `minio_data` : remove minio data (disable with `minio_rm_data=false`)
 - `minio_pkg` : uninstall minio packages (enable with `minio_rm_pkg=true`)
 
-The removal playbook uses the new **minio_remove** role with configurable parameters:
+The removal playbook uses the new **minio_remove** role with configurable [parameters](/minio/param#minio_remove):
 
 - [`minio_safeguard`](/minio/param#minio_safeguard): Prevents accidental removal when set to `true`
 - [`minio_rm_data`](/minio/param#minio_rm_data): Controls whether MinIO data is deleted (`true` by default)
 - [`minio_rm_pkg`](/minio/param#minio_rm_pkg): Controls whether MinIO packages are uninstalled (`false` by default)
 
-
-
-Trusted ca file: `/etc/pki/ca.crt` should exist on all nodes already. which is generated in `role: ca` and loaded & trusted by default in `role: node`.
-
-You should install [`MINIO`](/minio/) module on Pigsty-managed nodes (i.e., Install [`NODE`](/node/) first)
 
 
 ------
@@ -81,48 +84,8 @@ MINIO Playbook cheatsheet and common commands
 
 ```bash
 ./minio.yml -l <cls>                      # init MINIO module on group <cls>
-./minio.yml -l minio -e minio_clean=true  # init MINIO, and remove existing MinIO & Data (DEPRECATED!)
 ./minio-rm.yml -l minio                   # remove MinIO cluster using dedicated removal playbook
 ./minio.yml -l minio -t minio_install     # install MinIO, setup dirs, without configure & launch
 ./minio.yml -l minio -t minio_config      # generate MinIO config & certs
 ./minio.yml -l minio -t minio_launch      # restart MinIO cluster
 ```
-
-------
-
-## Safeguard
-
-Pigsty has safeguard mechanisms for both MinIO installation and removal:
-
-### Installation Safeguards (minio role)
-
-- [`minio_clean`](/minio/param#minio_clean): `false` by default, which means Pigsty will not remove existing MinIO data during installation
-
-### Removal Safeguards (minio_remove role)
-
-- [`minio_safeguard`](/minio/param#minio_safeguard): `false` by default, allows removal operations
-- [`minio_rm_data`](/minio/param#minio_rm_data): `true` by default, removes MinIO data during removal
-- [`minio_rm_pkg`](/minio/param#minio_rm_pkg): `false` by default, preserves MinIO packages after removal
-
-To prevent accidental removal, set `minio_safeguard=true`. You can override this with `-e minio_safeguard=false` in the command line.
-
-<Callout title="Important Change" type="warning">
-
-Since Pigsty v3.6+, cluster removal functionality has been moved from the main minio.yml playbook to the dedicated minio-rm.yml playbook using the minio_remove role. The `minio_clean` functionality in the main playbook is deprecated.
-
-</Callout>
-
-**Legacy cleanup (deprecated):**
-
-```bash
-./minio.yml -l <cls> -e minio_clean=true -t minio_clean  # DEPRECATED: use minio-rm.yml instead
-```
-
-**New removal approach:**
-
-```bash
-./minio-rm.yml -l <cls>                                  # Use dedicated removal playbook
-./minio-rm.yml -l <cls> -e minio_rm_pkg=true            # Also remove packages
-```
-
-------

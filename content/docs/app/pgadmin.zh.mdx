@@ -1,0 +1,94 @@
+---
+title: pgAdmin
+description: 启动 PostgreSQL 官方 GUI 管理工具
+icon: MonitorCheck
+---
+
+[pgAdmin](https://www.pgadmin.org/) 是最受欢迎且功能丰富的 PostgreSQL 开源管理和开发平台，
+PostgreSQL 是世界上最先进的开源数据库。
+
+--------
+
+## 快速开始 [#quick-start]
+
+Pigsty 内置（但可选）支持 pgAdmin，它使用 [Docker](/zh/docker) Compose 启动 pgadmin：
+
+```bash
+./docker.yml
+./app.yml -e app=pgadmin
+```
+
+pgadmin 的默认端口是 `8885`，您可以通过 IP:端口访问它：`http://10.10.10.10:8885`。
+
+默认凭据在 [`.env`](https://github.com/pgsty/pigsty/blob/main/app/pgadmin/.env) 中定义，用户名：`admin@pigsty.cc`，密码：`pigsty`。
+
+--------
+
+## 自定义 [#customize]
+
+在 `/opt/pgadmin/.env` 中自定义 pgadmin 配置并使用 `docker compose` 管理它。
+
+您还可以自定义 `apps` 参数并使用以下方式覆盖默认 `.env` 配置：
+
+```yaml
+all:
+  children:
+
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+      vars:
+        docker_enabled: true
+        app: pgadmin  # 指定要安装的应用程序名称（pgadmin）（在 apps 中）
+        apps:         # 定义所有应用程序
+          supabase:   # pgadmin 应用程序的定义
+            conf:     # 覆盖 /opt/supabase/.env
+
+              PGADMIN_DEFAULT_EMAIL: your@email.com
+              PGADMIN_DEFAULT_PASSWORD: yourPassword
+
+              PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+              PGADMIN_PORT: 8885
+              PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+              PGADMIN_REPLACE_SERVERS_ON_STARTUP: true
+```
+
+要启动应用程序，运行：
+
+```bash
+./app.yml -l infra
+```
+
+--------
+
+## 域名和证书 [#domain--cert]
+
+要通过 nginx（而不是直接访问端口 8885）访问 pgadmin，请使用以下方式配置 [基础设施门户](/zh/admin/portal)：
+
+```yaml title="pigsty.yml"
+all:
+  vars:
+    infra_portal:
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+      blackbox     : { endpoint: "${admin_ip}:9115" }
+      loki         : { endpoint: "${admin_ip}:3100" }
+
+      # 在此处添加 pgadmin 上游服务器定义
+      pgadmin      : { domain: adm.pigsty  ,endpoint: "127.0.0.1:8885" }
+```
+
+然后运行 `make nginx` 更新 nginx 配置，并在 `/etc/hosts` 或 [本地](/zh/admin/domain#internal-dynamic-resolution) / [公共](/zh/admin/domain#public-domain-resolution) DNS 服务器中配置 [本地静态 DNS](/zh/admin/domain#local-static-resolution) 记录 `<your_ip_address> adm.pigsty`。
+
+Pigsty 将自动为 [`infra_portal`](/zh/infra/param#infra_portal) 中列出的域名签发自签名 SSL 证书。
+如果您想使用真实域名，请定义 `cerbot` 条目并运行 `make cert`，查看 [SSL 证书](/zh/admin/cert) 了解详情。
+
+```yaml
+all:
+  vars:        # 确保您的域名（adm.pigsty.cc）解析到您的公网 IP
+    certbot_sign: true   # 使用 certbot 签发真实 HTTPS 证书（需要互联网访问！）
+    infra_portal:
+      pgadmin : { domain: adm.pigsty.cc  ,endpoint: "127.0.0.1:8885", certbot: adm.pigsty.cc }
+```

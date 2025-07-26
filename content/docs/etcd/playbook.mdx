@@ -77,8 +77,8 @@ To [**remove a member**](/etcd/admin/#remove-member) from an existing etcd clust
 ./etcd-rm.yml -l <ip>
 ```
 ```bash tab="script"
-bin/etcd-rm <ip1> <ip2> ...    # remove specific members from etcd cluster
-bin/etcd-rm                    # remove entire etcd cluster
+bin/etcd-rm <ip>    # remove specific members from etcd cluster
+bin/etcd-rm         # remove entire etcd cluster
 ```
 
 The removal playbook uses the new **etcd_remove** role with configurable parameters:

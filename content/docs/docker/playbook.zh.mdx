@@ -1,0 +1,33 @@
+---
+title: 剧本
+description: 使用剧本设置 docker
+icon: ScrollText
+---
+
+DOCKER 模块只有一个剧本：[`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml)
+用于在目标节点上安装 docker 守护进程和 docker compose。
+
+------
+
+## `docker.yml`
+
+原始剧本：[`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml)。
+
+在任何主机上运行此剧本将在启用 `docker_enabled: true` 标志的目标节点上安装 `docker-ce` 和 `docker-compose-plugin`。
+
+以下是 `docker.yml` 剧本中可用的子任务：
+
+- `docker_install`：在节点上安装 Docker 和 Docker Compose 包。
+- `docker_admin`：将指定用户添加到 Docker 管理员用户组。
+- `docker_config`：生成 Docker 守护进程服务配置文件。
+- `docker_launch`：启动 Docker 守护进程服务。
+- `docker_register`：将 Docker 守护进程注册为 Prometheus 监控目标。
+- `docker_image`：如果存在的话，尝试从 `/tmp/docker/*.tgz` 加载预打包的 Docker 镜像。
+
+Docker 模块不提供专用的 Docker 卸载剧本。如果您需要卸载 Docker，您可以手动停止 Docker 服务然后卸载它：
+
+```bash
+systemctl stop docker                        # 停止 Docker 守护进程服务
+yum remove docker-ce docker-compose-plugin   # 在 EL 系统上卸载 Docker
+apt remove docker-ce docker-compose-plugin   # 在 Debian 系统上卸载 Docker
+```

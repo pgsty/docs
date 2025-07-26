@@ -1,10 +1,12 @@
 ---
 title: Parameter
-description: Customize etcd with the 10-parameter
+description: Customize etcd with the 13-parameter
 icon: Variable
 ---
 
 There are **13** parameters about the `ETCD` module.
+
+`ETCD`: 10 Parameters:
 
 | Parameter                                             |  Type  | Level | Comment                                      |
 |-------------------------------------------------------|:------:|:-----:|----------------------------------------------|
@@ -19,7 +21,7 @@ There are **13** parameters about the `ETCD` module.
 | [`etcd_election_timeout`](#etcd_election_timeout)     |  int   |   C   | etcd election timeout, 1000ms by default     |
 | [`etcd_heartbeat_interval`](#etcd_heartbeat_interval) |  int   |   C   | etcd heartbeat interval, 100ms by default    |
 
-**ETCD_REMOVE Parameters (for etcd_remove role)**
+`ETCD_REMOVE`: 3 Parameters:
 
 | Parameter                           | Type | Level | Comment                                                  |
 |-------------------------------------|:----:|:-----:|----------------------------------------------------------|
@@ -164,9 +166,17 @@ name: `etcd_heartbeat_interval`, type: `int`, level: `C`
 
 etcd heartbeat interval, `100` (ms) by default
 
+
 ------
 
-## `etcd_safeguard`
+## `ETCD_REMOVE`
+
+This section contains parameters for the [`etcd_remove`](https://github.com/pgsty/pigsty/blob/main/roles/etcd_remove/defaults/main.yml) role,
+which are action flags for the [`etcd-rm.yml`](/etcd/playbook/#etcd-rmyml) playbook.
+
+------
+
+### `etcd_safeguard`
 
 name: `etcd_safeguard`, type: `bool`, level: `G/C/A`
 
@@ -177,7 +187,7 @@ If enabled, running etcd instance will not be purged by [`etcd-rm.yml`](/etcd/pl
 
 ------
 
-## `etcd_rm_data`
+### `etcd_rm_data`
 
 name: `etcd_rm_data`, type: `bool`, level: `G/C/A`
 
@@ -187,7 +197,7 @@ When enabled, the [`etcd-rm.yml`](/etcd/playbook/#etcd-rmyml) playbook will remo
 
 ------
 
-## `etcd_rm_pkg`
+### `etcd_rm_pkg`
 
 name: `etcd_rm_pkg`, type: `bool`, level: `G/C/A`
 

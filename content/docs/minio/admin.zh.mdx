@@ -1,0 +1,288 @@
+---
+title: 管理
+description: 创建、移除、扩展、收缩、升级 minio 集群
+icon: Wrench
+---
+
+以下是 MinIO 的一些管理标准操作程序：
+
+- [创建集群](#create-cluster)
+- [移除集群](#remove-cluster)
+- [扩展集群](#expand-cluster)
+- [收缩集群](#shrink-cluster)
+- [升级集群](#upgrade-cluster)
+- [节点故障恢复](#node-failure-recovery)
+- [磁盘故障恢复](#disk-failure-recovery)
+
+查看 [MINIO: FAQ](/zh/minio/faq/) 了解更多问题。
+
+------
+
+## 创建集群 [#create-cluster]
+
+要创建 MinIO 集群，首先在 [清单](/zh/config/inventory) 中定义 `minio` 集群：
+
+```yaml
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+```
+
+[`minio_cluster`](/zh/minio/param#minio_cluster) 参数将此集群标记为 MinIO 集群，`minio_seq` 是 MinIO 节点的序列号，用于生成 MinIO 节点名称如 `minio-1`、`minio-2` 等。
+
+此代码片段定义了一个单节点 MinIO 集群，使用以下命令创建 MinIO 集群：
+
+```bash
+./minio.yml -l minio  # 在 minio 组上初始化 MinIO 模块
+```
+
+------
+
+## 移除集群 [#remove-cluster]
+
+要销毁现有的 MinIO 集群，使用专用的 [`minio-rm.yml`](/zh/minio/playbook/#minio-rmyml) 剧本：
+
+```bash
+./minio-rm.yml -l minio                                  # 移除 MinIO 集群
+```
+
+您也可以使用参数自定义移除过程：
+
+```bash
+./minio-rm.yml -l minio -e minio_rm_pkg=true            # 同时移除包
+./minio-rm.yml -l minio -e minio_rm_data=false          # 保留数据目录
+./minio-rm.yml -l minio -e minio_safeguard=true         # 启用安全防护（将中止）
+```
+
+**传统方法（已弃用）：**
+
+```bash
+./minio.yml -l minio -t minio_clean -e minio_clean=true  # 已弃用：请使用 minio-rm.yml
+```
+
+<Callout title="架构变更：Pigsty v3.6+" type="info">
+
+自 Pigsty v3.6+ 起，MinIO 集群移除已移至使用 **minio_remove** 角色的专用 **minio-rm.yml** 剧本。移除过程中会自动清理 prometheus 监控目标。
+
+</Callout>
+
+------
+
+## 扩展集群 [#expand-cluster]
+
+- [教程：扩展 MinIO 部署](https://min.io/docs/minio/linux/operations/install-deploy-manage/expand-minio-deployment.html)
+
+您无法在节点/磁盘级别扩展 MinIO，但可以在存储池（多个节点）级别扩展。
+
+假设您有一个 4 节点的 MinIO 集群，想通过添加另一个四节点存储池来将容量翻倍。
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 , nodename: minio-1 }
+    10.10.10.11: { minio_seq: 2 , nodename: minio-2 }
+    10.10.10.12: { minio_seq: 3 , nodename: minio-3 }
+    10.10.10.13: { minio_seq: 4 , nodename: minio-4 }
+  vars:
+    minio_cluster: minio
+    minio_data: '/data{1...4}'
+    minio_buckets: [ { name: pgsql }, { name: infra }, { name: redis } ]
+    minio_users:
+      - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
+      - { access_key: pgbackrest , secret_key: S3User.SomeNewPassWord , policy: readwrite }
+
+    # 绑定节点 l2 vip (10.10.10.9) 到 minio 集群（可选）
+    node_cluster: minio
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.9
+    vip_interface: eth1
+
+    # 在所有节点上使用 haproxy 暴露 minio 服务
+    haproxy_services:
+      - name: minio                    # [必需] 服务名称，唯一
+        port: 9002                     # [必需] 服务端口，唯一
+        balance: leastconn             # [可选] 负载均衡算法
+        options:                       # [可选] minio 健康检查
+          - option httpchk
+          - option http-keep-alive
+          - http-check send meth OPTIONS uri /minio/health/live
+          - http-check expect status 200
+        servers:
+          - { name: minio-1 ,ip: 10.10.10.10 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-2 ,ip: 10.10.10.11 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-3 ,ip: 10.10.10.12 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+          - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+步骤 1，在组中添加 4 个节点定义，分配序列号 5 到 8。
+关键步骤是修改 [`minio_volumes`](/zh/minio/param#minio_volumes) 参数，将新的 4 个节点分配到新的 **存储池**。
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 , nodename: minio-1 }
+    10.10.10.11: { minio_seq: 2 , nodename: minio-2 }
+    10.10.10.12: { minio_seq: 3 , nodename: minio-3 }
+    10.10.10.13: { minio_seq: 4 , nodename: minio-4 }
+    # 新节点
+    10.10.10.14: { minio_seq: 5 , nodename: minio-5 }
+    10.10.10.15: { minio_seq: 6 , nodename: minio-6 }
+    10.10.10.16: { minio_seq: 7 , nodename: minio-7 }
+    10.10.10.17: { minio_seq: 8 , nodename: minio-8 }
+
+  vars:
+    minio_cluster: minio
+    minio_data: '/data{1...4}'
+    minio_volumes: 'https://minio-{1...4}.pigsty:9000/data{1...4} https://minio-{5...8}.pigsty:9000/data{1...4}'  # 新增的集群配置
+    # 其他参数
+```
+
+步骤 2，将这些节点添加到 Pigsty：
+
+```bash
+./node.yml -l 10.10.10.14,10.10.10.15,10.10.10.16,10.10.10.17
+```
+
+步骤 3，使用 `minio_install` 子任务在新节点上置备 MinIO（用户、目录、包等）：
+
+```bash
+./minio.yml -l 10.10.10.14,10.10.10.15,10.10.10.16,10.10.10.17 -t minio_install
+```
+
+步骤 4：使用 `minio_config` 子任务在 **整个集群** 上重新配置整个 MinIO 集群
+
+```bash
+./minio.yml -l minio -t minio_config
+```
+
+> 也就是说，现有 4 个节点的 `MINIO_VOLUMES` 配置也会被更新
+
+步骤 5：同时重启整个 MinIO 集群（注意，不要滚动重启！）：
+
+```bash
+./minio.yml -l minio -t minio_launch -f 10   # 并行度为 10
+```
+
+步骤 6：这是 **可选的**，如果您使用负载均衡器，请确保负载均衡器配置已更新。
+
+例如，将新的四个节点添加到负载均衡器配置：
+
+```yaml
+# 在所有节点上使用 haproxy 暴露 minio 服务
+haproxy_services:
+  - name: minio                    # [必需] 服务名称，唯一
+    port: 9002                     # [必需] 服务端口，唯一
+    balance: leastconn             # [可选] 负载均衡算法
+    options:                       # [可选] minio 健康检查
+      - option httpchk
+      - option http-keep-alive
+      - http-check send meth OPTIONS uri /minio/health/live
+      - http-check expect status 200
+    servers:
+      - { name: minio-1 ,ip: 10.10.10.10 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-2 ,ip: 10.10.10.11 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-3 ,ip: 10.10.10.12 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-4 ,ip: 10.10.10.13 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+
+      - { name: minio-5 ,ip: 10.10.10.14 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-6 ,ip: 10.10.10.15 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-7 ,ip: 10.10.10.16 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+      - { name: minio-8 ,ip: 10.10.10.17 ,port: 9000 ,options: 'check-ssl ca-file /etc/pki/ca.crt check port 9000' }
+```
+
+然后运行 `node.yml` 剧本的 `haproxy` 子任务来更新负载均衡器配置：
+
+```bash
+./node.yml -l minio -t haproxy_config,haproxy_reload   # 重新配置并重新加载 haproxy 服务定义
+```
+
+如果节点 L2 VIP 也用于确保可靠的负载均衡器访问，您还需要将新节点（如果有）添加到现有的 NODE VIP 组：
+
+```bash
+./node.yml -l minio -t node_vip  # 重新加载节点 l2 vip 配置
+```
+
+------
+
+## 收缩集群 [#shrink-cluster]
+
+MinIO 无法在节点/磁盘级别缩减，但您可以在存储池（多个节点）级别退役——添加新存储池，排空旧存储池，迁移到新存储池，然后退役旧存储池。
+
+- [教程：退役服务器池](https://min.io/docs/minio/linux/operations/install-deploy-manage/decommission-server-pool.html)
+
+------
+
+## 升级集群 [#upgrade-cluster]
+
+- [教程：升级 MinIO 部署](https://min.io/docs/minio/linux/operations/install-deploy-manage/upgrade-minio-deployment.html)
+
+首先，将新版本的 MinIO 软件包下载到 INFRA 节点的本地软件仓库：
+
+- minio:
+  - amd64: https://dl.min.io/server/minio/release/linux-amd64/
+  - arm64: https://dl.min.io/server/minio/release/linux-arm64/
+- mcli:
+  - amd64: https://dl.min.io/client/mc/release/linux-amd64/
+  - arm64: https://dl.min.io/client/mc/release/linux-arm64/
+
+然后重建软件仓库：
+
+```bash
+./infra.yml -t repo_create
+```
+
+您可以使用 Ansible `package` 模块升级所有 MinIO 软件包：
+
+```bash
+ansible minio -m package -b -a 'name=minio state=latest'  # 升级 MinIO 服务器
+ansible minio -m package -b -a 'name=mcli state=latest'   # 升级 mcli 客户端
+```
+
+最后，通知 MinIO 集群使用 `mc` 命令行工具重启：
+
+```bash
+mc admin service restart sss
+```
+
+------
+
+## 节点故障恢复 [#node-failure-recovery]
+
+- [教程：恢复硬件故障节点](https://min.io/docs/minio/linux/operations/data-recovery/recover-after-node-failure.html#minio-restore-hardware-failure-node)
+
+```bash
+# 1. 移除故障节点
+bin/node-rm <your_old_node_ip>
+
+# 2. 用相同名称替换故障节点（如果 IP 发生变化，修改清单）
+bin/node-add <your_new_node_ip>
+
+# 3. 在新节点上置备 MinIO
+./minio.yml -l <your_new_node_ip>
+
+# 4. 指示 MinIO 执行修复操作
+mc admin heal
+```
+
+------
+
+## 磁盘故障恢复 [#disk-failure-recovery]
+
+- [教程：恢复硬件故障磁盘](https://min.io/docs/minio/linux/operations/data-recovery/recover-after-drive-failure.html#minio-restore-hardware-failure-drive)
+
+```bash
+# 1. 卸载故障磁盘
+umount /dev/<your_disk_device>
+
+# 2. 更换新驱动器，使用 xfs 格式化
+mkfs.xfs /dev/sdb -L DRIVE1
+
+# 3. 不要忘记为自动挂载设置 fstab
+vi /etc/fstab
+# LABEL=DRIVE1     /mnt/drive1    xfs     defaults,noatime  0       2
+
+# 4. 重新挂载新磁盘
+mount -a
+
+# 5. 指示 MinIO 执行修复操作
+mc admin heal
+```

@@ -1,0 +1,88 @@
+---
+title: 配置
+description: 描述您想要的 ferret 集群
+icon: CodeXml
+---
+
+## FerretDB 集群 [#ferretdb-cluster]
+
+在部署 Mongo (FerretDB) 集群之前，您需要使用相关 [参数](/zh/ferret/param) 在清单中定义它。
+
+以下示例使用默认的单节点 `pg-meta` 集群的 `meta` 数据库作为 FerretDB 的底层存储：
+
+```yaml
+all:
+  children:
+
+    #----------------------------------#
+    # ferretdb for mongodb on postgresql
+    #----------------------------------#
+    # ./mongo.yml -l ferret
+    ferret:
+      hosts:
+        10.10.10.10: { mongo_seq: 1 }
+      vars:
+        mongo_cluster: ferret
+        mongo_pgurl: 'postgres://mongod:DBUser.Mongo@10.10.10.10:5432/meta'
+```
+
+这里，`mongo_cluster` 和 `mongo_seq` 是基本的身份参数。对于 FerretDB，还需要 `mongo_pgurl` 来指定底层 PG 位置。
+
+请注意，`mongo_pgurl` 参数需要一个 PostgreSQL **超级用户**。在此示例中，为 FerretDB 定义了一个专用的 `mongod` 超级用户。
+
+请注意，FerretDB 的 [身份验证](https://docs.ferretdb.io/security/authentication/) 完全基于 PostgreSQL。您可以使用 FerretDB 或 PostgreSQL 创建其他常规用户。
+
+------
+
+## PostgreSQL 集群 [#postgresql-cluster]
+
+FerretDB 2.0+ 需要一个扩展：[DocumentDB](https://ext.pgsty.com/e/documentdb)，它依赖于几个其他扩展。以下是为 FerretDB 创建 PostgreSQL 集群的模板：
+
+```yaml
+all:
+  children:
+
+    #----------------------------------#
+    # pgsql (singleton on current node)
+    #----------------------------------#
+    # postgres cluster: pg-meta
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - { name: mongod      ,password: DBUser.Mongo  ,pgbouncer: true ,roles: [dbrole_admin ] ,superuser: true ,comment: ferretdb super user }
+          - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
+          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
+        pg_databases:
+          - {name: meta, owner: mongod ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [ documentdb, postgis, vector, pg_cron, rum ]}
+        pg_hba_rules:
+          - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
+          - { user: mongod      , db: all ,addr: world ,auth: pwd ,title: 'mongodb password access from everywhere' }
+        pg_extensions:
+          - documentdb, citus, postgis, pgvector, pg_cron, rum
+        pg_parameters:
+          cron.database_name: meta
+        pg_libs: 'pg_documentdb, pg_documentdb_core, pg_cron, pg_stat_statements, auto_explain'  # 将 timescaledb 添加到 shared_preload_libraries
+```
+
+------
+
+## 高可用性 [#high-availability]
+
+您可以使用 [服务](/zh/pgsql/service/) 连接到高可用的 PostgreSQL 集群，并部署多个 FerretDB 实例副本，并为 FerretDB 层高可用性绑定 L2 VIP。
+
+```yaml
+ferret:
+  hosts:
+    10.10.10.45: { mongo_seq: 1 }
+    10.10.10.46: { mongo_seq: 2 }
+    10.10.10.47: { mongo_seq: 3 }
+  vars:
+    mongo_cluster: ferret
+    mongo_pgurl: 'postgres://mongod:DBUser.Mongo@10.10.10.3:5436/test'
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.99
+    vip_interface: eth1
+```

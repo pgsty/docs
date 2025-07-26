@@ -1,0 +1,56 @@
+---
+title: 常见问题
+description: 常见问题解答
+icon: MessageCircleQuestion
+---
+
+## 谁可以运行 Docker 命令？ [#who-can-run-docker-commands]
+
+默认情况下，Pigsty 将在远程主机上运行剧本的 **管理用户**（即 SSH 登录用户）和由 [`node_admin_username`](/zh/node/param#node_admin_username) 参数定义的用户都添加到操作系统组 **`docker`** 中。
+该组中的任何账户都可以通过 `docker` CLI 管理 Docker。
+
+需要为另一个用户授予 Docker 访问权限？只需将该操作系统用户添加到 **`docker`** 组：
+
+```bash
+sudo usermod -aG docker <username>
+```
+
+------
+
+## 通过代理工作 [#working-through-a-proxy]
+
+在安装期间，如果设置了 [`proxy_env`](/zh/infra/param#proxy_env) 参数，Pigsty 会将指定的 HTTP 代理设置写入 `/etc/docker/daemon.json`。
+
+然后 Docker 将通过此代理路由所有来自上游注册中心的镜像拉取。
+
+**提示：** 使用 `-x` 标志运行 `configure` 剧本会自动捕获当前 shell 的代理变量并将它们注入到 `proxy_env` 中。
+
+------
+
+## 使用镜像注册中心 [#using-mirror-registries]
+
+在中国大陆，您可能会遇到防火长城限制。历史上，可以使用诸如 **quay.io** 等镜像：
+
+```bash
+docker login quay.io   # 输入您的凭据登录
+```
+
+> **更新（2024年6月）：** 中国所有以前可访问的 Docker 镜像现在都已被阻止。请通过代理拉取镜像。
+
+------
+
+## 将 Docker 添加到监控 [#adding-docker-to-monitoring]
+
+安装 Docker 模块后，您可以通过运行 **`docker_register`**（别名 **`register_prometheus`**）任务将 Docker 注册为特定节点的 Prometheus 目标：
+
+```bash
+./docker.yml -l <your-node-selector> -t register_prometheus
+```
+
+------
+
+## 软件模板 [#software-templates]
+
+Pigsty 提供了一系列 [软件模板](/zh/app/)，这些模板使用 **Docker Compose** 启动流行的技术栈——开箱即用。
+
+只需确保首先安装了 Docker 模块。
