@@ -1,0 +1,34 @@
+---
+title: FAQ
+description: 常见问题
+icon: MessageCircleQuestion
+---
+
+
+## 由于现有 redis 实例而中止 [#abort-due-to-existing-redis-instance]
+
+> 使用 `redis_clean = true` 和 `redis_safeguard = false` 强制清理 redis 数据
+
+当您运行 `redis.yml` 初始化已经运行的 redis 实例，并且 [`redis_clean`](/zh/redis/param#redis_clean) 设置为 `false` 时会发生这种情况。
+
+如果 `redis_clean` 设置为 `true`（且 `redis_safeguard` 也设置为 `false`），`redis.yml` playbook 将删除现有的 redis 实例并将其重新初始化为新实例，这使得 `redis.yml` playbook 完全幂等。
+
+------
+
+## 由于启用 redis_safeguard 而中止 [#abort-due-to-redis_safeguard-enabled]
+
+> 当使用 [`redis_safeguard`](/zh/redis/param#redis_safeguard) 设置为 `true` 移除 redis 实例时会发生这种情况。
+
+您可以禁用 [`redis_safeguard`](/zh/redis/param#redis_safeguard) 来移除 Redis 实例。这就是 redis_safeguard 的作用。
+
+------
+
+## 如何在此节点上添加一个新的 redis 实例？ [#how-to-add-a-single-new-redis-instance-on-this-node]
+
+> 使用 `bin/redis-add <ip> <port>` 在节点上部署新的 redis 实例。
+
+------
+
+## 如何从节点移除单个 redis 实例？ [#how-to-remove-a-single-redis-instance-from-the-node]
+
+> `bin/redis-rm <ip> <port>` 从节点移除单个 redis 实例

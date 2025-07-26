@@ -1,0 +1,50 @@
+---
+title: 配置
+description: 定义 SNSD、SNMD、MNMD MinIO 集群
+icon: CodeXml
+---
+
+
+在部署之前，您必须在[配置清单](/zh/config/inventory)中定义 MinIO 集群。
+
+MinIO 集群有 3 种主要部署模式：
+
+- [SNSD：单节点单驱动器](#single-node-single-drive)：您可以在此模式下使用任何目录作为磁盘驱动器，便于开发/测试/演示。
+- [SNMD：单节点多驱动器](#single-node-multi-drive)：折中模式，在单个服务器上使用多个磁盘（>=2），仅在资源极其有限时使用。
+- [MNMD：多节点多驱动器](#multi-node-multi-drive)：具有最佳可靠性的标准生产部署，但需要多个服务器和真实驱动器。
+
+我们建议分别为开发和生产部署使用 SNSD 和 MNMD，仅在资源极其有限（只有一台服务器）时使用 SNMD。
+
+此外，您可以使用[多池部署](#multi-pool)来扩展现有的 MinIO 集群，或直接部署[多个集群](#multiple-clusters)。
+
+当使用多节点 MinIO 集群时，您可以从任何节点访问服务，因此最佳实践是使用负载均衡器和 HA [访问](#access-service)。
+
+------
+
+## 核心参数 [#core-param]
+
+MinIO 部署有且仅有一个核心参数，即 `MINIO_VOLUMES`，它指定 minio 集群的节点、驱动器、池
+
+Pigsty 将根据配置清单为您自动生成 `MINIO_VOLUMES`，但您始终可以直接覆盖它。如果未明确指定，Pigsty 将根据以下规则生成它：
+
+- SNSD：`MINIO_VOLUMES` 指向本地节点上的任何目录，来自 [`minio_data`](/zh/minio/param#minio_data)
+- SNMD：`MINIO_VOLUMES` 指向本地节点上的一系列真实驱动器，来自 [`minio_data`](/zh/minio/param#minio_data)
+- MNMD：`MINIO_VOLUMES` 指向多个节点和多个驱动器，根据 `minio_data` 和 `minio_node`
+
+- 使用 [`minio_data`](/zh/minio/param#minio_data) 指定每个节点上的驱动器，如 `/data{1...4}`
+- 使用 [`minio_node`](/zh/minio/param#minio_node) 指定节点名称模式，如 `${minio_cluster}-${minio_seq}.pigsty`
+
+- 多池：需要显式指定 `MINIO_VOLUMES`
+
+
+
+------
+
+## 单节点单驱动器 [#single-node-single-drive]
+
+教程：[deploy-minio-single-node-single-drive](https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html)
+
+要定义单例 MinIO 实例，很简单：
+
+```yaml
+# 1 节点 1 驱动器（默认）

@@ -1,0 +1,152 @@
+---
+title: 清单
+description: Pigsty 的主配置文件
+icon: CodeXml
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+import { CpuIcon, FileCode } from 'lucide-react';
+
+每个 pigsty 部署都有一个对应的配置 **清单**。
+它可以存储在 YAML 格式的本地配置文件中，或从 [CMDB](https://docs.ansible.com/ansible/2.9/user_guide/intro_dynamic_inventory.html) 或任何 ansible 兼容格式动态生成。
+Pigsty 默认使用一个单一的 YAML 配置文件，即 [`pigsty.yml`](https://github.com/pgsty/pigsty/blob/main/pigsty.yml)，[位于](https://github.com/pgsty/pigsty/blob/main/ansible.cfg#L3) pigsty 主目录中。
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <a href={"https://github.com/pgsty/pigsty/blob/main/pigsty.yml"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
+        <a href={"https://github.com/pgsty/pigsty/blob/main/ansible.cfg"}><File name="ansible.cfg"  icon={<FileCode className="text-orange-400" />} /></a>
+    </Folder>
+</Files>
+
+[`configure`](/zh/config/configure) 脚本将根据您的环境和输入生成具有良好默认值的 `pigsty.yml` 文件脚手架，
+但它是 **可选的**：您始终可以直接编辑 `pigsty.yml` 文件，如[**教程**](/zh/config/tutorial)所示。
+
+
+--------
+
+## 结构 [#structure]
+
+清单由两部分组成：**全局变量** 和多个 **组**。您可以在 `all.children` 中定义新集群。
+并使用全局变量描述基础设施：`all.vars`。它可能看起来像这样：
+
+```yaml
+all:                  # 顶级对象：all
+  vars: {...}         # 全局参数
+  children:           # 组定义
+    infra:            # 组定义：'infra'
+      hosts: {...}        # 组成员：'infra'
+      vars:  {...}        # 组参数：'infra'
+    etcd:    {...}    # 组定义：'etcd'
+    pg-meta: {...}    # 组定义：'pg-meta'
+    pg-test: {...}    # 组定义：'pg-test'
+    redis-test: {...} # 组定义：'redis-test'
+    # ...
+```
+
+在 [`conf/`](https://github.com/pgsty/pigsty/blob/main/conf/README.md) 下有大量示例，在 `configure` 期间也可以用作模板。
+
+------
+
+## 集群 [#cluster]
+
+每个 ansible 组可能代表一个集群，可以是节点集群、PostgreSQL 集群、Redis 集群、Etcd 集群或 Minio 集群等…
+
+集群定义由两部分组成：**hosts** 和 **vars**。
+您可以在 `<cls>.hosts` 中定义集群成员，并在 `<cls>.vars` 中使用参数描述集群。
+这是一个 3 节点 HA PG 集群的示例：
+
+```yaml
+all:
+  children:    # 所有组
+    pg-test:   # 组名
+      hosts:   # 组主机（集群成员）
+        10.10.10.11: { pg_seq: 1, pg_role: primary } # 主机 1
+        10.10.10.12: { pg_seq: 2, pg_role: replica } # 主机 2
+        10.10.10.13: { pg_seq: 3, pg_role: offline } # 主机 3
+      vars:    # 组变量（集群参数）
+        pg_cluster: pg-test
+```
+
+集群级别的 `vars` 将覆盖全局变量，主机级别的 `vars` 将覆盖集群变量和全局变量。
+
+
+
+------
+
+## 参数 [#parameter]
+
+参数是定义部署中所有实体的键值对。
+键是字符串名称，值可以是五种类型之一：布尔值、字符串、数字、数组或对象。
+
+参数可以在不同级别设置，具有以下优先级：
+
+| 级别       | 位置                   | 描述                                   | 优先级  |
+|:------------|:---------------------------|:----------------------------------------------|:------------|
+| CLI 参数    | 命令行               | 通过 `-e` CLI 参数                        | 最高 (5) |
+| 主机变量   | `<group>.hosts.<host>`     | 特定于单个主机的参数          | 高 (4)    |
+| 组变量  | `<group>.vars`             | 组/集群中主机共享的参数 | 中等 (3)  |
+| 全局变量 | `all.vars`                 | 所有主机共享的参数                | 低 (2)     |
+| 默认值    | `<roles>/default/main.yml` | 角色实现默认值            | 最低 (1)  |
+
+以下是关于参数优先级的一些示例：
+
+- 使用 Playbook CLI 参数 `-e pg_clean=true` 强制删除现有数据库
+- 使用主机变量上的实例级别参数 `pg_role` 覆盖 pg 实例角色
+- 使用组变量上的集群级别参数 `pg_cluster` 覆盖 pg 集群名称。
+- 使用全局变量上的全局参数 `node_ntp_servers` 指定全局 NTP 服务器
+- 如果没有设置 `pg_version`，pigsty 将使用角色实现的默认值（默认为 `17`）
+
+
+除了强制性的 **身份参数** 外，每个参数都有一个适当的默认值；它们用作标识符，必须明确设置。
+例如上述片段中的 [`pg_cluster`](/zh/pgsql/param#pg_cluster)、[`pg_role`](/zh/pgsql/param#pg_role) 和 [`pg_seq`](/zh/pgsql/param#pg_seq)。
+
+
+可用参数根据模块而异：
+
+| [<span className={"text-sky-600 font-bold"}>PGSQL</span>](/zh/pgsql/param) | [<span className={"text-green-700 font-bold"}>INFRA</span>](/zh/infra/param) |  [<span className={"text-amber-500 font-bold"}>NODE</span>](/zh/node/param)   |   [<span className={"text-sky-400 font-bold"}>ETCD</span>](/zh/etcd/param)    |
+|:----------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
+| [<span className={"text-red-800 font-bold"}>MINIO</span>](/zh/minio/param) |  [<span className={"text-red-400 font-bold"}>REDIS</span>](/zh/redis/param)  | [<span className={"text-blue-500 font-bold"}>DOCKER</span>](/zh/docker/param) | [<span className={"text-gray-500 font-bold"}>FERRET</span>](/zh/ferret/param) |
+
+
+
+------
+
+## 参考 [#reference]
+
+Pigsty 有 **290+** 个参数，查看模块参数了解详细信息。
+
+| 模块                         | 部分                                            | 描述                         | 数量 |
+|--------------------------------|----------------------------------------------------|-------------------------------------|-------|
+| [`INFRA`](/zh/infra/param)   | [`META`](/zh/infra/param#meta)                   | Pigsty 元数据                     | 4     |
+| [`INFRA`](/zh/infra/param)   | [`CA`](/zh/infra/param#ca)                       | 自签名 CA                      | 3     |
+| [`INFRA`](/zh/infra/param)   | [`INFRA_ID`](/zh/infra/param#infra_id)           | 基础设施门户和身份            | 2     |
+| [`INFRA`](/zh/infra/param)   | [`REPO`](/zh/infra/param#repo)                   | 本地软件仓库                 | 9     |
+| [`INFRA`](/zh/infra/param)   | [`INFRA_PACKAGE`](/zh/infra/param#infra_package) | 基础设施包                      | 2     |
+| [`INFRA`](/zh/infra/param)   | [`NGINX`](/zh/infra/param#nginx)                 | Nginx Web 服务器                    | 7     |
+| [`INFRA`](/zh/infra/param)   | [`DNS`](/zh/infra/param#dns)                     | DNSMASQ 名称服务器                  | 3     |
+| [`INFRA`](/zh/infra/param)   | [`PROMETHEUS`](/zh/infra/param#prometheus)       | Prometheus 堆栈                    | 18    |
+| [`INFRA`](/zh/infra/param)   | [`GRAFANA`](/zh/infra/param#grafana)             | Grafana 堆栈                       | 6     |
+| [`INFRA`](/zh/infra/param)   | [`LOKI`](/zh/infra/param#loki)                   | Loki 日志服务                | 4     |
+| [`NODE`](/zh/node/param)     | [`NODE_ID`](/zh/node/param#node_id)              | 节点身份参数            | 5     |
+| [`NODE`](/zh/node/param)     | [`NODE_DNS`](/zh/node/param#node_dns)            | 节点域名和解析器        | 6     |
+| [`NODE`](/zh/node/param)     | [`NODE_PACKAGE`](/zh/node/param#node_package)    | 节点仓库和包                | 5     |
+| [`NODE`](/zh/node/param)     | [`NODE_TUNE`](/zh/node/param#node_tune)          | 节点调优和内核功能       | 10    |
+| [`NODE`](/zh/node/param)     | [`NODE_ADMIN`](/zh/node/param#node_admin)        | 管理员用户和凭据            | 7     |
+| [`NODE`](/zh/node/param)     | [`NODE_TIME`](/zh/node/param#node_time)          | 节点时区、NTP、Crontabs        | 5     |
+| [`NODE`](/zh/node/param)     | [`NODE_VIP`](/zh/node/param#node_vip)            | 节点 Keepalived L2 VIP              | 8     |
+| [`NODE`](/zh/node/param)     | [`HAPROXY`](/zh/node/param#haproxy)              | HAProxy 负载均衡器           | 10    |
+| [`NODE`](/zh/node/param)     | [`NODE_EXPORTER`](/zh/node/param#node_exporter)  | 节点监控代理               | 3     |
+| [`NODE`](/zh/node/param)     | [`PROMTAIL`](/zh/node/param#promtail)            | Promtail 日志代理              | 4     |
+| [`DOCKER`](/zh/docker/param) | [`DOCKER`](/zh/docker/param)                     | Docker 守护进程                       | 4     |
+| [`ETCD`](/zh/etcd/param)     | [`ETCD`](/zh/etcd/param#etcd)                    | ETCD DCS 集群                    | 10    |
+| [`MINIO`](/zh/minio/param)   | [`MINIO`](/zh/minio/param#minio)                 | MINIO S3 对象存储             | 15    |
+| [`REDIS`](/zh/redis/param)   | [`REDIS`](/zh/redis/param)                       | Redis 键值 NoSQL 缓存     | 20    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_ID`](/zh/pgsql/param#pg_id)                 | PG 身份参数              | 11    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_BUSINESS`](/zh/pgsql/param#pg_business)     | PG 业务对象定义       | 12    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_INSTALL`](/zh/pgsql/param#pg_install)       | 安装 PG 包和扩展    | 10    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_BOOTSTRAP`](/zh/pgsql/param#pg_bootstrap)   | 使用 Patroni 初始化 HA PG 集群     | 35    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_PROVISION`](/zh/pgsql/param#pg_provision)   | 创建数据库内对象          | 9     |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_BACKUP`](/zh/pgsql/param#pg_backup)         | 使用 pgBackRest 设置备份仓库     | 5     |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_ACCESS`](/zh/pgsql/param#pg_access)         | 暴露服务、绑定 VIP、DNS     | 16    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_MONITOR`](/zh/pgsql/param#pg_monitor)       | 收集 Postgres 的指标和日志 | 18    |
+| [`PGSQL`](/zh/pgsql/param)   | [`PG_EXPORTER`](/zh/pgsql/param#pg_remove)       | 移除 Postgres 集群           | 4     |

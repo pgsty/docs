@@ -1,0 +1,191 @@
+---
+title: Ansible
+description: 开始学习基本的 ansible 概念
+icon: Volleyball
+---
+
+Pigsty 使用 [Ansible](https://docs.ansible.com/ansible/) 实现管理控制器，这是一个开源自动化工具，用于以基础设施即代码（IaC）的方式管理大规模基础设施。
+被运维人员广泛使用。
+
+--------
+
+## 安装 [#install]
+
+Pigsty 将在[**引导**](/zh/install/start#bootstrap)期间尽力安装 `ansible` 及其依赖项。
+但您始终可以手动安装它，它在大多数操作系统的官方仓库中都可用，可以用一个命令安装。
+
+<Callout title="安装 Ansible" type="info">
+
+    Playbooks 还需要一个弱依赖：`jmespath` python 包。
+
+    ```bash tab="默认"
+    cd ~/pigsty; ./bootstrap
+    ```
+    ```bash tab="Debian / Ubuntu"
+    sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 8/9"
+    sudo dnf install -y ansible python3.12-jmespath
+    ```
+    ```bash tab="EL 7"
+    sudo yum install -y ansible python-jmespath
+    ```
+    ```bash tab="macOS"
+    brew install ansible
+    pip3 install jmespath
+    ```
+
+</Callout>
+
+### macOS
+
+Ansible 在 macOS 上也可用。您可以使用 [**Homebrew**](https://brew.sh/) 在 Mac 上安装 Ansible。
+并将其用作管理节点来管理远程云服务器。
+如果您在云 VPS 上部署单节点 pigsty，这很方便。但不建议在生产环境中使用。
+
+
+
+
+
+
+
+
+
+--------
+
+## 基础知识 [#basics]
+
+了解 Ansible 知识是好的，但**不是必需的**。您只需要知道如何运行 [**Ansible Playbooks**](/zh/admin/playbook)。
+Playbooks 是包含要执行的一系列任务的可执行 YAML 文件。
+
+运行 `./node.yml` playbook 本质上转换为 `ansible-playbook node.yml`。
+文件顶部的 hashbang 使其可直接执行。
+您可以使用参数来控制 playbook 执行：
+
+```bash title="~/pigsty"
+./node.yml                         # 在所有主机上运行 infra playbook
+./pgsql.yml -l pg-test             # 在 pg-test 集群上运行 pgsql playbook
+./infra.yml -t repo                # 运行 infra.yml 的子任务 repo
+./pgsql-rm.yml -e pg_rm_pkg=false  # 删除 pgsql，但保留包
+```
+
+以下 **4 个参数** 需要您注意，以有效使用 ansible：
+
+| 目的                            | 参数                 | 描述                                           |
+|------------------------------------|---------------------------|-------------------------------------------------------|
+| [**在哪里**](#limit-host)           | `-l\|--limit <pattern>`   | 限制在特定组/主机/模式上的执行目标 |
+| [**什么**](#limit-task)            | `-t\|--tags <tags>`       | 只运行具有特定标签的任务                     |
+| [**如何**](#extra-vars)             | `-e\|--extra-vars <vars>` | 额外的命令行参数                          |
+| [**配置**](#designate-inventory) | `-i\|--inventory <path>`  | 使用特定的清单文件                       |
+
+
+
+
+
+
+
+--------
+
+## 限制主机 [#limit-host]
+
+playbook 的**执行目标**可以通过 `-l|--limit <selector>` 限制。
+当尝试在特定主机/节点或组/集群上运行 playbooks 时，这很方便。
+以下是主机限制的一些示例：
+
+```bash
+./pgsql.yml                              # 在所有主机上运行（危险！）
+./pgsql.yml -l pg-test                   # 在 pg-test 集群上运行
+./pgsql.yml -l 10.10.10.10               # 在单个主机 10.10.10.10 上运行
+./pgsql.yml -l pg-*                      # 在匹配 glob 模式 `pg-*` 的主机/组上运行
+./pgsql.yml -l '10.10.10.11,&pg-test'    # 在 pg-test 组的 10.10.10.11 上运行
+./pgsql-rm.yml -l 'pg-test,!10.10.10.11' # 在 pg-test 上运行，除了 10.10.10.11
+./pgsql.yml -l pg-test                   # 对 pg-test 集群中的主机执行 pgsql playbook
+```
+
+查看 ansible 文档中的所有详细信息：[Patterns: targeting hosts and groups](https://docs.ansible.com/ansible/latest/inventory_guide/intro_patterns.html)
+
+<Callout title="在没有主机限制的情况下运行 playbook 可能很危险！" type="warn">
+
+    缺少这个值可能很危险，因为大多数 playbooks 将在 `all` 主机上执行。**请谨慎使用**。
+
+</Callout>
+
+
+
+
+
+--------
+
+## 限制任务 [#limit-task]
+
+**执行任务**可以通过 `-t|--tags <tags>` 控制。
+如果指定，将执行具有给定标签的任务，而不是整个 playbook。
+以下是一些任务限制示例：
+
+```bash
+./infra.yml -t repo          # 创建仓库
+./node.yml  -t node_pkg      # 安装节点包
+./pgsql.yml -t pg_install    # 安装 pg 包和扩展
+./etcd.yml  -t etcd_purge    # 销毁 etcd 集群
+./minio.yml -t minio_alias   # 写入 minio cli 配置
+```
+
+要运行多个任务，指定多个标签并用逗号分隔：`-t tag1,tag2`：
+
+```bash
+./node.yml  -t node_repo,node_pkg   # 添加仓库，然后安装包
+./pgsql.yml -t pg_hba,pg_reload     # 配置，然后重新加载 pg hba 规则
+```
+
+
+
+--------
+
+## 额外变量 [#extra-vars]
+
+您可以使用 cli 参数在运行时覆盖配置参数，它具有[**最高优先级**](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence)。
+
+额外的命令行参数可以通过 `-e|--extra-vars KEY=VALUE` 传递，可以多次使用：
+
+```bash
+# 使用另一个管理员用户创建管理员
+./node.yml -e ansible_user=admin -k -K -t node_admin
+
+# 初始化一个特定的 redis 实例：10.10.10.11:6379
+./redis.yml -l 10.10.10.10 -e redis_port=6379 -t redis
+
+# 删除 postgres，但保留包和数据
+./pgsql-rm.yml -e pg_rm_pkg=false -e pg_rm_data=false
+```
+
+对于复杂参数，可以使用 JSON 字符串：
+
+```bash
+# 添加仓库并安装包
+./node.yml -t node_install -e '{"node_repo_modules":"infra","node_packages":["duckdb"]}'
+```
+
+
+
+
+
+
+--------
+
+## 指定清单 [#designate-inventory]
+
+默认配置文件是 pigsty 主目录中的 `pigsty.yml`。
+
+您可以使用 `-i <path>` 参数指定不同的[**清单**](/zh/config/inventory)文件路径。
+
+```bash
+./pgsql.yml -i conf/rich.yml            # 根据 rich 配置初始化一个下载了所有扩展的单节点
+./pgsql.yml -i conf/full.yml            # 根据 full 配置初始化一个 4 节点集群
+./pgsql.yml -i conf/app/supa.yml        # 根据 supa.yml 配置初始化一个 1 节点 Supabase 部署
+```
+
+<Callout title="更改默认清单文件" type="info">
+
+    要永久更改**默认**配置文件，请更改 [`ansible.cfg`](https://github.com/pgsty/pigsty/blob/main/ansible.cfg#L6) 中的 `inventory` 参数。
+
+</Callout>

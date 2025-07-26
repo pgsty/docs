@@ -1,0 +1,289 @@
+---
+title: DNS 域名
+description: 为 Web 服务设置域名
+icon: Earth
+---
+
+
+安装 Pigsty 后，用户可以通过 IP + 端口访问大多数基础设施组件的 Web 界面。
+
+假设您的节点内部 IP 是 10.10.10.10，那么默认情况下：
+
+- [http://10.10.10.10:3000](http://10.10.10.10:3000/) 是 Grafana 仪表板（**您的日常指挥中心**）
+- [http://10.10.10.10:9090](http://10.10.10.10:9090/) 是 Prometheus TSDB 控制台
+- [http://10.10.10.10:9093](http://10.10.10.10:9093/) 是 AlertManager 控制台
+- [http://10.10.10.10](http://10.10.10.10/) 是 Nginx HTTP 入口点（默认端口 80）
+
+虽然 IP + 端口对于开发/测试环境来说工作得很好（嘿，我们有时都很懒！），但对于更严肃的部署，我强烈建议通过**域名**访问这些服务。
+
+使用域名有[**许多优势**](#why-use-domains)，不需要额外费用，只需要一个简单的配置行。
+
+让我们深入了解这些主题：
+
+- [**TL;DR**](#tldr)
+- [**为什么使用域名？**](#why-use-domains)
+- [**DNS 工作原理**](#how-dns-works)
+- [**Pigsty 默认域名**](#pigsty-default-domains)
+- [**本地静态解析**](#local-static-resolution)
+- [**内部动态解析**](#internal-dynamic-resolution)
+- [**本地 HTTPS 访问**](#local-https-access)
+- [**信任自签名 CA**](#trust-self-signed-ca)
+- [**公共域名解析**](#public-domain-resolution)
+
+------
+
+## TL;DR
+
+将此静态解析记录添加到您的 `/etc/hosts`（Linux/MacOS）或 `C:\Windows\System32\drivers\etc\hosts`（Windows）：
+
+```bash
+sudo tee -a /etc/hosts <<EOF
+10.10.10.10 h.pigsty g.pigsty p.pigsty a.pigsty
+EOF
+```
+
+> 将占位符 IP `10.10.10.10` 替换为您的 Pigsty 节点的 IP（公共/私有，只要可达即可）。
+>
+> 如果您在 `infra_portal` 中修改了默认域名，请用您的自定义域名替换它们。
+
+------
+
+## 为什么使用域名？ [#why-use-domains]
+
+Pigsty **强烈建议**使用域名而不是直接 IP+端口访问，原因如下：
+
+- 域名更容易记住（除非您是机器人 🤖）
+- 更灵活 — 指向不同的 IP 而无需更改配置
+- 将所有服务整合在 Nginx 后面，以获得更好的管理、审计和减少攻击面
+- 启用 HTTPS 加密以防止流量窃听
+- 在中国，对未注册域名的 HTTP 访问会被 ISP 劫持，但 HTTPS 不会
+- 通过 Nginx 代理访问绑定到 127.0.0.1 或内部 Docker 网络的服务
+
+Pigsty 默认使用**内部静态域名** — 只需在本地添加 DNS 记录，**无需注册真实域名**。
+
+对于面向互联网的部署，考虑使用带有免费 HTTPS 证书的真实域名。
+
+------
+
+## DNS 工作原理 [#how-dns-works]
+
+如果您不熟悉 HTTP/DNS 协议，这里是关于 Nginx 如何在单个端口（80 + HTTPS 443）上为多个域名提供服务的快速入门：
+
+**DNS 协议**
+
+- 当客户端（例如浏览器）访问 [https://a.pigsty.cc](https://a.pigsty.cc/) 时，它首先通过 DNS 解析域名
+- 解析可以使用[**本地静态文件**](#local-static-resolution)、[**内部 DNS 服务器**](#internal-dynamic-resolution)或[**公共 DNS**](#public-domain-resolution)
+- DNS 返回一个 IP - 多个域名可以指向同一个 IP
+- 客户端只需要知道：向哪个 IP 发送请求
+
+**HTTP 协议**
+
+- HTTP 请求（HTTP/1.1+）包含带有请求域名的 **Host** 标头
+- 这个 Host 标头是关键的 — HTTP/1.1 规范要求客户端包含它
+- Nginx 使用 Host 标头匹配并将请求路由到不同的站点
+- 因此，一个端口可以根据 Host 值提供不同的内容
+
+------
+
+## Pigsty 默认域名 [#pigsty-default-domains]
+
+Pigsty 默认配置这四个**内部域名**：
+
+|   域名   | 名称           |    端口    |                   组件                   | 描述                 |
+|:----------:|----------------|:----------:|:---------------------------------------------:|-----------------------------|
+| `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/zh/infra/arch/#nginx)        | 默认服务器，本地仓库  |
+| `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/zh/infra/arch/#grafana)      | 监控和可视化  |
+| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/zh/infra/arch/#prometheus)   | 时间序列数据库              |
+| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/zh/infra/arch/#alertmanager) | 警报聚合和路由 |
+
+由于这些域名不使用 TLD，您需要[**本地静态**](#local-static-resolution)或[**内部动态**](#internal-dynamic-resolution)解析。
+
+不用担心 — 只需要一行配置！ 🚀
+
+------
+
+## 本地静态解析 [#local-static-resolution]
+
+假设 Pigsty 的内部 IP 是 `10.10.10.10`，将此添加到您的客户端机器的 hosts 文件：
+
+```bash
+# Pigsty 核心组件和默认域名
+10.10.10.10 h.pigsty g.pigsty p.pigsty a.pigsty
+```
+
+### 添加解析 [#adding-resolution]
+
+客户端机器是您浏览 Pigsty 服务的地方 — 您的笔记本电脑、台式机、VM 等。
+
+对于 Linux / macOS：`sudo nano /etc/hosts` 对于 Windows：以管理员身份运行记事本，编辑 `C:\Windows\System32\drivers\etc\hosts`
+
+添加记录后，您可以通过这些域名访问 Pigsty Web 服务。
+
+### 自定义域名 [#custom-domains]
+
+不喜欢默认域名？在安装前在 [**`infra_portal`**](/zh/infra/param#infra_portal) 中修改它们：
+
+```yaml
+infra_portal:
+  home         : { domain: h.pigsty.xxx }
+  grafana      : { domain: g.pigsty.xxx ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty.xxx ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty.xxx ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+```
+
+然后相应地更新您的 hosts 文件：
+
+```bash
+10.10.10.10 h.pigsty.xxx g.pigsty.xxx p.pigsty.xxx a.pigsty.xxx
+```
+
+使用您喜欢的任何域名 — 真实的或虚构的 - 只要它通过[本地](#local-static-resolution)、[内部](#internal-dynamic-resolution)或[公共](#public-domain-resolution) DNS 解析到 Pigsty 的 IP。
+
+### 附加记录 [#additional-records]
+
+运行其他 Pigsty 扩展？也添加这些记录：
+
+```bash
+# Pigsty 扩展工具和默认域名
+10.10.10.10 adm.pigsty   # pgAdmin GUI
+10.10.10.10 ddl.pigsty   # Bytebase DDL 管理
+10.10.10.10 cli.pigsty   # pig CLI 保留
+10.10.10.10 api.pigsty   # Pigsty API 保留
+10.10.10.10 lab.pigsty   # JupyterLab 保留
+10.10.10.10 git.pigsty   # Gitea 保留
+10.10.10.10 wiki.pigsty  # Wiki.js 保留
+10.10.10.10 noco.pigsty  # NocoDB 保留
+10.10.10.10 supa.pigsty  # Supabase 保留
+10.10.10.10 dify.pigsty  # Dify 保留
+10.10.10.10 odoo.pigsty  # Odoo 保留
+10.10.10.10 mm.pigsty    # MinIO 保留
+```
+
+### 公共 IP 解析 [#public-ip-resolution]
+
+对于云部署，解析到您的**公共 IP**，而不是内部 IP。
+
+如果您的服务器有互联网访问，它通常有两个网卡 - 一个用于互联网（公共 IP），一个用于内部网络（私有 IP）。
+
+示例：如果您的云服务器的公共 IP 是 `1.2.3.4`，VPC IP 是 `10.10.10.10`：
+
+```bash
+# 对于云部署，解析到公共 IP！只需更改 IP 部分：
+1.2.3.4 h.pigsty g.pigsty p.pigsty a.pigsty
+```
+
+
+
+------
+
+## 内部动态解析 [#internal-dynamic-resolution]
+
+希望您的办公室同事通过域名访问 Pigsty？使用**内部动态解析**。
+
+最简单的方法：请您的网络管理员将 DNS 记录添加到您的内部 DNS 服务器。
+
+### 使用内部 DNS [#using-internal-dns]
+
+如果您的内部 DNS 服务器是 `192.168.1.1`，在 Linux/MacOS 上编辑 `/etc/resolv.conf`：
+
+```bash
+nameserver 192.168.1.1
+```
+
+在 Windows 上：网络设置 → 网络适配器 → TCP/IPv4 属性 → DNS 配置
+
+测试内部 DNS 解析：
+
+```bash
+dig h.pigsty @192.168.1.1
+```
+
+### 使用 Pigsty 的 DNS [#using-pigstys-dns]
+
+Pigsty [基础设施模块](/zh/infra/arch/#dnsmasq) 包括 DNS 服务器（端口 53）。
+
+⚠️ 中国部署警告：公共服务器通常**不能**运行 DNS 服务（端口 53）！
+
+
+
+
+------
+
+## 本地 HTTPS 访问 [#local-https-access]
+
+对 Pigsty 的 HTTP 访问显示"**不安全**" - 它是明文的，容易受到 MITM 攻击。
+
+默认情况下，Pigsty 使用本地自签名 CA 为所有 Nginx 虚拟主机颁发证书。
+
+HTTPS 访问显示"**证书错误**" - 这些是自签名证书，不是来自受信任的 CA。
+
+您的选择：
+
+- 忽略它，使用 HTTP 或 IP+端口（反正是内部的，对吧？😅）
+- 使用 HTTPS，点击"高级 → 仍然继续"
+- Chrome 用户：在警告时输入 `thisisunsafe`（魔法词！）
+- 通过将 Pigsty 的 CA 添加到您的浏览器/操作系统来信任自签名证书
+- 为 Pigsty 使用真实的 CA 证书
+- 使用带有适当 HTTPS 证书的真实域名
+
+对于需要 HTTPS 但不想持续警告的内部访问，信任 Pigsty 的**自签名 CA**。
+
+对于生产环境，我们建议使用[**公共域名**](#public-domain-resolution)通过 [`certbot`](/zh/admin/cert) 获取免费的 HTTPS 证书。
+
+------
+
+## 信任自签名 CA [#trust-self-signed-ca]
+
+Pigsty 在初始化期间在[管理节点](/zh/node/arch#admin-node)源目录（`~/pigsty`）中生成自签名 CA。
+
+要使用 HTTPS，请将 Pigsty 的 CA 证书分发到客户端信任存储（或使用真实的 CA — 昂贵！）。
+
+Pigsty 管理的 Linux 节点自动信任 CA。对于其他 Linux 系统：
+
+- 信任 CA 证书
+- EL
+- Debian / Ubuntu
+
+```bash
+rm -rf /etc/pki/ca-trust/source/anchors/ca.crt
+ln -s /etc/pki/ca.crt /etc/pki/ca-trust/source/anchors/ca.crt
+/bin/update-ca-trust
+```
+
+MacOS：双击 `ca.crt`，添加到钥匙串，搜索 `pigsty-ca`，打开并"信任"根证书。
+
+
+Windows：将 `ca.crt` 添加到"受信任的根证书颁发机构"。
+
+信任 Pigsty 的 CA 后，不再有"不受信任的证书"警告！ 🎉
+
+
+
+
+
+------
+
+## 公共域名解析 [#public-domain-resolution]
+
+使用 DNS 提供商，如 Cloudflare、Godaddy、阿里云或腾讯云 DNSPod。
+
+需要**购买**域名 - 基本域名费用约为每年 10 美元。
+
+通过提供商的控制台/API 添加 DNS 记录，将域名指向 Pigsty 的**公共 IP**。
+
+示例：使用域名 `pigsty.xxx`，添加通配符 `*` A 记录或单独的 A 记录：
+
+- h.pigsty.xxx → 1.2.3.4
+- a.pigsty.xxx → 1.2.3.4
+- p.pigsty.xxx → 1.2.3.4
+- g.pigsty.xxx → 1.2.3.4
+
+Pigsty 包括[**Certbot 支持**](/zh/admin/cert)以获取免费的 HTTPS 证书（每 3 个月续订一次）。
+
+------
+
+## 进一步阅读 [#further-reading]
+
+有关更高级的配置，请查看 Pigsty 文档中的 DNS、Nginx 和 HTTPS 证书管理。

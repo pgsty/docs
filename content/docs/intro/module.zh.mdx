@@ -1,0 +1,143 @@
+---
+title: 模块
+description: Pigsty 中可用的模块
+icon: Boxes
+full: true
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    FileCode,
+    AtomIcon,
+    ToyBrickIcon,
+    Landmark,
+    Cog,
+    Settings,
+    FileJson,
+    Wrench,
+    Shield,
+    GraduationCap,
+    Container,
+    Leaf,
+    Box,
+    Layers,
+    Server,
+    Rocket,
+    SquareStack,
+    Code,
+    Network,
+    Fish,
+    Target,
+    RefreshCcw,
+    Zap,
+    PawPrint,
+    Cherry,
+    PawPrintIcon
+} from 'lucide-react';
+
+
+
+
+--------
+
+## 核心模块 [#core-modules]
+
+Pigsty 由多个**模块**组成。`PINE` 技术栈：`PGSQL` / `INFRA` / `NODE` / `ETCD` 对于自托管 Postgres RDS 服务是 <span className="text-sky-700 font-black">必需的</span>。
+
+<Cards>
+    <Card icon={<Database className="text-sky-600" />} title='PGSQL' href={"/zh/pgsql"}>
+        具有 PITR、IaC、ACL、监控和 420+ 扩展的 HA PG 集群
+    </Card>
+    <Card icon={<Landmark className="text-green-700" />} title='INFRA' href={"/zh/infra"}>
+        用于可观测性的 Nginx、仓库、DNS、NTP、Prometheus 和 Grafana 堆栈
+    </Card>
+    <Card icon={<CpuIcon className={"text-amber-500"} />} title='NODE' href={"/zh/node"}>
+        将节点注册到所需状态并监控它，以及 VIP、HAProxy
+    </Card>
+    <Card icon={<Settings className={"text-sky-400"} />} title='ETCD' href={"/zh/etcd"}>
+        可靠的分布式共识存储（DCS），为 PGSQL HA 提供支持
+    </Card>
+</Cards>
+
+
+
+------
+
+## 额外模块 [#extra-modules]
+
+Pigsty 还有一些 <span className="text-emerald-500 font-black">可选的</span> "奖励" 模块，它们与 PostgreSQL 配合良好，为您的数据基础设施带来额外价值。
+
+<Cards>
+    <Card icon={<Box className="text-red-800" />} title='MINIO' href={"/zh/minio"}>
+        S3 兼容的对象存储，可选的备份存储
+    </Card>
+    <Card icon={<Layers className="text-red-400" />} title='REDIS' href={"/zh/redis"}>
+        高性能内存缓存，可选的数据结构服务器
+    </Card>
+    <Card icon={<Container className="text-blue-500" />} title='DOCKER' href={"/zh/docker"}>
+        容器运行时，可选用于运行无状态应用程序和工具
+    </Card>
+    <Card icon={<Leaf className="text-gray-500" />} title='FERRET' href={"/zh/ferret"}>
+        在 PostgreSQL 上兼容 MongoDB 协议，可选中间件
+    </Card>
+</Cards>
+
+
+------
+
+## 内核模块 [#kernel-modules]
+
+Pigsty 允许使用 8 种特殊的 PostgreSQL <span className="text-red-500 font-black">内核</span> 分支，作为可选的就地替换：
+
+<Cards>
+    <Card
+        title="Citus"
+        description="原生分布式扩展"
+        href="/zh/feat/kernel#citus"
+        icon={<Network className="text-emerald-600"/>}
+    />
+    <Card
+        title="Babelfish"
+        description="SQL Server 协议兼容"
+        href="/zh/feat/kernel#babelfish"
+        icon={<Fish className="text-gray-600"/>}
+    />
+    <Card
+        title="IvorySQL"
+        description="Oracle 语法和 PL/SQL 兼容"
+        href="/zh/feat/kernel#ivorysql"
+        icon={<Target className="text-sky-700"/>}
+    />
+    <Card
+        title="OpenHalo"
+        description="MySQL 协议兼容性"
+        href="/zh/feat/kernel#openhalo"
+        icon={<RefreshCcw className="text-red-600"/>}
+    />
+    <Card
+        title="OrioleDB"
+        description="OLTP 优化的云原生存储引擎"
+        href="/zh/feat/kernel#orioledb"
+        icon={<Zap className="text-yellow-500"/>}
+    />
+    <Card
+        title="PolarDB PG"
+        description="类似 Aurora 的共享存储，符合中国合规要求"
+        href="/zh/feat/kernel#polardb"
+        icon={<PawPrint className="text-orange-500"/>}
+    />
+    <Card
+        title="Supabase"
+        description="后端即服务，自托管 Firebase"
+        href="/zh/feat/kernel#supabase"
+        icon={<Zap className="text-green-400"/>}
+    />
+    <Card
+        title="Greenplum"
+        description="大规模并行处理数据仓库"
+        href="/zh/feat/kernel#greenplum"
+        icon={<Cherry className="text-emerald-700"/>}
+    />
+</Cards>

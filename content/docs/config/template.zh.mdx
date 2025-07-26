@@ -1,0 +1,102 @@
+---
+title: 模板
+description: Pigsty 的配置模板
+icon: BookDashed
+---
+
+
+这个目录 [`conf`](https://github.com/pgsty/pigsty/blob/main/conf) 包含 pigsty 配置模板，将在 [`configure`](/zh/config/configure) 过程中使用。
+
+配置模板可以使用 `./configure -c <conf>` 指定，其中 conf 是到 `conf` 目录的相对路径（有或没有 `.yml` 后缀）。
+例如 `~/pigsty/conf/rich.yml` 可以指定为 `rich`
+
+```bash
+./configure                     # 默认使用 meta.yml 配置模板
+./configure -c meta             # 明确使用 meta.yml 1 节点模板
+./configure -c rich             # 使用包含所有扩展和 minio 的 1 节点模板
+./configure -c slim             # 使用最小的 1 节点模板
+./configure -c app/supa         # 使用 supabase 1 节点模板
+```
+
+如果没有给出 `-c|--conf`，默认会自动选择单节点 `meta` 配置模板。
+
+
+
+
+----------
+
+## 基本模板 [#basic-templates]
+
+这里是单节点模板，提供不同的功能和配置。
+
+| 模板                                                              | 节点 | 描述                                                  |
+|:----------------------------------------------------------------------|:----:|--------------------------------------------------------------|
+| [`meta.yml`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) |  1   | 默认 1 节点配置，pgsql、infra、node、etcd，最小扩展 |
+| [`rich.yml`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) |  1   | meta + minio + 所有扩展                               |
+| [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) |  1   | meta - infra - node 监控，最小安装                 |
+| [`pg18.yml`](https://github.com/pgsty/pigsty/blob/main/conf/pg18.yml) |  1   | PostgreSQL 18 集群（测试版）                                 |
+
+
+--------
+
+## 异种内核 [#exotic-kernel]
+
+使用异种 Postgres 内核分支：
+
+| 模板                                                                  | 节点 | 描述                                          |
+|---------------------------------------------------------------------------|:----:|------------------------------------------------------|
+| [`mssql.yml`](https://github.com/pgsty/pigsty/blob/main/conf/mssql.yml)   |  1   | WiltonDB 和 Babelfish，具有 MSSQL 协议兼容性   |
+| [`polar.yml`](https://github.com/pgsty/pigsty/blob/main/conf/polar.yml)   |  1   | PolarDB for PostgreSQL，具有 Aurora RAC 特性        |
+| [`ivory.yml`](https://github.com/pgsty/pigsty/blob/main/conf/ivory.yml)   |  1   | IvorySQL 集群，具有 Oracle 兼容性           |
+| [`mysql.yml`](https://github.com/pgsty/pigsty/blob/main/conf/mysql.yml)   |  1   | Halo 集群，具有 MySQL 协议兼容性           |
+| [`mongo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/mongo.yml)   |  1   | FerretDB 和 DocumentDB，具有 Mongo 协议兼容性  |
+| [`oriole.yml`](https://github.com/pgsty/pigsty/blob/main/conf/oriole.yml) |  1   | OrioleDB 集群，具有 OLTP 增强               |
+
+
+--------
+
+## 多节点 [#multi-node]
+
+| 模板                                                              | 节点 | 描述                               |
+|-----------------------------------------------------------------------|:----:|-------------------------------------------|
+| [`dual.yml`](https://github.com/pgsty/pigsty/blob/main/conf/dual.yml) |  2   | 半高可用部署                        |
+| [`trio.yml`](https://github.com/pgsty/pigsty/blob/main/conf/trio.yml) |  3   | 标准高可用部署                    |
+| [`full.yml`](https://github.com/pgsty/pigsty/blob/main/conf/full.yml) |  4   | 沙箱部署                        |
+| [`safe.yml`](https://github.com/pgsty/pigsty/blob/main/conf/safe.yml) |  4   | 带延迟副本的安全增强 |
+| [`simu.yml`](https://github.com/pgsty/pigsty/blob/main/conf/simu.yml) |  36  | 生产模拟                     |
+
+
+--------
+
+## 应用程序 [#applications]
+
+| 模板                                                                              | 描述                         |
+|---------------------------------------------------------------------------------------|-------------------------------------|
+| [`app/supa.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/supa.yml)         | 启动 1 节点 supabase              |
+| [`app/odoo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/odoo.yml)         | 启动 odoo ERP 系统          |
+| [`app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml)         | 启动 dify AI 工作流系统  |
+| [`app/electric.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/electric.yml) | 启动 electric 同步引擎应用 |
+
+--------
+
+## 演示模板 [#demo-templates]
+
+| 模板                                                                            | 描述                                                       |
+|-------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| [`demo/el.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/el.yml)         | EL 8/9 系统的包含所有默认参数的配置文件        |
+| [`demo/debian.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/debian.yml) | debian/ubuntu 系统的包含所有默认参数的配置文件 |
+| [`demo/remote.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/remote.yml) | 监控远程 pgsql 集群或 RDS PG 的示例配置    |
+| [`demo/redis.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/redis.yml)   | redis 集群的示例配置                                 |
+| [`demo/minio.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/minio.yml)   | 3 节点 minio 集群的示例配置                        |
+| [`demo/demo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/demo.yml)     | pigsty [公共演示](https://demo.pigsty.cc) 的配置文件  |
+| [`demo/citus.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/citus.yml)   | Citus 集群示例：1 个协调器和 3 个数据节点（4 节点）    |
+
+
+--------
+
+## 构建模板 [#build-templates]
+
+| 模板                                                                        | 描述                                                        |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| [`build/oss.yml`](https://github.com/pgsty/pigsty/blob/main/conf/build/oss.yml) | EL 8、9、Debian 12 和 Ubuntu 22.04/24.04 OSS 的构建配置 |
+| [`build/pro.yml`](https://github.com/pgsty/pigsty/blob/main/conf/build/pro.yml) | EL 7-9、Ubuntu、Debian pro 版本的构建配置             |

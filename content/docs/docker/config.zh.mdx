@@ -1,0 +1,122 @@
+---
+title: 配置
+description: 配置您的 docker 设置
+full: false
+icon: CodeXml
+---
+
+Pigsty 包含内置的 [**Docker**](https://www.docker.com/) 支持，允许您快速部署容器化应用程序。
+
+
+--------
+
+## 快速开始 [#quick-start]
+
+要在节点上安装 docker，请将 [`docker_enabled`](/zh/docker/param#docker_enabled) 参数设置为 `true`。
+
+```yaml
+all:
+  vars:
+
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1, nodename: infra-1 }
+        10.10.10.11: { infra_seq: 2, nodename: infra-2 }
+      vars:
+        docker_enabled: true  # 在此组上安装 Docker
+```
+
+然后运行 [`docker.yml`](/zh/docker/playbook) playbook（在目标主机/组上）：
+
+```bash title="~/pigsty"
+./docker.yml -l infra
+```
+
+Docker 将安装在该 `infra` 组上。
+
+
+--------
+
+## 注册表 [#registry]
+
+您可以使用 [`docker_registry_mirrors`](/zh/docker/param#docker_registry_mirrors) 指定 docker 注册表镜像：
+
+```yaml
+all:
+  vars:
+    docker_registry_mirrors: ["https://docker.1ms.run"]
+```
+
+以下是一些示例注册表镜像：
+
+- 阿里云：`["https://registry.cn-hangzhou.aliyuncs.com"]`
+- 腾讯云：`["https://ccr.ccs.tencentyun.com"]`
+- DaoCloud：`["https://docker.m.daocloud.io"]`
+- 1Ms：`["https://docker.1ms.run"]`
+
+您可以将多个注册表镜像指定为数组，记住用 `"` 引用 URL。
+
+
+--------
+
+## 代理 [#proxy]
+
+如果指定了 [`proxy_env`](/zh/infra/param#proxy_env) 参数，Docker 将使用它。
+
+您可以在全局参数 `all.vars` 或专用组（如 `infra`）中定义它：
+
+```bash
+all:
+  vars:
+    proxy_env:
+      no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*"
+      http_proxy: 'http://127.0.0.1:12345'
+      https_proxy: 'http://127.0.0.1:12345'
+      all_proxy: 'http://127.0.0.1:12345'
+```
+
+它将在 `docker_config` 任务期间呈现到 `/etc/docker/daemon.json`：
+
+```json
+{
+  "proxies": {
+    "http-proxy": "127.0.0.1:12345",
+    "https-proxy": "127.0.0.1:12345",
+    "no-proxy": "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.tsinghua.edu.cn"
+  }
+}
+```
+
+这在由于各种原因阻止直接网络访问时很有用。
+
+
+
+--------
+
+## 镜像 [#images]
+
+您可以使用 [`docker_image`](/zh/docker/param#docker_image) 和 [`docker_image_cache`](/zh/docker/param#docker_image_cache) 置备 docker 镜像：
+
+```yaml
+infra:
+  hosts:
+    10.10.10.10: { infra_seq: 1 }
+  vars:
+    docker_enabled: true
+    docker_image:
+      - redis:latest
+    docker_image_cache: "/tmp/docker/*.tgz"
+```
+
+在 [`docker_image`](/zh/docker/param#docker_image) 中定义的镜像将在 `docker_image` 任务期间逐个拉取。
+匹配 [`docker_image_cache`](/zh/docker/param#docker_image_cache) glob 列表的带有 `.tgz` 后缀的本地 docker 镜像缓存将使用 `docker load` 加载到 docker 中
+
+
+
+--------
+
+## 加速 [#accelerate]
+
+您可以在各个云供应商上使用加速器：
+
+- 阿里云 ACR：https://cr.console.aliyun.com/cn-shanghai/instances/mirrors

@@ -1,0 +1,181 @@
+---
+title: 软件
+description: 区域设置、防火墙、Ansible、Pigsty...
+icon: Disc
+---
+
+------
+
+## Linux [#linux]
+
+Pigsty 运行在 <span className="text-xl text-amber-500 font-black">Linux</span> 操作系统上，它支持 **10** 种主流 Linux 发行版：[**兼容操作系统列表**](/zh/prepare/linux)
+
+我们推荐使用 **RockyLinux 9.6**、**Debian 12.11** 或 **Ubuntu 24.04.5** 作为默认操作系统选项。
+
+<Callout title="在 macOS 上运行 pigsty？" type={"info"}>
+
+    您可以在 macOS 上安装 pigsty，并使用 `ansible` 从本地笔记本电脑发起控制。（用作管理节点）
+    但数据库/基础设施/节点/etcd 服务仍在 Linux 节点上运行。
+
+</Callout>
+
+我们**强烈建议**使用全新安装的操作系统环境，并将 `en_US` 设置为主要语言。
+
+<Callout title="如何启用 en_US 区域设置？" type={"info"}>
+
+    在使用其他主要语言时确保 `en_US` 区域设置可用：
+
+    ```bash
+    localedef -i en_US -f UTF-8 en_US.UTF-8
+    localectl set-locale LANG=en_US.UTF-8
+    ```
+
+</Callout>
+
+Pigsty **不**使用容器，主要组件针对特定发行版主版本打包。
+
+<Callout title="在所有节点上使用相同的操作系统版本" type={"warn"}>
+
+    请在单个部署中的所有节点上使用相同的操作系统主版本和次版本。
+
+</Callout>
+
+--------
+
+## 防火墙 [#firewall]
+
+您的安全策略和防火墙设置应该允许访问所需的端口。
+
+要访问 WebUI 服务，您必须允许 HTTP（`80`）/ HTTPS（`443`）访问。
+
+要访问 PostgreSQL 数据库服务，您必须允许 postgres 的 `5432` 端口。
+
+<Callout title="您可以通过其他端口访问 postgres 服务" type={"warn"}>
+
+    - `5432`: PostgreSQL 数据库
+    - `6432`: Pgbouncer 连接池
+    - `5433`: PG 主要服务
+    - `5434`: PG 副本服务
+    - `5436`: PG 默认服务
+    - `5438`: PG 离线服务
+
+    如果您通过其他端口访问 postgres 服务，请相应地允许它们
+
+</Callout>
+
+在典型的公有云 VPS 设置中，端口 `22/80/443/5432` 通常是开放的。
+
+<Callout title="谨慎公开数据库端口" type={"warn"}>
+
+    直接向互联网暴露数据库服务端口是非常危险的。
+    如果您需要这样做，请考虑咨询 [安全最佳实践](/zh/config/security/) 并谨慎进行。
+
+</Callout>
+
+在典型的生产设置中，端口 `22/80/443` 从 LAN / 跳板机向 DBA/OPS 开放。
+其他端口从内网访问。您必须确保它们在内部开放：[使用的端口](/zh/node/arch)。
+
+--------
+
+## Ansible [#ansible]
+
+Pigsty 使用 [**Ansible**](/zh/admin/ansible) 从管理节点发起对所有被管理节点的控制。
+
+您不需要关心细节，ansible 在 [**Bootstrap**](/zh/install/offline#bootstrap) 阶段安装。
+
+<Callout title="手动安装 Ansible" type="info">
+
+    ```bash tab="Debian / Ubuntu"
+    sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 9"
+    sudo dnf install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 8"
+    sudo dnf install -y ansible python3.12-jmespath
+    ```
+    ```bash tab="EL 7"
+    sudo yum install -y ansible python-jmespath
+    ```
+    ```bash tab="macOS"
+    brew install ansible
+    pip3 install jmespath
+    ```
+
+</Callout>
+
+Ansible 只在管理节点上需要，您可以在 macOS 上运行 ansible 将您的笔记本电脑用作管理节点。
+
+------
+
+## Pigsty [#pigsty]
+
+（<span className="text-sky-500 font-black">推荐</span>）您可以使用以下方式获取并提取最新稳定版本的 pigsty 源代码：
+
+```bash tab="默认"
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+```
+```bash tab="镜像"
+curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # 中国镜像
+```
+
+要安装特定版本，将版本字符串作为第一个参数传递：
+
+```bash tab="默认"
+curl -fsSL https://repo.pigsty.io/get | bash -s v3.6.0; cd ~/pigsty
+```
+```bash tab="镜像"
+curl -fsSL https://repo.pigsty.cc/get | bash -s v3.6.0; cd ~/pigsty # 中国镜像
+```
+
+您也可以使用 `git` 从 [GitHub](https://github.com/pgsty/pigsty) 克隆 Pigsty 源代码仓库：
+
+```bash title="克隆最新版本"
+git clone https://github.com/pgsty/pigsty.git; cd ~/pigsty
+```
+
+<Callout title="使用前检出特定版本" type="warn">
+
+    默认的 `main` 分支可能处于不稳定的开发状态，使用前请 `git checkout v3.6.0`。
+
+</Callout>
+
+```bash
+$ curl -fssL https://repo.pigsty.cc/get | bash -s v3.6.0
+[v3.6.0] ===========================================
+$ curl -fsSL https://repo.pigsty.cc/get | bash
+[Docs] https://doc.pgsty.com
+[Demo] https://demo.pigsty.cc
+[Repo] https://github.com/pgsty/pigsty
+[Download] ===========================================
+[ OK ] version = v3.6.0 (from arg)
+curl -fSL https://repo.pigsty.cc/src/pigsty-v3.6.0.tgz -o /tmp/pigsty-v3.6.0.tgz
+[WARN] tarball = /tmp/pigsty-v3.6.0.tgz exists, size = 1472486, use it
+[ OK ] md5sums = df64ac0c2b5aab39dd29698a640daf2e  /tmp/pigsty-v3.6.0.tgz
+[Install] ===========================================
+[ OK ] install = /home/vagrant/pigsty, from /tmp/pigsty-v3.6.0.tgz
+[Bootstrap] ===========================================
+[ OK ] ansible = ready
+[ OK ] bootstrap = skip
+you can run ./bootstrap to extrac offline package and install ansible
+[TodoList] ===========================================
+cd /home/vagrant/pigsty
+./configure      # [可选] 预检和配置生成
+./install.yml    # 部署配置描述的所有内容
+```
+
+您也可以从 [GitHub Release Page](https://github.com/pgsty/pigsty/releases/latest) 手动下载 pigsty 源代码（`pigsty-<version>.tar.gz`）：
+
+```bash tab="默认"
+wget https://repo.pigsty.io/src/pigsty-v3.6.0.tgz
+```
+```bash tab="镜像"
+wget https://pigsty.cc/pgsty/pigsty/releases/download/v3.6.0/pigsty-v3.6.0.tgz
+```
+```bash tab="GitHub"
+wget https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-v3.6.0.tgz
+```
+
+如果您的环境没有互联网访问，请考虑与源代码压缩包一起下载离线软件包并将其上传到您的节点。
+
+详情请查看 [离线安装](/zh/install/offline)。

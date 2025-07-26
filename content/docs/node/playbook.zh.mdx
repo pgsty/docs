@@ -1,0 +1,87 @@
+---
+title: 剧本
+description: 使用 Ansible playbooks 自动化节点生命周期管理
+icon: ScrollText
+---
+
+Pigsty 提供两个用于节点管理的 playbooks：
+
+| 剧本                         | 目的             | 用法                          | 范围      |
+|----------------------------------|----------------|-----------------------------|---------|
+| **[`node.yml`](#nodeyml)**       | 将节点添加到 pigsty  | `./node.yml -l <target>`    | 单个节点或集群 |
+| **[`node-rm.yml`](#node-rmyml)** | 从 pigsty 中移除节点 | `./node-rm.yml -l <target>` | 单个节点或集群 |
+
+
+------
+
+## `node.yml` [#nodeyml]
+
+**[`node.yml`](https://github.com/pgsty/pigsty/blob/main/node.yml)** playbook 将裸机计算资源转换为 Pigsty 基础设施中完全配置、监控和服务就绪的节点。这个全面的自动化处理从基本操作系统配置到高级监控设置的所有内容。
+
+```yaml
+node-id       : generate node identity
+node_name     : setup hostname
+node_hosts    : setup /etc/hosts records
+node_resolv   : setup dns resolver
+node_firewall : setup firewall & selinux
+node_ca       : add & trust ca certificate
+node_repo     : add upstream repo
+node_pkg      : install yum packages
+node_feature  : setup numa, grub, static network
+node_kernel   : enable kernel modules
+node_tune     : setup tuned profile
+node_sysctl   : setup additional sysctl parameters
+node_profile  : write /etc/profile.d/node.sh
+node_ulimit   : setup resource limits
+node_data     : setup main data dir
+node_admin    : setup admin user and ssh key
+node_timezone : setup timezone
+node_ntp      : setup ntp server/clients
+node_crontab  : add/overwrite crontab tasks
+node_vip      : setup optional l2 vrrp vip for node cluster
+  - vip_install
+  - vip_config
+  - vip_launch
+  - vip_reload
+haproxy       : setup haproxy on node to expose services
+  - haproxy_install
+  - haproxy_config
+  - haproxy_launch
+  - haproxy_reload
+monitor       : setup node_exporter & promtail for metrics & logs
+  - haproxy_register
+  - vip_dns
+  - node_exporter
+    - node_exporter_config
+    - node_exporter_launch
+  - vip_exporter
+    - vip_exporter_config
+    - vip_exporter_launch
+  - node_register
+  - promtail
+    - promtail_clean
+    - promtail_config
+    - promtail_install
+    - promtail_launch
+```
+
+[![asciicast](/img/asciinema/node.svg)](https://asciinema.org/a/568807)
+
+------
+
+## `node-rm.yml` [#node-rmyml]
+
+**[`node-rm.yml`](https://github.com/pgsty/pigsty/blob/main/node-rm.yml)** playbook 执行从 Pigsty 基础设施中干净、全面地移除节点。此自动化确保所有服务、配置和监控集成都正确注销和清理，防止孤立资源并保持系统卫生。
+
+
+```yaml
+register       : remove register from prometheus & nginx
+  - prometheus : remove registered prometheus monitor target
+  - nginx      : remove nginx proxy record for haproxy admin
+vip            : remove node keepalived if enabled
+haproxy        : remove haproxy load balancer
+node_exporter  : remove monitoring exporter
+vip_exporter   : remove keepalived_exporter if enabled
+promtail       : remove loki log agent
+profile        : remove /etc/profile.d/node.sh
+```

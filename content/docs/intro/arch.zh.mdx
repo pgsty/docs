@@ -1,0 +1,134 @@
+---
+title: 架构
+description: Pigsty 的模块化、声明式 PostgreSQL 基础设施设计
+icon: Blocks
+---
+
+
+> 模块化架构和声明式接口！
+
+- Pigsty 部署通过配置清单描述，并使用 ansible playbooks 实现。
+- Pigsty 在 [Linux](/zh/prepare/linux/) 通用节点上工作，即裸机或虚拟机。
+- Pigsty 使用模块化设计，可以自由组合以适应不同场景。
+- 配置控制**在哪里**和**如何**使用**参数**安装模块
+- Playbooks 将以幂等方式将节点调整到所需状态。
+
+------
+
+## 模块 [#modules]
+
+Pigsty 使用模块化设计，有六个默认模块：[`PGSQL`](/zh/pgsql/)、[`INFRA`](/zh/infra/)、[`NODE`](/zh/node/)、[`ETCD`](/zh/etcd/)、[`REDIS`](/zh/redis/) 和 [`MINIO`](/zh/minio/)。
+
+- [`PGSQL`](/zh/pgsql/)：由 Patroni、Pgbouncer、HAproxy、PgBackrest 等驱动的自主 HA Postgres 集群…
+- [`INFRA`](/zh/infra/)：本地 yum/apt 仓库、Prometheus、Grafana、Loki、AlertManager、PushGateway、Blackbox Exporter…
+- [`NODE`](/zh/node/)：将节点调整到所需状态，名称、时区、NTP、ssh、sudo、haproxy、docker、promtail、keepalived
+- [`ETCD`](/zh/etcd/)：分布式键值存储将用作高可用 Postgres 集群的 DCS。
+- [`REDIS`](/zh/redis/)：独立主副本、哨兵、集群模式的 Redis 服务器与 Redis exporter。
+- [`MINIO`](/zh/minio/)：S3 兼容的简单对象存储服务器，可用作 Postgres 的可选备份中心。
+
+您可以以声明式方式自由组合它们。如果您想要主机监控，[`INFRA`](/zh/infra/) 和 [`NODE`](/zh/node/) 就足够了。额外的 [`ETCD`](/zh/etcd/) 和 [`PGSQL`](/zh/pgsql/) 用于 HA PG 集群。在多个节点上部署它们将形成 HA 集群。您可以重用 pigsty 基础设施并开发您的模块，考虑可选的 [`REDIS`](/zh/redis/) 和 [`MINIO`](/zh/minio/) 作为示例。
+
+[![pigsty-sandbox.jpg](/img/pigsty/sandbox.jpg)](/zh/prepare/sandbox)
+
+------
+
+## 单例元数据 [#singleton-meta]
+
+Pigsty 默认将安装在单个**节点**（裸机/虚拟机）上。[`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) playbook 将在**当前**节点上安装 [`INFRA`](/zh/infra/)、[`ETCD`](/zh/etcd/)、[`PGSQL`](/zh/pgsql/) 和可选的 [`MINIO`](/zh/minio/) 模块，这将为您提供功能齐全的可观测性基础设施（Prometheus、Grafana、Loki、AlertManager、PushGateway、BlackboxExporter 等……）和一个开箱即用的 PostgreSQL 单例实例（名为 `meta`）。
+
+此节点现在具有自监控系统、可视化工具集和具有自动配置 PITR 的 Postgres 数据库。您可以将此节点用于开发环境、测试、运行演示以及进行数据可视化和分析。或者，进一步向其添加更多节点！
+
+[![pigsty-arch.jpg](/img/pigsty/infra.png)](/zh/infra/)
+
+------
+
+## 监控 [#monitoring]
+
+安装的 [单例元数据](/zh/intro/arch#singleton-meta) 可用作**管理节点**和**监控中心**，将更多节点和数据库服务器纳入其监控和控制范围。
+
+如果您想安装 Prometheus / Grafana 可观测性堆栈，Pigsty 为您提供最佳实践！它具有适用于 [节点](https://demo.pigsty.cc/d/node-overview) 和 [PostgreSQL](https://demo.pigsty.cc/d/pgsql-overview) 的细粒度仪表板，无论这些节点或 PostgreSQL 服务器是否由 Pigsty 管理，您都可以通过简单的配置立即获得生产级监控和告警。
+
+[![pigsty-dashboard.jpg](/img/pigsty/dashboard.gif)](/zh/pgsql/dashboard/)
+
+------
+
+## HA PG 集群 [#ha-pg-cluster]
+
+使用 Pigsty，您可以随心所欲地拥有自己的本地生产级 HA PostgreSQL RDS。
+
+要创建这样的 HA PostgreSQL 集群，您所要做的就是描述它并运行 playbook：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica }
+  vars: { pg_cluster: pg-test }
+```
+
+```bash
+$ bin/pgsql-add pg-test
+```
+
+这将为您提供以下集群，监控、副本、备份全部设置完成。
+
+[![pigsty-ha.png](/img/pigsty/ha.png)](/zh/feat/ha)
+
+硬件故障由基于 `patroni`、`etcd` 和 `haproxy` 的自愈 HA 架构覆盖，在主节点故障的情况下将在 30 秒内执行自动故障转移。借助由 haproxy 支持的自愈流量控制，在切换或副本故障的情况下，客户端甚至可能根本不会注意到有故障。
+
+软件故障、人为错误和数据中心故障由 `pgbackrest` 和可选的 `MinIO` 集群覆盖。这使您能够执行时间点恢复到任何时间（只要您的存储能够支持）
+
+------
+
+## 数据库即代码 [#database-as-code]
+
+Pigsty 遵循 IaC 和 GitOPS 哲学：Pigsty 部署由声明式 [配置清单](/zh/config/inventory) 描述，并通过幂等 playbooks 实现。
+
+用户以声明式方式使用 [参数](/zh/config/inventory) 描述所需状态，playbooks 以幂等方式将目标节点调整为该状态。这就像 Kubernetes CRD 和 Operator，但适用于裸机和虚拟机。
+
+[![pigsty-iac.jpg](/img/pigsty/iac.jpg)](/zh/feat/iac)
+
+以默认配置片段为例，它描述了一个安装了 [`INFRA`](/zh/infra/)、[`NODE`](/zh/node/)、[`ETCD`](/zh/etcd/) 和 [`PGSQL`](/zh/pgsql/) 模块的节点 `10.10.10.10`。
+
+```yaml
+# infra cluster for proxy, monitor, alert, etc...
+infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+
+# minio cluster, s3 compatible object storage
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+
+# etcd cluster for ha postgres DCS
+etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+
+# postgres example cluster: pg-meta
+pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary }, vars: { pg_cluster: pg-meta } }
+```
+
+要实现它，请使用以下 playbooks：
+
+```bash
+./infra.yml -l infra    # init infra module on group 'infra'
+./etcd.yml  -l etcd     # init etcd module on group 'etcd'
+./minio.yml -l minio    # init minio module on group 'minio'
+./pgsql.yml -l pg-meta  # init pgsql module on group 'pgsql'
+```
+
+执行常规管理任务将很简单。例如，如果您希望向现有的 HA PostgreSQL 集群添加新副本/数据库/用户，您只需在配置中添加一个主机并在其上运行该 playbook，例如：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica } # <-- add new instance
+  vars: { pg_cluster: pg-test }
+```
+
+```bash
+$ bin/pgsql-add  pg-test 10.10.10.13
+```
+
+您甚至可以使用这种方法管理许多 PostgreSQL 实体：用户/角色、数据库、服务、HBA 规则、扩展、模式等……
+
+查看 [PGSQL 配置](/zh/pgsql/config) 了解详情。

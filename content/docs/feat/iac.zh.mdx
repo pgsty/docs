@@ -1,0 +1,239 @@
+---
+title: 基础设施即代码
+description: 通过 YAML 驱动配置的声明式基础设施和数据库管理
+icon: SquareCode
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Pigsty 提供 **声明式** 接口：在 [配置](/zh/config/inventory) 文件中描述一切，Pigsty 使用幂等的 [playbooks](/zh/admin/playbook/) 将其操作到期望的状态。它的工作原理类似于 Kubernetes CRD 和 Operator，但适用于任何节点上的数据库和基础设施：裸机或虚拟机。
+
+<Callout type="info">
+**基础设施即代码，数据库即代码**：声明式 API 和幂等 Playbooks，GitOPS 工作得如魅力般。
+</Callout>
+
+--------
+
+## 声明模块 [#declare-module]
+
+您可以在单个节点上声明模块：
+
+```yaml
+# infra cluster for proxy, monitor, alert, etc...
+infra: { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+
+# minio cluster, s3 compatible object storage
+minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
+
+# etcd cluster for ha postgres DCS
+etcd: { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+
+# postgres example cluster: pg-meta
+pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+```
+
+并使用 playbooks 应用：
+
+```bash
+./infra.yml -l infra    # 在节点 10.10.10.10 上初始化 infra 模块
+./etcd.yml  -l etcd     # 在节点 10.10.10.10 上初始化 etcd 模块
+./minio.yml -l minio    # 在节点 10.10.10.10 上初始化 minio 模块
+./pgsql.yml -l pg-meta  # 在节点 10.10.10.10 上初始化 pgsql 模块
+```
+
+--------
+
+## 声明集群 [#declare-cluster]
+
+要创建具有流复制的三节点 HA postgres 集群：
+
+```yaml
+pg-test:
+  hosts:
+    10.10.10.11: { pg_seq: 1, pg_role: primary }
+    10.10.10.12: { pg_seq: 2, pg_role: replica }
+    10.10.10.13: { pg_seq: 3, pg_role: replica }
+  vars:
+    pg_cluster: pg-test
+```
+
+并使用以下命令应用：
+
+```bash
+./pgsql.yml -l pg-test  # 初始化 pg-test 集群
+```
+
+--------
+
+## 声明集群内部 [#declare-cluster-internal]
+
+您可以深度定制数据库集群：
+
+```yaml
+pg-meta:
+  hosts:
+    10.10.10.10: { pg_seq: 1, pg_role: primary }
+  vars:
+    pg_cluster: pg-meta
+    pg_databases:
+      - name: meta
+        baseline: cmdb.sql
+        comment: pigsty meta database
+        schemas: [pigsty]
+        extensions:
+          - { name: adminpack, schema: pg_catalog }
+          - { name: postgis, schema: public }
+          - { name: timescaledb, schema: public }
+    pg_users:
+      - { name: dbuser_meta, password: DBUser.Meta, pgbouncer: true, roles: [dbrole_admin], comment: pigsty admin user }
+      - { name: dbuser_view, password: DBUser.Viewer, pgbouncer: true, roles: [dbrole_readonly], comment: pigsty read-only user }
+    pg_services:
+      - { name: primary, port: 5433, dest: default }
+      - { name: replica, port: 5434, dest: default, selector: "[]" }
+      - { name: default, port: 5436, dest: postgres }
+      - { name: offline, port: 5438, dest: postgres, selector: "[]" }
+    pg_hba_rules:
+      - { user: dbuser_view, db: all, addr: infra, auth: pwd, title: 'allow view user from infra nodes' }
+    pgb_hba_rules:
+      - { user: dbuser_view, db: all, addr: infra, auth: pwd, title: 'allow view user from infra nodes' }
+```
+
+--------
+
+## 声明访问控制 [#declare-access-control]
+
+定义高级访问控制规则：
+
+```yaml
+pg_hba_rules:
+  - { user: '${dbsu}', db: all, addr: local, auth: ident, title: 'dbsu access via local os user ident' }
+  - { user: '${dbsu}', db: replication, addr: local, auth: ident, title: 'dbsu replication from local os ident' }
+  - { user: '${repl}', db: replication, addr: '${ip}/32', auth: pwd, title: 'replicator replication from ${ip}' }
+  - { user: '${repl}', db: postgres, addr: '${ip}/32', auth: pwd, title: 'replicator postgres db from ${ip}' }
+  - { user: '${monitor}', db: all, addr: '${ip}/32', auth: pwd, title: 'monitor from ${ip}' }
+  - { user: '${monitor}', db: all, addr: infra, auth: pwd, title: 'monitor from infra nodes' }
+  - { user: '${admin}', db: all, addr: infra, auth: ssl, title: 'admin @ infra nodes with pwd & ssl' }
+  - { user: '+dbrole_readonly', db: all, addr: '${vip}/32', auth: ssl, title: 'allow readonly role from ${vip} with ssl' }
+  - { user: '+dbrole_offline', db: all, addr: '${vip}/32', auth: ssl, title: 'allow offline role from ${vip} with ssl' }
+  - { user: dbuser_meta, db: meta, addr: '10.0.0.0/8', auth: ssl, title: 'allow meta user from 10.0.0.0/8 with ssl' }
+```
+
+--------
+
+## Citus 分布式集群 [#citus-distributive-cluster]
+
+声明一个水平分布的 Citus 集群：
+
+<Tabs items={['Coordinator', 'Workers']}>
+<Tab value="Coordinator">
+```yaml
+pg-citus0: # coordinator
+  hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+  vars:
+    pg_cluster: pg-citus0
+    pg_mode: citus
+    pg_shard: pg-citus
+    pg_primary_db: meta
+    pg_users: [ { name: dbuser_meta, password: DBUser.Meta, pgbouncer: true, roles: [ dbrole_admin ] } ]
+    pg_databases: [ { name: meta, extensions: [ { name: citus }, { name: postgis }, { name: timescaledb } ] } ]
+    pg_hba_rules:
+      - { user: 'all', db: all, addr: '10.10.10.0/24', auth: trust }
+```
+</Tab>
+<Tab value="Workers">
+```yaml
+pg-citus1: # worker1
+  hosts: { 10.10.10.11: { pg_seq: 1, pg_role: primary } }
+  vars: { pg_cluster: pg-citus1, pg_mode: citus, pg_shard: pg-citus }
+pg-citus2: # worker2
+  hosts: { 10.10.10.12: { pg_seq: 1, pg_role: primary } }
+  vars: { pg_cluster: pg-citus2, pg_mode: citus, pg_shard: pg-citus }
+pg-citus3: # worker3
+  hosts: { 10.10.10.13: { pg_seq: 1, pg_role: primary } }
+  vars: { pg_cluster: pg-citus3, pg_mode: citus, pg_shard: pg-citus }
+```
+</Tab>
+</Tabs>
+
+--------
+
+## Redis 集群 [#redis-clusters]
+
+声明不同类型的 Redis 集群：
+
+<Tabs items={['Standalone', 'Sentinel', 'Cluster']}>
+<Tab value="Standalone">
+```yaml
+redis-ms: # redis classic primary-replica
+  hosts: { 10.10.10.10: { redis_node: 1 , redis_instances: { 6379: { }, 6380: { replica_of: '10.10.10.10 6379' } } } }
+  vars: { redis_cluster: redis-ms ,redis_password: 'redis.ms' }
+```
+</Tab>
+<Tab value="Sentinel">
+```yaml
+redis-sentinel: # redis sentinel x3
+  hosts:
+    10.10.10.10: { redis_node: 1, redis_instances: { 26379: { sentinel_monitor: redis-src } } }
+    10.10.10.11: { redis_node: 2, redis_instances: { 26379: { sentinel_monitor: redis-src } } }
+    10.10.10.12: { redis_node: 3, redis_instances: { 26379: { sentinel_monitor: redis-src } } }
+  vars: { redis_cluster: redis-sentinel, redis_password: 'redis.sentinel' }
+```
+</Tab>
+<Tab value="Cluster">
+```yaml
+redis-cluster: # native redis cluster: 3m x 3s
+  hosts:
+    10.10.10.10: { redis_node: 1 ,redis_instances: { 6379: { }, 6380: { } } }
+    10.10.10.11: { redis_node: 2 ,redis_instances: { 6379: { }, 6380: { } } }
+    10.10.10.12: { redis_node: 3 ,redis_instances: { 6379: { }, 6380: { } } }
+  vars: { redis_cluster: redis-cluster, redis_password: 'redis.cluster', redis_mode: cluster, redis_max_memory: 64MB }
+```
+</Tab>
+</Tabs>
+
+--------
+
+## Etcd 集群 [#etcd-cluster]
+
+声明一个 3 节点 etcd 共识集群：
+
+```yaml
+etcd:
+  hosts:
+    10.10.10.10: { etcd_seq: 1 }
+    10.10.10.11: { etcd_seq: 2 }
+    10.10.10.12: { etcd_seq: 3 }
+  vars:
+    etcd_cluster: etcd
+    etcd_safeguard: false
+    etcd_clean: true
+```
+
+--------
+
+## MinIO 集群 [#minio-cluster]
+
+声明一个 3 节点 MinIO 对象存储集群：
+
+```yaml
+minio:
+  hosts:
+    10.10.10.10: { minio_seq: 1 }
+    10.10.10.11: { minio_seq: 2 }
+    10.10.10.12: { minio_seq: 3 }
+  vars:
+    minio_cluster: minio
+    minio_data: '/data/minio'
+    minio_domain: sss.pigsty
+    minio_buckets: [ { name: pgsql }, { name: infra }, { name: redis } ]
+    minio_users:
+      - { access_key: dba, secret_key: S3User.DBA, policy: consoleAdmin }
+      - { access_key: pgbackrest, secret_key: S3User.Backup, policy: readwrite }
+```
+
+---
+
+Pigsty 使您能够声明式地描述整个基础设施并通过代码管理它，为您的数据库和基础设施操作提供一致性、可重复性和可扩展性。

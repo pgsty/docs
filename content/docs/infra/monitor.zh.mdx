@@ -1,0 +1,50 @@
+---
+title: 监控
+description: infra 模块的仪表板和告警规则
+icon: Telescope
+---
+
+
+## 仪表板 [#dashboards]
+
+
+
+
+------
+
+## 告警规则 [#alert-rules]
+
+Pigsty 为 INFRA 模块提供以下两个告警规则：
+
+- `InfraDown`：基础设施组件宕机
+- `AgentDown`：监控代理宕机
+
+您可以在 [`files/prometheus/rules/infra.yml`](https://github.com/pgsty/pigsty/blob/main/files/prometheus/rules/infra.yml) 中修改或添加新的基础设施告警规则。
+
+```yaml
+################################################################
+#                Infrastructure Alert Rules                    #
+################################################################
+- name: infra-alert
+  rules:
+
+    #==============================================================#
+    #                       Infra Aliveness                        #
+    #==============================================================#
+    # infra components (prometheus,grafana) down for 1m triggers a P1 alert
+    - alert: InfraDown
+      expr: infra_up < 1
+      for: 1m
+      labels: { level: 0, severity: CRIT, category: infra }
+      annotations:
+        summary: "CRIT InfraDown {{ $labels.type }}@{{ $labels.instance }}"
+        description: |
+          infra_up[type={{ $labels.type }}, instance={{ $labels.instance }}] = {{ $value  | printf "%.2f" }} < 1          
+
+    #==============================================================#
+    #                       Agent Aliveness                        #
+    #==============================================================#
+
+    # agent aliveness are determined directly by exporter aliveness
+    # including: node_exporter, pg_exporter, pgbouncer_exporter, haproxy_exporter
+```

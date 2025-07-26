@@ -1,0 +1,88 @@
+---
+title: 剧本
+description: 使用剧本创建，销毁，扩容，缩容 Etcd 集群
+icon: ScrollText
+---
+
+有一个内置的 playbook：[`etcd.yml`](https://github.com/pgsty/pigsty/blob/main/etcd.yml) 用于 etcd 集群安装。
+
+------
+
+## `etcd.yml`
+
+要[创建新的 etcd 集群](/zh/etcd/admin/#create-cluster)，运行以下 playbook：
+
+```bash tab="playbook"
+./etcd.yml    # 在组 'etcd' 上安装 etcd 集群
+```
+```bash tab="script"
+bin/etcd-add    # 创建整个 etcd 集群
+```
+
+以下是可用的子任务：
+
+- `etcd_assert`：生成 etcd 身份
+- `etcd_install`：安装 etcd rpm 包
+- `etcd_dir`：创建 etcd 数据和配置目录
+- `etcd_config`：生成 etcd 配置
+  - `etcd_conf`：生成 etcd 主配置
+  - `etcd_cert`：生成 etcd ssl 证书
+- `etcd_launch`：启动 etcd 服务
+- `etcd_register`：向 prometheus 注册 etcd
+
+如果您想向现有 etcd 集群[**追加新成员**](/zh/etcd/admin/#append-member)，
+您必须将其添加到[配置清单](/zh/config/inventory)中，并使用 [`etcd_init`](/zh/etcd/param/#etcd_init) = `existing` 
+对新成员运行 playbook：
+
+```bash tab="playbook"
+./etcd.yml -l <new_instance> -e etcd_init=existing
+```
+```bash tab="script"
+bin/etcd-add <ip> # 向现有 etcd 集群追加新成员
+```
+
+通常重新运行 playbook 是可以的，它会更新 etcd 集群配置并重启 etcd 实例。
+
+<Callout title="Pigsty v3.6+ 的变化" type="info">
+
+    从 Pigsty v3.6+ 开始，`etcd.yml` playbook 不再具有集群移除功能。请使用专用的 `etcd-rm.yml` playbook 和 `etcd_remove` 角色进行 etcd 集群移除操作。
+
+</Callout>
+
+
+
+
+------
+
+## `etcd-rm.yml`
+
+要[移除 etcd 集群](/zh/etcd/admin/#remove-cluster)，运行以下 playbook：
+
+```bash
+./etcd-rm.yml    # 移除 etcd 集群
+```
+
+以下是可用的子任务：
+
+- `etcd_safeguard`：检查安全防护并在启用时中止
+- `prometheus`：从 prometheus 移除 etcd 目标注册
+- `etcd_leave`：在清除前尝试优雅地离开 etcd 集群
+- `etcd_stop`：使用 systemd 停止并禁用 etcd 服务
+- `etcd_data`：移除 etcd 数据（使用 `etcd_rm_data=false` 禁用）
+- `etcd_pkg`：卸载 etcd 包（使用 `etcd_rm_pkg=true` 启用）
+
+要从现有 etcd 集群中[**移除成员**](/zh/etcd/admin/#remove-member)，您可以运行 playbook
+
+```bash tab="playbook"
+./etcd-rm.yml -l <ip>
+```
+```bash tab="script"
+bin/etcd-rm <ip1> <ip2> ...    # 从 etcd 集群移除特定成员
+bin/etcd-rm                    # 移除整个 etcd 集群
+```
+
+移除 playbook 使用新的 **etcd_remove** 角色，具有可配置参数：
+
+- [`etcd_safeguard`](/zh/etcd/param#etcd_safeguard)：设置为 `true` 时防止意外移除
+- [`etcd_rm_data`](/zh/etcd/param#etcd_rm_data)：控制是否删除 ETCD 数据（默认为 `true`）
+- [`etcd_rm_pkg`](/zh/etcd/param#etcd_rm_pkg)：控制是否卸载 ETCD 包（默认为 `false`）

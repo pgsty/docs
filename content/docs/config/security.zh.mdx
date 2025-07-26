@@ -1,0 +1,268 @@
+---
+title: 安全
+description: 安全考虑和最佳实践
+icon: Shield
+---
+
+
+Pigsty 已经提供了一个默认安全的数据库[身份验证](/zh/pgsql/hba/)和[访问控制](/zh/pgsql/acl)模型。
+
+只要您遵循以下安全最佳实践，它对大多数常见场景来说都足够强大。
+
+
+
+------
+
+## 机密性 [#confidentiality]
+
+### 文件 [#files]
+
+<Callout title="保护您的 pigsty 配置文件" type="warn">
+
+- `pigsty.yml` 包含非常敏感的信息，如密码
+- 限制只有管理员/DBA 用户才能访问管理员/基础设施节点
+- 如果您使用 GitOps 管理 pigsty 配置，请限制对仓库的访问
+
+</Callout>
+
+<Callout title="保护您的 CA 私钥" type="warn">
+
+- 默认生成在 `~/pigsty/files/pki/ca/ca.key`
+- 在安全的地方备份它，**不要丢弃它！**
+- 还要考虑保护各种证书的其他私钥
+
+</Callout>
+
+
+
+
+------
+
+### 密码 [#passwords]
+
+<Callout title="不要使用默认密码" type="error">
+
+在严肃的部署中，始终更改这些默认密码
+
+- [`grafana_admin_password`](/zh/infra/param#grafana_admin_password): `pigsty`
+- [`pg_admin_password`](/zh/pgsql/param#pg_admin_password): `DBUser.DBA`
+- [`pg_monitor_password`](/zh/pgsql/param#pg_monitor_password): `DBUser.Monitor`
+- [`pg_replication_password`](/zh/pgsql/param#pg_replication_password): `DBUser.Replicator`
+- [`patroni_password`](/zh/pgsql/param#patroni_password): `Patroni.API`
+- [`haproxy_admin_password`](/zh/node/param#haproxy_admin_password): `pigsty`
+- [`minio_secret_key`](/zh/minio/param#minio_secret_key): `minioadmin`
+
+</Callout>
+    
+<Callout title="更改 MinIO 凭据和 pgbackrest 引用" type="warn">
+
+如果您使用 MinIO 作为备份存储，还要更改这些凭据：
+
+- 更改 [`minio_users`.`[pgbackrest]`.`secret_key`](/zh/minio/param#minio_users) 的密码
+- 更改 pgbackrest 引用：[`pgbackrest_repo`.`minio`.`s3_key_secret`](/zh/pgsql/param#pgbackrest_repo)
+
+</Callout>
+
+<Callout title="使用 passwordcheck 扩展强制使用强密码" type="warn">
+
+- 将 `$lib/passwordcheck` 添加到 [`pg_libs`](/zh/pgsql/param#pg_libs) 以强制执行密码策略。
+- 更强版本：`passwordcheck_cracklib`
+
+</Callout>
+
+<Callout title="使用加密算法加密远程备份" type="warn">
+
+- 检查 [`pgbackrest_repo`](/zh/pgsql/param#pgbackrest_repo) 定义 `repo_cipher_type`
+- 默认为 `cipher_type: aes-256-cbc`
+
+</Callout>
+
+
+<Callout title="为 PostgreSQL 使用高级密码加密方法" type="warn">
+
+- 使用 [`pg_pwd_enc`](/zh/pgsql/param#pg_pwd_enc) 默认 `scram-sha-256` 而不是传统的 `md5`
+- 默认行为是 `scram-sha-256`，`md5` 已被弃用
+
+</Callout>
+
+<Callout title="为业务用户密码添加过期日期" type="warn">
+
+为了合规目的，您可以为每个用户设置过期日期。
+
+```yaml
+- { name: dbuser_meta , password: Pleas3-ChangeThisPwd ,expire_in: 7300 ,pgbouncer: true ,roles: [ dbrole_admin ]    ,comment: pigsty admin user }
+- { name: dbuser_view , password: Make.3ure-Compl1ance  ,expire_in: 7300 ,pgbouncer: true ,roles: [ dbrole_readonly ] ,comment: read-only viewer for meta database }
+- { name: postgres     ,superuser: true  ,expire_in: 7300                        ,comment: system superuser }
+- { name: replicator ,replication: true  ,expire_in: 7300 ,roles: [pg_monitor, dbrole_readonly]   ,comment: system replicator }
+- { name: dbuser_dba   ,superuser: true  ,expire_in: 7300 ,roles: [dbrole_admin]  ,pgbouncer: true ,pool_mode: session, pool_connlimit: 16 , comment: pgsql admin user }
+- { name: dbuser_monitor ,roles: [pg_monitor] ,expire_in: 7300 ,pgbouncer: true ,parameters: {log_min_duration_statement: 1000 } ,pool_mode: session ,pool_connlimit: 8 ,comment: pgsql monitor user }
+```
+
+不要忘记使用 `pgsql-user.yml` playbook 定期刷新这些过期日期
+
+</Callout>
+
+<Callout title="不要将密码打印到日志" type="warn">
+
+```bash
+SET log_statement TO 'none';
+ALTER USER "{{ user.name }}" PASSWORD '{{ user.password }}';
+SET log_statement TO DEFAULT;
+```
+
+</Callout>
+
+
+
+------
+
+### IP 地址 [#ip-addresses]
+
+<Callout title="为 postgres/pgbouncer/patroni 绑定特定 IP 地址" type="warn">
+
+- 默认的 [`pg_listen`](/zh/pgsql/param#pg_listen) 地址是 `0.0.0.0`，即所有 IPv4 地址。
+- 考虑使用 `pg_listen: '${ip},${vip},${lo}'` 绑定到特定地址以获得更好的安全性。
+
+</Callout>
+
+<Callout title="不要将任何端口暴露到互联网；除了 80/443，基础设施门户" type="warn">
+
+- Grafana/Prometheus 默认绑定到**所有** IP 地址以便于使用。
+- 您可以修改它们的绑定配置，使其监听 localhost/内网 IP 并通过 Nginx 暴露。
+- Redis 服务器默认绑定到**所有** IP 地址以便于使用。您可以更改 [`redis_bind_address`](/zh/redis/param#redis_bind_address) 以监听内网 IP。
+- 您也可以通过安全组或防火墙规则来实现。
+
+</Callout>
+
+<Callout title="使用 HBA 限制 postgres 客户端访问" type="warn">
+
+- 有一个安全增强配置模板：[`security.yml`](https://github.com/pgsty/pigsty/blob/main/conf/safe.yml)
+
+</Callout>
+
+<Callout title="限制从基础设施/管理节点访问 patroni 管理" type="warn">
+
+- 这默认通过 [`restapi.allowlist`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/oltp.yml#L108) 进行限制
+
+
+</Callout>
+
+
+------
+
+### 网络流量 [#network-traffic]
+
+<Callout title="使用 SSL 和域名访问 Nginx" type="warn">
+
+- Nginx SSL 由 [`nginx_sslmode`](/zh/infra/param#nginx_sslmode) 控制，默认为 `enable`。
+- Nginx 域名由 [`infra_portal..domain`](/zh/infra/param#infra_portal) 指定。
+
+</Callout>
+
+<Callout title="使用 SSL 保护 Patroni REST API" type="warn">
+
+- [`patroni_ssl_enabled`](/zh/pgsql/param#patroni_ssl_enabled) 默认禁用
+- 因为它会影响健康检查和 API 调用。
+- 注意这是一个全局选项，您必须在部署前决定。
+
+</Callout>
+
+<Callout title="使用 SSL 保护 Pgbouncer 客户端流量" type="warn">
+
+- [`pgbouncer_sslmode`](/zh/pgsql/param#pgbouncer_sslmode) 默认为 `disable`
+- 因为它对性能有显著影响。
+
+</Callout>
+
+------
+
+## 完整性 [#integrity]
+
+### 一致性 [#consistency]
+
+<Callout title="为 PostgreSQL 使用一致性优先模式" type="warn">
+
+- 使用 `crit.yml` 模板为 [`pg_conf`](/zh/pgsql/param#pg_conf) 将牺牲一些可用性以获得最佳一致性。
+
+</Callout>
+
+<Callout title="使用节点关键调整模板以获得更好的一致性" type="warn">
+
+- 将 [`node_tune`](/zh/node/param#node_tune) 设置为 `crit` 以减少脏页比率。
+
+- 启用数据校验和以检测静默数据损坏。
+- [`pg_checksum`](/zh/pgsql/param#pg_checksum) 默认禁用，`crit.yml` 默认启用
+- 这可以稍后启用，但需要完整的集群扫描/停止。
+
+</Callout>
+
+### 审计 [#audit]
+
+<Callout title="启用连接日志进行审计" type="warn">
+
+- 在 pg 集群引导后启用 `log_connections` 和 `log_disconnections`。
+- 审计传入会话；这在 `crit.yml` 中默认启用。
+
+</Callout>
+
+### 误操作 [#fat-finger]
+
+<Callout title="不要重新运行 install.yml playbook" type="error">
+    再次运行 `install.yml` 将销毁（覆盖）整个部署！
+</Callout>
+
+<Callout title="谨慎重新运行 pgsql.yml" type="warn">
+    在 v3.5 之前，它默认会覆盖现有的 PostgreSQL。
+
+    使用 `pg_safeguard` 避免误操作
+</Callout>
+
+
+
+
+------
+
+## 可用性 [#availability]
+
+### 冗余 [#redundancy]
+
+<Callout title="为严肃的生产部署使用足够的节点" type="warn">
+
+- 您需要至少三个节点（容忍一个节点故障）才能实现生产级高可用性。
+- 如果您只有两个节点，您可以容忍特定备用节点的故障。
+- 如果您有一个节点，请使用外部 S3/MinIO 进行冷备份和 wal 归档存储。
+
+</Callout>
+
+<Callout title="在严肃的生产部署中使用多个基础设施节点" type="warn">
+
+- 在严肃的生产部署中使用多个基础设施节点（例如，1~3）
+- 通常，2 ~ 3 对于大型生产部署来说是足够的。
+
+</Callout>
+
+<Callout title="使用足够的 etcd 成员并使用奇数" type="warn">
+
+- 使用足够的 etcd 成员并使用奇数（1,3,5,7）。
+- 查看 [ETCD 配置](/zh/etcd/config/) 了解详情。
+
+</Callout>
+
+
+### 容错 [#fault-tolerance]
+
+<Callout title="为 PostgreSQL 在可用性和一致性之间进行权衡" type="warn">
+
+- [`pg_rpo`](/zh/pgsql/param#pg_rpo)：**可用性和一致性之间的权衡**
+- [`pg_rto`](/zh/pgsql/param#pg_rto)：**故障概率和影响之间的权衡**
+
+</Callout>
+
+### 访问 [#access]
+
+<Callout title="使用 VIP、DNS、HAProxy 而不是固定 IP" type="warn">
+
+- 不要通过固定 IP 地址直接访问数据库；使用 VIP、DNS、HAProxy 或它们的组合。
+- Haproxy 将在故障转移/切换时为客户端处理流量控制。
+
+</Callout>

@@ -1,0 +1,50 @@
+---
+title: FAQ
+description: 常见问题
+icon: MessageCircleQuestion
+---
+
+
+## etcd 在 pigsty 中的作用是什么？ [#what-is-the-role-of-the-etcd-in-pigsty]
+
+etcd 是一个分布式、可靠的键值存储，用于存储部署中最关键的配置/共识数据。
+Pigsty 使用 etcd 作为 Patroni 的 DCS（分布式配置存储）服务，它将存储 PostgreSQL 集群的高可用性状态信息。
+
+
+
+------
+
+## 我应该选择多少个 etcd 实例？ [#how-many-etcd-instances-should-i-choose]
+
+如果超过（包括）一半的 etcd 实例宕机，etcd 集群及其服务将不可用。
+
+例如，一个 3 节点 etcd 集群最多可以容忍一个节点故障，其他两个节点仍可正常工作；而一个 5 节点 etcd 集群可以容忍 2 个节点故障。
+
+请注意，etcd 集群中的 **学习者** 实例不计入成员数量。
+因此，在一个 3 节点 etcd 集群中，如果有一个学习者实例，实际成员数量是 2，因此无法容忍任何节点故障。
+
+建议选择奇数个 etcd 实例以避免脑裂场景。建议在生产环境中使用 3 或 5 个节点。
+
+
+
+------
+
+## etcd 故障的影响是什么？ [#what-is-the-impact-of-etcd-failure]
+
+如果 etcd 集群不可用，它将影响 Pigsty 的控制平面，但不会影响数据平面 — 现有的 PostgreSQL 集群将继续服务，但通过 Patroni 的管理操作将无法工作。
+
+在 etcd 故障期间，PostgreSQL HA 无法执行自动故障转移；大多数 Patroni 操作将被阻塞，如 edit-config、restart、switchover 等…
+通过 Ansible playbooks 的管理任务通常不受 etcd 故障影响，如创建数据库、创建用户、重新加载 HBA 和服务等…，
+您始终可以直接操作 PostgreSQL 集群以实现大多数 patroni 功能。
+
+请注意，上述描述仅适用于较新版本的 Patroni `(>=3.0, Pigsty >= 2.0)`。如果您使用较旧版本的 Patroni（`<3.0`，对应 Pigsty 版本 `1.x`），etcd / consul 故障将造成严重影响：
+所有 PostgreSQL 集群将被降级并拒绝写入请求，etcd 故障将被放大为全局 PostgreSQL 故障。在 Patroni 3.0 的 DCS 故障安全功能之后，这种情况得到了显著改善。
+
+
+------
+
+## etcd 集群中存储什么数据？ [#what-data-is-stored-in-the-etcd-cluster]
+
+在 Pigsty 中，etcd 仅用于 PostgreSQL HA 共识，默认情况下 etcd 中不存储其他数据。
+
+这些共识数据由 Patroni 管理，当这些数据在 etcd 中丢失时，Patroni 将自动重建它们。

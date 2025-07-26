@@ -1,0 +1,139 @@
+---
+title: 可组合模块
+description: 灵活的乐高积木
+icon: Boxes
+---
+
+import {
+    Blocks,
+    Download,
+    Settings,
+    PlusCircle,
+    Cpu,
+    BarChart3,
+    Rocket,
+    Package
+} from 'lucide-react';
+
+> 疾如风，化繁为简，乘变化之流而自由自在！
+
+<Cards>
+    <Card icon={<Blocks className="text-blue-600"/>} title='模块化设计' href={"#modular-design"}>
+        乐高式组装
+    </Card>
+    <Card icon={<Download className="text-green-600"/>} title='应用模板' href={"#app-templates"}>
+        一键企业部署
+    </Card>
+    <Card icon={<Settings className="text-purple-600"/>} title='核心模块' href={"#core-modules"}>
+        功能齐全的 Postgres RDS
+    </Card>
+    <Card icon={<PlusCircle className="text-orange-600"/>} title='扩展模块' href={"#extra-modules"}>
+        扩展 RDS 能力
+    </Card>
+    <Card icon={<Cpu className="text-cyan-600"/>} title='内核模块' href={"#kernel-modules"}>
+        可交换的数据库引擎
+    </Card>
+    <Card icon={<BarChart3 className="text-red-600"/>} title='OLAP 模块' href={"#olap-modules"}>
+        强大的分析能力
+    </Card>
+    <Card icon={<Rocket className="text-violet-600"/>} title='试验模块' href={"#pilot-modules"}>
+        探索前沿边界
+    </Card>
+    <Card icon={<Package className="text-amber-600"/>} title='风味模块' href={"#flavor-modules"}>
+        创意 Postgres 风味
+    </Card>
+</Cards>
+
+--------
+
+## 模块化设计：乐高式组装 [#modular-design]
+
+> 模块化设计，像乐高积木一样自由组合组件\
+> 声明式配置，用于定制基础设施和数据库环境
+
+- 开箱即用的高可用集群（PGSQL + ETCD）
+- 无限存储的集中备份（MINIO + PGSQL）
+- 独立数据库监控（INFRA + NODE）
+- 网站托管和数据可视化（INFRA + PGSQL）
+
+--------
+
+## 应用模板：一键企业部署 [#app-templates]
+
+> 可选的 Docker 模块，带有 Compose 模板\
+> 可销毁的无状态容器，状态持久化在外部 HA PGSQL 中
+
+- 企业应用：GitLab、Odoo、Dify
+- 高级数据库：Supabase、Neon、EdgeDB
+- 数据库管理工具：PGAdmin、Bytebase、PGWEB
+
+--------
+
+## 核心模块：功能齐全的 Postgres RDS [#core-modules]
+
+> 4 个核心模块协同工作，构建完整的 PostgreSQL RDS\
+> 可扩展、灵活的组合，无额外依赖
+
+- PGSQL：具有 HA、PITR、IaC、监控、420+ 扩展的 PG 集群
+- INFRA：Nginx、本地仓库、Prometheus 和 Grafana 堆栈、DNS、NTP
+- NODE：节点管理、仓库、包、VIP、日志、NTP
+- ETCD：PG 高可用的分布式配置存储
+
+--------
+
+## 扩展模块：扩展 RDS 能力 [#extra-modules]
+
+> 与 PostgreSQL 配合出色的组件\
+> 完全可选，按需安装
+
+- MINIO：S3 兼容对象存储，可选的 PG 备份仓库
+- REDIS：各种模式下的高性能字典服务器
+- FERRET：PostgreSQL 的 MongoDB 协议兼容性
+
+--------
+
+## 内核模块：可交换的数据库引擎 [#kernel-modules]
+
+> 普通 PostgreSQL 内核的可选替换\
+> 提供不同的数据库兼容性
+
+- Babelfish：来自 AWS 的 Microsoft SQL Server 协议兼容 PG
+- IvorySQL：来自海高的 Oracle 兼容 PostgreSQL 17 内核
+- OpenHalo：由 HaloTech 开发的 MySQL 协议兼容 PG 内核
+- OrioleDB：无 xid 环绕和表膨胀的新存储引擎
+
+--------
+
+## OLAP 模块：强大的分析能力 [#olap-modules]
+
+> DuckDB 集成展示\
+> Greenplum 衍生版本的安装和监控支持
+
+- CITUS：PostgreSQL 的原生分布式 HTAP 扩展
+- DUCKDB：带有 5 个 PG 扩展的嵌入式 OLAP 内核
+- GREENPLUM：具有 EL 监控的 MPP 数据仓库（PG 12）
+- CLOUDBERRY：来自原 GPSQL 团队的 PG 14 兼容版本
+
+--------
+
+## 试验模块：探索前沿边界 [#pilot-modules]
+
+> 与 PostgreSQL 无关\
+> 实验性能力探索
+
+- KUBE：使用 SealOS 的 Kubernetes 设置，部署支持
+- KAFKA：由 KRaft 驱动的消息队列
+- MYSQL：单节点 MySQL 8.0 支持
+- VICTORIA：指标和日志的基础设施替代方案
+
+--------
+
+## 风味模块：创意 Postgres 风味 [#flavor-modules]
+
+> 原生 PostgreSQL 上的多样化包装器和功能\
+> 探索后端即服务、无服务器和数据库内 Web 开发
+
+- SUPA：Firebase 开源替代方案
+- NEON：具有数据库分支的无服务器 PostgreSQL
+- EDGE：具有强大查询语言的 PostgreSQL
+- OMNI：针对特定用例扩展的 PostgreSQL

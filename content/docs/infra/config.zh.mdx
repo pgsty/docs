@@ -1,0 +1,101 @@
+---
+title: 配置
+description: 配置基础设施节点、nginx、仓库、dns、ntp、监控系统
+icon: CodeXml
+---
+
+
+INFRA 模块主要提供**监控**基础设施，对于 PostgreSQL 服务是 [**可选的**](/zh/install/minimal)。
+
+除非您在其他地方手动配置了对 INFRA 节点的 DNS/NTP 服务依赖，否则 INFRA 模块的故障通常不会影响 PostgreSQL 数据库集群的正常运行。
+
+在大多数情况下，单个 INFRA 节点足以满足典型场景。对于有更高要求的生产环境，我们建议使用 **2-3** 个 INFRA 节点以实现高可用性。
+
+为了提高资源利用率，PostgreSQL 高可用性通常依赖于 [**`ETCD`**](/zh/etcd/) 模块，该模块可以与 INFRA 模块共享节点。
+
+使用超过 3 个 INFRA 节点提供的好处有限，但您可以使用更多 ETCD 节点（例如 5 个）来增强 DCS 服务的可用性和可靠性。
+
+
+
+------
+
+## 示例 [#examples]
+
+要在节点上安装 INFRA 模块，首先将节点 IP 添加到 [**清单**](/zh/config/inventory) 中的 `infra` 组，并为它们分配一个 Infra 实例编号 [`infra_seq`](/zh/infra/param#infra_seq)。
+
+默认情况下，单个 INFRA 节点配置可以满足大多数要求。所有配置模板都包含默认的 `infra` 组定义：
+
+```yaml
+all:
+  children:
+    infra: { hosts: { 10.10.10.10: { infra_seq: 1 } }}
+```
+
+在 [**配置**](/zh/config/configure) 期间，`infra` 组中的 `10.10.10.10` IP 占位符将被替换为 [**当前节点的主 IP 地址**](/zh/prepare/hardware#network)，这意味着 INFRA 模块将安装在当前节点上。
+
+然后使用 [`infra.yml`](/zh/infra/playbook/#infrayml) playbook 在节点上初始化 INFRA 模块。
+
+### 更多节点 [#more-nodes]
+
+要配置两个 INFRA 节点，请将新 IP 添加到 `infra.hosts`：
+
+```yaml
+all:
+  children:
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+        10.10.10.11: { infra_seq: 2 }
+```
+
+要配置三个 INFRA 节点并使用自定义集群/节点参数：
+
+```yaml
+all:
+  children:
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+        10.10.10.11: { infra_seq: 2, repo_enabled: false }
+        10.10.10.12: { infra_seq: 3, repo_enabled: false }
+      vars:
+        grafana_clean: false
+        prometheus_clean: false
+        loki_clean: false
+```
+
+
+
+
+------
+
+## 高可用性 [#high-availability]
+
+Infra 模块中的大多数组件是"无状态/共享状态"的。对于这些组件，高可用性主要需要解决负载均衡问题。
+
+Infra 组件负载均衡可以通过两种方法实现：Keepalived L2 VIP 或 HAProxy 四层负载均衡。
+
+如果您的网络环境支持二层连接，您可以使用 Keepalived L2 VIP 实现高可用性：
+
+```yaml
+infra:
+  hosts:
+    10.10.10.10: { infra_seq: 1 }
+    10.10.10.11: { infra_seq: 2 }
+    10.10.10.12: { infra_seq: 3 }
+  vars:
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.8
+    vip_interface: eth1
+
+    infra_portal:
+      home         : { domain: h.pigsty }
+      grafana      : { domain: g.pigsty ,endpoint: "10.10.10.8:3000" , websocket: true }
+      prometheus   : { domain: p.pigsty ,endpoint: "10.10.10.8:9090" }
+      alertmanager : { domain: a.pigsty ,endpoint: "10.10.10.8:9093" }
+      blackbox     : { endpoint: "10.10.10.8:9115" }
+      loki         : { endpoint: "10.10.10.8:3100" }
+```
+
+除了配置像 [`vip_address`](/zh/node/param#vip_address) 这样的 VIP 相关参数外，您还需要在 [`infra_portal`](/zh/infra/param#infra_portal) 中修改 Infra 服务的端点。

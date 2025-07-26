@@ -1,0 +1,102 @@
+---
+title: FAQ
+description: 常见问题解答
+icon: MessageCircleQuestion
+---
+
+## 如何配置 NTP 服务？ [#how-to-configure-ntp-service]
+
+> 如果未配置 NTP，请使用公共 NTP 服务或与管理节点同步时间。
+
+如果您的节点已经配置了 NTP，您可以通过将 `node_ntp_enabled` 设置为 `false` 来保持不变。
+
+否则，如果您有互联网访问权限，您可以使用公共 NTP 服务，如 `pool.ntp.org`。
+
+如果您没有互联网访问权限，至少您可以使用以下方式与管理节点同步时间：
+
+```bash
+node_ntp_servers:                 # /etc/chrony.conf 中的 NTP 服务器
+  - pool cn.pool.ntp.org iburst
+  - pool ${admin_ip} iburst       # 假设非管理节点没有互联网访问权限
+```
+
+------
+
+## 如何强制在节点上同步时间？ [#how-to-force-sync-time-on-nodes]
+
+使用 `chronyc` 同步时间。您必须首先配置 NTP 服务。
+
+```bash
+ansible all -b -a 'chronyc -a makestep'     # 同步时间
+```
+
+您可以将 `all` 替换为任何组或主机 IP 地址来限制执行范围。
+
+------
+
+## 远程节点无法通过 SSH 命令访问。 [#remote-nodes-are-not-accessible-via-ssh-commands]
+
+如果目标机器隐藏在 SSH 跳板机后面，或者进行了一些自定义以至于无法使用 `ssh ip` 直接访问，请考虑使用 [**Ansible 连接参数**](https://docs.ansible.com/ansible/latest/inventory_guide/connection_details.html)。可以使用 `ansible_port` 或 `ansible_host` 指定 SSH 别名的额外 SSH 端口。
+
+```bash
+pg-test:
+  vars: { pg_cluster: pg-test }
+  hosts:
+    10.10.10.11: {pg_seq: 1, pg_role: primary, ansible_host: node-1 }
+    10.10.10.12: {pg_seq: 2, pg_role: replica, ansible_port: 22223, ansible_user: admin }
+    10.10.10.13: {pg_seq: 3, pg_role: offline, ansible_port: 22224 }
+```
+
+------
+
+## 远程节点 SSH 和 SUDO 需要密码 [#password-required-for-remote-node-ssh-and-sudo]
+
+**在执行部署和更改时**，使用的管理员用户**必须**对所有节点具有 `ssh` 和 `sudo` 权限。不需要免密。
+
+您可以在执行 playbook 时通过 `-k|-K` 参数传入 ssh 和 sudo 密码，甚至可以通过 `-e`[`ansible_host`](/zh/prepare/admin#using-alias)`=<another_user>` 使用另一个用户运行 playbook。但是，Pigsty 强烈建议为管理员用户配置 SSH **免密登录**和免密 `sudo`。
+
+------
+
+## 使用现有管理员用户创建管理员用户。 [#create-an-admin-user-with-the-existing-admin-user]
+
+这将使用该节点上的现有管理员用户创建由 [`node_admin_username`](/zh/node/param#node_admin_username) 指定的管理员用户。
+
+```bash
+./node.yml -k -K -e ansible_user=<another_admin> -t node_admin
+```
+
+------
+
+## 使用 HAProxy 公开节点服务 [#exposing-node-services-with-haproxy]
+
+您可以在 `node.yml` 中使用 [`haproxy_services`](/zh/node/param#haproxy_services) 公开服务。
+
+这是使用它公开 MinIO 服务的示例：[公开 MinIO 服务](/zh/minio/config#expose-service)
+
+------
+
+## 为什么我的节点 /etc/yum.repos.d/* 被清除了？ [#why-my-nodes-etcyumreposd-are-nuked]
+
+Pigsty 将尝试在基础设施节点上的本地 yum 仓库中包含所有依赖项。此仓库文件将根据 [`node_repo_modules`](/zh/node/param#node_repo_modules) 添加。现有的仓库文件将根据 [`node_repo_remove`](/zh/node/param#node_repo_remove) 的默认值默认删除。这将防止节点使用互联网仓库或一些愚蠢的问题。
+
+如果您想在节点初始化期间保留现有的仓库文件，只需将 [`node_repo_remove`](/zh/node/param#node_repo_remove) 设置为 `false`。
+
+如果您想在基础设施节点本地仓库引导期间保留现有的仓库文件，只需将 [`repo_remove`](/zh/infra/param#repo_remove) 设置为 `false`。
+
+------
+
+## 为什么我的 shell 提示符改变了，如何恢复？ [#why-my-shell-prompt-change-and-how-to-restore-it]
+
+pigsty 提示符在 `/etc/profile.d/node.sh` 中使用环境变量 `PS1` 定义。
+
+要恢复您现有的提示符，只需删除该文件并重新登录。
+
+------
+
+## 腾讯 OpenCloudOS 兼容性问题 [#tencent-opencloudos-compatibility-issue]
+
+OpenCloudOS 没有 softdog 模块，在全局变量上覆盖 [`node_kernel_modules`](/zh/node/param#node_kernel_modules)：
+
+```yaml
+node_kernel_modules: [ br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+```

@@ -1,0 +1,147 @@
+---
+title: 配置
+description: 如何配置 pigsty 清单文件？
+icon: CodeXml
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+import { CpuIcon, FileCode } from 'lucide-react';
+
+
+[`configure`](https://github.com/pgsty/pigsty/blob/main/configure) 脚本将根据您的环境和输入生成具有良好默认值的 `pigsty.yml` 配置文件[清单](/zh/config/inventory)。
+它是 **可选的**，您可以直接编辑 `pigsty.yml`，如[**教程**](/zh/config/tutorial)所示。
+
+<Files>
+    <Folder name="pigsty" defaultOpen>
+        <a href={"https://github.com/pgsty/pigsty/blob/main/configure"}><File name="configure"  icon={<CpuIcon className="text-orange-400" />} /></a>
+        <a href={"https://github.com/pgsty/pigsty/blob/main/pigsty.yml"}><File name="pigsty.yml" icon={<FileCode className="text-blue-500" />} /></a>
+    </Folder>
+</Files>
+
+
+--------
+
+## 用法 [#usage]
+
+除非指定了 `-n|--non-interactive`，否则 `configure` 脚本是一个交互式向导。
+
+```bash title="~/pigsty/configure"
+./configure
+    [-c|--conf <confname>   # [meta|dual|trio|full|app/supa|...]
+    [-i|--ip <ip>]          # 主 IP 地址（使用 -s 跳过）
+    [-v|--version <pgver>   # [17|16|15|14|13]
+    [-r|--region <region>   # [default|china|europe]
+    [-s|--skip]             # 跳过 IP 地址探测
+    [-x|--proxy]            # 从环境变量写入代理环境
+    [-n|--non-interactive]  # 非交互模式
+    [-p|--port <port>]      # 指定 SSH 端口（仅在设置时使用）
+```
+
+| 选项                  | 描述                                                                                 |
+|-------------------------|---------------------------------------------------------------------------------------------|
+| `-c\|--conf`            | 根据此参数从[配置模板](/zh/config/template/)生成配置 |
+| `-i\|--ip`              | 用给定 IP 替换 IP 地址占位符 `10.10.10.10`                                  |
+| `-v\|--version`         | 指定 PostgreSQL 主版本号（`13\|14\|15\|16\|17`）                              |
+| `-r\|--region`          | 根据 `region` 设置上游仓库镜像（`default\|china\|europe`）                   |
+| `-x\|--proxy`           | 将当前代理环境写入配置 [`proxy_env`](/zh/infra/param#proxy_env)            |
+| `-s\|--skip`            | 跳过交互式向导并使用默认/参数值                                        |
+| `-n\|--non-interactive` | 非交互模式                                                                      |
+| `-p\|--port`            | 指定 SSH 端口（仅在设置时使用）                                                         |
+
+
+--------
+
+## 示例 [#example]
+
+```bash
+./configure                # 如果只有一个 IP 地址，否则会要求您输入
+./configure -i 10.11.12.13 # 明确告诉主 IP 地址
+./configure -c rich -v 16  # 使用 conf/rich.yml 作为模板，使用 PG 16 和所有扩展
+./configure -c app/supa    # 使用 app/supa 模板，运行自托管 supabase
+./configure -c mssql       # 使用 babelfish 模板，运行 MSSQL 兼容的 PG 内核分支
+./configure -c full -s     # 使用 4 节点沙箱配置模板，不进行 IP 替换和探测
+./configure -r china       # 使用中国镜像而不是默认仓库
+```
+
+configure 输出示例：
+
+```bash title="./configure"
+[vagrant@node-1 pigsty]$ ./configure
+configure pigsty v3.6.0 begin
+[ OK ] region = china
+[ OK ] kernel  = Linux
+[ OK ] machine = x86_64
+[ OK ] package = rpm,dnf
+[ OK ] vendor  = rocky (Rocky Linux)
+[ OK ] version = 9 (9.5)
+[ OK ] sudo = vagrant ok
+[ OK ] ssh = vagrant@127.0.0.1 ok
+[WARN] Multiple IP address candidates found:
+    (1) 192.168.121.193	    inet 192.168.121.193/24 brd 192.168.121.255 scope global dynamic noprefixroute eth0
+    (2) 10.10.10.11	    inet 10.10.10.11/24 brd 10.10.10.255 scope global noprefixroute eth1
+[ IN ] INPUT primary_ip address (of current meta node, e.g 10.10.10.10):
+=> 10.10.10.11
+[ OK ] primary_ip = 10.10.10.11 (from input)
+[ OK ] admin = vagrant@10.10.10.11 ok
+[ OK ] mode = meta (el9)
+[ OK ] locale  = C.UTF-8
+[ OK ] configure pigsty done
+proceed with ./install.yml
+```
+
+
+
+
+--------
+
+## 行为 [#behavior]
+
+<Callout title="配置模板">
+    如果指定了 `-c|--conf <template>`，它将从指定的[模板](/zh/config/template/)生成配置文件。例如 `meta`、`app/supa` 等...
+    如果没有给出配置模板，它将使用默认的单节点配置模板 `meta`。
+</Callout>
+
+<Callout title="IP 地址">
+    如果指定了 `-i|--ip <ipaddr>`，它将用给定的 IP 地址替换配置模板中的占位符 `10.10.10.10`。
+    否则，如果当前节点只有一个 IP 地址，将使用该地址。如果有多个 IP 地址，它会要求您手动输入当前节点的主 IP 地址。
+</Callout>
+
+<Callout title="PostgreSQL 版本">
+    如果指定了 `-v|--version`，它将使用指定的 PostgreSQL 主版本号，范围从 `13` 到 `17`。
+    如果没有指定版本，它会保持 `pg_version` 不变，通常默认回退到 `17`。
+</Callout>
+
+<Callout title="区域">
+    如果指定了 `-r|--region`，它将直接使用指定的区域。在无法访问 Google 服务的地方将使用 `china` 镜像。
+</Callout>
+
+<Callout title="代理环境">
+    如果指定了 `-x|--proxy`，它将把当前代理环境变量写入配置 [`proxy_env`](/zh/infra/param#proxy_env)。
+    在安装期间将被重用。包括：`HTTP_PROXY`、`HTTPS_PROXY`、`ALL_PROXY`、`NO_PROXY`。
+</Callout>
+
+<Callout title="跳过模式">
+    如果指定了 `-s|--skip`，它将跳过 IP 地址替换和 ssh sudo 权限检查
+</Callout>
+
+<Callout title="非交互模式">
+    如果指定了 `-n|--non-interactive`，此脚本不会询问您任何事情，但您必须使用 `-i|--ip <ipaddr>` 明确指定主 IP 地址。
+</Callout>
+
+<Callout title="SSH 端口">
+    如果指定了 `-p|--port`，它将使用指定的 SSH 端口而不是默认的 `22`。
+    当您的本地 SSH 端口不是 `22` 时使用。
+</Callout>
+
+<Callout title="低端硬件优化">
+    如果当前节点 CPU 核心数 &le; 4，它将对 [`pg_conf`](/zh/pgsql/param#pg_conf) 和 [`node_tune`](/zh/node/param#node_tune) 使用 `tiny` 模式以优化低端硬件。
+</Callout>
+
+<Callout title="区域设置">
+    Pigsty 将使用 `C.UTF-8` 作为默认区域设置，如果：
+
+    - PostgreSQL 主版本 &ge; 17，具有内置本地提供程序（默认）
+    - **或者**，您的系统支持 `C.utf8` / `C.utf-8` 区域设置（`locale -a`）
+
+    否则，默认将使用本地 `C`。
+</Callout>

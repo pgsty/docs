@@ -1,0 +1,77 @@
+---
+title: 配置
+description: 描述您想要的 redis 集群
+icon: CodeXml
+---
+
+Redis 的实体模型与 [PostgreSQL](/zh/pgsql) 几乎相同，
+也包括**集群**和**实例**的概念。这里的集群不是指原生 Redis 集群模式。
+
+REDIS 模块与 [PGSQL](/zh/pgsql/) 模块的核心区别是 Redis 使用**单节点多实例**部署而不是 1:1 部署：
+通常在一个物理/虚拟机节点上部署多个 Redis 实例以充分利用多核 CPU。
+因此，[配置](/zh/redis/config)和[管理](/zh/redis/admin/) Redis 实例的方式与 PGSQL 略有不同。
+
+在 Pigsty 管理的 Redis 中，节点完全从属于集群，这意味着目前
+不允许在一个节点上部署两个不同集群的 Redis 实例。
+但是，这不影响在一个节点上部署多个独立的 Redis 主副本实例。
+
+
+------
+
+## Redis 身份 [#redis-identity]
+
+Redis [**身份参数**](/zh/redis/param) 是定义 Redis 集群时的必需参数。
+
+|                       名称                        |          属性          |     描述      |          示例          |
+|:-------------------------------------------------:|:---------------------------:|:--------------------:|:-------------------------:|
+|   [`redis_cluster`](/zh/redis/param#redis_cluster)   | **必需**，集群级别 |     集群名称     |       `redis-test`        |
+|      [`redis_node`](/zh/redis/param#redis_node)      |  **必需**，节点级别   | 节点序列号 |          `1`,`2`          |
+| [`redis_instances`](/zh/redis/param#redis_instances) |  **必需**，节点级别   | 实例定义  | `{ 6001 : {} ,6002 : {}}` |
+
+------
+
+## Redis 模式 [#redis-mode]
+
+Pigsty 中有三种可用的 [`redis_mode`](/zh/redis/param#redis_mode)：
+
+- `standalone`：以独立（主从）模式设置 Redis
+- `cluster`：将此 Redis 集群设置为 Redis 原生集群
+- `sentinel`：将 Redis 设置为独立 Redis HA 的哨兵
+
+以下是三个示例：
+
+- 1 节点，一个主节点和一个从节点的 Redis 独立集群：`redis-ms`
+- 1 节点，3 实例的 Redis 哨兵集群：`redis-sentinel`
+- 2 节点，6 实例的 Redis 集群：`redis-cluster`
+
+```yaml
+redis-ms: # redis classic primary & replica
+  hosts: { 10.10.10.10: { redis_node: 1 , redis_instances: { 6379: { }, 6380: { replica_of: '10.10.10.10 6379' } } } }
+  vars: { redis_cluster: redis-ms ,redis_password: 'redis.ms' ,redis_max_memory: 64MB }
+
+redis-meta: # redis sentinel x 3
+  hosts: { 10.10.10.11: { redis_node: 1 , redis_instances: { 26379: { } ,26380: { } ,26381: { } } } }
+  vars:
+    redis_cluster: redis-meta
+    redis_password: 'redis.meta'
+    redis_mode: sentinel
+    redis_max_memory: 16MB
+    redis_sentinel_monitor: # primary list for redis sentinel, use cls as name, primary ip:port
+      - { name: redis-ms, host: 10.10.10.10, port: 6379 ,password: redis.ms, quorum: 2 }
+
+redis-test: # redis native cluster: 3m x 3s
+  hosts:
+    10.10.10.12: { redis_node: 1 ,redis_instances: { 6379: { } ,6380: { } ,6381: { } } }
+    10.10.10.13: { redis_node: 2 ,redis_instances: { 6379: { } ,6380: { } ,6381: { } } }
+  vars: { redis_cluster: redis-test ,redis_password: 'redis.test' ,redis_mode: cluster, redis_max_memory: 32MB }
+```
+
+------
+
+## 限制 [#limitation]
+
+- 一个 Redis 节点只能属于一个 Redis 集群，这意味着您不能同时将一个节点分配给两个不同的 Redis 集群。
+- 在每个 Redis 节点上，您需要为 Redis 实例分配唯一的端口号以避免端口冲突。
+- 通常，同一个 Redis 集群将使用相同的密码，但 Redis 节点上的多个 Redis 实例不能设置不同的密码（因为 redis_exporter 只允许一个密码）。
+- Redis 集群具有内置 HA，而独立 HA 需要在哨兵中手动配置，因为我们不确定您是否有可用的哨兵。
+  幸运的是，配置独立 Redis HA 很简单：[使用哨兵配置 HA](/zh/redis/admin/#ha-with-sentinel)。

@@ -1,0 +1,472 @@
+---
+title: 可观测性基础设施
+description: 具有 3000+ 指标、30+ 仪表板和企业级监控的现代可观测性堆栈
+icon: Telescope
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Pigsty 提供 **无与伦比的可观测性**，具有基于行业最佳实践构建的现代监控堆栈。
+自动监控每个组件，具有 **3000+ 指标**、**30+ 仪表板**。
+
+![](/img/pigsty/dashboard.gif)
+
+<Callout type="info">
+**完整洞察**：从高级集群健康到单个表统计的所有内容进行监控。完整洞察您基础设施的过去、现在和未来。
+</Callout>
+
+
+## 架构概述 [#architecture-overview]
+
+![](/img/pigsty/infra.png)
+
+Pigsty 的可观测性基础设施在一个连贯的、生产就绪的堆栈中利用经过实战考验的开源组件：
+
+<Cards>
+<Card title="Grafana 可视化引擎" icon="📊">
+具有高级交互式可视化的仪表板
+</Card>
+<Card title="Prometheus 指标数据库" icon="📈">
+具有强大查询语言的时间序列存储
+</Card>
+<Card title="Loki 日志平台" icon="📝">
+具有基于标签索引的集中式日志记录
+</Card>
+<Card title="AlertManager" icon="🚨">
+告警聚合、管理和升级
+</Card>
+</Cards>
+
+### 服务架构 [#service-architecture]
+
+```mermaid
+graph TB
+    subgraph "Observability Stack"
+        Grafana[Grafana :3000]
+        Prometheus[Prometheus :9090]
+        Loki[Loki :3100]
+        AlertManager[AlertManager :9093]
+        Pushgateway[Pushgateway :9091]
+        Blackbox[Blackbox :9115]
+    end
+    
+    subgraph "Data Sources"
+        PG[(PostgreSQL)]
+        Node[Node Metrics]
+        Redis[(Redis)]
+        MinIO[(MinIO)]
+    end
+    
+    subgraph "Exporters"
+        PGExp[pg_exporter]
+        NodeExp[node_exporter]
+        RedisExp[redis_exporter]
+        MinIOExp[minio_exporter]
+    end
+    
+    PG --> PGExp
+    Node --> NodeExp
+    Redis --> RedisExp
+    MinIO --> MinIOExp
+    
+    PGExp --> Prometheus
+    NodeExp --> Prometheus
+    RedisExp --> Prometheus
+    MinIOExp --> Prometheus
+    
+    Prometheus --> Grafana
+    Prometheus --> AlertManager
+    Loki --> Grafana
+```
+
+--------
+
+## 监控仪表板 [#monitoring-dashboards]
+
+### 多层级仪表板层次结构 [#multi-level-dashboard-hierarchy]
+
+Pigsty 提供按逻辑下钻层次结构组织的 **26+ PostgreSQL 仪表板**：
+
+<Tabs items={['Overview Level', 'Cluster Level', 'Instance Level', 'Database Level']}>
+<Tab value="Overview Level">
+```yaml
+# 全局概览仪表板
+dashboards:
+  - Home: 全局集群概览和关键指标
+  - INFRA: 基础设施服务状态
+  - NODES: 节点级资源利用率
+  - Alert: 活跃告警和通知状态
+```
+**目的**：整个环境的高级运营可见性
+**受众**：运营团队、管理仪表板
+</Tab>
+<Tab value="Cluster Level">
+```yaml
+# 集群焦点仪表板
+dashboards:
+  - PGSQL Cluster: 集群健康和复制状态
+  - PGSQL Service: 服务端点和负载均衡
+  - PGSQL Activity: 连接池和查询活动
+  - PGSQL Replication: 流复制指标
+```
+**目的**：集群范围的 PostgreSQL 性能和健康
+**受众**：数据库管理员、SRE 团队
+</Tab>
+<Tab value="Instance Level">
+```yaml
+# 实例特定仪表板
+dashboards:
+  - PGSQL Instance: 详细的 PostgreSQL 服务器指标
+  - PGSQL Persist: WAL、检查点和持久化
+  - PGSQL Proxy: Pgbouncer 连接池指标
+  - PGSQL Session: 活跃会话和锁分析
+```
+**目的**：深入了解单个 PostgreSQL 实例
+**受众**：数据库开发人员、性能工程师
+</Tab>
+<Tab value="Database Level">
+```yaml
+# 数据库和对象级仪表板
+dashboards:
+  - PGSQL Database: 数据库特定性能指标
+  - PGSQL Table: 表统计和访问模式
+  - PGSQL Query: 查询性能和优化
+  - PGSQL Slow: 慢查询分析和调优
+```
+**目的**：应用级数据库性能分析
+**受众**：应用程序开发人员、数据库分析师
+</Tab>
+</Tabs>
+
+### 仪表板功能 [#dashboard-features]
+
+<Cards>
+<Card title="下钻导航" icon="🔍">
+**无缝探索** 从概览到详细信息，具有上下文链接
+</Card>
+<Card title="时间范围控制" icon="⏰">
+**灵活的时间窗口** 从实时到数月的历史分析
+</Card>
+<Card title="多维过滤" icon="🎯">
+**动态过滤** 按集群、实例、数据库或自定义标签
+</Card>
+<Card title="告警集成" icon="🚨">
+**可视化告警关联** 与指标和告警详情的直接链接
+</Card>
+</Cards>
+
+--------
+
+## Grafana 部署 [#grafana-deployment]
+
+### 增强的 Grafana 堆栈 [#enhanced-grafana-stack]
+
+Pigsty 使用强大的插件和数据源扩展 Grafana，用于高级分析：
+
+<Tabs items={['Core Plugins', 'Visualization Plugins', 'Data Sources', 'Custom Extensions']}>
+<Tab value="Core Plugins">
+```yaml
+# 基本 Grafana 插件
+grafana_plugins:
+  - grafana-piechart-panel        # 饼图可视化
+  - grafana-polystat-panel        # 多值状态面板
+  - grafana-worldmap-panel        # 地理可视化
+  - grafana-clock-panel           # 时间显示小部件
+```
+**目的**：监控仪表板的基本可视化功能
+</Tab>
+<Tab value="Visualization Plugins">
+```yaml
+# 高级可视化插件
+grafana_plugins:
+  - echarts-panel                 # Apache ECharts 集成
+  - volkovlabs-echarts-panel      # 增强的 ECharts 支持
+  - volkovlabs-form-panel         # 交互式表单
+  - volkovlabs-variable-panel     # 动态变量
+```
+**目的**：用于复杂数据分析的丰富交互式可视化
+</Tab>
+<Tab value="Data Sources">
+```yaml
+# 扩展数据源支持
+grafana_datasources:
+  - infinity-datasource           # REST API 和文件数据源
+  - redis-datasource              # Redis 数据源
+  - clickhouse-datasource         # ClickHouse 集成
+  - postgres-datasource           # 增强的 PostgreSQL 支持
+```
+**目的**：连接到传统指标之外的多样化数据源
+</Tab>
+<Tab value="Custom Extensions">
+```yaml
+# Pigsty 特定定制
+custom_features:
+  - pigsty-theme                  # 自定义品牌和颜色
+  - dashboard-provisioning       # 自动化仪表板部署
+  - alert-templates               # 预配置告警规则
+  - data-link-automation          # 上下文感知导航
+```
+**目的**：为 PostgreSQL 环境优化的定制用户体验
+</Tab>
+</Tabs>
+
+### 配置和定制 [#configuration-customization]
+
+```yaml
+# 高级 Grafana 配置
+grafana_config:
+  # 认证
+  auth.anonymous.enabled: true
+  auth.anonymous.org_role: Viewer
+  auth.disable_login_form: false
+  
+  # 安全性
+  security.allow_embedding: true
+  security.cookie_secure: true
+  security.cookie_samesite: strict
+  
+  # 性能
+  database.max_open_conn: 300
+  database.max_idle_conn: 300
+  database.conn_max_lifetime: 14400
+  
+  # 告警
+  alerting.enabled: true
+  alerting.execute_alerts: true
+  unified_alerting.enabled: true
+  
+  # 自定义面板
+  panels.enable_alpha: true
+  feature_toggles.enable: ngalert,live,publicDashboards
+```
+
+--------
+
+## Prometheus 堆栈 [#prometheus-stack]
+
+### 完整的监控生态系统 [#complete-monitoring-ecosystem]
+
+Pigsty 部署完整的 Prometheus 生态系统以实现全面的可观测性：
+
+<Steps>
+
+<Step>
+### Prometheus 服务器 [#prometheus-server]
+**核心指标数据库** 具有高级查询和存储功能
+```yaml
+# Prometheus 配置亮点
+prometheus_config:
+  global:
+    scrape_interval: 15s          # 默认抓取频率
+    evaluation_interval: 15s      # 规则评估频率
+    external_labels:
+      cluster: '{{ pg_cluster }}'
+      
+  rule_files:
+    - "/etc/prometheus/rules/*.yml"
+    
+  scrape_configs:
+    - job_name: 'node'            # 节点级指标
+    - job_name: 'postgres'        # PostgreSQL 指标
+    - job_name: 'redis'           # Redis 指标
+    - job_name: 'pushgateway'     # 批处理作业指标
+```
+</Step>
+
+<Step>
+### AlertManager [#alertmanager]
+**智能告警路由** 具有抑制、分组和升级功能
+```yaml
+# AlertManager 路由配置
+alertmanager_routes:
+  - match:
+      severity: critical
+    receiver: pagerduty-critical
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+    
+  - match:
+      severity: warning  
+    receiver: slack-warnings
+    group_wait: 1m
+    group_interval: 10m
+    repeat_interval: 24h
+```
+</Step>
+
+<Step>
+### Pushgateway [#pushgateway]
+**批处理作业指标收集** 用于短暂工作负载和 cron 作业
+```bash
+# 示例：备份作业指标
+echo "backup_duration_seconds $(date +%s)" | curl --data-binary @- \
+  http://pushgateway:9091/metrics/job/pg-backup/instance/pg-test
+```
+</Step>
+
+<Step>
+### Blackbox Exporter [#blackbox-exporter]
+**网络连接监控** 具有 HTTP、TCP 和 ICMP 探测
+```yaml
+# Blackbox 探测配置
+blackbox_probes:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_status_codes: [200]
+      
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+```
+</Step>
+
+</Steps>
+
+### 预配置告警规则 [#pre-configured-alert-rules]
+
+```yaml
+# PostgreSQL 告警规则示例
+alert_rules:
+  - alert: PostgreSQLDown
+    expr: pg_up == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "PostgreSQL 实例 {{ $labels.instance }} 已宕机"
+      
+  - alert: PostgreSQLHighConnections
+    expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{ $labels.instance }} 上连接使用率过高"
+      
+  - alert: PostgreSQLReplicationLag  
+    expr: pg_replication_lag_seconds > 300
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "{{ $labels.instance }} 上复制延迟 > 5 分钟"
+```
+
+--------
+
+## pg_exporter：高级 PostgreSQL 监控 [#pg-exporter-advanced-postgresql-monitoring]
+
+### 自定义指标引擎 [#custom-metrics-engine]
+
+Pigsty 的 [pg_exporter](https://github.com/pgsty/pg_exporter) 是一个高度可定制的 PostgreSQL 指标收集器，支持 **所有 PostgreSQL 版本**，具有细粒度指标控制：
+
+<Tabs items={['Core Features', 'Version Compatibility', 'Custom Queries', 'RDS Support']}>
+<Tab value="Core Features">
+```yaml
+# pg_exporter 关键功能
+features:
+  - auto_discovery: true          # 自动数据库发现
+  - custom_queries: true          # 用户定义指标查询
+  - version_aware: true           # PostgreSQL 版本检测
+  - rds_compatible: true          # 云数据库支持
+  - label_customization: true     # 灵活的指标标签
+  - connection_pooling: true      # 高效连接重用
+```
+**优势**：灵活、轻量级且高度可配置
+</Tab>
+<Tab value="Version Compatibility">
+```yaml
+# PostgreSQL 版本支持矩阵
+supported_versions:
+  - postgresql_9_6: legacy_metrics_set
+  - postgresql_10: enhanced_metrics_set  
+  - postgresql_11: advanced_metrics_set
+  - postgresql_12: modern_metrics_set
+  - postgresql_13: extended_metrics_set
+  - postgresql_14: latest_metrics_set
+  - postgresql_15: cutting_edge_metrics_set
+  - postgresql_16: next_gen_metrics_set
+```
+**好处**：异构 PostgreSQL 环境的单一 exporter
+</Tab>
+<Tab value="Custom Queries">
+```yaml
+# 自定义指标定义示例
+custom_queries:
+  pg_custom_business_metrics:
+    query: |
+      SELECT 
+        schemaname,
+        tablename,
+        n_tup_ins as inserts_total,
+        n_tup_upd as updates_total,
+        n_tup_del as deletes_total
+      FROM pg_stat_user_tables
+    metrics:
+      - inserts_total:
+          usage: COUNTER
+          description: "插入总数"
+      - updates_total:
+          usage: COUNTER  
+          description: "更新总数"
+```
+</Tab>
+<Tab value="RDS Support">
+```yaml
+# RDS 监控配置
+rds_monitoring:
+  connection_string: "postgres://monitor:password@rds.region.rds.amazonaws.com:5432/postgres"
+  metrics_subset: rds_safe        # 仅 RDS 兼容指标
+  auto_discovery: false           # 手动数据库规范
+  query_timeout: 30s              # 保守超时
+  
+  # RDS 特定指标
+  included_databases: [production, staging]
+  excluded_schemas: [information_schema, pg_catalog]
+```
+</Tab>
+</Tabs>
+
+## 最佳实践 [#best-practices]
+
+### 性能优化 [#performance-optimization]
+
+<Callout type="warn">
+**资源规划**：监控基础设施可能消耗大量资源。相应地规划指标保留和查询性能。
+</Callout>
+
+- **指标基数**：限制高基数标签以防止存储爆炸
+- **保留策略**：平衡历史数据需求与存储成本
+- **查询优化**：对频繁访问的指标使用记录规则
+- **仪表板性能**：优化面板查询和时间范围
+
+### 安全考虑 [#security-considerations]
+
+```yaml
+# 安全最佳实践
+security_config:
+  authentication:
+    - ldap_integration: true
+    - oauth_providers: [github, google, okta]
+    - api_key_rotation: automated
+    
+  authorization:
+    - role_based_access: true
+    - team_based_folders: true
+    - dashboard_permissions: granular
+    
+  network_security:
+    - tls_encryption: enforced
+    - firewall_rules: restrictive
+    - reverse_proxy: nginx
+```
+
+---
+
+Pigsty 的可观测性基础设施将监控从被动的事后思考转变为主动的运营优势。通过全面的指标、直观的仪表板和灵活的架构，您可以深入了解数据库基础设施的每个方面。

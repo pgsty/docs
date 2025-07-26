@@ -1,0 +1,30 @@
+---
+title: Supabase
+description: 自托管企业级 supabase
+icon: Zap
+---
+
+
+Supabase 很棒，拥有自己的 supabase 更好。
+Pigsty 帮助您在自己的服务器上自托管 supabase，
+具有更好的控制、更多扩展、更低成本和企业级功能。
+
+> 一小时内迁移，扩展到数十亿！
+
+--------
+
+## 简短版本 [#short-version]
+
+这里是在本地/云 VM/裸机上自托管生产级 supabase 的综合教程。
+
+```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
+./bootstrap                # 安装 ansible
+./configure -c app/supa    # 使用 supabase 配置（请在 pigsty.yml 中更改凭据）
+vi pigsty.yml              # 编辑域名、密码、密钥...
+./install.yml              # 安装 pigsty
+./docker.yml               # 安装 docker compose
+./app.yml                  # 使用 docker 启动 supabase 无状态部分
+```
+
+------

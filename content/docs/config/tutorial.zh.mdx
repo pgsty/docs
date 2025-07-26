@@ -1,0 +1,262 @@
+---
+title: 教程
+description: 从零开始打造复杂配置
+icon: GraduationCap
+---
+
+您可以手动从零开始编写 pigsty 配置文件，而不是使用 [`configure`](/zh/config/configure) 生成配置。
+
+这里是一个教程，帮助您从零开始构建复杂的配置文件[清单](/zh/config/inventory)。
+
+
+--------
+
+## 最小配置 [#minimal]
+
+这是一个最小的工作配置示例，您必须告诉 pigsty 管理节点和基础设施节点的 IP。
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children: {infra: {hosts: {10.10.10.10: { infra_seq: 1 }}}}
+  vars: { admin_ip: 10.10.10.10 }
+```
+
+这将在 `10.10.10.10`（更改为您的 IP 地址）上安装 [**INFRA**](/zh/infra) 和 [**NODE**](/zh/node) 模块。
+
+```bash title="~/pigsty"
+./install.yml
+```
+
+您将拥有一个完整的可观测性堆栈和节点监控。但数据库服务尚未运行。
+
+
+
+--------
+
+## PGSQL & ETCD
+
+要提供 PostgreSQL 服务，您必须定义其他组并安装 [**PGSQL**](/zh/pgsql) 和 [**ETCD**](/zh/etcd) 模块。
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+我们在这里添加了两个新组：`etcd` 和 `pg-meta`，它们定义了一个 1 节点 ETCD 集群和一个 1 节点 PGSQL 集群。
+使用 `./install.yml` 重新创建所有内容，或使用这些命令进行增量步骤：
+
+```bash title="~/pigsty"
+./etcd.yml  -l etcd      # 在 etcd 组上安装 etcd 模块
+./pgsql.yml -l pg-meta   # 在 pg-meta 组上安装 pgsql 模块
+```
+
+[PGSQL](/zh/pgsql) 模块依赖 [**ETCD**](/zh/etcd) 进行 HA 共识，因此请确保首先安装 ETCD 模块。
+
+
+
+--------
+
+## 数据库和用户 [#database-users]
+
+现在我们要自定义我们的 postgres 数据库集群，包括用户、数据库和备份：
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - { name: dbuser_meta ,password: DBUser.Meta ,pgbouncer: true ,roles: [dbrole_admin] ,comment: admin user}
+        pg_databases:
+          - { name: meta ,baseline: cmdb.sql ,comment: pigsty meta database ,schemas: [pigsty] ,extensions: [vector]}
+        node_crontab:
+          - '00 01 * * * postgres /pg/bin/pg-backup full'
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+我们在 `pg-meta` 集群级别定义一些额外的详细信息：
+
+- `pg_users`：定义一个新用户 `dbuser_meta`，密码为 `DBUser.Meta`
+- `pg_databases`：定义一个新数据库 `meta`，包含 pigsty [CMDB](/zh/config/cmdb) 模式和 `vector` 扩展
+- `node_crontab`：定义在每天凌晨 1 点进行完整备份的 crontab
+
+我们不使用 `./install.yml` 重新创建所有内容，而是增量地进行更改：
+
+```bash title="~/pigsty"
+bin/pgsql-user pg-meta dbuser_meta      # 在 pg-meta 上创建用户 dbuser_meta
+bin/pgsql-db   pg-meta meta             # 在 pg-meta 上创建数据库 meta
+./node.yml -l pg-meta -t node_crontab   # 在 pg-meta 上将备份任务添加到 crontab
+```
+
+
+--------
+
+## PG 版本和扩展 [#pg-ver-extensions]
+
+您可以安装不同的 PostgreSQL 主版本，以及 [**420+**](https://ext.pigsty.io/#/list) 相应的扩展。
+
+让我们安装 PostgreSQL 16（而不是默认的 17），包含 `timescaledb`、`postgis` 和 `pgvector` 扩展。
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta:
+      hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
+      vars:
+        pg_cluster: pg-meta
+        pg_users:
+          - name: dbuser_meta
+            password: DBUser.Meta
+            pgbouncer: true
+            roles: [dbrole_admin]
+            comment: pigsty admin user
+        pg_databases:
+          - name: meta
+            baseline: cmdb.sql
+            comment: pigsty meta database
+            schemas: [pigsty]
+            extensions: [ vector, postgis, timescaledb ]           # <--- 创建扩展
+        pg_libs: 'timescaledb, pg_stat_statements, auto_explain'   # <--- 加载扩展
+        node_crontab:
+          - '00 01 * * * postgres /pg/bin/pg-backup full'
+  vars:
+    admin_ip: 10.10.10.10
+    region: default # 使用本地镜像以获得更快的下载速度   # <--- default|china|europe
+    repo_extra_packages: [ timescaledb, postgis, pgvector, pgsql ] # <--- 下载扩展
+    pg_extensions:       [ timescaledb, postgis, pgvector ]        # <--- 安装扩展
+    pg_version: 16   # PG 17 是默认的最新主版本   # <--- 使用 PG 16 版本
+```
+
+- `repo_extra_packages`：下载 `timescaledb` 和 `postgis` 扩展。
+- `pg_libs`：预加载 `timescaledb`、`pg_stat_statements`、`auto_explain` 扩展。
+
+让我们重新下载缺失的包（PG 16 内核和扩展），删除旧集群，并重新创建它：
+
+```bash
+make repo                   # 重新下载包
+./pgsql-rm.yml -l pg-meta   # 删除旧的 pg-meta 集群（因为它是 PG17）
+./pgsql.yml    -l pg-meta   # 使用 PG16 和扩展重新创建 pg-meta 集群
+````
+
+
+
+--------
+
+## 更多节点 [#more-node]
+
+我们可以向此部署添加 **3** 个更多节点。
+
+```yaml
+bin/node-add pg-test
+```
+
+或者逐个添加它们：
+
+```bash
+bin/node-add 10.10.10.11
+bin/node-add 10.10.10.12
+bin/node-add 10.10.10.13
+````
+
+
+--------
+
+## PGSQL HA
+
+现在我们要添加一个新的数据库集群 `pg-test`，具有 3 节点 HA 设置：
+
+```yaml title="~/pigsty/pigsty.yml"
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+    pg-test:
+      hosts:
+        10.10.10.11: { pg_seq: 1, pg_role: primary }
+        10.10.10.12: { pg_seq: 2, pg_role: replica  }
+        10.10.10.13: { pg_seq: 3, pg_role: replica  }
+      vars: { pg_cluster: pg-test }
+  vars:
+    admin_ip: 10.10.10.10
+```
+
+Pigsty 的工作假设是每个节点上只有一个 postgres 实例。
+不支持在单个节点上运行多个 postgres 实例。
+
+
+
+--------
+
+## Redis 启动 [#redis-up]
+
+Pigsty 有可选的 Redis 支持，用作 PostgreSQL 前面的缓存。
+
+```bash
+bin/redis-add redis-ms
+bin/redis-add redis-meta
+bin/redis-add redis-test
+
+```
+
+Redis HA 设置需要集群模式或哨兵基础设施，请查看 Redis 配置了解详情。
+
+
+--------
+
+## MinIO 启动 [#minio-up]
+
+Pigsty 有可选的 MinIO 支持，用作 PostgreSQL 的备份存储。
+
+```bash
+./minio.yml -l minio
+```
+
+严肃的生产 MinIO 部署通常需要至少 4 个节点，每个节点有 4 个磁盘（4N/16D）
+
+
+--------
+
+## Docker 启动 [#docker-up]
+
+在 `infra` 组上安装 docker：
+
+```bash
+./docker.yml -l infra
+```
+
+--------
+
+## 运行 PgAdmin [#run-pgadmin]
+
+查看 [App: Pgadmin](/zh/app/pgadmin) 了解如何使用 Pigsty 运行 pgAdmin 的详细信息。简短版本：
+
+```bash
+./docker.yml -l infra
+./app.yml    -l infra -e app=pgadmin
+```
+
+--------
+
+## 自托管 Supabase [#self-hosting-supabase]
+
+查看 [App: Supabase](/zh/app/supabase) 了解如何使用 Pigsty 运行 Supabase 的详细信息。简短版本：
+
+```bash
+./configure -c app/supa
+./install.yml
+./docker.yml
+./app.yml
+```

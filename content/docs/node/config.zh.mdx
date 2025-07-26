@@ -1,0 +1,75 @@
+---
+title: 配置
+description: 节点身份、DNS、VIP、数据目录和 haproxy 服务
+full: false
+icon: CodeXml
+---
+
+您不需要显式定义节点集群和节点实例。
+它通常由其他数据库 [模块](/zh/intro/module) 的集群定义暗示。
+如果您定义了一个 [PGSQL](/zh/pgsql/) 集群，它会隐式定义一个节点集群。
+
+但在某些情况下，您可能希望使用显式命名的节点集群/实例。
+例如运行专用用途的节点组（例如，haproxy 组、节点缓冲池等）
+
+--------
+
+## 身份参数 [#identity-parameters]
+
+Pigsty 使用节点的主要 IPv4 地址（`inventory_hostname`）作为其身份。
+
+|                      名称                       |   类型   | 级别 | 必要性    | 注释               |
+|:-----------------------------------------------:|:--------:|:-----:|--------------|-----------------------|
+|              `inventory_hostname`               |   `ip`   | **-** | **必需** | **节点 IP**           |
+|     [`nodename`](/zh/node/param#nodename)     | `string` | **I** | 可选     | **节点名称**         |
+| [`node_cluster`](/zh/node/param#node_cluster) | `string` | **C** | 可选     | **节点集群名称** |
+
+[`nodename`](/zh/node/param#nodename) 和 [`node_cluster`](/zh/node/param#node_cluster) 可以用作监控目的的可选次要身份。
+
+```yaml title="节点集群示例"
+node-test:
+  hosts:
+    10.10.10.11: { nodename: node-test-1 }
+    10.10.10.12: { nodename: node-test-2 }
+    10.10.10.13: { nodename: node-test-3 }
+  vars:
+    node_cluster: node-test
+```
+
+当您只想监控这些节点而不是在其上运行数据库时，这会很有用。
+
+--------
+
+## 借用身份 [#borrowed-identity]
+
+因为 Pigsty 在 NODE 和 PG 实例之间使用 1:1 映射（每个节点只有一个 PG 实例），
+节点的身份可以从相应的 PG 实例借用：
+
+|                      名称                       | 标签 | 级别 | 借用身份               | 注释              |
+|:-----------------------------------------------:|:-----:|:-----:|---------------------------------|----------------------|
+|     [`nodename`](/zh/node/param#nodename)     | `ins` | **I** | `{{ pg_cluster }}-{{ pg_seq }}` | **PG 实例名称** |
+| [`node_cluster`](/zh/node/param#node_cluster) | `cls` | **C** | `{{ pg_cluster }}`              | **PG 集群名称**  |
+
+这是默认行为，在监控系统中让 PG 和 NODE 具有相同的 `cls` / `ins` 身份标签很方便。
+这可以通过将 [`node_id_from_pg`](/zh/node/param#node_id_from_pg) 参数覆盖为 `false` 来禁用。
+
+如果没有定义相应的 PG 实例，也没有明确定义 [`nodename`](/zh/node/param#nodename) 和 [`node_cluster`](/zh/node/param#node_cluster)，
+节点将被标记为 `cls` 为 `nodes`，`ins` 为当前主机名。
+
+--------
+
+## SSH 连接 [#ssh-connection]
+
+`inventory_hostname` 由 [Ansible](/zh/admin/ansible) 用于通过 SSH 连接到节点。
+
+如果您的节点无法通过 `ssh <inventory_hostname>` 简单访问，可以使用 [ssh 别名](/zh/prepare/admin/#using-alias) 和更多 [ansible 连接参数](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters)（甚至不同的 IP）。
+但 `inventory_hostname` 仍然是节点的核心身份。
+
+```yaml title="ssh 参数示例"
+node-test:
+  hosts:
+    10.10.10.11: { nodename: node-test-1 , ansible_host: node-1 }
+    10.10.10.12: { nodename: node-test-2 , ansible_host: 192.168.0.1 , ansible_port: 2222 , ansible_user: root }
+  vars:
+    node_cluster: node-test
+```

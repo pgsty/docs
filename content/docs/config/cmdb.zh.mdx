@@ -1,0 +1,107 @@
+---
+title: CMDB
+description: 使用 PostgreSQL 作为配置清单
+icon: Database
+---
+
+
+Pigsty 允许您使用 **数据库（CMDB）** 作为动态配置源，而不是静态配置文件。
+您可以使用内置的 PostgreSQL 作为[配置清单](/zh/config/inventory)进行配置管理。
+
+使用 Postgres CMDB，配置被组织在结构化关系表中，可以使用 SQL 轻松查询和操作。
+这允许与其他系统和工具更容易地集成。
+
+
+
+------
+
+## 工作原理 [#how-does-it-work]
+
+Ansible 允许您使用[**动态清单**](https://docs.ansible.com/ansible/latest/inventory_guide/intro_dynamic_inventory.html)脚本来即时生成清单配置。
+
+其想法是在 [`ansible.cfg`](https://github.com/pgsty/pigsty/blob/main/ansible.cfg) 中用动态 shell 脚本 [`inventory.sh`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_cmdb#L30) 替换静态 `pigsty.yml`
+
+
+```bash title="~/pigsty/ansible.cfg"
+---
+inventory = pigsty.yml
++++
+inventory = inventory.sh
+```
+
+`inventory.sh` 的内容非常简单，它将查询 PostgreSQL CMDB 并检索配置。
+
+```bash title="~/pigsty/inventory.sh"
+psql ${METADB_URL} -AXtwc 'SELECT text FROM pigsty.inventory;'
+```
+
+<Callout title="CMDB 实用脚本" type="info">
+
+- [`bin/inventory_load`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_load)：将 YAML 配置文件加载到 CMDB 中
+- [`bin/inventory_cmdb`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_cmdb)：使用 CMDB 作为配置清单（`meta`.`pigsty`）
+- [`bin/inventory_conf`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_cmdb)：使用 YAML 文件作为配置清单（`pigsty.yml`）
+
+
+</Callout>
+
+
+------
+
+## CMDB 模式 [#cmdb-schema]
+
+CMDB 基线模式随 pigsty 一起提供：[`files/cmdb.sql`](https://github.com/pgsty/pigsty/blob/main/files/cmdb.sql)
+大多数默认配置模板都将其用作示例基线。这意味着默认情况下可以使用它。
+
+```yaml
+all:
+  children:
+    pg-meta:
+      hosts:
+        10.10.10.10: { pg_seq: 1, pg_role: primary }
+      vars:
+        pg_cluster: pg-meta
+        pg_databases:
+          - name: meta
+            baseline: cmdb.sql  # <--- 使用它作为数据库模式基线
+```
+
+
+--------
+
+## 加载配置数据 [#load-config-data]
+
+CMDB 默认为空，使用 [`bin/inventory_load`](https://github.com/pgsty/pigsty/blob/main/bin/inventory_load) 脚本将配置文件加载到 CMDB 中。
+
+不带参数运行 `bin/inventory_load` 将加载默认的 `pigsty.yml` 到默认 CMDB 中。
+
+```bash
+usage: inventory_load [-h] [-p PATH] [-d CMDB_URL]
+
+load config arguments
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PATH, --path PATH  config path, ${PIGSTY_HOME}/pigsty.yml by default
+  -d DATA, --data DATA  postgres cmdb pgurl, ${METADB_URL} by default
+```
+
+使用 `-p` 指定配置文件路径，使用 `-d` 指定 CMDB URL。
+
+```bash
+bin/inventory_load
+bin/inventory_load -p conf/demo.yml
+bin/inventory_load -p conf/prod.yml -d postgresql://dbuser_meta:DBUser.Meta@10.10.10.10:5432/meta
+```
+
+
+--------
+
+## 切换清单 [#switch-inventory]
+
+您可以通过以下方式切换到动态 CMDB 清单：
+
+```bash
+bin/inventory_cmdb
+```
+
+这实际上将 `ansible.cfg` 中的 `inventory` 参数更改为使用 `inventory.sh` 脚本。

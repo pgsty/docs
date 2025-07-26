@@ -1,0 +1,1070 @@
+---
+title: 参数
+description: 65 个参数用于定制节点
+icon: Variable
+---
+
+`NODE` 模块有 10 个部分，65 个参数。
+
+- [`NODE_ID`](#node_id)：节点身份参数
+- [`NODE_DNS`](#node_dns)：节点域名解析
+- [`NODE_PACKAGE`](#node_package)：上游仓库和安装包
+- [`NODE_TUNE`](#node_tune)：节点调优和功能
+- [`NODE_ADMIN`](#node_admin)：管理员用户和 SSH 密钥
+- [`NODE_TIME`](#node_time)：时区、NTP、Crontab
+- [`NODE_VIP`](#node_vip)：集群间可选的 L2 VIP
+- [`HAPROXY`](#haproxy)：使用 HAProxy 暴露服务
+- [`NODE_EXPORTER`](#node_exporter)：节点监控代理
+- [`PROMTAIL`](#promtail)：Promtail 日志代理
+
+------
+
+## 参数 [#parameters]
+
+| 名称                                                  | 部分                           | 类型        | 级别 | 注释                                                         |
+|-------------------------------------------------------|-----------------------------------|-------------|-------|-----------------------------------------------------------------|
+| [`nodename`](#nodename)                               | [`NODE_ID`](#node_id)             | `string`    | I     | 节点实例身份，如果缺失则使用主机名，可选       |
+| [`node_cluster`](#node_cluster)                       | [`NODE_ID`](#node_id)             | `string`    | C     | 节点集群身份，如果缺失则使用 'nodes'，可选         |
+| [`nodename_overwrite`](#nodename_overwrite)           | [`NODE_ID`](#node_id)             | `bool`      | C     | 使用 nodename 覆盖节点的主机名？                        |
+| [`nodename_exchange`](#nodename_exchange)             | [`NODE_ID`](#node_id)             | `bool`      | C     | 在 play 主机间交换节点名？                             |
+| [`node_id_from_pg`](#node_id_from_pg)                 | [`NODE_ID`](#node_id)             | `bool`      | C     | 如果适用，使用 postgres 身份作为节点身份？           |
+| [`node_write_etc_hosts`](#node_write_etc_hosts)       | [`NODE_DNS`](#node_dns)           | `bool`      | G/C/I | 修改目标节点上的 `/etc/hosts`？                             |
+| [`node_default_etc_hosts`](#node_default_etc_hosts)   | [`NODE_DNS`](#node_dns)           | `string[]`  | G     | `/etc/hosts` 中的静态 DNS 记录                              |
+| [`node_etc_hosts`](#node_etc_hosts)                   | [`NODE_DNS`](#node_dns)           | `string[]`  | C     | `/etc/hosts` 中的额外静态 DNS 记录                        |
+| [`node_dns_method`](#node_dns_method)                 | [`NODE_DNS`](#node_dns)           | `enum`      | C     | 如何处理 DNS 服务器：add、none、overwrite                   |
+| [`node_dns_servers`](#node_dns_servers)               | [`NODE_DNS`](#node_dns)           | `string[]`  | C     | `/etc/resolv.conf` 中的动态名称服务器                        |
+| [`node_dns_options`](#node_dns_options)               | [`NODE_DNS`](#node_dns)           | `string[]`  | C     | `/etc/resolv.conf` 中的 DNS 解析选项                        |
+| [`node_repo_modules`](#node_repo_modules)             | [`NODE_PACKAGE`](#node_package)   | `string`    | C     | 节点上要添加的上游仓库，默认为本地             |
+| [`node_repo_remove`](#node_repo_remove)               | [`NODE_PACKAGE`](#node_package)   | `bool`      | C     | 移除节点上现有的仓库？                                   |
+| [`node_packages`](#node_packages)                     | [`NODE_PACKAGE`](#node_package)   | `string[]`  | C     | 当前节点要安装的包                          |
+| [`node_default_packages`](#node_default_packages)     | [`NODE_PACKAGE`](#node_package)   | `string[]`  | G     | 所有节点上要安装的默认包                   |
+| [`node_disable_firewall`](#node_disable_firewall)     | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | 禁用节点防火墙？默认为 true                          |
+| [`node_disable_selinux`](#node_disable_selinux)       | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | 禁用节点 selinux？默认为 true                           |
+| [`node_disable_numa`](#node_disable_numa)             | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | 禁用节点 numa，需要重启                              |
+| [`node_disable_swap`](#node_disable_swap)             | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | 禁用节点交换分区，谨慎使用                             |
+| [`node_static_network`](#node_static_network)         | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | 重启后保留 DNS 解析器设置                     |
+| [`node_disk_prefetch`](#node_disk_prefetch)           | [`NODE_TUNE`](#node_tune)         | `bool`      | C     | 在 HDD 上设置磁盘预取以提高性能              |
+| [`node_kernel_modules`](#node_kernel_modules)         | [`NODE_TUNE`](#node_tune)         | `string[]`  | C     | 此节点上要启用的内核模块                       |
+| [`node_hugepage_count`](#node_hugepage_count)         | [`NODE_TUNE`](#node_tune)         | `int`       | C     | 2MB 大页数量，优先于比率              |
+| [`node_hugepage_ratio`](#node_hugepage_ratio)         | [`NODE_TUNE`](#node_tune)         | `float`     | C     | 节点内存大页比率，默认 0 禁用                |
+| [`node_overcommit_ratio`](#node_overcommit_ratio)     | [`NODE_TUNE`](#node_tune)         | `float`     | C     | 节点内存过量使用比率，默认 0 禁用              |
+
+| [`node_tune`](#node_tune)                             | [`NODE_TUNE`](#node_tune)         | `enum`      | C     | 节点调优配置文件：none、oltp、olap、crit、tiny                    |
+| [`node_sysctl_params`](#node_sysctl_params)           | [`NODE_TUNE`](#node_tune)         | `dict`      | C     | 除调优外的 k:v 格式 sysctl 参数                        |
+| [`node_data`](#node_data)                             | [`NODE_ADMIN`](#node_admin)       | `path`      | C     | 节点主数据目录，默认为 `/data`                    |
+| [`node_admin_enabled`](#node_admin_enabled)           | [`NODE_ADMIN`](#node_admin)       | `bool`      | C     | 在目标节点上创建管理员用户？                             |
+| [`node_admin_uid`](#node_admin_uid)                   | [`NODE_ADMIN`](#node_admin)       | `int`       | C     | 节点管理员用户的 uid 和 gid                                 |
+| [`node_admin_username`](#node_admin_username)         | [`NODE_ADMIN`](#node_admin)       | `username`  | C     | 节点管理员用户名，默认为 `dba`                       |
+| [`node_admin_ssh_exchange`](#node_admin_ssh_exchange) | [`NODE_ADMIN`](#node_admin)       | `bool`      | C     | 在节点集群间交换管理员 SSH 密钥                       |
+| [`node_admin_pk_current`](#node_admin_pk_current)     | [`NODE_ADMIN`](#node_admin)       | `bool`      | C     | 将当前用户的 SSH 公钥添加到管理员 authorized_keys              |
+| [`node_admin_pk_list`](#node_admin_pk_list)           | [`NODE_ADMIN`](#node_admin)       | `string[]`  | C     | 要添加到管理员用户的 SSH 公钥                       |
+| [`node_aliases`](#node_aliases)                       | [`NODE_ADMIN`](#node_admin)       | `dict`      | C     | 要添加的额外 shell 别名，k:v 字典                       |
+| [`node_timezone`](#node_timezone)                     | [`NODE_TIME`](#node_time)         | `string`    | C     | 设置节点时区，空字符串跳过                       |
+| [`node_ntp_enabled`](#node_ntp_enabled)               | [`NODE_TIME`](#node_time)         | `bool`      | C     | 启用 chronyd 时间同步服务？                               |
+| [`node_ntp_servers`](#node_ntp_servers)               | [`NODE_TIME`](#node_time)         | `string[]`  | C     | `/etc/chrony.conf` 中的 NTP 服务器                               |
+| [`node_crontab_overwrite`](#node_crontab_overwrite)   | [`NODE_TIME`](#node_time)         | `bool`      | C     | 覆盖还是追加到 `/etc/crontab`？                          |
+| [`node_crontab`](#node_crontab)                       | [`NODE_TIME`](#node_time)         | `string[]`  | C     | `/etc/crontab` 中的 crontab 条目                               |
+| [`vip_enabled`](#vip_enabled)                         | [`NODE_VIP`](#node_vip)           | `bool`      | C     | 在此节点集群上启用 VIP？                                |
+| [`vip_address`](#vip_address)                         | [`NODE_VIP`](#node_vip)           | `ip`        | C     | IPv4 格式的节点 VIP 地址，如果启用 VIP 则必需     |
+| [`vip_vrid`](#vip_vrid)                               | [`NODE_VIP`](#node_vip)           | `int`       | C     | 必需，整数，1-254，在同一 VLAN 中应唯一      |
+| [`vip_role`](#vip_role)                               | [`NODE_VIP`](#node_vip)           | `enum`      | I     | 可选，`master/backup`，默认为 backup，用作初始角色  |
+| [`vip_preempt`](#vip_preempt)                         | [`NODE_VIP`](#node_vip)           | `bool`      | C/I   | 可选，`true/false`，默认为 false，启用 VIP 抢占 |
+| [`vip_interface`](#vip_interface)                     | [`NODE_VIP`](#node_vip)           | `string`    | C/I   | 节点 VIP 监听的网络接口，默认为 `eth0`         |
+| [`vip_dns_suffix`](#vip_dns_suffix)                   | [`NODE_VIP`](#node_vip)           | `string`    | C     | 节点 VIP DNS 名称后缀，默认为空字符串               |
+| [`vip_exporter_port`](#vip_exporter_port)             | [`NODE_VIP`](#node_vip)           | `port`      | C     | keepalived 导出器监听端口，默认为 9650                |
+| [`haproxy_enabled`](#haproxy_enabled)                 | [`HAPROXY`](#haproxy)             | `bool`      | C     | 在此节点上启用 haproxy？                                    |
+| [`haproxy_clean`](#haproxy_clean)                     | [`HAPROXY`](#haproxy)             | `bool`      | G/C/A | 清理所有现有的 haproxy 配置？                            |
+| [`haproxy_reload`](#haproxy_reload)                   | [`HAPROXY`](#haproxy)             | `bool`      | A     | 配置后重新加载 haproxy？                                    |
+| [`haproxy_auth_enabled`](#haproxy_auth_enabled)       | [`HAPROXY`](#haproxy)             | `bool`      | G     | 为 haproxy 管理页面启用身份验证                    |
+| [`haproxy_admin_username`](#haproxy_admin_username)   | [`HAPROXY`](#haproxy)             | `username`  | G     | haproxy 管理员用户名，默认为 `admin`                      |
+| [`haproxy_admin_password`](#haproxy_admin_password)   | [`HAPROXY`](#haproxy)             | `password`  | G     | haproxy 管理员密码，默认为 `pigsty`                     |
+| [`haproxy_exporter_port`](#haproxy_exporter_port)     | [`HAPROXY`](#haproxy)             | `port`      | C     | haproxy 管理/导出器端口，默认为 9101                    |
+| [`haproxy_client_timeout`](#haproxy_client_timeout)   | [`HAPROXY`](#haproxy)             | `interval`  | C     | 客户端连接超时，默认为 24h                  |
+| [`haproxy_server_timeout`](#haproxy_server_timeout)   | [`HAPROXY`](#haproxy)             | `interval`  | C     | 服务器端连接超时，默认为 24h                  |
+| [`haproxy_services`](#haproxy_services)               | [`HAPROXY`](#haproxy)             | `service[]` | C     | 要在节点上公开的 haproxy 服务列表                   |
+| [`node_exporter_enabled`](#node_exporter_enabled)     | [`NODE_EXPORTER`](#node_exporter) | `bool`      | C     | 在此节点上设置 node_exporter？                               |
+| [`node_exporter_port`](#node_exporter_port)           | [`NODE_EXPORTER`](#node_exporter) | `port`      | C     | node exporter 监听端口，默认为 9100                      |
+| [`node_exporter_options`](#node_exporter_options)     | [`NODE_EXPORTER`](#node_exporter) | `arg`       | C     | node_exporter 的额外服务器选项                          |
+| [`promtail_enabled`](#promtail_enabled)               | [`PROMTAIL`](#promtail)           | `bool`      | C     | 启用 promtail 日志收集器？                              |
+| [`promtail_clean`](#promtail_clean)                   | [`PROMTAIL`](#promtail)           | `bool`      | G/A   | 初始化期间清除现有的 promtail 状态文件？                |
+| [`promtail_port`](#promtail_port)                     | [`PROMTAIL`](#promtail)           | `port`      | C     | promtail 监听端口，默认为 9080                           |
+| [`promtail_positions`](#promtail_positions)           | [`PROMTAIL`](#promtail)           | `path`      | C     | promtail 位置状态文件路径                              |
+
+------
+
+# `NODE` [#node]
+
+Node 模块将目标节点调优到所需状态，并将它们集成到 Pigsty 监控系统中。
+
+------
+
+## `NODE_ID` [#node_id]
+
+每个节点都有**身份参数**，这些参数通过 `<cluster>.hosts` 和 `<cluster>.vars` 中的参数配置。详情请查看 [NODE Identity](/zh/node/config#identity-parameters)。
+
+------
+
+### `nodename` [#nodename]
+
+名称：`nodename`，类型：`string`，级别：`I`
+
+节点实例身份，如果缺失则使用主机名，可选
+
+无默认值，Null 或空字符串表示 `nodename` 将设置为节点的当前主机名。
+
+如果 [`node_id_from_pg`](#node_id_from_pg) 为 `true`（默认）且 `nodename` 未明确定义，[`nodename`](#nodename) 将首先尝试使用 `${pg_cluster}-${pg_seq}`，如果此节点上未定义 PGSQL，则回退到默认的 `HOSTNAME`。
+
+如果 [`nodename_overwrite`](#nodename_overwrite) 为 `true`，节点名称也将用作 HOSTNAME。
+
+------
+
+### `node_cluster` [#node_cluster]
+
+名称：`node_cluster`，类型：`string`，级别：`C`
+
+节点集群身份，如果缺失则使用 'nodes'，可选
+
+默认值：`nodes`
+
+如果 [`node_id_from_pg`](#node_id_from_pg) 为 `true`（默认）且 `node_cluster` 未明确定义，[`node_cluster`](#node_cluster) 将首先尝试使用 `${pg_cluster}`，如果此节点上未定义 PGSQL，则回退到默认的 `HOSTNAME`。
+
+------
+
+### `nodename_overwrite` [#nodename_overwrite]
+
+名称：`nodename_overwrite`，类型：`bool`，级别：`C`
+
+使用 nodename 覆盖节点的主机名？
+
+默认值为 `true`，非空节点名 [`nodename`](#nodename) 将覆盖当前节点的主机名。
+
+当 [`nodename`](#nodename) 参数未定义或为空字符串，但 [`node_id_from_pg`](#node_id_from_pg) 为 `true` 时，节点名称将尝试使用 `{{ pg_cluster }}-{{ pg_seq }}`，借用 1:1 PostgreSQL 实例的实例名身份。
+
+如果 `nodename` 未定义、为空或空字符串且 `node_id_from_pg` 为 `false`，则不对主机名进行任何更改。
+
+------
+
+### `nodename_exchange` [#nodename_exchange]
+
+名称：`nodename_exchange`，类型：`bool`，级别：`C`
+
+在 play 主机间交换节点名？
+
+默认值为 `false`
+
+启用此参数时，在执行 [`node.yml`](/zh/node/playbook/#nodeyml) playbook 的同一组节点之间交换节点名称，写入 `/etc/hosts`。
+
+------
+
+### `node_id_from_pg` [#node_id_from_pg]
+
+名称：`node_id_from_pg`，类型：`bool`，级别：`C`
+
+如果适用，使用 postgres 身份作为节点身份？
+
+默认值为 `true`
+
+如果适用，借用 PostgreSQL 集群和实例身份。
+
+如果 postgres 和节点之间存在 1:1 关系，使用相同的身份很有用。
+
+------
+
+## `NODE_DNS` [#node_dns]
+
+Pigsty 为节点配置静态 DNS 记录和动态 DNS 解析器。
+
+如果您已经有 DNS 服务器，请将 [`node_dns_method`](#node_dns_method) 设置为 `none` 以禁用动态 DNS 设置。
+
+```yaml
+node_write_etc_hosts: true        # 修改目标节点上的 `/etc/hosts`？
+node_default_etc_hosts:           # `/etc/hosts` 中的静态 DNS 记录
+  - "${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"
+node_etc_hosts: []                # `/etc/hosts` 中的额外静态 DNS 记录
+node_dns_method: add              # 如何处理 DNS 服务器：add、none、overwrite
+node_dns_servers: ['${admin_ip}'] # `/etc/resolv.conf` 中的动态名称服务器
+node_dns_options:                 # `/etc/resolv.conf` 中的 DNS 解析选项
+  - options single-request-reopen timeout:1
+```
+
+------
+
+### `node_write_etc_hosts` [#node_write_etc_hosts]
+
+名称：`node_write_etc_hosts`，类型：`bool`，级别：`G|C|I`
+
+修改目标节点上的 `/etc/hosts`？
+
+例如，docker VM 默认无法修改 `/etc/hosts`，因此您可以将此值设置为 `false` 以禁用修改。
+
+------
+
+### `node_default_etc_hosts` [#node_default_etc_hosts]
+
+名称：`node_default_etc_hosts`，类型：`string[]`，级别：`G`
+
+`/etc/hosts` 中的静态 DNS 记录
+
+默认值：
+
+```yaml
+["${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"]
+```
+
+[`node_default_etc_hosts`](#node_default_etc_hosts) 是一个数组。每个元素都是格式为 `<ip> <name>` 的 DNS 记录。
+
+它用于全局静态 DNS 记录。您可以为每个集群使用 [`node_etc_hosts`](#node_etc_hosts) 来设置临时记录。
+
+确保在 DNS 名称服务器启动之前，将类似 `10.10.10.10 h.pigsty a.pigsty p.pigsty g.pigsty` 的 DNS 记录写入 `/etc/hosts`，以确保可以使用域名访问本地 yum 仓库。
+
+------
+
+### `node_etc_hosts` [#node_etc_hosts]
+
+名称：`node_etc_hosts`，类型：`string[]`，级别：`C`
+
+`/etc/hosts` 中的额外静态 DNS 记录
+
+默认值：`[]`
+
+与 [`node_default_etc_hosts`](#node_default_etc_hosts) 相同，但是额外添加的。
+
+------
+
+### `node_dns_method` [#node_dns_method]
+
+名称：`node_dns_method`，类型：`enum`，级别：`C`
+
+如何处理 DNS 服务器：add、none、overwrite
+
+默认值：`add`
+
+- `add`：将 [`node_dns_servers`](#node_dns_servers) 中的记录追加到 `/etc/resolv.conf` 并保留现有的 DNS 服务器。（默认）
+- `overwrite`：用 [`node_dns_servers`](#node_dns_servers) 中的记录覆盖 `/etc/resolv.conf`
+- `none`：如果在生产环境中提供了 DNS 服务器，可以跳过 DNS 服务器配置。
+
+------
+
+### `node_dns_servers` [#node_dns_servers]
+
+名称：`node_dns_servers`，类型：`string[]`，级别：`C`
+
+`/etc/resolv.conf` 中的动态名称服务器
+
+默认值：`["${admin_ip}"]`，管理节点上的默认名称服务器将作为第一个名称服务器添加到 `/etc/resolv.conf`。
+
+------
+
+### `node_dns_options` [#node_dns_options]
+
+名称：`node_dns_options`，类型：`string[]`，级别：`C`
+
+`/etc/resolv.conf` 中的 DNS 解析选项，默认值：
+
+```yaml
+- options single-request-reopen timeout:1
+```
+
+------
+
+## `NODE_PACKAGE` [#node_package]
+
+本节讨论要安装的上游 yum 仓库和软件包。
+
+```yaml
+node_repo_modules: local          # 要在节点上添加的上游仓库，默认为本地
+node_repo_remove: true            # 移除节点上现有的仓库？
+node_packages: [openssh-server]   # 要安装最新版本的当前节点软件包
+#node_default_packages: []        # 要在基础设施节点上安装的默认软件包，（默认值从 node_id/vars 加载）
+```
+
+------
+
+### `node_repo_modules` [#node_repo_modules]
+
+名称：`node_repo_modules`，类型：`string`，级别：`C/A`
+
+要在节点上添加的上游仓库，默认值：`local`
+
+此参数指定要添加到节点的上游仓库。它用于过滤 [`repo_upstream`](#repo_upstream) 条目，只有具有相同 `module` 值的条目才会添加到节点的软件源。这类似于 [`repo_modules`](#repo_modules) 参数。
+
+------
+
+### `node_repo_remove` [#node_repo_remove]
+
+名称：`node_repo_remove`，类型：`bool`，级别：`C/A`
+
+移除节点上现有的仓库？
+
+默认值为 `true`，因此 Pigsty 将在添加上游仓库之前将 `/etc/yum.repos.d` 中的现有仓库文件移动到备份目录：`/etc/yum.repos.d/backup`。在 Debian/Ubuntu 上，Pigsty 将备份并移动 `/etc/apt/sources.list(.d)` 到 `/etc/apt/backup`。
+
+------
+
+### `node_packages` [#node_packages]
+
+名称：`node_packages`，类型：`string[]`，级别：`C`
+
+要在当前节点上安装的软件包，默认值：`[openssh-server]`。
+
+每个元素都是逗号分隔的软件包名称列表，除了 [`node_default_packages`](#node_default_packages) 之外，还将在当前节点上安装。
+
+此参数中指定的软件包将**升级**到最新版本，默认值为 `[openssh-server]`，默认升级 `sshd` 以避免 SSH CVE。
+
+此参数通常用于安装对当前节点/集群而言是临时的额外软件包。
+
+------
+
+### `node_default_packages` [#node_default_packages]
+
+名称：`node_default_packages`，类型：`string[]`，级别：`G`
+
+要在所有节点上安装的默认软件包，未定义默认值。
+
+此参数是字符串数组，每个字符串都是逗号分隔的软件包名称列表，默认情况下将在所有节点上安装。
+
+此参数**没有**默认值，您可以明确指定它，或者如果要使用默认值则将其留空。
+
+当将其留空时，Pigsty 将根据您的操作系统使用 [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的 `node_packages_default` 的默认值。
+
+对于 EL 系统，默认值为：
+
+```yaml
+- lz4,unzip,bzip2,pv,jq,git,ncdu,make,patch,bash,lsof,wget,uuid,tuned,nvme-cli,numactl,sysstat,iotop,htop,rsync,tcpdump
+- python3,python3-pip,socat,lrzsz,net-tools,ipvsadm,telnet,ca-certificates,openssl,keepalived,etcd,haproxy,chrony
+- zlib,yum,audit,bind-utils,readline,vim-minimal,node_exporter,grubby,openssh-server,openssh-clients
+```
+
+对于 debian / ubuntu 节点，明确使用此默认值：
+
+```yaml
+- lz4,unzip,bzip2,pv,jq,git,ncdu,make,patch,bash,lsof,wget,uuid,tuned,nvme-cli,numactl,sysstat,iotop,htop,rsync,tcpdump
+- python3,python3-pip,socat,lrzsz,net-tools,ipvsadm,telnet,ca-certificates,openssl,keepalived,etcd,haproxy,chrony
+- zlib1g,acl,dnsutils,libreadline-dev,vim-tiny,node-exporter,openssh-server,openssh-client
+```
+
+------
+
+## `NODE_TUNE` [#node_tune]
+
+在节点上配置调优模板、功能、内核模块、sysctl 参数。
+
+```yaml
+node_disable_firewall: true       # 禁用节点防火墙？默认为 true
+node_disable_selinux: true        # 禁用节点 selinux？默认为 true
+node_disable_numa: false          # 禁用节点 numa，需要重启
+node_disable_swap: false          # 禁用节点交换分区，谨慎使用
+node_static_network: true         # 重启后保留 DNS 解析器设置
+node_disk_prefetch: false         # 在 HDD 上设置磁盘预取以提高性能
+node_kernel_modules: [ softdog, br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+node_hugepage_count: 0            # 2MB 大页数量，优先于比率
+node_hugepage_ratio: 0            # 节点内存大页比率，0 禁用它（默认）
+node_overcommit_ratio: 0          # 节点内存过量使用比率，0 禁用它（默认）
+node_tune: oltp                   # 节点调优配置文件：none、oltp、olap、crit、tiny
+node_sysctl_params: { }           # 除调优外的 k:v 格式 sysctl 参数
+```
+
+------
+
+### `node_disable_firewall` [#node_disable_firewall]
+
+名称：`node_disable_firewall`，类型：`bool`，级别：`C`
+
+禁用节点防火墙？默认为 true
+
+默认值为 `true`
+
+------
+
+### `node_disable_selinux` [#node_disable_selinux]
+
+名称：`node_disable_selinux`，类型：`bool`，级别：`C`
+
+禁用节点 selinux？默认为 true
+
+默认值为 `true`
+
+------
+
+### `node_disable_numa` [#node_disable_numa]
+
+名称：`node_disable_numa`，类型：`bool`，级别：`C`
+
+禁用节点 numa，需要重启
+
+默认值为 `false`
+
+布尔标志，默认不关闭。请注意，关闭 NUMA 需要重启机器才能生效！
+
+如果您不知道如何设置 CPU 亲和性，建议关闭 NUMA。
+
+------
+
+### `node_disable_swap` [#node_disable_swap]
+
+名称：`node_disable_swap`，类型：`bool`，级别：`C`
+
+禁用节点交换分区，谨慎使用
+
+默认值为 `false`
+
+不建议关闭 SWAP。但是，当您的节点用于 Kubernetes 部署时，应该禁用 SWAP。
+
+如果有足够的内存并且数据库独占部署，可能会略微提高性能。
+
+------
+
+### `node_static_network` [#node_static_network]
+
+名称：`node_static_network`，类型：`bool`，级别：`C`
+
+重启后保留 DNS 解析器设置，默认值为 `true`
+
+启用静态网络意味着机器重启不会因 NIC 更改而覆盖您的 DNS Resolv 配置。建议在生产环境中启用。
+
+------
+
+### `node_disk_prefetch` [#node_disk_prefetch]
+
+名称：`node_disk_prefetch`，类型：`bool`，级别：`C`
+
+在 HDD 上设置磁盘预取以提高性能
+
+默认值为 `false`，使用 HDD 时考虑启用此功能。
+
+------
+
+### `node_kernel_modules` [#node_kernel_modules]
+
+名称：`node_kernel_modules`，类型：`string[]`，级别：`C`
+
+要在此节点上启用的内核模块
+
+默认值：
+
+```yaml
+node_kernel_modules: [ softdog, br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+```
+
+由内核模块名称组成的数组，声明需要在节点上安装的内核模块。
+
+------
+
+### `node_hugepage_count` [#node_hugepage_count]
+
+名称：`node_hugepage_count`，类型：`int`，级别：`C`
+
+2MB 大页数量，优先于比率，默认为 0
+
+优先于 [`node_hugepage_ratio`](#node_hugepage_ratio)。如果给出非零值，将写入 `/etc/sysctl.d/hugepage.conf`
+
+如果 `node_hugepage_count` 和 `node_hugepage_ratio` 都为 `0`（默认），大页将完全禁用。
+
+负值不起作用，高于节点内存 90% 的数字将上限到节点内存的 90%。
+
+如果不为零，它应该略大于 [`pg_shared_buffer_ratio`](/zh/pgsql/param#pg_shared_buffer_ratio)。
+
+------
+
+### `node_hugepage_ratio` [#node_hugepage_ratio]
+
+名称：`node_hugepage_ratio`，类型：`float`，级别：`C`
+
+节点内存大页比率，0 禁用它（默认），有效范围：0 ~ 0.40
+
+默认值：`0`，将设置 `vm.nr_hugepages=0` 并且根本不使用 HugePage。
+
+此内存的百分比将分配为 HugePage，并为 PostgreSQL 保留。
+
+如果不为零，它应该等于或略大于 [`pg_shared_buffer_ratio`](/zh/pgsql/param#pg_shared_buffer_ratio)。
+
+例如，如果您为 postgres 共享缓冲区使用默认的 25% 内存，您可以将此值设置为 0.27 ~ 0.30，浪费的大页可以稍后使用 `/pg/bin/pg-tune-hugepage` 回收。
+
+------
+
+### `node_overcommit_ratio` [#node_overcommit_ratio]
+
+名称：`node_overcommit_ratio`，类型：`int`，级别：`C`
+
+节点内存过量使用比率，0 禁用它（默认）。这是一个从 0 到 100+ 的整数。
+
+默认值：`0`，将设置 `vm.overcommit_memory=0`，否则将使用 `vm.overcommit_memory=2`，此值将用作 `vm.overcommit_ratio`。
+
+建议在专用 pgsql 节点上设置使用 `vm.overcommit_ratio`。例如 50 ~ 100。
+
+------
+
+### `node_tune` [#node_tune]
+
+名称：`node_tune`，类型：`enum`，级别：`C`
+
+节点调优配置文件：none、oltp、olap、crit、tiny
+
+默认值：`oltp`
+
+- `tiny`：微型虚拟机（1 ~ 3 核，1 ~ 8 GB 内存）
+- `oltp`：优化延迟的常规 OLTP 模板
+- `olap`：优化吞吐量的常规 OLAP 模板
+- `crit`：核心金融业务模板，优化脏页数量
+
+通常，数据库调优模板 [`pg_conf`](/zh/pgsql/param#pg_conf) 应该与节点调优模板配对：[`node_tune`](#node_tune)
+
+------
+
+### `node_sysctl_params` [#node_sysctl_params]
+
+名称：`node_sysctl_params`，类型：`dict`，级别：`C`
+
+除调优外的 k:v 格式 sysctl 参数
+
+默认值：`{}`
+
+字典 K-V 结构，Key 是内核 `sysctl` 参数名称，Value 是参数值。
+
+您也可以使用调优配置文件定义 sysctl 参数。
+
+------
+
+## `NODE_ADMIN` [#node_admin]
+
+本节讨论管理员用户及其凭据。
+
+```yaml
+node_data: /data                  # 节点主数据目录，默认为 `/data`
+node_admin_enabled: true          # 在目标节点上创建管理员用户？
+node_admin_uid: 88                # 节点管理员用户的 uid 和 gid
+node_admin_username: dba          # 节点管理员用户名，默认为 `dba`
+node_admin_ssh_exchange: true     # 在节点集群间交换管理员 SSH 密钥
+node_admin_pk_current: true       # 将当前用户的 SSH 公钥添加到管理员 authorized_keys
+node_admin_pk_list: []            # 要添加到管理员用户的 SSH 公钥
+```
+
+------
+
+### `node_data` [#node_data]
+
+名称：`node_data`，类型：`path`，级别：`C`
+
+节点主数据目录，默认为 `/data`
+
+默认值：`/data`
+
+如果指定，此路径将用作主数据磁盘挂载点。如果路径不存在，将创建目录并抛出警告。
+
+数据目录由 root 拥有，模式为 `0777`。
+
+------
+
+### `node_admin_enabled` [#node_admin_enabled]
+
+名称：`node_admin_enabled`，类型：`bool`，级别：`C`
+
+在目标节点上创建管理员用户？
+
+默认值为 `true`
+
+在每个节点上创建管理员用户（免密 sudo 和 ssh），默认创建名为 `dba (uid=88)` 的管理员用户，可以从元节点通过 SSH 免密访问环境中的其他节点并执行 sudo。
+
+------
+
+### `node_admin_uid` [#node_admin_uid]
+
+名称：`node_admin_uid`，类型：`int`，级别：`C`
+
+节点管理员用户的 uid 和 gid
+
+默认值：`88`
+
+------
+
+### `node_admin_username` [#node_admin_username]
+
+名称：`node_admin_username`，类型：`username`，级别：`C`
+
+节点管理员用户名，默认为 `dba`
+
+默认值：`dba`
+
+------
+
+### `node_admin_ssh_exchange` [#node_admin_ssh_exchange]
+
+名称：`node_admin_ssh_exchange`，类型：`bool`，级别：`C`
+
+在节点集群间交换管理员 SSH 密钥
+
+默认值为 `true`
+
+启用时，Pigsty 将在 playbook 执行期间在成员之间交换 SSH 公钥，允许管理员 [`node_admin_username`](#node_admin_username) 从不同节点相互访问。
+
+------
+
+### `node_admin_pk_current` [#node_admin_pk_current]
+
+名称：`node_admin_pk_current`，类型：`bool`，级别：`C`
+
+将当前用户的 SSH 公钥添加到管理员 authorized_keys
+
+默认值为 `true`
+
+启用时，在当前节点上，当前用户的 SSH 公钥（`~/.ssh/id_rsa.pub`）被复制到目标节点管理员用户的 `authorized_keys`。
+
+在生产环境中部署时，请务必注意此参数，它将当前执行命令的用户的默认公钥安装到所有机器的管理员用户。
+
+------
+
+### `node_admin_pk_list` [#node_admin_pk_list]
+
+名称：`node_admin_pk_list`，类型：`string[]`，级别：`C`
+
+要添加到管理员用户的 SSH 公钥
+
+默认值：`[]`
+
+数组的每个元素都是一个字符串，包含写入管理员用户 `~/.ssh/authorized_keys` 的密钥，具有相应私钥的用户可以作为管理员用户登录。
+
+在生产环境中部署时，请务必注意此参数，并且只将受信任的密钥添加到此列表。
+
+------
+
+### `node_aliases` [#node_aliases]
+
+名称：`node_aliases`，类型：`dict`，级别：`C/I`
+
+要添加到管理员用户 shell 配置文件的额外别名
+
+默认值：`{}`
+
+您可以向其添加额外的 shell 别名，pigsty 将这些别名添加到目标节点上的 `/etc/profile.d/node.alias.sh` 文件：
+
+```yaml
+node_aliases:
+  g:   git
+  d:   docker
+```
+
+这将生成：
+
+```bash
+alias g="git"
+alias d="docker"
+```
+
+------
+
+## `NODE_TIME` [#node_time]
+
+```yaml
+node_timezone: ''                 # 设置节点时区，空字符串跳过
+node_ntp_enabled: true            # 启用 chronyd 时间同步服务？
+node_ntp_servers:                 # `/etc/chrony.conf` 中的 NTP 服务器
+  - pool pool.ntp.org iburst
+node_crontab_overwrite: true      # 覆盖还是追加到 `/etc/crontab`？
+node_crontab: [ ]                 # `/etc/crontab` 中的 crontab 条目
+```
+
+------
+
+### `node_timezone` [#node_timezone]
+
+名称：`node_timezone`，类型：`string`，级别：`C`
+
+设置节点时区，空字符串跳过
+
+默认值为空字符串，不会更改默认时区（通常为 UTC）
+
+------
+
+### `node_ntp_enabled` [#node_ntp_enabled]
+
+名称：`node_ntp_enabled`，类型：`bool`，级别：`C`
+
+启用 chronyd 时间同步服务？
+
+默认值为 `true`，因此 Pigsty 将使用 [`node_ntp_servers`](#node_ntp_servers) 覆盖节点的 `/etc/chrony.conf`。
+
+如果您已经配置了 NTP 服务器，只需设置为 `false` 即可保持不变。
+
+------
+
+### `node_ntp_servers` [#node_ntp_servers]
+
+名称：`node_ntp_servers`，类型：`string[]`，级别：`C`
+
+`/etc/chrony.conf` 中的 NTP 服务器，默认值：`["pool pool.ntp.org iburst"]`
+
+只有当 [`node_ntp_enabled`](#node_ntp_enabled) 为 true 时才生效。
+
+您可以使用 `${admin_ip}` 与管理节点上的 NTP 服务器同步时间，而不是公共 NTP 服务器。
+
+```yaml
+node_ntp_servers: [ 'pool ${admin_ip} iburst' ]
+```
+
+------
+
+### `node_crontab_overwrite` [#node_crontab_overwrite]
+
+名称：`node_crontab_overwrite`，类型：`bool`，级别：`C`
+
+覆盖还是追加到 `/etc/crontab`？
+
+默认值为 `true`，pigsty 将以覆盖模式渲染 [`node_crontab`](#node_crontab) 中的记录，而不是追加到其中。
+
+------
+
+### `node_crontab` [#node_crontab]
+
+名称：`node_crontab`，类型：`string[]`，级别：`C`
+
+`/etc/crontab` 中的 crontab 条目
+
+默认值：`[]`
+
+------
+
+## `NODE_VIP` [#node_vip]
+
+您可以在一个节点集群之间绑定可选的 L2 VIP，默认情况下是禁用的。
+
+L2 VIP 只能在同一 L2 LAN 中使用，这可能会对您的网络拓扑产生额外限制。
+
+如果启用，您必须为每个节点集群手动分配 [`vip_address`](#vip_address) 和 [`vip_vrid`](#vip_vrid)。
+
+用户有责任确保地址 / vrid 在同一 LAN 中是**唯一的**。
+
+```yaml
+vip_enabled: false                # 在此节点集群上启用 VIP？
+# vip_address:         [IDENTITY] # IPv4 格式的节点 VIP 地址，如果启用 VIP 则必需
+# vip_vrid:            [IDENTITY] # 必需，整数，1-254，在同一 VLAN 中应唯一
+vip_role: backup                  # 可选，`master/backup`，默认为 backup，用作初始角色
+vip_preempt: false                # 可选，`true/false`，默认为 false，启用 VIP 抢占
+vip_interface: eth0               # 节点 VIP 监听的网络接口，默认为 `eth0`
+vip_dns_suffix: ''                # 节点 VIP DNS 名称后缀，默认为空字符串
+vip_exporter_port: 9650           # keepalived 导出器监听端口，默认为 9650
+```
+
+------
+
+### `vip_enabled` [#vip_enabled]
+
+名称：`vip_enabled`，类型：`bool`，级别：`C`
+
+在此节点集群上启用 VIP？默认值为 `false`，表示不为此节点集群创建 L2 VIP。
+
+L2 VIP 只能在同一 L2 LAN 中使用，这可能会对您的网络拓扑产生额外限制。
+
+------
+
+### `vip_address` [#vip_address]
+
+名称：`vip_address`，类型：`ip`，级别：`C`
+
+IPv4 格式的节点 VIP 地址，如果节点 [`vip_enabled`](#vip_enabled) 则**必需**。
+
+无默认值。此参数必须明确分配并在您的 LAN 中唯一。
+
+------
+
+### `vip_vrid` [#vip_vrid]
+
+名称：`vip_vrid`，类型：`int`，级别：`C`
+
+整数，1-254，在同一 VLAN 中应唯一，如果节点 [`vip_enabled`](#vip_enabled) 则**必需**。
+
+无默认值。此参数必须明确分配并在您的 LAN 中唯一。
+
+------
+
+### `vip_role` [#vip_role]
+
+名称：`vip_role`，类型：`enum`，级别：`I`
+
+节点 VIP 角色，可以是 `master` 或 `backup`，将用作初始 keepalived 状态。
+
+------
+
+### `vip_preempt` [#vip_preempt]
+
+名称：`vip_preempt`，类型：`bool`，级别：`C/I`
+
+可选，`true/false`，默认为 false，启用 VIP 抢占
+
+默认值为 `false`，表示当备份具有比活跃主服务器更高的优先级时不会发生抢占。
+
+------
+
+### `vip_interface` [#vip_interface]
+
+名称：`vip_interface`，类型：`string`，级别：`C/I`
+
+节点 VIP 监听的网络接口，默认为 `eth0`。
+
+它应该是节点的相同主要内网接口，即您在清单文件中使用的 IP 地址。
+
+如果您的节点有不同的接口，您可以在实例变量上覆盖它。
+
+------
+
+### `vip_dns_suffix` [#vip_dns_suffix]
+
+名称：`vip_dns_suffix`，类型：`string`，级别：`C/I`
+
+节点 VIP DNS 名称后缀，默认为空字符串。它将用作节点 VIP 的 DNS 名称。
+
+------
+
+### `vip_exporter_port` [#vip_exporter_port]
+
+名称：`vip_exporter_port`，类型：`port`，级别：`C/I`
+
+keepalived 导出器监听端口，默认为 9650。
+
+------
+
+## `HAPROXY` [#haproxy]
+
+默认情况下，HAProxy 安装在每个节点上，以 NodePort 方式公开服务。
+
+它由 [`PGSQL`](/zh/pgsql/) [Service](/zh/pgsql/service) 使用。
+
+```yaml
+haproxy_enabled: true             # 在此节点上启用 haproxy？
+haproxy_clean: false              # 清理所有现有的 haproxy 配置？
+haproxy_reload: true              # 配置后重新加载 haproxy？
+haproxy_auth_enabled: true        # 为 haproxy 管理页面启用身份验证
+haproxy_admin_username: admin     # haproxy 管理员用户名，默认为 `admin`
+haproxy_admin_password: pigsty    # haproxy 管理员密码，默认为 `pigsty`
+haproxy_exporter_port: 9101       # haproxy 管理/导出器端口，默认为 9101
+haproxy_client_timeout: 24h       # 客户端连接超时，默认为 24h
+haproxy_server_timeout: 24h       # 服务器端连接超时，默认为 24h
+haproxy_services: []              # 要在节点上公开的 haproxy 服务列表
+```
+
+------
+
+### `haproxy_enabled` [#haproxy_enabled]
+
+名称：`haproxy_enabled`，类型：`bool`，级别：`C`
+
+在此节点上启用 haproxy？
+
+默认值为 `true`
+
+------
+
+### `haproxy_clean` [#haproxy_clean]
+
+名称：`haproxy_clean`，类型：`bool`，级别：`G/C/A`
+
+清理所有现有的 haproxy 配置？
+
+默认值为 `false`
+
+------
+
+### `haproxy_reload` [#haproxy_reload]
+
+名称：`haproxy_reload`，类型：`bool`，级别：`A`
+
+配置后重新加载 haproxy？
+
+默认值为 `true`，它将在配置更改后重新加载 haproxy。
+
+如果您希望在应用之前检查，您可以使用 cli 参数关闭此功能并检查它。
+
+------
+
+### `haproxy_auth_enabled` [#haproxy_auth_enabled]
+
+名称：`haproxy_auth_enabled`，类型：`bool`，级别：`G`
+
+为 haproxy 管理页面启用身份验证
+
+默认值为 `true`，这将需要管理页面的 http 基本身份验证。
+
+不建议禁用它，因为您的流量控制将被暴露。
+
+------
+
+### `haproxy_admin_username` [#haproxy_admin_username]
+
+名称：`haproxy_admin_username`，类型：`username`，级别：`G`
+
+haproxy 管理员用户名，默认为 `admin`
+
+------
+
+### `haproxy_admin_password` [#haproxy_admin_password]
+
+名称：`haproxy_admin_password`，类型：`password`，级别：`G`
+
+haproxy 管理员密码，默认为 `pigsty`
+
+> 请在您的生产环境中更改它！
+
+------
+
+### `haproxy_exporter_port` [#haproxy_exporter_port]
+
+名称：`haproxy_exporter_port`，类型：`port`，级别：`C`
+
+haproxy 管理/导出器端口，默认为 `9101`
+
+------
+
+### `haproxy_client_timeout` [#haproxy_client_timeout]
+
+名称：`haproxy_client_timeout`，类型：`interval`，级别：`C`
+
+客户端连接超时，默认为 `24h`
+
+------
+
+### `haproxy_server_timeout` [#haproxy_server_timeout]
+
+名称：`haproxy_server_timeout`，类型：`interval`，级别：`C`
+
+服务器端连接超时，默认为 `24h`
+
+------
+
+### `haproxy_services` [#haproxy_services]
+
+名称：`haproxy_services`，类型：`service[]`，级别：`C`
+
+要在节点上公开的 haproxy 服务列表，默认值：`[]`
+
+每个元素都是一个服务定义，这是一个临时 haproxy 服务示例：
+
+```yaml
+haproxy_services:                   # haproxy 服务列表
+
+  # 公开 pg-test 只读副本
+  - name: pg-test-ro                # [必需] 服务名称，唯一
+    port: 5440                      # [必需] 服务端口，唯一
+    ip: "*"                         # [可选] 服务监听地址，默认为 "*"
+    protocol: tcp                   # [可选] 服务协议，默认为 'tcp'
+    balance: leastconn              # [可选] 负载均衡算法，默认为 roundrobin（或 leastconn）
+    maxconn: 20000                  # [可选] 最大允许前端连接，默认为 20000
+    default: 'inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100'
+    options:
+      - option httpchk
+      - option http-keep-alive
+      - http-check send meth OPTIONS uri /read-only
+      - http-check expect status 200
+    servers:
+      - { name: pg-test-1 ,ip: 10.10.10.11 , port: 5432 , options: check port 8008 , backup: true }
+      - { name: pg-test-2 ,ip: 10.10.10.12 , port: 5432 , options: check port 8008 }
+      - { name: pg-test-3 ,ip: 10.10.10.13 , port: 5432 , options: check port 8008 }
+```
+
+它将渲染到 `/etc/haproxy/<service.name>.cfg` 并在重新加载后生效。
+
+------
+
+## `NODE_EXPORTER` [#node_exporter]
+
+```yaml
+node_exporter_enabled: true       # 在此节点上设置 node_exporter？
+node_exporter_port: 9100          # node exporter 监听端口，默认为 9100
+node_exporter_options: '--no-collector.softnet --no-collector.nvme --collector.tcpstat --collector.processes'
+```
+
+------
+
+### `node_exporter_enabled` [#node_exporter_enabled]
+
+名称：`node_exporter_enabled`，类型：`bool`，级别：`C`
+
+在此节点上设置 node_exporter？默认值为 `true`
+
+------
+
+### `node_exporter_port` [#node_exporter_port]
+
+名称：`node_exporter_port`，类型：`port`，级别：`C`
+
+node exporter 监听端口，默认为 `9100`
+
+------
+
+### `node_exporter_options` [#node_exporter_options]
+
+名称：`node_exporter_options`，类型：`arg`，级别：`C`
+
+node_exporter 的额外服务器选项，默认值：`--no-collector.softnet --no-collector.nvme --collector.tcpstat --collector.processes`
+
+默认情况下，Pigsty 启用 `tcpstat`、`processes` 收集器并禁用 `nvme`、`softnet` 指标收集器。
+
+------
+
+## `PROMTAIL` [#promtail]
+
+Promtail 将从其他模块收集日志，并将它们发送到 [`LOKI`](#loki)
+
+- `INFRA`：基础设施日志，仅在基础设施节点上收集。
+  - `nginx-access`：`/var/log/nginx/access.log`
+  - `nginx-error`：`/var/log/nginx/error.log`
+  - `grafana`：`/var/log/grafana/grafana.log`
+- `NODES`：主机节点日志，在所有节点上收集。
+  - `syslog`：`/var/log/messages`
+  - `dmesg`：`/var/log/dmesg`
+  - `cron`：`/var/log/cron`
+- `PGSQL`：PostgreSQL 日志，当节点使用 `pg_cluster` 定义时收集。
+  - `postgres`：`/pg/log/postgres/*`
+  - `patroni`：`/pg/log/patroni.log`
+  - `pgbouncer`：`/pg/log/pgbouncer/pgbouncer.log`
+  - `pgbackrest`：`/pg/log/pgbackrest/*.log`
+- `REDIS`：Redis 日志，当节点使用 `redis_cluster` 定义时收集。
+  - `redis`：`/var/log/redis/*.log`
+
+> 日志目录可根据 [`pg_log_dir`](/zh/pgsql/param#pg_log_dir)、[`patroni_log_dir`](/zh/pgsql/param#patroni_log_dir)、[`pgbouncer_log_dir`](/zh/pgsql/param#pgbouncer_log_dir)、[`pgbackrest_log_dir`](/zh/pgsql/param#pgbackrest_log_dir) 自定义
+
+```yaml
+promtail_enabled: true            # 启用 promtail 日志收集器？
+promtail_clean: false             # 初始化期间清除现有的 promtail 状态文件？
+promtail_port: 9080               # promtail 监听端口，默认为 9080
+promtail_positions: /var/log/positions.yaml # promtail 位置状态文件路径
+```
+
+------
+
+### `promtail_enabled` [#promtail_enabled]
+
+名称：`promtail_enabled`，类型：`bool`，级别：`C`
+
+启用 promtail 日志收集器？
+
+默认值为 `true`
+
+------
+
+### `promtail_clean` [#promtail_clean]
+
+名称：`promtail_clean`，类型：`bool`，级别：`G/A`
+
+初始化期间清除现有的 promtail 状态文件？
+
+默认值为 `false`，如果您选择清理，Pigsty 将删除由 [`promtail_positions`](#promtail_positions) 定义的现有状态文件，这意味着 Promtail 将重新收集当前节点上的所有日志并再次将它们发送到 Loki。
+
+------
+
+### `promtail_port` [#promtail_port]
+
+名称：`promtail_port`，类型：`port`，级别：`C`
+
+promtail 监听端口，默认为 9080
+
+默认值：`9080`
+
+------
+
+### `promtail_positions` [#promtail_positions]
+
+名称：`promtail_positions`，类型：`path`，级别：`C`
+
+promtail 位置状态文件路径
+
+默认值：`/var/log/positions.yaml`
+
+Promtail 记录所有日志的消费偏移量，定期写入由 [`promtail_positions`](#promtail_positions) 指定的文件。

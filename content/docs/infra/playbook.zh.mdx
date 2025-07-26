@@ -1,0 +1,134 @@
+---
+title: 剧本
+description: 使用剧本部署与移除可观测性基础设施
+icon: ScrollText
+---
+
+有三个与 INFRA 模块相关的 playbook：
+
+- [`infra.yml`](#infrayml)：在基础设施节点上初始化 Pigsty 基础设施
+- [`infra-rm.yml`](#infra-rmyml)：从基础设施节点移除基础设施组件
+- [`install.yml`](#installyml)：在当前节点上执行 Pigsty 的完整一次性安装
+
+
+
+------
+
+## `infra.yml` [#infrayml]
+
+INFRA 模块 playbook [`infra.yml`](https://github.com/pgsty/pigsty/blob/main/infra.yml) 在配置文件的 `infra` 组中定义的 [**Infra 节点**](/zh/node/arch#infra-node) 上初始化基础设施模块。
+
+**此 playbook 执行以下任务：**
+
+- 在 Infra 节点上配置目录和环境变量
+- 下载并创建本地软件仓库以加速后续安装（如果使用离线包或本地仓库已存在则跳过）
+- 将当前 Infra 节点纳入由 Pigsty 管理的 [普通节点](/zh/node/arch#common-node)
+- 部署**基础设施**组件，包括 Prometheus、Grafana、Loki、Alertmanager、PushGateway、Blackbox Exporter 等
+
+**此 playbook 默认在 [`infra`](/zh/node/arch#infra-node) 组上执行：**
+
+- Pigsty 在配置文件中名为 `infra` 的组上安装 [**`INFRA`**](/zh/infra/) 模块
+- 在 [配置](/zh/config/configure) 期间，Pigsty 将当前安装节点标记为 Infra 节点，并将配置模板中的占位符 IP 地址 `10.10.10.10` 替换为 [**当前节点的主 IP 地址**](/zh/prepare/hardware#network)
+- 此节点可以发起管理任务并托管基础设施组件，同时像任何常规被管理节点一样工作
+
+**Playbook 注意事项：**
+
+- 这是一个幂等的 playbook - 重复执行将覆盖 Infra 节点上的基础设施组件
+  - 除非 [`prometheus_clean`](/zh/infra/param#prometheus_clean) 设置为 `false`，否则 Prometheus 时间序列指标将丢失
+  - 除非 [`loki_clean`](/zh/infra/param#loki_clean) 设置为 `false`，否则 Loki 日志数据将丢失
+  - 除非 [`grafana_clean`](/zh/infra/param#grafana_clean) 设置为 `false`，否则 Grafana 仪表板和配置更改将丢失
+
+- 当本地软件仓库 `/www/pigsty/repo_complete` 存在时，此 playbook 跳过从互联网下载软件
+  - 完整执行大约需要 1 ~ 3 分钟，取决于机器配置和网络条件
+  - 直接从原始上游源下载软件（不使用离线包）可能需要 5-10 分钟，取决于您的网络连接
+
+### 演示 [#demo]
+
+[![asciicast](/img/asciinema/infra.svg)](https://asciinema.org/a/566412)
+
+### 可用任务 [#available-tasks]
+
+以下是 `infra.yml` playbook 中可用任务的列表：
+
+```yaml
+#--------------------------------------------------------------#
+# Tasks
+#--------------------------------------------------------------#
+# ca            : create self-signed CA in localhost files/pki
+#   - ca_dir        : create CA directory
+#   - ca_private    : generate CA private key: files/pki/ca/ca.key
+#   - ca_cert       : sign CA certificate: files/pki/ca/ca.crt
+#
+# id            : generate node identity
+#
+# repo          : bootstrap a local YUM repository from internet or offline packages
+#   - repo_dir      : create repository directory
+#   - repo_check    : check repository exists
+#   - repo_prepare  : use existing repository if exists
+#   - repo_build    : build repository from upstream if not exists
+#     - repo_upstream    : handle upstream repository files in /etc/yum.repos.d
+#       - repo_remove    : remove existing repository file if repo_remove == true
+#       - repo_add       : add upstream repository files to /etc/yum.repos.d
+#     - repo_url_pkg     : download packages from internet defined by repo_url_packages
+#     - repo_cache       : make upstream YUM cache with yum makecache
+#     - repo_boot_pkg    : install bootstrap packages such as createrepo_c, yum-utils, etc.
+#     - repo_pkg         : download packages & dependencies from upstream repository
+#     - repo_create      : create a local YUM repository with createrepo_c & modifyrepo_c
+#     - repo_use         : add newly built repository into /etc/yum.repos.d
+#   - repo_nginx    : launch nginx for repository if no nginx is serving
+#
+# node/haproxy/docker/monitor : set up infra node as a common node (check node.yml)
+#   - node_name, node_hosts, node_resolv, node_firewall, node_ca, node_repo, node_pkg
+#   - node_feature, node_kernel, node_tune, node_sysctl, node_profile, node_ulimit
+#   - node_data, node_admin, node_timezone, node_ntp, node_crontab, node_vip
+#   - haproxy_install, haproxy_config, haproxy_launch, haproxy_reload
+#   - docker_install, docker_admin, docker_config, docker_launch, docker_image
+#   - haproxy_register, node_exporter, node_register, promtail
+#
+# infra         : set up infra components
+#   - infra_env      : env_dir, env_pg, env_pgadmin, env_var
+#   - infra_pkg      : infra_pkg_yum, infra_pkg_pip
+#   - infra_user     : set up infra OS user group
+#   - infra_cert     : issue certificate for infra components
+#   - dns            : dns_config, dns_record, dns_launch
+#   - nginx          : nginx_config, nginx_cert, nginx_static, nginx_launch, nginx_certbot, nginx_reload, nginx_exporter
+#   - prometheus     : prometheus_clean, prometheus_dir, prometheus_config, prometheus_launch, prometheus_reload
+#   - alertmanager   : alertmanager_config, alertmanager_launch
+#   - pushgateway    : pushgateway_config, pushgateway_launch
+#   - blackbox       : blackbox_config, blackbox_launch
+#   - grafana        : grafana_clean, grafana_config, grafana_launch, grafana_provision
+#   - loki           : loki clean, loki_dir, loki_config, loki_launch
+#   - infra_register : register infra components to prometheus
+#--------------------------------------------------------------#
+```
+
+
+
+
+------
+
+## `infra-rm.yml` [#infra-rmyml]
+
+INFRA 模块 playbook [`infra-rm.yml`](https://github.com/pgsty/pigsty/blob/main/infra-rm.yml) 从配置文件的 `infra` 组中定义的 [Infra 节点](/zh/node/arch#infra-node) 移除 Pigsty 基础设施。
+
+常见子任务包括：
+
+```bash
+./infra-rm.yml               # 移除 INFRA 模块
+./infra-rm.yml -t service    # 停止 INFRA 上的基础设施服务
+./infra-rm.yml -t data       # 移除 INFRA 上保留的数据
+./infra-rm.yml -t package    # 卸载 INFRA 上安装的包
+```
+
+
+
+
+
+
+------
+
+## `install.yml` [#installyml]
+
+INFRA 模块 playbook [`install.yml`](https://github.com/pgsty/pigsty/blob/main/install.yml) 在**所有节点**上执行 Pigsty 的完整一次性安装。
+
+此 playbook 在 [Playbook：一次性部署](/zh/admin/playbook#deployment) 中有更详细的描述。

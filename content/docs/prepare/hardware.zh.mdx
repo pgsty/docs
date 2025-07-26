@@ -1,0 +1,176 @@
+---
+title: 硬件
+description: 节点、规格、磁盘、网络、VIP、域名...
+icon: Cpu
+---
+
+--------
+
+## 节点 [#node]
+
+Pigsty 目前运行在具有 [`Linux`](#linux-os) 内核和 `x86_64` / `aarch64` 架构的节点上。
+
+"**节点**" 指的是 SSH [可访问](#accessibility) 且提供裸 Linux 操作系统环境的资源。
+它可以是物理机、虚拟机或配备 `systemd`、`sudo` 和 `sshd` 的类似操作系统的容器。
+
+部署 pigsty 至少需要 <span className="text-xl font-black"> 1 </span> 个节点，
+您可以准备更多并在 [一次性](/zh/admin/playbook#deployment) 中设置所有内容，或稍后添加它们。
+最小节点规格要求是 `1C1G`，建议至少使用 `2C2G`。
+越高越好，没有上限。参数将根据可用资源自动调优。
+
+<Callout title="生产部署使用多个节点" type={"info"}>
+
+    功能性 HA 设置至少需要 **3** 个节点才能工作，或使用 **2** 个节点进行半 HA 设置
+
+</Callout>
+
+--------
+
+## 规格 [#spec]
+
+您需要多少个节点？这取决于您的资源和需求。
+
+<Callout title="单节点设置" type="info">
+
+最简单的设置，所有内容都在单个节点上运行，安装四个基本模块：
+
+| ID | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+
+如果为备份/PITR 配置了外部 S3/MinIO，此设置可用于生产。
+
+</Callout>
+
+<Callout title="双节点设置" type="info">
+
+双节点设置启用数据库复制和半 HA 功能：
+
+| ID | [NODE](/zh/node) | [PGSQL](/zh/pgsql)  | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
+|:--:|:------------------:|:---------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      | `pg-meta-1` (主节点) |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      | `pg-meta-2` (副本) |                      |                        |
+
+虽然比单节点设置更强大，但 HA 有限制：
+- 如果 `node-1` 故障，无自动故障转移 - 需要手动提升 `node-2`
+- 如果 `node-2` 故障，自动故障转移有效 - `node-1` 自动提升
+
+这种"半 HA"设置只能从特定节点故障中自动恢复。
+
+</Callout>
+
+<Callout title="三节点设置" type="info">
+
+真正的 HA 设置，可以从任何单个节点故障中自动恢复：
+
+| ID | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      |     `pg-meta-2`      |      `infra-2`       |        `etcd-2`        |
+| 3  |      `node-3`      |     `pg-meta-3`      |      `infra-3`       |        `etcd-3`        |
+
+</Callout>
+
+<Callout title="四节点设置" type="info">
+
+Pigsty [沙盒](/zh/prepare/sandbox) 使用的标准演示环境：
+
+| ID | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
+|:--:|:------------------:|:--------------------:|:--------------------:|:----------------------:|
+| 1  |      `node-1`      |     `pg-meta-1`      |      `infra-1`       |        `etcd-1`        |
+| 2  |      `node-2`      |     `pg-test-1`      |                      |        `etcd-2`        |
+| 3  |      `node-3`      |     `pg-test-2`      |                      |        `etcd-3`        |
+| 4  |      `node-4`      |     `pg-test-3`      |                      |                        |
+
+</Callout>
+
+------
+
+## 磁盘 [#disk]
+
+Pigsty 将使用 `/data` 作为默认数据目录，如果您有专用的主数据磁盘，建议将其挂载到那里，
+并为额外的磁盘驱动器使用 `/data1`、`/data2`、`/dataN`。
+
+<Callout title="将磁盘挂载到别处？" type={"warn"}>
+
+如果您将其挂载到别处，您必须相应地更改以下参数：
+
+| 名称                                                   | 描述                    | 默认值            |
+|--------------------------------------------------------|--------------------------------|--------------------|
+| [`node_data`](/zh/node/param#node_data)              | 节点主数据目录       | `/data`            |
+| [`pg_fs_main`](/zh/pgsql/param#pg_fs_main)           | postgres 主数据目录   | `/data`            |
+| [`pg_fs_backup`](/zh/pgsql/param#pg_fs_backup)           | postgres 备份数据目录 | `/data/backups`    |
+| [`etcd_data`](/zh/etcd/param#etcd_data)              | etcd 数据目录            | `/data/etcd`       |
+| [`prometheus_data`](/zh/infra/param#prometheus_data) | prometheus 数据目录      | `/data/prometheus` |
+| [`loki_data`](/zh/infra/param#loki_data)             | loki 数据目录            | `/data/loki`       |
+| [`minio_data`](/zh/minio/param#minio_data)           | minio 数据目录           | `/data/minio`      |
+| [`redis_fs_main`](/zh/redis/param#redis_fs_main)     | redis 数据目录           | `/data/redis`      |
+
+</Callout>
+
+我们建议使用 `ext4` 或 `xfs` 作为数据磁盘的文件系统。它们对 PostgreSQL 有最佳性能。
+
+虽然 `ext4` 有更多的数据恢复工具，但 `xfs` 对小文件更高效。
+如果您运行 MinIO，建议使用 `xfs`，否则，建议使用 `ext4` 作为默认选项。
+
+--------
+
+## 网络 [#network]
+
+Pigsty 需要**静态网络**才能工作，您应该为每个节点明确分配一个**固定的** IPv4 地址。
+
+<Callout title="没有固定 IP？" type="info">
+
+    在单节点安装中，如果没有固定 IP 地址，可以使用 `127.0.0.1` 作为变通方法。
+
+</Callout>
+
+IP 地址将用作节点的**唯一标识符**，它应该是绑定到用于**内部**网络通信的主网络接口的主 IP 地址。
+
+<Callout title="永远不要使用公共 IP 作为标识符" type="error">
+
+    使用公共 IP 地址作为节点标识符可能导致安全和连接问题。
+
+</Callout>
+
+<Callout title="L2 VIP 需要 L2 网络" type="warn">
+
+    要使用可选的节点 VIP 和 PG VIP 功能，请确保所有节点位于同一 L2 网络内
+
+</Callout>
+
+执行标准（在线）[**安装**](/zh/install) 时需要互联网访问。
+但 pigsty 可以通过离线软件包进行 [离线安装](/zh/install/offline)，
+在这种情况下不需要互联网访问。
+
+--------
+
+## VIP [#vip]
+
+Pigsty 支持 NODE 集群（`keepalived`）和 PGSQL 集群（`vip-manager`）的可选 L2 VIP。
+
+要使用 L2 VIP 功能，您必须为它们明确分配一个 L2 VIP。
+在您自己的硬件上运行时这不是大问题，
+但在公有云环境中工作时可能成为问题。
+
+--------
+
+## 域名 [#domain]
+
+Pigsty 为以下具有 WebUI 的服务使用本地静态域名。
+您可以为这些服务分配自定义域名，或使用真实域名。
+只需在 [`infra_portal`](/zh/infra/param#infra_portal) 中更改它们。
+
+|   域名   | 名称           |    端口    |                     组件                      | 描述                 |
+|:----------:|----------------|:----------:|:--------------------------------------------------:|-----------------------------|
+| `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/zh/infra/arch/#nginx)        | 默认服务器，本地仓库  |
+| `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/zh/infra/arch/#grafana)      | 监控和可视化  |
+| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/zh/infra/arch/#prometheus)   | 时间序列数据库              |
+| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/zh/infra/arch/#alertmanager) | 告警聚合和路由 |
+
+域名是可选的，要使用它们，用户有责任将以下记录添加到您的 `/etc/hosts` 文件（本地静态解析），
+或将它们添加到您的 DNS 服务器/公共 DNS 供应商。
+
+```bash
+10.10.10.10 h.pigsty g.pigsty p.pigsty a.pigsty
+```

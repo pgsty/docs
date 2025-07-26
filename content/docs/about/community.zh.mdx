@@ -1,0 +1,158 @@
+---
+title: 社区
+description: 开源社区和用户群组
+icon: HeartHandshake
+full: true
+---
+
+import {
+    Database,
+    CpuIcon,
+    SearchIcon,
+    Newspaper,
+    ClipboardList,
+    Map,
+    ScanFace,
+    Bug,
+    AtomIcon,
+    ToyBrickIcon, 
+    ScaleIcon,
+    Github,
+    MessagesSquare,
+    Users,
+    GitPullRequest,
+    MessageCircle,
+    Send,
+    HeartHandshake,
+} from 'lucide-react';
+
+
+Pigsty 社区已经提供免费的微信/Discord/Telegram 问答答疑时间，我们也很乐意为我们的支持者提供更多免费的增值服务。
+
+------
+
+## GitHub 总部 [#github-hq]
+
+如果您觉得 Pigsty 有用，请考虑在 GitHub 上给我们一个 [**star**](https://github.com/pgsty/pigsty/stargazers)。
+欢迎提交 Issues、PRs 和讨论。
+
+<Cards>
+
+    <Card icon={<Github className={"text-black-700"} />} title='仓库' href={"https://github.com/pgsty/pigsty"}>
+        Pigsty 的源代码仓库
+    </Card>
+    <Card icon={<Users className={"text-blue-500"} />} title='组织' href={"https://github.com/pgsty"}>
+        GitHub 上的 `pgsty` 组织是 Pigsty 的官方主页。
+    </Card>
+
+    <Card icon={<GitPullRequest className="text-amber-600" />} title='问题' href={"https://github.com/pgsty/pigsty/issues/new"}>
+        创建新问题和报告错误，提交功能请求
+    </Card>
+    <Card icon={<MessageCircle className="text-red-600" />} title='讨论' href={"https://github.com/pgsty/pigsty/discussions"}>
+        提问，分享想法，从社区获得帮助
+    </Card>
+
+</Cards>
+
+
+
+------
+
+## 社区 [#community]
+
+我们有 7 个活跃的微信用户群，约有 2700+ 用户，加入我们的讨论！
+
+<Cards>
+
+    <Card icon={<MessagesSquare className="text-gray-600" />} title='讨论' href={"https://github.com/pgsty/pigsty/discussions"}>
+        Pigsty 的 GitHub 讨论论坛
+    </Card>
+
+    <Card icon={<MessageCircle className="text-green-500" />} title='微信' href={"https://pigsty.io/img/pigsty/pigsty-cc.jpg"}>
+        搜索 `pigsty-cc` 并加入用户群组。
+    </Card>
+    <Card icon={<Send className={"text-sky-300"} />} title='Telegram' href={"https://t.me/joinchat/gV9zfZraNPM3YjFh"}>
+        Pigsty 的 Telegram 群组：gV9zfZraNPM3YjFh
+    </Card>
+    <Card icon={<HeartHandshake className={"text-violet-500"} />} title='Discord' href={"https://discord.gg/j5pG8qfKxU"}>
+        Pigsty 的 Discord 服务器：j5pG8qfKxU
+    </Card>
+
+</Cards>
+
+
+您也可以通过邮件联系我：[rh@vonng.com](mailto:rh@vonng.com)
+
+
+
+
+------
+
+## 寻求帮助 [#ask-for-help]
+
+您可以[向社区寻求帮助](https://github.com/pgsty/pigsty/discussions/338#discussion-5761383)，提供足够信息和上下文的问题更容易得到帮助。
+
+也可以考虑使用我们的 [ChatGPT QA 代理](https://chat.openai.com/g/g-y0USNfoXJ-pigsty-consul) 或 [专业服务](/zh/about/service)。
+
+<Callout title="寻求帮助" type="info">
+
+**发生了什么？** (**必需**)
+
+**Pigsty 版本和操作系统版本** (**必需**)
+
+```bash
+$ grep version  pigsty.yml 
+
+$ cat /etc/os-release
+```
+
+如果您使用云提供商，请告诉我们您使用的是哪个云提供商以及什么操作系统镜像。
+
+如果您在安装裸机操作系统后自定义和修改了环境，或者在 WAN 中有特定的安全规则和防火墙配置，请在故障排除时也告诉我们。
+
+**Pigsty 配置文件** (**必需**)
+
+不要忘记删除敏感信息，如密码等…
+
+```bash
+cat ~/pigsty/pigsty.yml
+```
+
+**您期望发生什么？**
+
+> 请描述您期望发生什么。
+
+**如何重现它？**
+
+> 请尽可能详细地告诉我们如何重现该问题。
+
+**监控截图**
+
+如果您正在使用 pigsty 监控系统，您可以在此处粘贴**相关**截图。
+
+**错误日志**
+
+请复制并粘贴任何**相关**的日志输出。不要粘贴类似"无法启动 xxx 服务"的内容
+
+- Syslog：`/var/log/messages`（RHEL）或 `/var/log/syslog`（Debian）
+- Postgres：`/pg/log/postgres/*`
+- Patroni：`/pg/log/patroni/*`
+- Pgbouncer：`/pg/log/pgbouncer/*`
+- Pgbackrest：`/pg/log/pgbackrest/*`
+
+```bash
+journalctl -u patroni
+journalctl -u <service name>
+```
+
+**您是否尝试过问题和 FAQ？**
+
+- [Pigsty FAQ](/zh/intro/faq/)
+- [Github Issues](https://github.com/pgsty/pigsty/issues)
+- [Pigsty 讨论论坛](https://github.com/pgsty/pigsty/discussions)
+
+**我们还需要知道什么？**
+
+您提供的信息和上下文越多，我们就越有可能帮助您解决问题。
+
+</Callout>

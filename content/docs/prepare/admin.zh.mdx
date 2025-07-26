@@ -1,0 +1,205 @@
+---
+title: 管理员
+description: 用户、区域设置、Sudo、SSH、可访问性...
+icon: Landmark
+---
+
+------
+
+## 用户 [#user]
+
+Pigsty 需要一个在所有被管理节点上具有免密 [`ssh`](#ssh) 和 [`sudo`](#sudo-privileges) 权限的操作系统**用户**。
+
+------
+
+### 命名约定 [#naming-convention]
+
+通常我们会选择 `dba` 或 `admin` 这样的名称，
+但避免使用 `root` 或 `postgres`：
+
+<Callout title="避免使用 root 用户" type="warn">
+
+    虽然可能，但出于安全原因，不建议使用 `root` 作为管理员用户。
+
+</Callout>
+
+<Callout title="不要使用 postgres dbsu 作为管理员用户" type="error">
+
+    DBSU（默认为 `postgres`）**不应该**用作管理员用户。
+    这会导致意外的安全问题。
+
+    如果您使用不同的 dbsu 用户，也避免将其用作管理员用户。
+
+</Callout>
+
+------
+
+### 提供密码 [#provide-password]
+
+如果您可以接受每个 `ssh` 和 `sudo` 命令的密码提示，则免密要求是可选的。
+
+<Callout title="使用密码提示运行 playbook" type="info">
+
+    您可以在运行 [playbook](/zh/admin/playbook) 时使用 `-k|--ask-pass` 来提示输入 **ssh** 密码。
+
+    并使用 `-K|--ask-become-pass` 来提示输入 **sudo** 密码。
+
+    ```bash
+    ./install.yml -k -K
+    ```
+</Callout>
+
+------
+
+### 创建管理员用户 [#create-admin-user]
+
+在服务器置备阶段，用户/供应商有责任创建并交付这样的管理员用户。
+但如果您没有这样的管理员用户，或者该用户受到限制，您可以使用 pigsty 本身创建一个：
+
+<Callout title="使用 pigsty 创建管理员用户" type="info">
+
+    假设您在节点上有 root 或现有的管理员用户，您可以使用 pigsty 本身创建管理员用户。
+
+    ```bash
+    ./node.yml -k -K -t node_admin -e ansible_user=[existing_admin_user]
+    ```
+
+    它将利用现有的管理员创建新的管理员用户。
+    它将创建由以下参数描述的专用 `dba`（uid=88）用户，
+    并正确配置 sudo / ssh。
+
+    | 名称 | 描述 | 默认值 |
+    |------|-------------|---------|
+    | [`node_admin_enabled`](/zh/node/param#node_admin_enabled) | 启用节点管理员用户 | `true` |
+    | [`node_admin_uid`](/zh/node/param#node_admin_uid) | 节点管理员用户的 uid | `88` |
+    | [`node_admin_username`](/zh/node/param#node_admin_username) | 节点管理员用户名 | `dba` |
+
+</Callout>
+
+------
+
+### Sudo 权限 [#sudo-privileges]
+
+所有 [管理员用户](#user) 都应该在所有被管理节点上具有免密 `sudo` 权限。
+
+如果您想从头开始配置具有免密 `sudo` 权限的管理员用户：
+
+<Callout title="允许免密 sudo" type="info">
+
+    要手动允许用户执行免密 `sudo` 命令：
+
+    为您的管理员用户创建 sudoers 文件（假设是 `vagrant`，请替换为您选择的名称）：
+
+    ```bash
+    echo '%vagrant ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/vagrant
+    ```
+
+    假设您的管理员用户名选择是 `dba`，那么 `/etc/sudoers.d/dba` 内容应该是
+
+    ```bash
+    %dba ALL=(ALL) NOPASSWD: ALL
+    ```
+
+</Callout>
+
+Ansible 依赖 `sudo` 在被管理节点上以 root 权限执行命令。
+因此，在 `sudo` 不可用的环境中（比如在精简容器内），您可能需要先安装 `sudo`。
+
+------
+
+## SSH [#ssh]
+
+您的当前用户应该能够以相应的管理员用户身份免密 SSH 访问所有被管理节点。
+
+您的当前用户可以是管理员用户本身，但不是必需的，只要您能以管理员用户身份 SSH。
+
+SSH 配置是 Linux 101，但我们会在此处介绍基础知识，以防您不熟悉：
+
+------
+
+### 生成 SSH 密钥 [#generate-ssh-key]
+
+如果您没有 SSH 密钥对，请生成一个
+
+<Callout title="生成 SSH 密钥" type="info">
+
+    ```bash
+    ssh-keygen -t rsa -b 2048 -N '' -f ~/.ssh/id_rsa -q
+    ```
+
+    如果您没有密钥对，Pigsty 会在 [`bootstrap`](/zh/install/offline#bootstrap) 阶段为您完成此操作。
+
+</Callout>
+
+------
+
+### 复制 SSH 密钥 [#copy-ssh-key]
+
+您需要将生成的公钥分发到远程（和本地）服务器，并将其放入
+所有节点上管理员用户的 `~/.ssh/authorized_keys` 文件中。
+可以使用 `ssh-copy-id` 工具。
+
+<Callout title="将您的 ssh 密钥分发到其他节点" type="info">
+
+    将公钥复制到所有被管理节点，使用 `ssh-copy-id` 或手动添加到 `~/.ssh/authorized_keys`。
+
+```bash
+ssh-copy-id <ip>                        # 交互式密码输入
+```
+
+    您可以使用 `sshpass` 工具直接传递密码而不提示，但这很危险：
+
+```bash
+sshpass -p <password> ssh-copy-id <ip>  # 非交互式（谨慎使用）
+```
+
+</Callout>
+
+------
+
+### 使用别名 [#using-alias]
+
+当无法直接 SSH 访问时（由于跳板机、其他端口、凭据等...），考虑：
+
+<Callout title="使用 SSH 别名" type="info">
+
+    在 `~/.ssh/config` 中配置 SSH 别名，并在那里放置别名的自定义参数。
+
+    ```bash
+    Host meta
+        HostName 10.10.10.10
+        User dba                      # <--- 远程上不同的用户
+        IdentityFile /etc/dba/id_rsa  # <--- 不是普通密钥
+        Port 24                       # <--- 不是众所周知的端口
+    ```
+
+    并在清单中引用别名，使用 `ansible_host` 指定真实的 SSH 别名。
+
+    ```yaml
+    nodes:
+      hosts:          # 如果节点 `10.10.10.10` 需要 SSH 别名 `meta`
+        10.10.10.10: { ansible_host: meta }  # <---- 通过 `ssh meta` 访问
+    ```
+
+    SSH 参数可以直接在 ansible 中使用，详情请查看 [Ansible Inventory Guide](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters)。
+
+</Callout>
+
+------
+
+### 检查可访问性 [#check-accessibility]
+
+您应该能够从管理节点通过当前用户免密 `ssh` 访问所有被管理节点。
+远程用户（管理员用户）应该有权限运行免密 `sudo` 命令。
+
+<Callout title="验证免密 ssh sudo 是否工作" type="info">
+
+    在管理节点上对所有被管理节点运行此命令：
+
+    ```bash
+    ssh <ip|alias> 'sudo ls'
+    ```
+
+    如果没有密码提示或错误，免密 ssh/sudo 按预期工作。
+
+</Callout>

@@ -1,0 +1,30 @@
+---
+title: Nginx 门户
+description: 配置基础设施门户和 nginx 设置
+icon: DoorOpen
+---
+
+
+Pigsty 在基础设施节点上安装 Nginx 作为 Web 服务代理，默认使用端口 80/443。
+全局参数 [`infra_portal`](/zh/infra/param#infra_portal) 配置 Nginx 代理规则和上游服务。
+
+
+
+--------
+
+
+Nginx 服务器配置通过 `infra_portal` 参数指定。用户声明要通过 Nginx 代理的所有域名，以及相应的上游服务器端点或本地目录路径。
+
+### 基本示例 [#basic-example]
+
+```yaml
+infra_portal:  # 域名和上游服务器
+  home         : { domain: h.pigsty }
+  grafana      : { domain: g.pigsty, endpoint: "${admin_ip}:3000", websocket: true }
+  prometheus   : { domain: p.pigsty, endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty, endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+```
+
+### 复杂示例 [#complex-example]

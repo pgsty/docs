@@ -1,0 +1,37 @@
+---
+title: 使用
+description: 使用客户端工具连接到 FerretDB
+icon: Rocket
+---
+
+
+
+## 安装客户端工具 [#install-client-tools]
+
+您可以使用 MongoDB 的命令行工具 [MongoSH](https://www.mongodb.com/docs/mongodb-shell/) 来访问 FerretDB。
+
+使用 `pig` 命令添加 MongoDB 仓库，然后使用 `yum` 或 `apt` 安装 `mongosh`：
+
+```bash
+pig repo add mongo -u
+yum install mongodb-mongosh
+apt install mongodb-mongosh
+```
+
+------
+
+## 连接到 FerretDB [#connect-to-ferretdb]
+
+您可以使用任何语言的任何 MongoDB 驱动程序使用 MongoDB 连接字符串访问 FerretDB。以下是使用 `mongosh` CLI 工具的示例：
+
+```bash
+$ mongosh
+Current Mongosh Log ID:	67ba8c1fe551f042bf51e943
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.4.0
+Using MongoDB:		7.0.77
+Using Mongosh:		2.4.0
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+test>
+```

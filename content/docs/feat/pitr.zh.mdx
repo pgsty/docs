@@ -1,0 +1,140 @@
+---
+title: 灾难恢复
+description: 经过实战考验的备份策略和自动配置的时间点恢复
+icon: DatabaseBackup
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Clock, Shield, Archive } from 'lucide-react';
+
+时间点恢复（PITR）允许将 PostgreSQL 集群回滚到过去的任何特定时刻，防止软件缺陷或人为错误导致的数据丢失。Pigsty 使用 pgBackRest 进行 PITR，具有可配置的备份策略，使用本地文件系统或 MinIO 等对象存储。
+
+![PITR Architecture](/img/pigsty/pitr.png)
+
+<Callout type="info">
+**数据库的时间旅行**：将您的集群回滚到任何时间点，防止高可用性无法解决的软件缺陷、人为错误和数据损坏场景。
+</Callout>
+
+## 概述 [#overview]
+
+Pigsty 提供 **企业级时间点恢复**，具有零配置设置、自动备份和灵活的恢复选项。基于 pgBackRest 构建，支持 MinIO/S3，防护数据损坏、人为错误和逻辑灾难。
+
+<Cards>
+  <Card title="降低 RPO" icon={<Clock className="text-amber-600"/>}>
+    通过连续 WAL 归档最小化恢复点目标
+  </Card>
+  <Card title="数据完整性" icon={<Shield className="text-blue-600"/>}>
+    增强数据完整性保护，防止损坏
+  </Card>
+  <Card title="灾难恢复" icon={<Archive className="text-green-600"/>}>
+    通过灵活的恢复选项改进灾难恢复能力
+  </Card>
+</Cards>
+
+## PITR 工作原理 [#how-pitr-works]
+
+PITR 需要两个关键组件协同工作以实现时间点恢复：
+
+<Tabs items={['Base Backups', 'WAL Archiving']}>
+  <Tab value="Base Backups">
+    ### 基础备份 [#base-backups]
+    
+    使用 pgBackRest 创建数据库集群快照，支持多种备份类型：
+    
+    - **完整备份**：完整的数据库集群快照
+    - **增量备份**：仅自上次备份以来的变更
+    - **差异备份**：自上次完整备份以来的变更
+    - **计划备份**：通过 Crontab 配置的定期备份
+  </Tab>
+  
+  <Tab value="WAL Archiving">
+    ### WAL 归档 [#wal-archiving]
+    
+    连续归档预写日志（WAL）段文件：
+    
+    - **连续归档**：实时 WAL 文件保存
+    - **自动管理**：WAL 文件和清理自动处理
+    - **可选功能**：如果不需要 PITR 可以禁用
+  </Tab>
+</Tabs>
+
+## 实现 [#implementation]
+
+Pigsty 提供两种默认备份策略，具有灵活的配置选项：
+
+<Tabs items={['Local Filesystem', 'MinIO/S3']}>
+  <Tab value="Local Filesystem">
+    ### 本地文件系统策略 [#local-filesystem-strategy]
+    
+    - **频率**：每日完整备份
+    - **存储**：本地文件系统存储
+    - **使用场景**：单节点或本地开发环境
+  </Tab>
+  
+  <Tab value="MinIO/S3">
+    ### MinIO/S3 策略 [#minio-s3-strategy]
+    
+    - **频率**：每周完整备份，每日增量备份
+    - **存储**：对象存储（MinIO、S3）
+    - **使用场景**：具有分布式存储的生产环境
+  </Tab>
+</Tabs>
+
+### 配置选项 [#configuration-options]
+
+备份配置非常灵活，可以指定选项：
+
+- **仓库类型**：本地、S3 或其他支持的后端
+- **保留策略**：保留备份的时间长度
+- **加密**：安全备份存储
+- **存储位置**：多个备份目标
+
+## 恢复选项 [#recovery-options]
+
+<Callout type="warning">
+恢复操作应谨慎执行，因为它们将替换当前的数据库状态。
+</Callout>
+
+恢复命令允许恢复到各种时间点：
+
+<Steps>
+  <Step>
+    ### 最新 WAL 归档 [#latest-wal-archive]
+    恢复到 WAL 归档中可用的最近点：
+    ```bash
+    pg-pitr
+    ```
+  </Step>
+  
+  <Step>
+    ### 特定时间戳 [#specific-timestamp]
+    恢复到确切的时间点：
+    ```bash
+    pg-pitr --time="2022-12-30 14:44:44+08"
+    ```
+  </Step>
+  
+  <Step>
+    ### 命名恢复点 [#named-restore-point]
+    恢复到之前创建的命名点：
+    ```bash
+    pg-pitr --name="my-restore-point"
+    ```
+  </Step>
+  
+  <Step>
+    ### 特定 LSN 或事务 ID [#specific-lsn-or-transaction-id]
+    恢复到特定的日志序列号或事务：
+    ```bash
+    pg-pitr --lsn="0/1234567"
+    pg-pitr --xid="12345"
+    ```
+  </Step>
+</Steps>
+
+<Callout type="info">
+虽然 PITR 对数据恢复很强大，但理想情况下应该与高可用性解决方案结合使用，以全面保护数据免受逻辑和物理故障的影响。
+</Callout>

@@ -1,0 +1,39 @@
+---
+title: 架构
+description: 节点类型、架构和核心概念
+icon: Blocks
+---
+
+["**节点**"](/zh/prepare/hardware#node) 是指可以通过 SSH [访问](#accessibility)并提供裸机 Linux 操作系统环境的资源。
+它可以是物理机、虚拟机或配备 `systemd`、`sudo` 和 `sshd` 的类似操作系统的容器。
+
+Pigsty 中有三种不同类型的节点，在[单节点部署](/zh/install/start)中，它们是同一个。
+
+| 节点类型                   | 描述                                                      |
+|-----------------------------|------------------------------------------------------------------|
+| [管理节点](#admin-node)   | 安装 Pigsty 并发出管理命令的节点 |
+| [基础设施节点](#infra-node)   | 安装 [`INFRA`](/zh/infra/) 模块的节点        |
+| [普通节点](#common-node) | 由 Pigsty 管理的任何节点，包括管理节点和基础设施节点       |
+
+------
+
+## 示例 [#example]
+
+在以下 4 节点[沙箱](/zh/prepare/sandbox)配置片段中，我们有 4 个普通节点。
+`10.10.10.10` 同时标记为基础设施节点和管理节点。
+
+```yaml
+all:
+  children:
+    infra:   { hosts: { 10.10.10.10: { infra_seq: 1 } } }  # <--- 标记为基础设施节点
+    etcd:    { hosts: { 10.10.10.10: { etcd_seq: 1 } }, vars: { etcd_cluster: etcd } }
+    pg-meta: { hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }, vars: { pg_cluster: pg-meta } }
+    pg-test:
+      hosts:
+        10.10.10.11: { pg_seq: 1, pg_role: primary }
+        10.10.10.12: { pg_seq: 2, pg_role: replica }
+        10.10.10.13: { pg_seq: 3, pg_role: replica }
+      vars: { pg_cluster: pg-test }
+  vars:
+    admin_ip: 10.10.10.10    # <--- 标记为管理节点
+```

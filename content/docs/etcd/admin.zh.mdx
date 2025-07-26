@@ -1,0 +1,50 @@
+---
+title: 管理
+description: 管理您的 etcd 集群
+icon: Wrench
+---
+
+
+以下是 etcd 的一些管理 SOP：
+
+- [创建集群](#create-cluster)
+- [移除集群](#remove-cluster)
+- [CLI 环境](#cli-environment)
+- [重新加载配置](#reload-config)
+- [管理脚本](#management-scripts)
+- [追加成员](#append-member)
+- [移除成员](#remove-member)
+
+查看 [ETCD: FAQ](/zh/etcd/faq) 了解更多问题。
+
+
+------
+
+## 创建集群 [#create-cluster]
+
+要创建 etcd 集群，请首先在[清单](/zh/config/inventory)中定义 `etcd` 集群：
+
+```yaml
+etcd:
+  hosts:
+    10.10.10.10: { etcd_seq: 1 }
+    10.10.10.11: { etcd_seq: 2 }
+    10.10.10.12: { etcd_seq: 3 }
+  vars: { etcd_cluster: etcd   }
+```
+
+然后运行 [`etcd.yml`](/zh/etcd/playbook/#etcdyml) playbook。
+
+```bash
+./etcd.yml   # 在组 'etcd' 上初始化 etcd 模块
+```
+
+如果存在现有的 etcd 集群，此 playbook 将更新配置并**重启**所有 etcd 实例
+
+
+
+Pigsty 有一个安全防护机制来防止意外清除。默认情况下，[`etcd_clean`](/zh/etcd/param#etcd_clean) 为 `true`，[`etcd_safeguard`](/zh/etcd/param#etcd_safeguard) 为 `false`，
+这意味着即使有运行中的 etcd 实例，playbook 也会清除 etcd 集群。在这种情况下，`etcd.yml` 是真正幂等的，
+这对于开发、测试和生产中 etcd 集群的紧急重建很有用。
+
+对于生产环境中已置备的 etcd 集群，您可以启用安全防护来防止意外清理。

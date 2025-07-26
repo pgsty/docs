@@ -1,8 +1,8 @@
 {
     "pages": [
+        "note",
         "latest",
         "beta",
-        "note",
         "pig",
         "pg_exporter",
         "rpm",

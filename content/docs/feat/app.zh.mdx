@@ -1,0 +1,31 @@
+---
+title: 应用模板
+description: 使用模板设置企业软件，supabase、odoo、dify、gitlab……
+icon: BookDashed
+---
+
+import {
+    Database,
+    Boxes,
+    Bot,
+    Zap,
+    BookOpen,
+    ActivitySquare,
+    HelpCircle, ScrollText
+} from 'lucide-react';
+
+
+<Cards>
+    <Card icon={<Zap className="text-emerald-600" />} title='Supabase' href={"/zh/app/supabase"}>
+        自托管 Supabase
+    </Card>
+    <Card icon={<Boxes className="text-yellow-600" />} title='Odoo' href={"/zh/app/odoo"}>
+        运行 Odoo 开源 ERP
+    </Card>
+    <Card icon={<Bot className="text-purple-600" />} title='Dify' href={"/zh/app/dify"}>
+        运行 Dify AI 工作流
+    </Card>
+    <Card icon={<ScrollText className="text-blue-500" />} title='pgAdmin' href={"/zh/app/pgadmin"}>
+        运行官方管理 GUI 工具
+    </Card>
+</Cards>

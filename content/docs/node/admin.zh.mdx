@@ -1,0 +1,150 @@
+---
+title: 管理
+description: 节点管理标准操作程序
+icon: Wrench
+---
+
+
+节点管理 SOP，添加和移除节点，设置管理员，绑定 VIP 和其他杂项
+
+以下是 [`NODE`](/zh/node) 模块的一些常见管理任务。
+
+- [添加节点](#add-node)
+- [移除节点](#remove-node)
+- [创建管理员](#create-admin)
+- [绑定 VIP](#bind-vip)
+- [其他任务](#other-tasks)
+- [FAQ: NODE](/zh/node/faq)
+
+------
+
+## 添加节点 [#add-node]
+
+要将节点添加到 Pigsty，您需要对该节点具有免密 ssh/sudo 访问权限
+
+```bash
+# ./node.yml -l <cls|ip|group>        # 底层 playbook
+# bin/node-add <selector|ip...>       # 将集群/节点添加到 pigsty
+bin/node-add node-test                # 初始化节点集群 'node-test'
+bin/node-add 10.10.10.10              # 初始化节点 '10.10.10.10'
+```
+
+------
+
+## 移除节点 [#remove-node]
+
+要从 Pigsty 中移除节点，您可以使用以下命令：
+
+```bash
+# ./node-rm.yml -l <cls|ip|group>    # 底层 playbook
+# bin/node-rm <selector|ip...>       # 从 pigsty 中移除节点：
+bin/node-rm node-test                # 移除节点集群 'node-test'
+bin/node-rm 10.10.10.10              # 移除节点 '10.10.10.10'
+```
+
+------
+
+## 创建管理员 [#create-admin]
+
+如果当前用户对节点没有免密 ssh/sudo 访问权限，您可以使用其他管理员用户来引导节点：
+
+```bash
+node.yml -t node_admin -k -K -e ansible_user=<another admin>   # 为另一个管理员输入 ssh/sudo 密码
+```
+
+------
+
+## 绑定 VIP [#bind-vip]
+
+您可以使用 [`vip_enabled`](/zh/node/param#vip_enabled) 在节点集群上绑定可选的 L2 VIP。
+
+```bash
+proxy:
+  hosts:
+    10.10.10.29: { nodename: proxy-1 }
+    10.10.10.30: { nodename: proxy-2 } # , vip_role: master }
+  vars:
+    node_cluster: proxy
+    vip_enabled: true
+    vip_vrid: 128
+    vip_address: 10.10.10.99
+    vip_interface: eth1
+./node.yml -l proxy -t node_vip     # 首次启用
+./node.yml -l proxy -t vip_refresh  # 刷新 VIP 配置（例如指定主节点）
+```
+
+------
+
+## 其他任务 [#other-tasks]
+
+```bash
+# Play
+./node.yml -t node                            # 初始化节点本身（不包括 haproxy 监控）
+./node.yml -t haproxy                         # 在节点上设置 haproxy 以暴露服务
+./node.yml -t monitor                         # 设置 node_exporter 和 promtail 用于指标和日志
+./node.yml -t node_vip                        # 为节点集群 L2 VIP 启用 keepalived
+./node.yml -t vip_config,vip_reload           # 刷新 L2 VIP 配置
+./node.yml -t haproxy_config,haproxy_reload   # 刷新节点集群上的 haproxy 服务定义
+./node.yml -t register_prometheus             # 将节点注册到 Prometheus
+./node.yml -t register_nginx                  # 将 haproxy 管理页面 URL 注册到基础设施节点上的 Nginx
+
+# Task
+./node.yml -t node-id        # 生成节点身份
+./node.yml -t node_name      # 设置主机名
+./node.yml -t node_hosts     # 设置 /etc/hosts 记录
+./node.yml -t node_resolv    # 设置 DNS 解析器
+./node.yml -t node_firewall  # 设置防火墙和 selinux
+./node.yml -t node_ca        # 添加和信任 CA 证书
+./node.yml -t node_repo      # 添加上游仓库
+./node.yml -t node_pkg       # 安装 yum 包
+./node.yml -t node_feature   # 设置 numa、grub、静态网络
+./node.yml -t node_kernel    # 启用内核模块
+./node.yml -t node_tune      # 设置调优配置文件
+./node.yml -t node_sysctl    # 设置额外的 sysctl 参数
+./node.yml -t node_profile   # 写入 /etc/profile.d/node.sh
+./node.yml -t node_ulimit    # 设置资源限制
+./node.yml -t node_data      # 设置主数据目录
+./node.yml -t node_admin     # 设置管理员用户和 SSH 密钥
+./node.yml -t node_timezone  # 设置时区
+./node.yml -t node_ntp       # 设置 NTP 服务器/客户端
+./node.yml -t node_crontab   # 添加/覆写 crontab 任务
+./node.yml -t node_vip       # 为节点集群设置可选的 L2 VRRP VIP
+```
+
+
+------
+
+## 节点调优 [#node-tune]
+
+Pigsty 为不同的工作负载预定义了四个调优配置文件：
+
+| 配置文件                                                                                  | 描述                            | 场景                        |
+|------------------------------------------------------------------------------------------|--------------------------------|---------------------------------|
+| [`TINY`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-tiny.conf) | 针对小型虚拟机运行优化           | 规格 < 4c8g                     |
+| [`OLTP`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-oltp.conf) | 针对延迟优化                    | 默认，事务处理 |
+| [`OLAP`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-olap.conf) | 针对吞吐量优化                  | 分析性工作负载              |
+| [`CRIT`](https://github.com/pgsty/pigsty/blob/main/roles/node/templates/tuned-crit.conf) | 针对可靠性优化                  | 金融、关键业务               |
+
+您也可以在节点上使用 `tuned-adm` 命令管理调优配置文件：
+
+```bash
+tuned-adm list             # 列出可用配置文件
+tuned-adm active           # 显示当前配置文件
+tuned-adm profile          # 列出活动配置文件
+tuned-adm profile <name>   # 切换到配置文件 <name>
+tuned-adm verify           # 列出活动配置文件
+cat /var/log/tuned/tuned.log  # 显示调优日志
+```
+
+------
+
+## 内核模块 [#kernel-modules]
+
+您可以在 `node.yml` 中使用 [`node_kernel_modules`](/zh/node/param#node_kernel_modules) 管理内核模块。
+
+要手动管理内核模块，您可以在节点上使用以下命令：
+
+```bash
+lsmod                   # 列出已加载的内核模块
+modprobe <module>       # 加载内核模块 <module>
+```

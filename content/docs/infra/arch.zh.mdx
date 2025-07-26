@@ -1,0 +1,29 @@
+---
+title: 架构
+description: infra 模块中的架构和实体
+icon: Blocks
+---
+
+标准的 Pigsty 部署附带一个 [**`INFRA`**](/zh/infra/) 模块，提供以下服务：
+
+![](/img/pigsty/infra.png)
+
+这些对于生产级 PostgreSQL 服务是必需的，将默认安装。
+
+|      组件      |  端口  |   域名   | 描述                       |
+|:-------------------:|:------:|:----------:|-----------------------------------|
+|       `nginx`       |  `80`  | `h.pigsty` | Web 服务门户（YUM/APT 仓库） |
+|   `alertmanager`    | `9093` | `a.pigsty` | 告警聚合和传递    |
+|    `prometheus`     | `9090` | `p.pigsty` | 监控时间序列数据库   |
+|      `grafana`      | `3000` | `g.pigsty` | 可视化平台            |
+|        `loki`        | `3100` |     -      | 日志收集服务器         |
+|    `pushgateway`    | `9091` |     -      | 收集一次性作业指标      |
+| `blackbox_exporter` | `9115` |     -      | ICMP、TCP、HTTP 探测           |
+|      `dnsmasq`      |  `53`  |     -      | DNS 服务器，可选              |
+|      `chronyd`      | `123`  |     -      | NTP 时间服务器，可选         |
+
+<Callout title="HA PG 可以在没有 INFRA 的情况下部署" type="warn">
+
+如果您不想要这些，[**最小安装**](/zh/install/minimal) 模式可以在没有 Infra 模块的情况下部署 HA Postgres。
+
+</Callout>

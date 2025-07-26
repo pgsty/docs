@@ -1,0 +1,33 @@
+---
+title: FAQ
+description: 常见问题解答
+icon: MessageCircleQuestion
+---
+
+## 无法启动多节点/多驱动器 MinIO 集群。 [#fail-to-launch-multi-node-multi-driver-minio-cluster]
+
+在 [多驱动器](/zh/minio/config#single-node-multi-drive) 或 [多节点](/zh/minio/config#multi-node-multi-drive) 模式下，如果数据目录不是有效的挂载点，MinIO 将拒绝启动。
+
+为 MinIO 数据目录使用挂载的磁盘而不是普通目录。您只能在 [单节点单驱动器](/zh/minio/config#single-node-single-drive) 模式下使用普通目录。
+
+------
+
+## 如何部署多节点多驱动器 MinIO 集群？ [#how-to-deploy-a-multi-node-multi-drive-minio-cluster]
+
+> 查看 [创建多节点多驱动器 MinIO 集群](/zh/minio/config#multi-node-multi-drive)
+
+------
+
+## 如何向现有 MinIO 集群添加成员？ [#how-to-add-a-member-to-the-existing-minio-cluster]
+
+> 您最好在部署前规划 MinIO 集群…因为这需要全局重启
+
+查看这个：[扩展 MinIO 部署](https://min.io/minio/linux/operations/install-deploy-manage/expand-minio-deployment.html)
+
+------
+
+## 如何为 PGSQL 使用 HA MinIO 部署？ [#how-to-use-a-ha-minio-deployment-for-pgsql]
+
+> 使用可选的负载均衡器和不同端口访问 HA MinIO 集群。
+
+这是一个示例：[访问 MinIO 服务](/zh/minio/usage#access-cluster)

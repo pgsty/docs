@@ -1,0 +1,9 @@
+---
+title: 监控
+description: docker 监控和仪表板
+icon: Telescope
+---
+
+如果节点的 [`docker_enabled`](/zh/docker/param#docker_enabled) = `true`，Pigsty 将把 docker 守护进程添加到监控目标中
+
+但是 docker 模块没有默认的仪表板和告警规则，您可以向 prometheus 和 grafana 添加自己的规则。

@@ -1,0 +1,253 @@
+---
+title: PG 内核分支
+description: 模拟其他数据库管理系统，用特殊分支替换普通 PostgreSQL
+icon: Cpu
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Badge } from '@/components/ui/badge';
+import { Network, Database, Shield, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand} from 'lucide-react';
+
+
+
+Pigsty 支持各种 PostgreSQL 内核和兼容分支，
+使您能够模拟不同的数据库系统，同时利用 PostgreSQL 的生态系统。
+每个内核提供独特的功能和兼容性层。
+
+
+## 数据库内核 [#database-kernels]
+
+<Cards>
+    <Card
+        title="Citus"
+        description="原生分布式扩展"
+        href="#citus"
+        icon={<Network className="text-emerald-600"/>}
+    />
+    <Card
+        title="Babelfish"
+        description="SQL Server 协议兼容"
+        href="#babelfish"
+        icon={<Fish className="text-gray-600"/>}
+    />
+    <Card
+        title="IvorySQL"
+        description="Oracle 语法和 PL/SQL 兼容"
+        href="#ivorysql"
+        icon={<Target className="text-sky-700"/>}
+    />
+    <Card
+        title="OpenHalo"
+        description="MySQL 协议兼容性"
+        href="#openhalo"
+        icon={<RefreshCcw className="text-red-600"/>}
+    />
+    <Card
+        title="OrioleDB"
+        description="OLTP 优化的云原生存储引擎"
+        href="#orioledb"
+        icon={<Zap className="text-yellow-500"/>}
+    />
+    <Card
+        title="PolarDB PG"
+        description="类似 Aurora 的共享存储，符合中国合规要求"
+        href="#polardb"
+        icon={<PawPrint className="text-orange-500"/>}
+    />
+    <Card
+        title="Supabase"
+        description="后端即服务，自托管 Firebase"
+        href="#supabase"
+        icon={<Zap className="text-green-400"/>}
+    />
+    <Card
+        title="Greenplum"
+        description="大规模并行处理数据仓库"
+        href="#greenplum"
+        icon={<Cherry className="text-emerald-700"/>}
+    />
+</Cards>
+
+
+--------
+
+## 选择合适的内核 [#choose-the-right-kernel]
+
+<Callout type="info">
+**灵活内核**：为您的特定用例选择合适的内核 - 无论您需要 MSSQL 兼容性、Oracle 功能还是水平扩展能力。
+</Callout>
+
+| 内核                                      | 关键特性                 | 描述                                     |
+|------------------------------------------|-------------------------|------------------------------------------|
+| [Citus](/zh/feat/kernel#citus)          | **水平扩展**             | 原生分布式 PostgreSQL                    |
+| [WiltonDB](/zh/feat/kernel#babelfish)   | **SQL Server 迁移**      | SQL Server 协议兼容性                   |
+| [IvorySQL](/zh/feat/kernel#ivorysql)    | **Oracle 迁移**          | Oracle 语法和 PL/SQL 兼容               |
+| [OpenHalo](/zh/feat/kernel#openhalo)    | **MySQL 迁移**           | MySQL 协议兼容性                        |
+| [FerretDB](/zh/ferret)                  | **MongoDB 迁移**         | MongoDB 协议兼容性                      |
+| [OrioleDB](/zh/feat/kernel#orioledb)    | **OLTP 优化**            | Zheap、无膨胀、S3 存储                  |
+| [PolarDB PG](/zh/feat/kernel#polardb)   | **Aurora 风格 RAC**      | RAC、中国国产合规                        |
+| [Supabase](/zh/feat/kernel#supabase)    | **后端即服务**           | 基于 PostgreSQL 的 BaaS，Firebase 替代品 |
+| [Greenplum](/zh/feat/kernel#greenplum)  | **分析/数据仓库**        | 大规模并行处理数据仓库                   |
+
+
+
+
+--------
+
+## Citus（分布式） [#citus]
+
+<Badge icon={<Clock />}  variant="blue-subtle"><a   href="#citus" className="no-underline">Citus</a></Badge>
+<Badge icon={<Expand />}  variant="blue-subtle">原生分布式</Badge>
+
+
+Citus 将 PostgreSQL 转换为分布式数据库系统，支持跨多个节点的水平扩展。使用 Pigsty 部署原生 HA Citus 集群，获得更好的吞吐量和性能。
+
+### 关键特性 [#key-features]
+
+- **分布式表**：自动在工作节点间分片表
+- **分布式查询**：在整个集群上执行查询
+- **高可用性**：内置复制和故障转移功能
+- **实时分析**：处理事务性和分析性工作负载
+- **Postgres 兼容性**：保持完整的 PostgreSQL 功能兼容性
+
+### 使用场景 [#use-cases]
+
+- 需要水平扩展的多租户 SaaS 应用程序
+- 大数据集上的实时分析
+- 高吞吐量 OLTP 工作负载
+- 需要扩展超出单节点限制的应用程序
+
+<Callout type="warn">
+**需要规划**：适当的分片键选择对于优化性能和避免跨分片查询至关重要。
+</Callout>
+
+--------
+
+## Babelfish（MSSQL） [#babelfish]
+
+<Callout variant="secondary">SQL Server 兼容</Callout> <Callout variant="outline">Beta</Callout>
+
+使用 WiltonDB 和 Babelfish 创建 SQL Server 兼容的 PostgreSQL 集群，提供与 Microsoft SQL Server 的协议级兼容性。
+
+### 关键特性 [#key-features-babelfish]
+
+- **T-SQL 支持**：原生执行 T-SQL 查询
+- **协议兼容性**：使用 SQL Server 驱动程序和工具连接
+- **存储过程**：支持 T-SQL 存储过程和函数
+- **数据类型**：与 SQL Server 数据类型和行为兼容
+- **迁移工具**：简化从 SQL Server 环境的迁移
+
+### 使用场景 [#use-cases-babelfish]
+
+- 将传统 SQL Server 应用程序迁移到 PostgreSQL
+- 需要 SQL Server 兼容性的多数据库环境
+- 在保持应用程序兼容性的同时降低成本
+- 从 SQL Server 迁移到开源替代方案的云迁移
+
+<Callout type="info">
+**迁移路径**：非常适合希望降低许可成本同时保持现有 SQL Server 应用程序兼容性的组织。
+</Callout>
+
+--------
+
+## IvorySQL（Oracle） [#ivorysql]
+
+<Callout variant="secondary">Oracle 兼容</Callout> <Callout variant="outline">社区版</Callout>
+
+使用由 HighGo 开源的 IvorySQL 内核运行 Oracle 兼容的 PostgreSQL 集群，提供 Oracle 语法和功能兼容性。
+
+### 关键特性 [#key-features-ivorysql]
+
+- **Oracle 语法支持**：支持 Oracle SQL 语法和 PL/SQL
+- **数据类型兼容**：Oracle 数据类型映射和行为
+- **包支持**：Oracle 风格的包和过程
+- **内置函数**：Oracle 兼容的内置函数库
+- **迁移友好**：简化从 Oracle 的迁移过程
+
+### 使用场景 [#use-cases-ivorysql]
+
+- Oracle 到 PostgreSQL 的数据库迁移
+- 降低 Oracle 许可成本
+- 遗留 Oracle 应用程序现代化
+- 需要 Oracle 功能的新项目
+
+--------
+
+## OpenHalo（MySQL） [#openhalo]
+
+<Callout variant="secondary">MySQL 兼容</Callout> <Callout variant="outline">实验性</Callout>
+
+OpenHalo 提供 MySQL 协议兼容性，允许 MySQL 应用程序和工具连接到 PostgreSQL。
+
+### 关键特性 [#key-features-openhalo]
+
+- **MySQL 协议**：与 MySQL 客户端和驱动程序兼容
+- **SQL 方言**：支持 MySQL 特定的 SQL 语法
+- **函数映射**：MySQL 函数到 PostgreSQL 等效项的映射
+- **连接器支持**：与现有 MySQL 工具和连接器工作
+
+--------
+
+## OrioleDB（云原生） [#orioledb]
+
+<Callout variant="secondary">云原生存储</Callout> <Callout variant="outline">开发中</Callout>
+
+OrioleDB 是一个云原生存储引擎，为现代云环境优化，提供无膨胀存储和 S3 集成。
+
+### 关键特性 [#key-features-orioledb]
+
+- **无膨胀存储**：消除 PostgreSQL 传统的膨胀问题
+- **云存储集成**：原生 S3 存储支持
+- **OLTP 优化**：为事务性工作负载优化
+- **现代架构**：为云原生环境设计
+
+--------
+
+## PolarDB PG（共享存储） [#polardb]
+
+<Callout variant="secondary">共享存储</Callout> <Callout variant="outline">企业版</Callout>
+
+PolarDB for PostgreSQL 提供类似 Aurora 的共享存储架构，具有中国国产化特性。
+
+### 关键特性 [#key-features-polardb]
+
+- **共享存储**：计算与存储分离架构
+- **读写分离**：多个只读实例共享存储
+- **快速扩容**：快速添加只读实例
+- **国产化**：符合中国信创要求
+
+--------
+
+## Supabase（BaaS） [#supabase]
+
+<Callout variant="secondary">后端即服务</Callout> <Callout variant="outline">开源</Callout>
+
+Supabase 将 PostgreSQL 转换为完整的后端即服务平台，提供 Firebase 的开源替代方案。
+
+### 关键特性 [#key-features-supabase]
+
+- **实时数据库**：实时订阅和同步
+- **认证服务**：内置用户认证系统
+- **存储服务**：文件存储和 CDN
+- **边缘函数**：无服务器函数支持
+- **仪表板**：Web 管理界面
+
+--------
+
+## Greenplum（数据仓库） [#greenplum]
+
+<Callout variant="secondary">MPP 架构</Callout> <Callout variant="outline">企业版</Callout>
+
+Greenplum 是基于 PostgreSQL 的大规模并行处理数据仓库，专为分析性工作负载设计。
+
+### 关键特性 [#key-features-greenplum]
+
+- **MPP 架构**：大规模并行处理
+- **列式存储**：优化分析查询性能
+- **分布式计算**：跨节点并行查询执行
+- **ETL 工具**：内置数据加载和转换工具
+- **企业功能**：备份、恢复和高可用性
+
+---
+
+通过选择合适的 PostgreSQL 内核分支，您可以在保持 PostgreSQL 生态系统优势的同时获得特定的功能和兼容性。每个内核都为不同的使用场景和迁移需求提供了解决方案。

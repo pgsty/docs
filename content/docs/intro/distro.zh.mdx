@@ -1,0 +1,68 @@
+---
+title: PG 发行版
+description: 为一切使用 PostgreSQL！用 postgres 超能力构建数据基础设施
+icon: Gift
+---
+
+[PostgreSQL 正在吞噬数据库世界](https://medium.com/@fengruohang/postgres-is-eating-the-database-world-157c204dcfc4)，
+它正在成为数据库世界的 Linux 内核。
+
+**但是发行版在哪里？**
+
+--------
+
+## 什么是发行版？ [#what-is-distribution]
+
+如今，人们使用 Ubuntu、Debian 和 RHEL 等操作系统发行版，而不是直接使用原始的 Linux 内核。
+您需要大量组件来构建实用的操作系统，例如 systemd、cron、NTP、DNS、日志记录等，以使原始 Linux 内核可用。
+
+Linux 内核大小为几 MB，但完整的操作系统 DVD 可以轻松占用 10+ GB，包括所有必要的部分和软件包。
+这就是 PostgreSQL 发行版的全部内容——为您提供构建生产级数据库服务所需的一切。
+
+![](/img/pigsty/kernel-distro.jpg)
+
+
+--------
+
+## 为什么我们需要发行版？ [#why-do-we-need-distribution]
+
+我们有两个东西来打造强大的 PostgreSQL 发行版：[扩展](#extensions) 和 [服务](#services)。
+
+
+## 扩展 [#extensions]
+
+PostgreSQL 生态系统中有 [1000+](https://gist.github.com/joelonsql/e5aa27f8cc9bd22b8999b7de8aee9d47) 个扩展。
+但其中只有 100 个可以通过"官方" PGDG 存储库访问。
+
+![](/img/pigsty/ecosystem.gif)
+
+因此，我们将最受欢迎和最有用的扩展打包到预制的 RPM/DEB 包中，支持 10 个 Linux 发行版和 5 个 PG 主版本。
+现在有无与伦比的 [422 个扩展](/zh/pgsql/extension) 开箱即用，我们将在未来继续添加更多扩展。
+
+更重要的是，我们甚至支持 8 种 PostgreSQL 内核版本（扩展、分支、包装器等），包括：
+
+| 内核                                      | 关键特性                 | 描述                                     |
+|------------------------------------------|-------------------------|------------------------------------------|
+| [Citus](/zh/feat/kernel#citus)          | **水平扩展**             | 原生分布式 PostgreSQL                    |
+| [WiltonDB](/zh/feat/kernel#babelfish)   | **SQL Server 迁移**      | SQL Server 协议兼容性                   |
+| [IvorySQL](/zh/feat/kernel#ivorysql)    | **Oracle 迁移**          | Oracle 语法和 PL/SQL 兼容               |
+| [OpenHalo](/zh/feat/kernel#openhalo)    | **MySQL 迁移**           | MySQL 协议兼容性                        |
+| [FerretDB](/zh/ferret)                  | **MongoDB 迁移**         | MongoDB 协议兼容性                      |
+| [OrioleDB](/zh/feat/kernel#orioledb)    | **OLTP 优化**            | Zheap、无膨胀、S3 存储                  |
+| [PolarDB PG](/zh/feat/kernel#polardb)   | **Aurora 风格 RAC**      | RAC、中国国产合规                        |
+| [Supabase](/zh/feat/kernel#supabase)    | **后端即服务**           | 基于 PostgreSQL 的 BaaS，Firebase 替代品 |
+| [Greenplum](/zh/feat/kernel#greenplum)  | **分析/数据仓库**        | 大规模并行处理数据仓库                   |
+
+
+
+--------
+
+## 服务 [#services]
+
+![](/img/pigsty/infra.png)
+
+您可以像 `systemctl start postgresql` 这样轻松地开始使用原始 PostgreSQL 内核，但这远不是生产级服务。
+这就是人们为 AWS RDS 等托管 PostgreSQL 服务支付每 vCPU·月 160 美元的主要原因。
+
+但是，如果您可以用几个命令在自己的服务器上构建企业级 PostgreSQL 服务，而且不需要许可费用，会怎么样？
+Pigsty 使您能够做到这一点。它为您提供具有 PITR、监控和告警、连接池等功能的 HA PostgreSQL 集群

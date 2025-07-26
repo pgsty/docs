@@ -1,0 +1,153 @@
+---
+title: 管理
+description: 管理基础设施组件、本地仓库、nginx 门户和域名
+icon: Wrench
+---
+
+import {
+    GlobeIcon,
+    ShieldCheckIcon,
+    Warehouse,
+    DoorOpen,
+} from 'lucide-react';
+
+这里是与 INFRA 模块相关的一些管理任务
+
+<Cards>
+    <Card icon={<DoorOpen className="text-violet-500"/>} title='Nginx 门户' href={"/zh/admin/portal"}>
+        WebUI 服务的 Nginx 门户
+    </Card>
+    <Card icon={<Warehouse className="text-amber-500"/>} title='本地仓库' href={"/zh/admin/repo"}>
+        管理本地 APT / YUM 仓库
+    </Card>
+    <Card icon={<GlobeIcon className="text-cyan-500"/>} title='域名' href={"/zh/admin/domain"}>
+        使用本地/公共域名
+    </Card>
+    <Card icon={<ShieldCheckIcon className="text-rose-500"/>} title='CA 与证书' href={"/zh/admin/cert"}>
+        使用自签名或真实的 HTTPS 证书
+    </Card>
+</Cards>
+
+------
+
+## 安装 INFRA [#install-infra]
+
+使用 [`infra.yml`](/zh/infra/playbook/#infrayml) playbook 在基础设施节点上安装 INFRA 模块：
+
+```bash
+./infra.yml     # 在 infra 组上安装 INFRA 模块
+```
+
+------
+
+## 移除 INFRA [#remove-infra]
+
+使用 [`infra-rm.yml`](/zh/infra/playbook/#infra-rmyml) playbook 从基础设施节点卸载 INFRA 模块：
+
+```bash
+./infra-rm.yml  # 从 infra 组卸载 INFRA 模块
+```
+
+------
+
+## 扩展 INFRA [#expand-infra]
+
+要扩展现有的 INFRA 部署，首先通过添加新节点 IP 并分配唯一的 [`infra_seq`](/zh/infra/param#infra_seq) 数字来修改 `infra` 组：
+
+```yaml
+all:
+  children:
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 } # 现有节点 #1
+        10.10.10.11: { infra_seq: 2 } # 新节点 #2（新鲜血液！）
+```
+
+然后使用 [`infra.yml`](/zh/infra/playbook/#infrayml) playbook 在新节点上安装 INFRA：
+
+```bash
+./infra.yml -l 10.10.10.11    # 在新节点上安装 INFRA
+```
+
+------
+
+## 本地仓库 [#local-repo]
+
+使用这些 playbook 任务在基础设施节点上管理本地软件包仓库（YUM/APT）：
+
+```bash
+./infra.yml -t repo              # 从互联网或离线软件包创建本地仓库
+
+./infra.yml -t repo_dir          # 创建本地仓库目录
+./infra.yml -t repo_check        # 检查本地仓库是否存在
+./infra.yml -t repo_prepare      # 如果可用，使用现有的本地仓库
+./infra.yml -t repo_build        # 如果不存在，从上游构建本地仓库
+./infra.yml     -t repo_upstream     # 添加上游仓库/列表文件
+./infra.yml     -t repo_remove       # 如果 repo_remove=true，移除现有仓库文件
+./infra.yml     -t repo_add          # 向 /etc/yum.repos.d（或 apt）添加上游仓库文件
+./infra.yml     -t repo_url_pkg      # 下载在 repo_url_packages 中定义的软件包
+./infra.yml     -t repo_cache        # 使用 yum makecache / apt update 创建元数据缓存
+./infra.yml     -t repo_boot_pkg     # 安装引导软件包（createrepo_c、yum-utils 等）
+./infra.yml     -t repo_pkg          # 从上游下载软件包和依赖项
+./infra.yml     -t repo_create       # 使用 createrepo_c / dpkg-dev 创建本地仓库
+./infra.yml     -t repo_use          # 向 /etc/yum.repos.d | apt 源添加新仓库
+./infra.yml -t repo_nginx        # 如果未运行，启动 nginx 作为文件服务器
+```
+
+常用命令：
+
+```bash
+./infra.yml     -t repo_upstream     # 添加在 repo_upstream 中定义的上游仓库
+./infra.yml     -t repo_pkg          # 下载软件包及其依赖项
+./infra.yml     -t repo_create       # 创建/更新本地 YUM/APT 仓库
+```
+
+------
+
+## 管理 Nginx [#managing-nginx]
+
+```bash
+./infra.yml -t nginx                       # 重置 Nginx 组件
+./infra.yml -t nginx_index                 # 重新渲染 Nginx 主页
+./infra.yml -t nginx_config,nginx_reload   # 重新渲染配置并公开新的上游服务
+```
+
+如果用户在 `infra_portal` 的 `certbot` 字段中指定证书名称，您可以使用 certbot 获取免费的 HTTPS 证书：
+
+```bash
+# 使用 certbot 为真实域名获取免费的 HTTPS 证书
+./infra.yml -t nginx_certbot,nginx_reload -e certbot_sign=true
+```
+
+------
+
+## 管理基础设施组件 [#manage-infra-components]
+
+使用这些 playbook 任务在基础设施节点上管理基础设施组件
+
+```bash
+./infra.yml -t infra           # 配置基础设施
+./infra.yml -t infra_env       # 配置环境变量：env_dir、env_pg、env_pgadmin、env_var
+./infra.yml -t infra_pkg       # 安装必需的软件包：infra_pkg_yum、infra_pkg_pip
+./infra.yml -t infra_user      # 设置基础设施操作系统用户组
+./infra.yml -t infra_cert      # 为基础设施组件颁发证书
+./infra.yml -t dns             # 配置 DNSMasq：dns_config、dns_record、dns_launch
+./infra.yml -t nginx           # 配置 Nginx：nginx_config、nginx_cert、nginx_static、nginx_launch、nginx_exporter
+./infra.yml -t prometheus      # 配置 Prometheus：prometheus_clean、prometheus_dir、prometheus_config、prometheus_launch、prometheus_reload
+./infra.yml -t alertmanager    # 配置 AlertManager：alertmanager_config、alertmanager_launch
+./infra.yml -t pushgateway     # 配置 PushGateway：pushgateway_config、pushgateway_launch
+./infra.yml -t blackbox        # 配置 Blackbox Exporter：blackbox_launch
+./infra.yml -t grafana         # 配置 Grafana：grafana_clean、grafana_config、grafana_plugin、grafana_launch、grafana_provision
+./infra.yml -t loki            # 配置 Loki：loki_clean、loki_dir、loki_config、loki_launch
+./infra.yml -t infra_register  # 向 prometheus 注册基础设施组件
+```
+
+其他有用的任务
+
+```bash
+./infra.yml -t nginx_index                        # 重新渲染 Nginx 主页
+./infra.yml -t nginx_config,nginx_reload          # 重新渲染配置并公开新的上游服务
+./infra.yml -t prometheus_conf,prometheus_reload   # 重新生成 Prometheus 配置并重新加载
+./infra.yml -t prometheus_rule,prometheus_reload   # 重新复制规则和告警，然后重新加载
+./infra.yml -t grafana_plugin                     # 下载 Grafana 插件（可能需要 VPN）
+```

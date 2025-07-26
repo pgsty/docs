@@ -1,0 +1,141 @@
+---
+title: 管理
+description: 运行管理任务
+icon: Wrench
+---
+
+这里是 Redis 的一些常见管理任务。更多详情请查看 [FAQ: Redis](/zh/redis/faq/)。
+
+------
+
+## 初始化 Redis [#init-redis]
+
+**初始化集群/节点/实例**
+
+```bash
+# 在组 <cluster> 上初始化所有 redis 实例
+./redis.yml -l <cluster>      # 初始化 redis 集群
+
+# 初始化 redis 节点
+./redis.yml -l 10.10.10.10    # 初始化 redis 节点
+
+# 初始化一个特定的 redis 实例 10.10.10.11:6379
+./redis.yml -l 10.10.10.11 -e redis_port=6379 -t redis
+```
+
+您也可以使用包装脚本：
+
+```bash
+bin/redis-add redis-ms          # 创建 redis 集群 'redis-ms'
+bin/redis-add 10.10.10.10       # 创建 redis 节点 '10.10.10.10'
+bin/redis-add 10.10.10.10 6379  # 创建 redis 实例 '10.10.10.10:6379'
+```
+
+------
+
+## 移除 Redis [#remove-redis]
+
+**移除集群/节点/实例**
+
+```bash
+# 移除集群 `redis-test`
+redis-rm.yml -l redis-test
+
+# 移除集群 `redis-test`，并卸载软件包
+redis-rm.yml -l redis-test -e redis_uninstall=true
+
+# 移除 redis 节点 10.10.10.13 上的所有实例
+redis-rm.yml -l 10.10.10.13
+
+# 移除一个特定的实例 10.10.10.13:6379
+redis-rm.yml -l 10.10.10.13 -e redis_port=6379
+```
+
+您也可以使用包装脚本：
+
+```bash
+bin/redis-rm redis-ms          # 移除 redis 集群 'redis-ms'
+bin/redis-rm 10.10.10.10       # 移除 redis 节点 '10.10.10.10'
+bin/redis-rm 10.10.10.10 6379  # 移除 redis 实例 '10.10.10.10:6379'
+```
+
+------
+
+## 重新加载 Redis [#reload-redis]
+
+您可以部分运行 [`redis.yml`](/zh/redis/playbook/#redisyml) 任务来重新配置 redis。
+
+```bash
+./redis.yml -l <cluster> -t redis_config,redis_launch
+```
+
+请注意，redis 无法在线重新加载；您必须重启 redis 才能使配置生效。
+
+------
+
+## 使用 Redis CLI [#use-redis-cli]
+
+使用 `redis-cli` 访问 redis 实例：
+
+```bash
+$ redis-cli -h 10.10.10.10 -p 6379 # <--- 使用主机和端口连接
+10.10.10.10:6379> auth redis.ms    # <--- 使用密码验证
+OK
+10.10.10.10:6379> set a 10         # <--- 设置一个键
+OK
+10.10.10.10:6379> get a            # <--- 获取一个键
+"10"
+```
+
+Redis 还有一个 `redis-benchmark`，可用于基准测试和在 redis 服务器上生成负载：
+
+```bash
+redis-benchmark -h 10.10.10.13 -p 6379
+```
+
+------
+
+## 复制 Redis [#replicate-redis]
+
+https://redis.io/commands/replicaof/
+
+```bash
+# 将 redis 实例提升为主节点
+> REPLICAOF NO ONE
+"OK"
+
+# 使 redis 实例成为另一个实例的副本
+> REPLICAOF 127.0.0.1 6799
+"OK"
+```
+
+------
+
+## 使用 Sentinel 的高可用 [#ha-with-sentinel]
+
+您必须使用您的 redis sentinel 手动为 redis 独立主从集群启用 HA。
+
+以 4 节点沙盒为例，redis sentinel 集群 `redis-meta` 用于管理 `redis-ms` 独立集群。
+
+```bash
+# 对于每个 sentinel，使用以下方式将 redis 主节点添加到 sentinel：
+$ redis-cli -h 10.10.10.11 -p 26379 -a redis.meta
+10.10.10.11:26379> SENTINEL MONITOR redis-ms 10.10.10.10 6379 1
+10.10.10.11:26379> SENTINEL SET redis-ms auth-pass redis.ms      # 如果启用了身份验证，必须配置密码
+```
+
+如果您希望从 sentinel 中移除 redis 主节点，请使用 `SENTINEL REMOVE <name>`。
+
+您可以使用 [`redis_sentinel_monitor`](/zh/redis/param#redis_sentinel_monitor) 在 sentinel 集群上配置多个 redis 主节点。
+
+```yaml
+redis_sentinel_monitor: # redis sentinel 的主节点列表，使用 cls 作为名称，主节点 ip:port
+  - { name: redis-src, host: 10.10.10.45, port: 6379 ,password: redis.src, quorum: 1 }
+  - { name: redis-dst, host: 10.10.10.48, port: 6379 ,password: redis.dst, quorum: 1 }
+```
+
+并使用以下方式刷新 sentinel 集群上的主节点列表：
+
+```bash
+./redis.yml -l redis-meta -t redis-ha   # 如果您的 sentinel 集群有不同的名称，请替换 redis-meta
+```

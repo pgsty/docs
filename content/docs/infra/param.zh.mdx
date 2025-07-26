@@ -1,0 +1,1130 @@
+---
+title: 参数
+description: 使用选项进行自定义
+icon: Variable
+---
+
+Pigsty 基础设施组件的参数：本地 YUM 仓库、Nginx、DNSMasq、Prometheus、Grafana、Loki、AlertManager、PushGateway、Blackbox Exporter 等。
+
+本模块共有 **9** 个部分，**57** 个参数。
+
+- [`META`](#meta)：基础设施元数据
+- [`CA`](#ca)：自签名 CA
+- [`INFRA_ID`](#infra_id)：门户和身份
+- [`REPO`](#repo)：本地 YUM/APT 仓库
+- [`INFRA_PACKAGE`](#infra_package)：要安装的包
+- [`NGINX`](#nginx)：Nginx Web 服务器
+- [`DNS`](#dns)：DNSMasq 域名服务器
+- [`PROMETHEUS`](#prometheus)：Prometheus、AlertManager、PushGateway 和 Blackbox Exporter
+- [`GRAFANA`](#grafana)：Grafana，可视化平台
+- [`LOKI`](#loki)：Loki，日志服务器
+
+------
+
+## 参数 [#parameters]
+
+| 名称                                                        | 部分                               | 类型         | 级别 | 注释                                            |
+|-------------------------------------------------------------|-----------------------------------|--------------|-------|----------------------------------------------------|
+| [`version`](#version)                                       | [`META`](#meta)                   | `string`     | G     | pigsty 版本字符串                              |
+| [`admin_ip`](#admin_ip)                                     | [`META`](#meta)                   | `ip`         | G     | 管理员节点 IP 地址                              |
+| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | 上游镜像区域：default、china、europe     |
+| [`proxy_env`](#proxy_env)                                   | [`META`](#meta)                   | `dict`       | G     | 下载包时的全局代理环境         |
+| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create、recreate、copy；默认为 create          |
+| [`ca_cn`](#ca_cn)                                           | [`CA`](#ca)                       | `string`     | G     | CA 通用名称，固定为 pigsty-ca                 |
+| [`cert_validity`](#cert_validity)                           | [`CA`](#ca)                       | `interval`   | G     | 证书有效期，默认 20 年                 |
+| [`infra_seq`](#infra_seq)                                   | [`INFRA_ID`](#infra_id)           | `int`        | I     | 基础设施节点身份，必需                      |
+| [`infra_portal`](#infra_portal)                             | [`INFRA_ID`](#infra_id)           | `dict`       | G     | 通过门户暴露的基础设施服务                  |
+| [`repo_enabled`](#repo_enabled)                             | [`REPO`](#repo)                   | `bool`       | G/I   | 在此基础设施节点上创建 yum 仓库？              |
+| [`repo_home`](#repo_home)                                   | [`REPO`](#repo)                   | `path`       | G     | 仓库主目录，默认 `/www`                   |
+| [`repo_name`](#repo_name)                                   | [`REPO`](#repo)                   | `string`     | G     | 仓库名称，默认为 pigsty                       |
+| [`repo_endpoint`](#repo_endpoint)                           | [`REPO`](#repo)                   | `url`        | G     | 通过域名或 IP:端口访问此仓库的接入点     |
+| [`repo_remove`](#repo_remove)                               | [`REPO`](#repo)                   | `bool`       | G/A   | 移除现有上游仓库                      |
+| [`repo_modules`](#repo_modules)                             | [`REPO`](#repo)                   | `string`     | G/A   | 在 repo_upstream 中安装哪些仓库模块  |
+| [`repo_upstream`](#repo_upstream)                           | [`REPO`](#repo)                   | `upstream[]` | G     | 从哪里下载上游包                |
+| [`repo_packages`](#repo_packages)                           | [`REPO`](#repo)                   | `string[]`   | G     | 包含哪些包                      |
+| [`repo_extra_packages`](#repo_extra_packages)               | [`REPO`](#repo)                   | `string[]`   | G/C/I | 要包含的额外包                      |
+| [`repo_url_packages`](#repo_url_packages)                   | [`REPO`](#repo)                   | `string[]`   | G     | 来自 URL 的额外包                            |
+| [`infra_packages`](#infra_packages)                         | [`INFRA_PACKAGE`](#infra_package) | `string[]`   | G     | 要在基础设施节点上安装的包            |
+| [`infra_packages_pip`](#infra_packages_pip)                 | [`INFRA_PACKAGE`](#infra_package) | `string`     | G     | 为基础设施节点安装的 pip 包             |
+| [`nginx_enabled`](#nginx_enabled)                           | [`NGINX`](#nginx)                 | `bool`       | G/I   | 在此基础设施节点上启用 nginx？                   |
+| [`nginx_exporter_enabled`](#nginx_enabled)                  | [`NGINX`](#nginx)                 | `bool`       | G/I   | 在此基础设施节点上启用 nginx_exporter？          |
+| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx SSL 模式？disable、enable、enforce           |
+| [`nginx_cert_validity`](#nginx_cert_validity)               | [`NGINX`](#nginx)                 | `duration`   | G     | nginx 自签名证书有效期，默认 397 天   |
+| [`nginx_home`](#nginx_home)                                 | [`NGINX`](#nginx)                 | `path`       | G     | nginx 内容目录，默认 `/www`               |
+| [`nginx_port`](#nginx_port)                                 | [`NGINX`](#nginx)                 | `port`       | G     | nginx 监听端口，默认 80                   |
+| [`nginx_ssl_port`](#nginx_ssl_port)                         | [`NGINX`](#nginx)                 | `port`       | G     | nginx SSL 监听端口，默认 443              |
+| [`nginx_navbar`](#nginx_navbar)                             | [`NGINX`](#nginx)                 | `index[]`    | G     | nginx 索引页导航链接                  |
+| [`certbot_sign`](#certbot_sign)                             | [`NGINX`](#nginx)                 | `bool`       | G/A   | 设置期间使用 certbot 签名 nginx 证书？         |
+| [`certbot_email`](#certbot_email)                           | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot 邮箱地址，用于免费 SSL           |
+| [`certbot_option`](#certbot_option)                         | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot 额外选项                              |
+| [`dns_enabled`](#dns_enabled)                               | [`DNS`](#dns)                     | `bool`       | G/I   | 在此基础设施节点上设置 dnsmasq？                  |
+| [`dns_port`](#dns_port)                                     | [`DNS`](#dns)                     | `port`       | G     | DNS 服务器监听端口，默认 53              |
+| [`dns_records`](#dns_records)                               | [`DNS`](#dns)                     | `string[]`   | G     | 由 dnsmasq 解析的动态 DNS 记录            |
+| [`prometheus_enabled`](#prometheus_enabled)                 | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上启用 prometheus？              |
+| [`prometheus_clean`](#prometheus_clean)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/A   | 初始化期间清理 prometheus 数据？                 |
+| [`prometheus_data`](#prometheus_data)                       | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus 数据目录，默认 `/data/prometheus` |
+| [`prometheus_sd_dir`](#prometheus_sd_dir)                   | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus 文件服务发现目录        |
+| [`prometheus_sd_interval`](#prometheus_sd_interval)         | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 目标刷新间隔，默认 5 秒  |
+| [`prometheus_scrape_interval`](#prometheus_scrape_interval) | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 抓取和评估间隔，默认 10 秒  |
+| [`prometheus_scrape_timeout`](#prometheus_scrape_timeout)   | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 全局抓取超时，默认 8 秒    |
+| [`prometheus_options`](#prometheus_options)                 | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | prometheus 额外服务器选项                    |
+| [`pushgateway_enabled`](#pushgateway_enabled)               | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 pushgateway？              |
+| [`pushgateway_options`](#pushgateway_options)               | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | pushgateway 额外服务器选项                   |
+| [`blackbox_enabled`](#blackbox_enabled)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 blackbox_exporter？        |
+| [`blackbox_options`](#blackbox_options)                     | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | blackbox_exporter 额外服务器选项             |
+| [`alertmanager_enabled`](#alertmanager_enabled)             | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 alertmanager？             |
+| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager 监听端口，默认 `9093`        |
+| [`alertmanager_options`](#alertmanager_options)             | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | alertmanager 额外服务器选项                  |
+| [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter 指标路径，默认 `/metrics`        |
+| [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | 如何安装 exporter？none、yum、binary         |
+| [`exporter_repo_url`](#exporter_repo_url)                   | [`PROMETHEUS`](#prometheus)       | `url`        | G     | 如果通过 yum 安装 exporter 的仓库文件 URL |
+| [`grafana_enabled`](#grafana_enabled)                       | [`GRAFANA`](#grafana)             | `bool`       | G/I   | 在此基础设施节点上启用 grafana？                 |
+| [`grafana_clean`](#grafana_clean)                           | [`GRAFANA`](#grafana)             | `bool`       | G/A   | 初始化期间清理 grafana 数据？                    |
+| [`grafana_admin_username`](#grafana_admin_username)         | [`GRAFANA`](#grafana)             | `username`   | G     | grafana 管理员用户名，默认 `admin`         |
+| [`grafana_admin_password`](#grafana_admin_password)         | [`GRAFANA`](#grafana)             | `password`   | G     | grafana 管理员密码，默认 `pigsty`        |
+| [`loki_enabled`](#loki_enabled)                             | [`LOKI`](#loki)                   | `bool`       | G/I   | 在此基础设施节点上启用 loki？                    |
+| [`loki_clean`](#loki_clean)                                 | [`LOKI`](#loki)                   | `bool`       | G/A   | 是否移除现有 loki 数据？                 |
+| [`loki_data`](#loki_data)                                   | [`LOKI`](#loki)                   | `path`       | G     | loki 数据目录，默认 `/data/loki`             |
+| [`loki_retention`](#loki_retention)                         | [`LOKI`](#loki)                   | `interval`   | G     | loki 日志保留期，默认 15 天          |
+
+------
+
+## `META` [#meta]
+
+本部分包含当前 Pigsty 部署的元数据，如版本字符串、管理员节点 IP 地址、仓库镜像 [`region`](#region) 和下载包时的 HTTP(S) 代理。
+
+```yaml
+version: v3.4.1                   # Pigsty 版本字符串
+admin_ip: 10.10.10.10             # 管理员节点 IP 地址
+region: default                   # 上游镜像区域：default、china、europe
+proxy_env:                        # 下载包时的全局代理环境
+  no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.myqcloud.com,*.tsinghua.edu.cn"
+  # http_proxy:  # 在此设置您的代理：例如 http://user:pass@proxy.xxx.com
+  # https_proxy: # 在此设置您的代理：例如 http://user:pass@proxy.xxx.com
+  # all_proxy:   # 在此设置您的代理：例如 http://user:pass@proxy.xxx.com
+```
+
+------
+
+### `version` [#version]
+
+类型：`string`，级别：`G`
+
+pigsty 版本字符串
+
+默认值：`v3.6.0`
+
+它将用于 pigsty 内省和内容渲染。
+
+
+
+------
+
+### `admin_ip` [#admin_ip]
+
+类型：`ip`，级别：`G`
+
+管理员节点 IP 地址
+
+默认值：`10.10.10.10`
+
+具有此 IP 地址的节点将被视为管理员节点，通常指向安装 Pigsty 的第一个节点。
+
+默认值 `10.10.10.10` 是一个占位符，将在 [配置](/zh/config/configure) 过程中被替换
+
+此参数被许多其他参数引用，例如：
+
+- [`infra_portal`](#infra_portal)
+- [`repo_endpoint`](#repo_endpoint)
+- [`dns_records`](#dns_records)
+- [`node_default_etc_hosts`](/zh/node/param#node_default_etc_hosts)
+- [`node_etc_hosts`](/zh/node/param#node_etc_hosts)
+- [`node_repo_modules`](/zh/node/param#node_repo_modules)
+
+确切的字符串 `${admin_ip}` 将被替换为上述参数的实际 `admin_ip`。
+
+------
+
+### `region` [#region]
+
+类型：`enum`，级别：`G`
+
+上游镜像区域：default、china、europe
+
+默认值：`default`
+
+如果设置了除 `default` 以外的区域，并且在 `repo_upstream.[repo].baseurl` 中有相应的条目，它将被使用而不是 `default`。
+
+例如，如果使用 `china`，pigsty 将使用在 [`repo_upstream`](#repo_upstream) 中指定的中国镜像（如果适用）。
+
+------
+
+### `proxy_env` [#proxy_env]
+
+类型：`dict`，级别：`G`
+
+下载包时的全局代理环境
+
+默认值：
+
+```yaml
+proxy_env: # 下载包时的全局代理环境
+  http_proxy: 'http://username:password@proxy.address.com'
+  https_proxy: 'http://username:password@proxy.address.com'
+  all_proxy: 'http://username:password@proxy.address.com'
+  no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.aliyuncs.com,mirrors.tuna.tsinghua.edu.cn,mirrors.zju.edu.cn"
+```
+
+在受限制的生产环境中或当您的互联网访问被阻止时（例如中国大陆），使用 HTTP 代理非常重要。
+
+请注意，如果使用 Docker 模块，代理服务器配置也将写入 Docker 守护程序配置文件。
+
+请注意，如果在 `./configure` 期间指定了 `-x` 参数，当前环境中的代理配置信息将自动填入生成的 `pigsty.yaml` 文件。
+
+
+
+------
+
+## `CA` [#ca]
+
+Pigsty 使用的自签名 CA。支持高级安全功能需要它。
+
+```yaml
+ca_method: create                 # create、recreate、copy，默认为 create
+ca_cn: pigsty-ca                  # CA 通用名称，固定为 pigsty-ca
+cert_validity: 7300d              # 证书有效期，默认 20 年
+```
+
+------
+
+### `ca_method` [#ca_method]
+
+类型：`enum`，级别：`G`
+
+可用选项：create、recreate、copy
+
+默认值：`create`
+
+- `create`：如果不存在则创建新的 CA 公私钥对，如果存在则使用
+- `recreate`：始终重新创建新的 CA 公私钥对
+- `copy`：从本地 `files/pki/ca` 复制现有的 CA 公钥和私钥，如果缺失则中止
+
+如果您已经有一对 `ca.crt` 和 `ca.key`，将它们放在 `files/pki/ca` 下并将 `ca_method` 设置为 `copy`。
+
+------
+
+### `ca_cn` [#ca_cn]
+
+类型：`string`，级别：`G`
+
+CA 通用名称，不建议更改它。
+
+默认值：`pigsty-ca`
+
+您可以使用 `openssl x509 -text -in /etc/pki/ca.crt` 检查它
+
+------
+
+### `cert_validity` [#cert_validity]
+
+类型：`interval`，级别：`G`
+
+证书有效期，默认 20 年，对于大多数情况已经足够
+
+默认值：`7300d`
+
+------
+
+## `INFRA_ID` [#infra_id]
+
+基础设施身份和门户定义。
+
+```yaml
+#infra_seq: 1                     # 基础设施节点身份，明确必需
+infra_portal:                     # 通过门户暴露的基础设施服务
+  home         : { domain: h.pigsty }
+  grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+```
+
+------
+
+### `infra_seq` [#infra_seq]
+
+类型：`int`，级别：`I`
+
+基础设施节点身份，**必需**，没有默认值，您必须明确分配它。
+
+------
+
+### `infra_portal` [#infra_portal]
+
+类型：`dict`，级别：`G`
+
+通过门户暴露的基础设施服务。
+
+默认值将通过相应的域名通过 nginx 暴露首页、grafana、prometheus、alertmanager。
+
+```yaml
+infra_portal:                     # 通过门户暴露的基础设施服务
+  home         : { domain: h.pigsty }
+  grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+```
+
+每个记录由键和值字典组成，其中 `name` 是键，表示组件名称，值是可以配置以下参数的对象：
+
+每个记录由键和值字典组成，其中 name 是键，表示组件名称，值是可以配置以下参数的对象：
+
+每个记录由键和值字典组成，其中 name 是键，表示组件名称，值是可以配置以下参数的对象：
+
+- `name`：**必需**，指定 Nginx 服务器的名称
+    - 默认记录：home、grafana、prometheus、alertmanager、blackbox、loki 是固定名称，请不要修改它们。
+    - 用作 Nginx 配置文件名的一部分，对应配置文件：`/etc/nginx/conf.d/<name>.conf`
+    - 没有域字段的 Nginx 服务器不会生成配置文件，但将用作引用。
+- `domain`：**可选**，当服务需要通过 Nginx 对外暴露时，它是一个**必需**字段，指定使用的域名
+    - 在 Pigsty 自签名 Nginx HTTPS 证书中，域名将添加到 Nginx SSL 证书的 SAN 字段
+    - Pigsty 网页交叉引用将使用此处的默认域名
+- `endpoint`：通常用作 path 的替代，指定上游服务器地址。设置 endpoint 表示这是一个反向代理服务器
+    - 在配置中，`${admin_ip}` 可以用作占位符，并将在部署期间动态替换为 [admin_ip](/zh/infra/param#admin_ip)
+    - 默认反向代理服务器使用 [endpoint.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/endpoint.conf) 作为配置模板
+    - 反向代理服务器还可以配置 websocket 和 schema 参数
+- `path`：通常用作 endpoint 的替代，指定本地文件服务器路径。设置 path 意味着这是一个本地 Web 服务器
+    - 本地 Web 服务器使用 [path.conf](https://github.com/pgsty/pigsty/blob/main/roles/infra/templates/nginx/path.conf) 作为配置模板
+    - 本地 Web 服务器还可以配置 index 参数，是否启用文件索引页
+- `certbot`：Certbot 证书名称，如果配置，将使用 Certbot 申请证书
+    - 如果多个服务器指定相同的 certbot，Pigsty 将合并证书申请，最终证书名称将是此 certbot 的名称
+- `cert`：证书文件路径，如果配置，将覆盖默认证书路径
+- `key`：证书密钥文件路径，如果配置，将覆盖默认证书密钥路径
+- `websocket`：是否启用 WebSocket 支持
+    - 只有反向代理服务器可以配置此参数，如果启用它将允许上游使用 WebSocket 连接
+- `schema`：上游服务器使用的协议，如果配置，将覆盖默认协议
+    - 默认是 http，如果配置为 https 将强制 HTTPS 连接到上游服务器
+- `index`：是否启用文件索引页
+    - 只有本地 Web 服务器可以配置此参数，如果启用它将启用 autoindex 配置以自动为目录生成索引页
+- `log`：Nginx 日志文件路径
+    - 如果指定，访问日志将写入此文件，否则将根据服务器类型使用默认日志文件
+    - 反向代理服务器使用 `/var/log/nginx/<name>.log` 作为默认日志文件路径
+    - 本地 Web 服务器使用默认访问日志
+- `conf`：Nginx 配置文件路径
+    - 明确指定要使用的配置模板文件，位于 [roles/infra/templates/nginx](https://github.com/pgsty/pigsty/tree/main/roles/infra/templates/nginx) 或 [templates/nginx](https://github.com/pgsty/pigsty/tree/main/templates/nginx) 目录
+    - 如果未指定此参数，将使用默认配置模板，位于 [roles/infra/templates/nginx](https://github.com/pgsty/pigsty/tree/main/roles/infra/templates/nginx) 或 [templates/nginx](https://github.com/pgsty/pigsty/tree/main/templates/nginx) 目录
+- `config`：Nginx 配置代码块
+    - 直接注入到 Nginx Server 配置块的配置文本
+- `enforce_https`：将 HTTP 重定向到 HTTPS
+    - 全局配置可以通过 nginx_sslmode: enforce 指定
+    - 此配置不影响默认主页服务器，它将始终同时监听端口 80 和 443 以确保兼容性。
+
+
+
+------
+
+## `REPO` [#repo]
+
+本部分是关于本地软件仓库的。Pigsty 在初始化基础设施节点时将创建一个本地软件仓库（APT/YUM）。
+
+在初始化过程中，Pigsty 将从互联网上游仓库（由 [`repo_upstream`](#repo_upstream) 指定）下载所有包及其依赖项（由 [`repo_packages`](#repo_packages) 指定）到 [`{{ nginx_home }}`](#nginx_home) / [`{{ repo_name }}`](#repo_name)（默认为 `/www/pigsty`），所有依赖软件的总大小约为 1GB。
+
+创建本地仓库时，如果目录已经存在并且目录中有名为 `repo_complete` 的标记文件，Pigsty 将跳过软件下载阶段。
+
+如果某些包的下载速度太慢，您可以通过使用 [`proxy_env`](#proxy_env) 配置条目设置下载代理或直接下载预打包的 [离线包](/zh/install/offline) 来完成初始下载，这本质上是在同一操作系统上构建的本地软件源。
+
+```yaml
+repo_enabled: true                # 在此基础设施节点上创建 yum 仓库？
+repo_home: /www                   # 仓库主目录，默认 `/www`
+repo_name: pigsty                 # 仓库名称，默认为 pigsty
+repo_endpoint: http://${admin_ip}:80 # 通过域名或 IP:端口访问此仓库的接入点
+repo_remove: true                 # 移除现有上游仓库
+repo_modules: infra,node,pgsql    # 在仓库引导期间安装上游仓库
+#repo_upstream: []                # 从哪里下载
+#repo_packages: []                # 下载哪些包
+#repo_extra_packages: []          # 下载额外包
+repo_url_packages: []             # 来自 URL 的额外包
+```
+
+------
+
+### `repo_enabled` [#repo_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上创建 YUM 仓库？默认值：`true`
+
+如果您有多个基础设施节点，您可以在其他备用节点上禁用 YUM 仓库以减少互联网流量。
+
+------
+
+### `repo_home` [#repo_home]
+
+类型：`path`，级别：`G`
+
+仓库主目录，默认 `/www`
+
+------
+
+### `repo_name` [#repo_name]
+
+类型：`string`，级别：`G`
+
+仓库名称，默认为 `pigsty`，不建议更改此值
+
+------
+
+### `repo_endpoint` [#repo_endpoint]
+
+类型：`url`，级别：`G`
+
+通过域名或 IP:端口访问此仓库的接入点，默认值：`http://${admin_ip}:80`
+
+如果您更改了 [`nginx_port`](#nginx_port) 或 [`nginx_ssl_port`](#nginx_ssl_port)，或使用与管理员节点不同的基础设施节点，请相应调整此参数。
+
+`${admin_ip}` 将在运行时被替换为实际的 [`admin_ip`](#admin_ip)。
+
+------
+
+### `repo_remove` [#repo_remove]
+
+类型：`bool`，级别：`G/A`
+
+移除现有上游仓库，默认值：`true`
+
+如果您想保留现有上游仓库，请将此值设置为 `false`。
+
+------
+
+### `repo_modules` [#repo_modules]
+
+类型：`string`，级别：`G/A`
+
+在 repo_upstream 中安装哪些仓库模块，默认值：`infra,node,pgsql`
+
+这是一个逗号分隔的值字符串，用于过滤 [`repo_upstream`](#repo_upstream) 中具有相应 `module` 字段的条目。
+
+对于 Ubuntu/Debian 用户，您可以将 redis 添加到列表中：`infra,node,pgsql,redis`
+
+------
+
+### `repo_upstream` [#repo_upstream]
+
+类型：`upstream[]`，级别：`G`
+
+此参数定义 Pigsty 的上游软件仓库。它**没有**默认值；您可以明确指定它，或者如果您想使用默认值则留空。
+
+留空时，Pigsty 将根据您的操作系统使用在 [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的 `repo_upstream_default` 的默认值。
+
+对于 EL（7、8、9）系统，默认值为：
+
+```yaml
+- { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty'  }} # 内网节点使用
+- { name: pigsty-infra   ,description: 'Pigsty INFRA'       ,module: infra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/yum/infra/$basearch' ,china: 'https://repo.pigsty.cc/yum/infra/$basearch' }}
+- { name: pigsty-pgsql   ,description: 'Pigsty PGSQL'       ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/yum/pgsql/el$releasever.$basearch' ,china: 'https://repo.pigsty.cc/yum/pgsql/el$releasever.$basearch' }}
+- { name: nginx          ,description: 'Nginx Repo'         ,module: infra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://nginx.org/packages/rhel/$releasever/$basearch/' }}
+- { name: docker-ce      ,description: 'Docker CE'          ,module: infra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.docker.com/linux/centos/$releasever/$basearch/stable'        ,china: 'https://mirrors.aliyun.com/docker-ce/linux/centos/$releasever/$basearch/stable' ,europe: 'https://mirrors.xtom.de/docker-ce/linux/centos/$releasever/$basearch/stable' }}
+- { name: baseos         ,description: 'EL 8+ BaseOS'       ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/BaseOS/$basearch/os/'         ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/BaseOS/$basearch/os/'         ,europe: 'https://mirrors.xtom.de/rocky/$releasever/BaseOS/$basearch/os/'     }}
+- { name: appstream      ,description: 'EL 8+ AppStream'    ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/AppStream/$basearch/os/'      ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/AppStream/$basearch/os/'      ,europe: 'https://mirrors.xtom.de/rocky/$releasever/AppStream/$basearch/os/'  }}
+- { name: extras         ,description: 'EL 8+ Extras'       ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/extras/$basearch/os/'         ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/extras/$basearch/os/'         ,europe: 'https://mirrors.xtom.de/rocky/$releasever/extras/$basearch/os/'     }}
+- { name: powertools     ,description: 'EL 8 PowerTools'    ,module: node    ,releases: [  8  ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/PowerTools/$basearch/os/'     ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/PowerTools/$basearch/os/'     ,europe: 'https://mirrors.xtom.de/rocky/$releasever/PowerTools/$basearch/os/' }}
+- { name: crb            ,description: 'EL 9 CRB'           ,module: node    ,releases: [    9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://dl.rockylinux.org/pub/rocky/$releasever/CRB/$basearch/os/'            ,china: 'https://mirrors.aliyun.com/rockylinux/$releasever/CRB/$basearch/os/'            ,europe: 'https://mirrors.xtom.de/rocky/$releasever/CRB/$basearch/os/'        }}
+- { name: epel           ,description: 'EL 8+ EPEL'         ,module: node    ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://download.fedoraproject.org/pub/epel/$releasever/Everything/$basearch/' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/epel/$releasever/Everything/$basearch/'    ,europe: 'https://mirrors.xtom.de/epel/$releasever/Everything/$basearch/'     }}
+- { name: pgdg-common    ,description: 'PostgreSQL Common'  ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/redhat/rhel-$releasever-$basearch' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg-el8fix    ,description: 'PostgreSQL EL8FIX'  ,module: pgsql   ,releases: [  8  ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/pgdg-centos8-sysupdates/redhat/rhel-8-x86_64/' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/pgdg-centos8-sysupdates/redhat/rhel-8-x86_64/' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/pgdg-centos8-sysupdates/redhat/rhel-8-x86_64/' } }
+- { name: pgdg-el9fix    ,description: 'PostgreSQL EL9FIX'  ,module: pgsql   ,releases: [    9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/pgdg-rocky9-sysupdates/redhat/rhel-9-x86_64/'  ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/pgdg-rocky9-sysupdates/redhat/rhel-9-x86_64/' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/pgdg-rocky9-sysupdates/redhat/rhel-9-x86_64/' }}
+- { name: pgdg13         ,description: 'PostgreSQL 13'      ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/13/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/13/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg14         ,description: 'PostgreSQL 14'      ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/14/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/14/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg15         ,description: 'PostgreSQL 15'      ,module: pgsql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/15/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/15/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg16         ,description: 'PostgreSQL 16'      ,module: pgsql   ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/16/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/16/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/16/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg17         ,description: 'PostgreSQL 17'      ,module: pgsql   ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/17/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/17/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/17/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg-extras    ,description: 'PostgreSQL Extra'   ,module: extra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/common/pgdg-rhel$releasever-extras/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/common/pgdg-rhel$releasever-extras/redhat/rhel-$releasever-$basearch' , europe: 'https://mirrors.xtom.de/postgresql/repos/yum/common/pgdg-rhel$releasever-extras/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg13-nonfree ,description: 'PostgreSQL 13+'     ,module: extra   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/13/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/13/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/13/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg14-nonfree ,description: 'PostgreSQL 14+'     ,module: extra   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/14/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/14/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/14/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg15-nonfree ,description: 'PostgreSQL 15+'     ,module: extra   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/15/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/15/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/15/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg16-nonfree ,description: 'PostgreSQL 16+'     ,module: extra   ,releases: [  8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/16/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/16/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/16/redhat/rhel-$releasever-$basearch' }}
+- { name: pgdg17-nonfree ,description: 'PostgreSQL 17+'     ,module: extra   ,releases: [  8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://download.postgresql.org/pub/repos/yum/non-free/17/redhat/rhel-$releasever-$basearch' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/yum/non-free/17/redhat/rhel-$releasever-$basearch' ,europe: 'https://mirrors.xtom.de/postgresql/repos/yum/non-free/17/redhat/rhel-$releasever-$basearch' }}
+- { name: timescaledb    ,description: 'TimescaleDB'        ,module: extra   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/timescale/timescaledb/el/$releasever/$basearch'  }}
+- { name: wiltondb       ,description: 'WiltonDB'           ,module: mssql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/yum/mssql/el$releasever.$basearch', china: 'https://repo.pigsty.cc/yum/mssql/el$releasever.$basearch' , origin: 'https://download.copr.fedorainfracloud.org/results/wiltondb/wiltondb/epel-$releasever-$basearch/' }}
+- { name: ivorysql       ,description: 'IvorySQL'           ,module: ivory   ,releases: [7,8,9] ,arch: [x86_64         ] ,baseurl: { default: 'https://repo.pigsty.io/yum/ivory/el$releasever.$basearch', china: 'https://repo.pigsty.cc/yum/ivory/el$releasever.$basearch' }}
+- { name: groonga        ,description: 'Groonga'            ,module: groonga ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.groonga.org/almalinux/$releasever/$basearch/' }}
+- { name: mysql          ,description: 'MySQL'              ,module: mysql   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mysql.com/yum/mysql-8.0-community/el/$releasever/$basearch/', china: 'https://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql-8.0-community-el7-$basearch/'}}
+- { name: mongo          ,description: 'MongoDB'            ,module: mongo   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/8.0/$basearch/' , 'https://mirrors.aliyun.com/mongodb/yum/redhat/$releasever/mongodb-org/8.0/$basearch/' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [7    ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://rpmfind.net/linux/remi/enterprise/$releasever/remi/$basearch/' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://rpmfind.net/linux/remi/enterprise/$releasever/redis72/$basearch/' }}
+- { name: grafana        ,description: 'Grafana'            ,module: grafana ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://rpm.grafana.com' }}
+- { name: kubernetes     ,description: 'Kubernetes'         ,module: kube    ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://pkgs.k8s.io/core:/stable:/v1.31/rpm/', china: 'https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.31/rpm/' }}
+- { name: gitlab         ,description: 'Gitlab'             ,module: gitlab  ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/el/$releasever/$basearch' }}
+```
+
+对于 Debian（11,12）或 Ubuntu（22.04, 22.04）系统，默认值为：
+
+```yaml
+- { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty ./' }}
+- { name: pigsty-pgsql   ,description: 'Pigsty PgSQL'       ,module: pgsql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/pgsql/${distro_codename} ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/pgsql/${distro_codename} ${distro_codename} main' }}
+- { name: pigsty-infra   ,description: 'Pigsty Infra'       ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/infra/ generic main' ,china: 'https://repo.pigsty.cc/apt/infra/ generic main' }}
+- { name: nginx          ,description: 'Nginx'              ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://nginx.org/packages/${distro_name} ${distro_codename} nginx' }}
+- { name: docker-ce      ,description: 'Docker'             ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.docker.com/linux/${distro_name} ${distro_codename} stable'                               ,china: 'https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux//${distro_name} ${distro_codename} stable' }}
+- { name: base           ,description: 'Debian Basic'       ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename} main non-free-firmware'                                  ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename} main restricted universe multiverse' }}
+- { name: updates        ,description: 'Debian Updates'     ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename}-updates main non-free-firmware'                          ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename}-updates main restricted universe multiverse' }}
+- { name: security       ,description: 'Debian Security'    ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://security.debian.org/debian-security ${distro_codename}-security main non-free-firmware'            ,china: 'https://mirrors.aliyun.com/debian-security/ ${distro_codename}-security main non-free-firmware' }}
+- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}           main universe multiverse restricted' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}           main restricted universe multiverse' }}
+- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' }}
+- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' }}
+- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' }}
+- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}           main universe multiverse restricted'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}           main restricted universe multiverse' }}
+- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse' }}
+- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse' }}
+- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse' }}
+- { name: pgdg           ,description: 'PGDG'               ,module: pgsql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://apt.postgresql.org/pub/repos/apt/ ${distro_codename}-pgdg main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ ${distro_codename}-pgdg main' }}
+- { name: timescaledb    ,description: 'Timescaledb'        ,module: extra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/timescale/timescaledb/${distro_name}/ ${distro_codename} main' }}
+- { name: citus          ,description: 'Citus'              ,module: extra   ,releases: [11,12,20,22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/citusdata/community/${distro_name}/ ${distro_codename} main' } }
+- { name: pgml           ,description: 'PostgresML'         ,module: pgml    ,releases: [         22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.postgresml.org ${distro_codename} main'  }}
+- { name: wiltondb       ,description: 'WiltonDB'           ,module: mssql   ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/mssql/ ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/mssql/ ${distro_codename} main' , origin: 'https://ppa.launchpadcontent.net/wiltondb/wiltondb/ubuntu/ ${distro_codename} main'  }}
+- { name: groonga        ,description: 'Groonga Debian'     ,module: groonga ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.groonga.org/debian/ ${distro_codename} main' }}
+- { name: groonga        ,description: 'Groonga Ubuntu'     ,module: groonga ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/groonga/ppa/ubuntu/ ${distro_codename} main' }}
+- { name: mysql          ,description: 'MySQL'              ,module: mysql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mysql.com/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools', china: 'https://mirrors.tuna.tsinghua.edu.cn/mysql/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools' }}
+- { name: mongo          ,description: 'MongoDB'            ,module: mongo   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mongodb.org/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse', china: 'https://mirrors.aliyun.com/mongodb/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.redis.io/deb ${distro_codename} main' }}
+- { name: haproxyd       ,description: 'Haproxy Debian'     ,module: haproxy ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://haproxy.debian.net/ ${distro_codename}-backports-3.1 main' }}
+- { name: haproxyu       ,description: 'Haproxy Ubuntu'     ,module: haproxy ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/vbernat/haproxy-3.1/ubuntu/ ${distro_codename} main' }}
+- { name: grafana        ,description: 'Grafana'            ,module: grafana ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.grafana.com stable main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/grafana/apt/ stable main' }}
+- { name: kubernetes     ,description: 'Kubernetes'         ,module: kube    ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /', china: 'https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.31/deb/ /' }}
+- { name: gitlab         ,description: 'Gitlab'             ,module: gitlab  ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/${distro_name}/ ${distro_codename} main' }}
+```
+
+------
+
+### `repo_packages` [#repo_packages]
+
+类型：`string[]`，级别：`G`
+
+此参数是一个字符串数组，每个字符串是用空格分隔的软件包列表，指定要包含和下载哪些包。
+
+此参数**没有**默认值，您可以明确指定它，或者如果您想使用默认值则留空。
+
+留空时，Pigsty 将根据您的操作系统使用在 [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的 `repo_packages_default` 的默认值。
+
+```yaml
+[ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-utility, extra-modules ]
+```
+
+`repo_packages` 中的每个元素将根据上述文件中定义的 `package_map` 翻译为特定操作系统发行版版本的包名称列表。
+
+例如，在 EL 系统上，它将被翻译为：
+
+```yaml
+node-bootstrap:          "ansible python3 python3-pip python3-virtualenv python3-requests python3-jmespath python3-cryptography dnf-utils modulemd-tools createrepo_c sshpass"
+infra-package:           "nginx dnsmasq etcd haproxy vip-manager node_exporter keepalived_exporter pg_exporter pgbackrest_exporter redis_exporter redis minio mcli pig"
+infra-addons:            "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox_exporter nginx_exporter pev2 certbot python3-certbot-nginx"
+extra-modules:           "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:           "lz4 unzip bzip2 zlib yum pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl grubby sysstat iotop htop rsync tcpdump perf flamegraph chkconfig"
+node-package2:           "netcat socat ftp lrzsz net-tools ipvsadm bind-utils telnet audit ca-certificates readline vim-minimal keepalived chrony openssl openssh-server openssh-clients"
+pgsql-utility:           "patroni patroni-etcd pgbouncer pgbackrest pgbadger pg_activity pg_timetable pgFormatter pg_filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb"
+```
+
+在 Debian/Ubuntu 系统上，它将被翻译为：
+
+```yaml
+node-bootstrap:          "ansible python3 python3-pip python3-venv python3-jmespath dpkg-dev sshpass ftp linux-tools-generic"
+infra-package:           "nginx dnsmasq etcd haproxy vip-manager node-exporter keepalived-exporter pg-exporter pgbackrest-exporter redis-exporter redis minio mcli pig"
+infra-addons:            "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox-exporter nginx-exporter pev2 certbot python3-certbot-nginx"
+extra-modules:           "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:           "lz4 unzip bzip2 zlib1g pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl sysstat iotop htop rsync tcpdump acl chrony"
+node-package2:           "netcat-openbsd socat lrzsz net-tools ipvsadm dnsutils telnet ca-certificates libreadline-dev vim-tiny keepalived openssl openssh-server openssh-client"
+pgsql-utility:           "patroni pgbouncer pgbackrest pgbadger pg-activity pg-timetable pgformatter postgresql-filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb pgloader"
+```
+
+按照惯例，`repo_packages` 通常包括与 PostgreSQL 主版本无关的软件包（如 Infra、Node 和 PGDG Common），而与 PostgreSQL 主版本相关的软件包（内核、扩展）通常在 `repo_extra_packages` 中指定，以便于在 PG 主版本之间切换。
+
+------
+
+### `repo_extra_packages` [#repo_extra_packages]
+
+类型：`string[]`，级别：`G/C/I`
+
+此参数与 [`repo_packages`](#repo_packages) 相同，但用于需要下载的额外软件包（通常是 PostgreSQL 版本特定的包）。
+
+默认值是空列表。您可以在集群和实例级别覆盖它以指定需要下载的额外软件包。
+
+如果未明确定义此参数，Pigsty 将从 [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的 `repo_extra_packages_default` 加载默认值，即：
+
+```yaml
+[ pgsql-main ]
+```
+
+`repo_packages` 中的每个元素将根据上述文件中定义的 `package_map` 翻译为特定操作系统发行版版本的包名称列表。
+
+例如，在 EL 系统上，它将被翻译为：
+
+```yaml
+postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit pg_repack_$v* wal2json_$v* pgvector_$v*
+```
+
+在 Debian/Ubuntu 系统上，它将被翻译为：
+
+```yaml
+postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector
+```
+
+这里 `$v` 将被实际的 PostgreSQL 主版本号 [`pg_version`](/zh/pgsql/param#pg_version) 替换，所以您可以在这里添加任何 PG 版本相关的包，Pigsty 将为您下载它们。
+
+------
+
+### `repo_url_packages` [#repo_url_packages]
+
+类型：`object[] | string[]`，级别：`G`
+
+来自 URL 的额外包，默认值：`[]`
+
+您可以在此参数中使用对象列表或字符串列表，在后一种情况下，Pigsty 将使用 URL 基名作为文件名。
+
+请注意，如果 [`region`](#region) 设置为 `china`，`pigsty.io` 将自动替换为 `pigsty.cc`。
+
+------
+
+## `INFRA_PACKAGE` [#infra_package]
+
+这些包仅安装在基础设施节点上，包括常见的 rpm/deb/pip 包。
+
+------
+
+### `infra_packages` [#infra_packages]
+
+类型：`string[]`，级别：`G`
+
+此参数是一个字符串数组，每个字符串是用空格分隔的通用软件包列表，指定要在 INFRA 节点上安装哪些包。
+
+此参数**没有**默认值；您可以明确指定它，或者如果您想使用默认值则留空。
+
+留空时，Pigsty 将根据您的操作系统使用在 [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的 `repo_packages_default` 的默认值。
+
+对于 EL（7/8/9）系统，默认值为：
+
+```yaml
+infra_packages:                   # 要在基础设施节点上安装的包
+  - grafana,loki,logcli,promtail,prometheus,alertmanager,pushgateway,grafana-plugins,restic,certbot,python3-certbot-nginx
+  - node_exporter,blackbox_exporter,nginx_exporter,pg_exporter,pev2,nginx,dnsmasq,ansible,etcd,python3-requests,redis,mcli
+```
+
+对于 Debian（11,12）或 Ubuntu（22.04, 22.04）系统，默认值为：
+
+```yaml
+infra_packages:                   # 要在基础设施节点上安装的包
+  - grafana,grafana-plugins,loki,logcli,promtail,prometheus,alertmanager,pushgateway,restic,certbot,python3-certbot-nginx
+  - node-exporter,blackbox-exporter,nginx-exporter,pg-exporter,pev2,nginx,dnsmasq,ansible,etcd,python3-requests,redis,mcli
+```
+
+------
+
+### `infra_packages_pip` [#infra_packages_pip]
+
+类型：`string`，级别：`G`
+
+为基础设施节点安装的 pip 包，默认值为空字符串
+
+------
+
+## `NGINX` [#nginx]
+
+Pigsty 通过 Nginx 暴露所有 Web 服务：主页、Grafana、Prometheus、AlertManager 等，以及其他可选工具如 PGWeb、Jupyter Lab、pgAdmin、Bytebase，以及其他静态资源和报告如 `pev`、`schemaspy` 和 `pgbadger`。
+
+此 Nginx 还用作本地 YUM/APT 仓库。
+
+```yaml
+nginx_enabled: true               # 在此基础设施节点上启用 nginx？
+nginx_exporter_enabled: true      # 在此基础设施节点上启用 nginx_exporter？
+nginx_sslmode: enable             # nginx SSL 模式？disable、enable、enforce
+nginx_cert_validity: 397d         # nginx 自签名证书有效期，默认 397 天
+nginx_home: /www                  # nginx 内容目录，默认 `/www`
+nginx_port: 80                    # nginx 监听端口，默认 80
+nginx_ssl_port: 443               # nginx SSL 监听端口，默认 443
+nginx_navbar:                     # nginx 索引页导航链接
+  - { name: CA Cert ,url: '/ca.crt'   ,desc: 'pigsty self-signed ca.crt'   }
+  - { name: Package ,url: '/pigsty'   ,desc: 'local yum repo packages'     }
+  - { name: PG Logs ,url: '/logs'     ,desc: 'postgres raw csv logs'       }
+  - { name: Reports ,url: '/report'   ,desc: 'pgbadger summary report'     }
+  - { name: Explain ,url: '/pigsty/pev.html' ,desc: 'postgres explain visualizer' }
+certbot_sign: false               # 设置期间使用 certbot 签名 nginx 证书？
+certbot_email: your@email.com     # certbot 邮箱地址，用于免费 SSL
+certbot_options: ''               # certbot 额外选项
+```
+
+------
+
+### `nginx_enabled` [#nginx_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上启用 nginx？默认值：`true`
+
+------
+
+### `nginx_exporter_enabled` [#nginx_exporter_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上启用 nginx_exporter？默认值：`true`。
+
+将此设置为 false 也将禁用 `/nginx` 健康检查存根：如果您的 Nginx 不支持 `/nginx` 存根，您可以将此值设置为 `false` 以禁用它。
+
+------
+
+### `nginx_sslmode` [#nginx_sslmode]
+
+类型：`enum`，级别：`G`
+
+nginx SSL 模式？可以是：`disable`、`enable`、`enforce`，默认值：`enable`
+
+- `disable`：监听 [`nginx_port`](#nginx_port) 并仅提供纯 HTTP
+- `enable`：也监听 [`nginx_ssl_port`](#nginx_ssl_port) 并提供 HTTPS
+- `enforce`：所有链接将默认呈现为 `https://`
+  - 也为 nginx [`infra_portal`](#infra_portal) 中的所有非默认服务器将 80 端口重定向到 443 端口
+
+
+
+------
+
+### `nginx_cert_validity` [#nginx_cert_validity]
+
+类型：`duration`，级别：`G`
+
+nginx 自签名证书有效期，默认 `397d`
+
+不建议使用更长的有效期，因为最新的浏览器要求网站证书最多有效期为 397 天，所以这是默认值。
+
+
+
+
+------
+
+### `nginx_home` [#nginx_home]
+
+类型：`path`，级别：`G`
+
+nginx Web 服务器静态内容目录，默认 `/www`
+
+包含静态资源和仓库资源的 Nginx 根目录。明智的做法是将此值设置为与 [`repo_home`](#repo_home) 相同，以便自动提供本地仓库内容。
+
+------
+
+### `nginx_port` [#nginx_port]
+
+类型：`port`，级别：`G`
+
+提供 HTTP 请求的 Nginx 监听端口，默认 `80`。
+
+如果您的默认 80 端口被占用或不可用，您可以考虑使用另一个端口，并相应地更改 [`repo_endpoint`](#repo_endpoint) 和 [`repo_upstream`](#repo_upstream)（`local` 条目）。
+
+------
+
+### `nginx_ssl_port` [#nginx_ssl_port]
+
+类型：`port`，级别：`G`
+
+nginx SSL 监听端口，默认 `443`
+
+------
+
+### `nginx_navbar` [#nginx_navbar]
+
+类型：`index[]`，级别：`G`
+
+nginx 索引页导航链接
+
+默认值：
+
+```yaml
+nginx_navbar:                     # nginx 索引页导航链接
+  - { name: CA Cert ,url: '/ca.crt'   ,desc: 'pigsty self-signed ca.crt'   }
+  - { name: Package ,url: '/pigsty'   ,desc: 'local yum repo packages'     }
+  - { name: PG Logs ,url: '/logs'     ,desc: 'postgres raw csv logs'       }
+  - { name: Reports ,url: '/report'   ,desc: 'pgbadger summary report'     }
+  - { name: Explain ,url: '/pigsty/pev.html' ,desc: 'postgres explain visualizer' }
+```
+
+每个记录都呈现为 Pigsty 主页应用下拉菜单的导航链接，这些应用都是可选的，默认挂载在 `http://h.pigsty/` 下的 Pigsty 默认服务器上。
+
+`url` 参数指定应用的 URL PATH，例外情况是如果 URL 中存在 `${grafana}` 字符串，它将自动替换为在 [`infra_portal`](#infra_portal) 中定义的 Grafana 域名。
+
+------
+
+### `certbot_sign` [#certbot_sign]
+
+类型：`bool`，级别：`G/A`
+
+设置期间使用 certbot 签名 nginx 证书？默认值：`false`
+
+当设置为 `true` 时，Pigsty 将在执行 `infra.yml` 和 `install.yml` playbook（`nginx` 角色）期间使用 certbot 自动从 Let's Encrypt 申请免费 SSL 证书。
+
+在 [`infra_portal`](#infra_portal) 定义的域中，如果定义了 `certbot` 参数，Pigsty 将使用 certbot 为 `domain` 域申请证书，证书名称将是 `certbot` 参数的值。如果多个服务器/域指定相同的 `certbot` 参数，Pigsty 将合并并为这些域申请证书，并使用 `certbot` 参数的值作为证书名称。
+
+启用此选项需要：
+
+- 当前节点可以通过公共域名访问，并且 DNS 解析已正确指向当前节点的公共 IP
+- 当前节点可以访问 Let's Encrypt API 接口
+
+此选项默认禁用，您可以在安装后手动执行 `make cert` 命令来手动执行它，它实际上调用渲染的 `/etc/nginx/sign-cert` 脚本，使用 certbot 更新或申请证书。
+
+------
+
+### `certbot_email` [#certbot_email]
+
+类型：`string`，级别：`G/A`
+
+用于接收证书到期提醒邮件的邮箱地址，默认值：`your@email.com`
+
+当 `certbot_sign` 设置为 `true` 时，建议提供此参数。Let's Encrypt 将在证书即将到期时向此邮箱发送提醒邮件。
+
+------
+
+### `certbot_option` [#certbot_option]
+
+类型：`string`，级别：`G/A`
+
+传递给 certbot 的额外配置参数，默认值：空字符串。
+
+您可以通过此参数向 certbot 传递额外的命令行选项，例如 `--dry-run`，然后 certbot 将不会实际申请证书，而是预览和测试。
+
+------
+
+## `DNS` [#dns]
+
+Pigsty 将在基础设施节点上启动默认的 DNSMASQ 服务器来处理 DNS 查询。如 `h.pigsty` `a.pigsty` `p.pigsty` `g.pigsty` 和可选 MinIO 服务的 `sss.pigsty`。
+
+所有记录将添加到基础设施节点的 `/etc/hosts.d/*`。
+
+您必须在您的 `/etc/resolv` 中添加 `nameserver {{ admin_ip }}` 来使用此 DNS 服务器，[`node_dns_servers`](/zh/node/param#node_dns_servers) 将完成这个技巧。
+
+```yaml
+dns_enabled: true                 # 在此基础设施节点上设置 dnsmasq？
+dns_port: 53                      # DNS 服务器监听端口，默认 53
+dns_records:                      # 由 dnsmasq 解析的动态 DNS 记录
+  - "${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"
+  - "${admin_ip} api.pigsty adm.pigsty cli.pigsty ddl.pigsty lab.pigsty git.pigsty sss.pigsty wiki.pigsty"
+```
+
+------
+
+### `dns_enabled` [#dns_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上设置 dnsmasq？默认值：`true`
+
+如果您不想使用默认 DNS 服务器，您可以将此值设置为 `false` 以禁用它。并使用 [`node_default_etc_hosts`](/zh/node/param#node_default_etc_hosts) 和 [`node_etc_hosts`](/zh/node/param#node_etc_hosts) 代替。
+
+------
+
+### `dns_port` [#dns_port]
+
+类型：`port`，级别：`G`
+
+DNS 服务器监听端口，默认 `53`
+
+------
+
+### `dns_records` [#dns_records]
+
+类型：`string[]`，级别：`G`
+
+由 dnsmasq 解析的动态 DNS 记录，一些辅助域名将默认写入基础设施节点上的 `/etc/hosts.d/default`
+
+```yaml
+dns_records:                      # 由 dnsmasq 解析的动态 DNS 记录
+  - "${admin_ip} h.pigsty a.pigsty p.pigsty g.pigsty"
+  - "${admin_ip} api.pigsty adm.pigsty cli.pigsty ddl.pigsty lab.pigsty git.pigsty sss.pigsty wiki.pigsty"
+```
+
+------
+
+## `PROMETHEUS` [#prometheus]
+
+Prometheus 用作指标抓取、存储和分析的时间序列数据库。
+
+```yaml
+prometheus_enabled: true          # 在此基础设施节点上启用 prometheus？
+prometheus_clean: true            # 初始化期间清理 prometheus 数据？
+prometheus_data: /data/prometheus # prometheus 数据目录，默认 `/data/prometheus`
+prometheus_sd_dir: /etc/prometheus/targets # prometheus 文件服务发现目录
+prometheus_sd_interval: 5s        # prometheus 目标刷新间隔，默认 5 秒
+prometheus_scrape_interval: 10s   # prometheus 抓取和评估间隔，默认 10 秒
+prometheus_scrape_timeout: 8s     # prometheus 全局抓取超时，默认 8 秒
+prometheus_options: '--storage.tsdb.retention.time=15d' # prometheus 额外服务器选项
+pushgateway_enabled: true         # 在此基础设施节点上设置 pushgateway？
+pushgateway_options: '--persistence.interval=1m' # pushgateway 额外服务器选项
+blackbox_enabled: true            # 在此基础设施节点上设置 blackbox_exporter？
+blackbox_options: ''              # blackbox_exporter 额外服务器选项
+alertmanager_enabled: true        # 在此基础设施节点上设置 alertmanager？
+alertmanager_port: 9093           # alertmanager 监听端口，默认 9093
+alertmanager_options: ''          # alertmanager 额外服务器选项
+exporter_metrics_path: /metrics   # exporter 指标路径，默认 `/metrics`
+exporter_install: none            # 如何安装 exporter？none、yum、binary
+exporter_repo_url: ''             # 如果通过 yum 安装 exporter 的仓库文件 URL
+```
+
+------
+
+### `prometheus_enabled` [#prometheus_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上启用 prometheus？
+
+默认值：`true`
+
+------
+
+### `prometheus_clean` [#prometheus_clean]
+
+类型：`bool`，级别：`G/A`
+
+初始化期间清理 prometheus 数据？默认值：`true`
+
+------
+
+### `prometheus_data` [#prometheus_data]
+
+类型：`path`，级别：`G`
+
+prometheus 数据目录，默认 `/data/prometheus`
+
+------
+
+### `prometheus_sd_dir` [#prometheus_sd_dir]
+
+类型：`path`，级别：`G`，默认值：`/etc/prometheus/targets`
+
+prometheus 静态文件服务发现目标目录，prometheus 将从此目录中找到动态监控目标。
+
+------
+
+### `prometheus_sd_interval` [#prometheus_sd_interval]
+
+类型：`interval`，级别：`G`，默认值：`5s`
+
+Prometheus 将默认每 5 秒检查 [`prometheus_sd_interval`](#prometheus_sd_interval) 目录以找到新的监控目标。
+
+------
+
+### `prometheus_scrape_interval` [#prometheus_scrape_interval]
+
+类型：`interval`，级别：`G`
+
+prometheus 抓取和评估间隔，默认 `10s`
+
+------
+
+### `prometheus_scrape_timeout` [#prometheus_scrape_timeout]
+
+类型：`interval`，级别：`G`
+
+prometheus 全局抓取超时，默认 `8s`
+
+不要将此设置为大于 [`prometheus_scrape_interval`](#prometheus_scrape_interval)
+
+------
+
+### `prometheus_options` [#prometheus_options]
+
+类型：`arg`，级别：`G`
+
+prometheus 额外服务器选项
+
+默认值：`--storage.tsdb.retention.time=15d`
+
+prometheus 服务器的额外 cli 参数，默认值将设置 15 天数据保留以限制磁盘使用。
+
+------
+
+### `pushgateway_enabled` [#pushgateway_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上设置 pushgateway？默认值：`true`
+
+------
+
+### `pushgateway_options` [#pushgateway_options]
+
+类型：`arg`，级别：`G`
+
+pushgateway 额外服务器选项，默认值：`--persistence.interval=1m`
+
+------
+
+### `blackbox_enabled` [#blackbox_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上设置 blackbox_exporter？默认值：`true`
+
+------
+
+### `blackbox_options` [#blackbox_options]
+
+类型：`arg`，级别：`G`
+
+blackbox_exporter 额外服务器选项，默认值为空字符串
+
+------
+
+### `alertmanager_enabled` [#alertmanager_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上设置 alertmanager？默认值：`true`
+
+------
+
+### `alertmanager_port` [#alertmanager_port]
+
+类型：`port`，级别：`G`
+
+AlertManager 的监听端口，默认值为 `9093`。
+
+允许对 AlertManager 端口进行特殊设置的原因是 Kafka 的默认端口也使用 `9093`，容易造成冲突。
+
+------
+
+### `alertmanager_options` [#alertmanager_options]
+
+类型：`arg`，级别：`G`
+
+alertmanager 额外服务器选项，默认值为空字符串
+
+------
+
+### `exporter_metrics_path` [#exporter_metrics_path]
+
+类型：`path`，级别：`G`
+
+exporter 指标路径，默认 `/metrics`
+
+------
+
+### `exporter_install` [#exporter_install]
+
+类型：`enum`，级别：`G`
+
+（**过时**）如何安装 exporter？none、yum、binary
+
+默认值：`none`
+
+指定如何安装 Exporter：
+
+- `none`：不安装，（默认情况下，Exporter 已经由 [`node_pkg`](/zh/node/param#node_default_packages) 任务预先安装）
+- `yum`：使用 yum 安装（如果启用 yum 安装，在部署 Exporter 之前运行 yum 安装 [`node_exporter`](/zh/node/param#node_exporter) 和 [`pg_exporter`](/zh/pgsql/param#pg_exporter_enabled)）
+- `binary`：使用复制二进制文件安装（直接从本地文件目录复制 [`node_exporter`](/zh/node/param#node_exporter) 和 [`pg_exporter`](/zh/pgsql/param#pg_exporter_enabled) 二进制文件，不推荐）
+
+使用 `yum` 安装时，如果指定了 `exporter_repo_url`（非空），安装将首先将该 URL 下的 REPO 文件安装到 `/etc/yum.repos.d`。此功能允许您直接安装 Exporter 而无需初始化节点基础设施。不建议常规用户使用 `binary` 安装。此模式通常用于紧急故障排除和临时问题修复。
+
+```bash
+<meta>:<pigsty>/files/node_exporter ->  <target>:/usr/bin/node_exporter
+<meta>:<pigsty>/files/pg_exporter   ->  <target>:/usr/bin/pg_exporter
+```
+
+------
+
+### `exporter_repo_url` [#exporter_repo_url]
+
+类型：`url`，级别：`G`
+
+（**过时**）如果通过 yum 安装 exporter 的仓库文件 URL
+
+默认值为空字符串
+
+默认为空；当 [`exporter_install`](#exporter_install) 为 `yum` 时，此参数指定的仓库将添加到节点源列表。
+
+------
+
+## `GRAFANA` [#grafana]
+
+Grafana 是 Pigsty 监控系统的可视化平台。
+
+它也可以用作低代码数据可视化环境
+
+```yaml
+grafana_enabled: true             # 在此基础设施节点上启用 grafana？
+grafana_clean: true               # 初始化期间清理 grafana 数据？
+grafana_admin_username: admin     # grafana 管理员用户名，默认 `admin`
+grafana_admin_password: pigsty    # grafana 管理员密码，默认 `pigsty`
+loki_enabled: true                # 在此基础设施节点上启用 loki？
+loki_clean: false                 # 是否移除现有 loki 数据？
+loki_data: /data/loki             # loki 数据目录，默认 `/data/loki`
+loki_retention: 15d               # loki 日志保留期，默认 15 天
+```
+
+------
+
+### `grafana_enabled` [#grafana_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上启用 grafana？默认值：`true`
+
+------
+
+### `grafana_clean` [#grafana_clean]
+
+类型：`bool`，级别：`G/A`
+
+初始化期间清理 grafana 数据？默认值：`true`
+
+------
+
+### `grafana_admin_username` [#grafana_admin_username]
+
+类型：`username`，级别：`G`
+
+grafana 管理员用户名，默认 `admin`
+
+------
+
+### `grafana_admin_password` [#grafana_admin_password]
+
+类型：`password`，级别：`G`
+
+grafana 管理员密码，默认 `pigsty`
+
+默认值：`pigsty`
+
+> 警告：在部署到生产环境之前，请将其更改为强密码
+
+------
+
+## `LOKI` [#loki]
+
+------
+
+### `loki_enabled` [#loki_enabled]
+
+类型：`bool`，级别：`G/I`
+
+在此基础设施节点上启用 loki？默认值：`true`
+
+------
+
+### `loki_clean` [#loki_clean]
+
+类型：`bool`，级别：`G/A`
+
+是否移除现有 loki 数据？默认值：`false`
+
+------
+
+### `loki_data` [#loki_data]
+
+类型：`path`，级别：`G`
+
+loki 数据目录，默认值：`/data/loki`
+
+------
+
+### `loki_retention` [#loki_retention]
+
+类型：`interval`，级别：`G`
+
+loki 日志保留期，默认 `15d`

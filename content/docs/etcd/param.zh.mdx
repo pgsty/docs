@@ -1,0 +1,195 @@
+---
+title: 参数
+description: 使用 10 个参数自定义 etcd
+icon: Variable
+---
+
+有关 `ETCD` 模块的 **13** 个参数。
+
+| 参数                                             |  类型  | 级别 | 说明                                      |
+|-------------------------------------------------------|:------:|:-----:|----------------------------------------------|
+| [`etcd_seq`](#etcd_seq)                               |  int   |   I   | etcd 实例标识符，必需           |
+| [`etcd_cluster`](#etcd_cluster)                       | string |   C   | etcd 集群和组名，默认为 etcd   |
+| [`etcd_learner`](#etcd_learner)                       |  bool  |   I   | 防止清除运行中的 etcd 实例？       |
+| [`etcd_clean`](#etcd_clean)                           |  bool  | G/C/A | 初始化期间清除现有 etcd？ |
+| [`etcd_data`](#etcd_data)                             |  path  |   C   | etcd 数据目录，默认为 /data/etcd   |
+| [`etcd_port`](#etcd_port)                             |  port  |   C   | etcd 客户端端口，默认为 2379            |
+| [`etcd_peer_port`](#etcd_peer_port)                   |  port  |   C   | etcd 对等端口，默认为 2380              |
+| [`etcd_init`](#etcd_init)                             |  enum  |   C   | etcd 初始集群状态，new 或 existing  |
+| [`etcd_election_timeout`](#etcd_election_timeout)     |  int   |   C   | etcd 选举超时，默认为 1000ms     |
+| [`etcd_heartbeat_interval`](#etcd_heartbeat_interval) |  int   |   C   | etcd 心跳间隔，默认为 100ms    |
+
+**ETCD_REMOVE 参数（用于 etcd_remove 角色）**
+
+| 参数                           | 类型 | 级别 | 说明                                                  |
+|-------------------------------------|:----:|:-----:|----------------------------------------------------------|
+| [`etcd_safeguard`](#etcd_safeguard) | bool | G/C/A | 防止清除运行中的 etcd 实例？                   |
+| [`etcd_rm_data`](#etcd_rm_data)     | bool | G/C/A | 移除期间删除 etcd 数据？（默认：true）         |
+| [`etcd_rm_pkg`](#etcd_rm_pkg)       | bool | G/C/A | 移除期间卸载 etcd 包？（默认：false） |
+
+
+
+
+------
+
+## 默认值 [#defaults]
+
+默认参数在 [`roles/etcd/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/etcd/defaults/main.yml) 中定义
+
+额外的移除参数在 [`roles/etcd_remove/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/etcd_remove/defaults/main.yml) 中定义
+
+```yaml
+#-----------------------------------------------------------------
+# ETCD
+#-----------------------------------------------------------------
+#etcd_seq: 1                      # etcd instance identifier, explicitly required
+etcd_cluster: etcd                # etcd cluster & group name, etcd by default
+etcd_data: /data/etcd             # etcd data directory, /data/etcd by default
+etcd_learner: false               # etcd instance run as learner? false by default
+etcd_port: 2379                   # etcd client port, 2379 by default
+etcd_peer_port: 2380              # etcd peer port, 2380 by default
+etcd_init: new                    # etcd initial cluster state, new or existing
+etcd_election_timeout: 1000       # etcd election timeout, 1000ms by default
+etcd_heartbeat_interval: 100      # etcd heartbeat interval, 100ms by default
+```
+
+**ETCD_REMOVE 参数**
+
+```yaml
+#-----------------------------------------------------------------
+# ETCD_REMOVE
+#-----------------------------------------------------------------
+etcd_safeguard: false             # prevent accidental removal?
+etcd_rm_data: true                # remove etcd data during removal?
+etcd_rm_pkg: false                # uninstall etcd packages during removal?
+```
+
+------
+
+## `etcd_seq`
+
+名称：`etcd_seq`，类型：`int`，级别：`I`
+
+etcd 实例标识符，必需
+
+没有默认值，您必须明确指定它。这里是一个 3 节点 etcd 集群示例：
+
+```yaml
+etcd: # dcs service for postgres/patroni ha consensus
+  hosts:  # 1 node for testing, 3 or 5 for production
+    10.10.10.10: { etcd_seq: 1 }  # etcd_seq required
+    10.10.10.11: { etcd_seq: 2 }  # assign from 1 ~ n
+    10.10.10.12: { etcd_seq: 3 }  # use odd numbers
+  vars: # cluster level parameter override roles/etcd
+    etcd_cluster: etcd  # mark etcd cluster name etcd
+    etcd_safeguard: false # safeguard against purging
+    etcd_clean: true # purge etcd during init process
+```
+
+------
+
+## `etcd_cluster`
+
+名称：`etcd_cluster`，类型：`string`，级别：`C`
+
+etcd 集群和组名，默认为 etcd
+
+默认值：`etcd`，这是一个固定的组名，当您想要部署一些额外的 etcd 集群时很有用
+
+
+------
+
+## `etcd_learner`
+
+名称：`etcd_learner`，类型：`bool`，级别：`I`
+
+将 etcd 实例初始化为学习者？默认值为 `false`
+
+当设置为 `true` 时，etcd 实例将被初始化为学习者，因此它无法在 etcd 集群中投票。
+您可以稍后使用 `etcdctl member promote` 命令将其提升为完整成员。
+
+
+
+
+------
+
+## `etcd_data`
+
+名称：`etcd_data`，类型：`path`，级别：`C`
+
+etcd 数据目录，默认为 `/data/etcd`
+
+------
+
+## `etcd_port`
+
+名称：`etcd_port`，类型：`port`，级别：`C`
+
+etcd 客户端端口，默认为 `2379`
+
+------
+
+## `etcd_peer_port`
+
+名称：`etcd_peer_port`，类型：`port`，级别：`C`
+
+etcd 对等端口，默认为 `2380`
+
+------
+
+## `etcd_init`
+
+名称：`etcd_init`，类型：`enum`，级别：`C`
+
+etcd 初始集群状态，`new` 或 `existing`
+
+默认值：`new`，将创建一个独立的新 etcd 集群。
+
+值 `existing` 在尝试向现有 etcd 集群[**追加新成员**](/zh/etcd/admin/#append-member)时使用。
+
+------
+
+## `etcd_election_timeout`
+
+名称：`etcd_election_timeout`，类型：`int`，级别：`C`
+
+etcd 选举超时，默认为 `1000`（毫秒）
+
+------
+
+## `etcd_heartbeat_interval`
+
+名称：`etcd_heartbeat_interval`，类型：`int`，级别：`C`
+
+etcd 心跳间隔，默认为 `100`（毫秒）
+
+------
+
+## `etcd_safeguard`
+
+名称：`etcd_safeguard`，类型：`bool`，级别：`G/C/A`
+
+防止清除 etcd 实例？默认值为 `false`
+
+如果启用，运行中的 etcd 实例将不会被 [`etcd-rm.yml`](/zh/etcd/playbook/#etcd-rmyml) playbook 清除。
+
+
+------
+
+## `etcd_rm_data`
+
+名称：`etcd_rm_data`，类型：`bool`，级别：`G/C/A`
+
+移除期间删除 etcd 数据？默认值为 `true`
+
+启用时，[`etcd-rm.yml`](/zh/etcd/playbook/#etcd-rmyml) playbook 将在集群或成员移除期间删除 etcd 数据目录和配置文件。
+
+------
+
+## `etcd_rm_pkg`
+
+名称：`etcd_rm_pkg`，类型：`bool`，级别：`G/C/A`
+
+移除期间卸载 etcd 包？默认值为 `false`
+
+启用时，[`etcd-rm.yml`](/zh/etcd/playbook/#etcd-rmyml) playbook 将在集群或成员移除期间卸载 etcd 包。

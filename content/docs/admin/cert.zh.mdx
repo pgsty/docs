@@ -1,0 +1,242 @@
+---
+title: SSL 证书
+description: 配置真实和自签名 HTTPS 证书
+icon: Lock
+---
+
+Pigsty 在基础设施节点上预装了 Certbot，使您能够为 Nginx 服务器和公共域名获取免费的 Let's Encrypt HTTPS 证书。
+
+
+--------
+
+## 前提条件 [#prerequisites]
+
+在获取 Let's Encrypt 证书之前，请确保您拥有：
+- 一个公共域名
+- 指向您服务器公共 IP 的 DNS 记录
+- 正确配置了您的域名的 Nginx
+
+
+--------
+
+## 步骤 1：确定哪些域名需要证书 [#step-1-determine-which-domains-need-certificates]
+
+首先，通过在您的 `infra_portal` 中配置域名来确定哪些上游服务需要公共证书：
+
+```yaml
+infra_portal:
+  home         : { domain: h.pigsty.cc }
+  grafana      : { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true }
+  prometheus   : { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093" }
+  minio        : { domain: m.pigsty.cc, endpoint: "${admin_ip}:9001", scheme: https, websocket: true }
+  web          : { domain: pigsty.cc, path: "/www/web.cc" }
+  repo         : { domain: repo.pigsty.cc, path: "/www/repo" }
+```
+
+
+--------
+
+## 步骤 2：将域名指向您的服务器 [#step-2-point-domains-to-your-server]
+
+配置 DNS A 记录，将所有域名指向您服务器的公共 IP 地址：
+
+```bash
+# DNS 配置示例
+47.83.172.23 pigsty.cc
+47.83.172.23 h.pigsty.cc
+47.83.172.23 g.pigsty.cc
+47.83.172.23 p.pigsty.cc
+47.83.172.23 a.pigsty.cc
+47.83.172.23 m.pigsty.cc
+47.83.172.23 repo.pigsty.cc
+```
+
+验证您的域名是否正确指向您的服务器：
+
+```bash
+# 测试域名解析
+nslookup pigsty.cc
+dig g.pigsty.cc
+```
+
+
+--------
+
+## 步骤 3：使用 Certbot 请求证书 [#step-3-request-certificates-with-certbot]
+
+使用 Certbot 为您的域名请求 Let's Encrypt 证书：
+
+### 交互式方法（首次） [#interactive-method-first-time]
+
+```bash
+certbot --nginx -d pigsty.cc -d repo.pigsty.cc -d g.pigsty.cc -d p.pigsty.cc -d a.pigsty.cc
+```
+
+在首次运行期间，您将被提示：
+- 提供用于 Let's Encrypt 账户注册的电子邮件地址
+- 同意服务条款
+- 选择是否与电子前哨基金会分享您的电子邮件
+
+### 非交互式方法 [#non-interactive-method]
+
+对于自动化部署，使用非交互式模式：
+
+```bash
+certbot --nginx --agree-tos --email your@email.com -n -d your-domain.com
+```
+
+多个域名的示例：
+
+```bash
+certbot --nginx --agree-tos --email admin@pigsty.cc -n \
+  -d pigsty.cc \
+  -d g.pigsty.cc \
+  -d p.pigsty.cc \
+  -d a.pigsty.cc \
+  -d repo.pigsty.cc
+```
+
+## 步骤 4：更新 Nginx 配置 [#step-4-update-nginx-configuration]
+
+成功获取证书后，通过添加 `certbot: true` 参数来更新您的 `infra_portal` 配置以使用它们：
+
+```yaml
+infra_portal:
+  grafana: { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true, certbot: true }
+  prometheus: { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090", certbot: true }
+  alertmanager: { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093", certbot: true }
+  web: { domain: pigsty.cc, path: "/www/web.cc", certbot: true }
+  repo: { domain: repo.pigsty.cc, path: "/www/repo", certbot: true }
+```
+
+然后重新生成 Nginx 配置并重启服务：
+
+```bash
+./infra.yml -t nginx_config,nginx_launch
+```
+
+
+--------
+
+## 步骤 5：配置证书续期 [#step-5-configure-certificate-renewal]
+
+Let's Encrypt 证书每 90 天过期一次。设置自动续期以确保持续的 HTTPS 覆盖：
+
+### 测试续期（试运行） [#test-renewal-dry-run]
+
+在设置自动续期之前，测试流程：
+
+```bash
+certbot renew --dry-run
+```
+
+### 手动续期 [#manual-renewal]
+
+手动续期所有证书：
+
+```bash
+certbot renew
+```
+
+续期特定证书：
+
+```bash
+certbot renew --cert-name your-domain.com
+```
+
+### 自动续期 [#automatic-renewal]
+
+设置每月自动续期的 cron 作业：
+
+```bash
+# 添加到 crontab
+crontab -e
+
+# 添加这一行在每月第一天凌晨 2 点进行续期
+0 2 1 * * certbot renew --quiet
+```
+
+或者，如果可用，使用 systemd 定时器：
+
+```bash
+# 启用 certbot 定时器
+systemctl enable certbot.timer
+systemctl start certbot.timer
+```
+
+
+
+--------
+
+## 证书管理命令 [#certificate-management-commands]
+
+以下是管理证书的有用 Certbot 命令：
+
+```bash
+# 列出所有证书
+certbot certificates
+
+# 查看证书详细信息
+certbot certificates --cert-name your-domain.com
+
+# 续期特定证书
+certbot renew --cert-name your-domain.com
+
+# 删除证书
+certbot delete --cert-name your-domain.com
+
+# 扩展证书以包含新域名
+certbot --nginx -d existing-domain.com -d new-domain.com
+
+# 撤销证书
+certbot revoke --cert-path /etc/letsencrypt/live/your-domain.com/cert.pem
+```
+
+
+
+
+--------
+
+## 故障排除 [#troubleshooting]
+
+### 常见问题 [#common-issues]
+
+1. **域名不可访问**：确保 DNS 记录正确配置并已传播
+2. **端口 80 被阻塞**：Let's Encrypt 需要端口 80 进行域名验证
+3. **速率限制**：Let's Encrypt 有速率限制；避免快速请求太多证书
+4. **防火墙问题**：确保防火墙中端口 80 和 443 是开放的
+
+### 验证命令 [#verification-commands]
+
+```bash
+# 检查证书过期时间
+openssl x509 -in /etc/letsencrypt/live/your-domain.com/cert.pem -text -noout | grep "Not After"
+
+# 测试 SSL 配置
+openssl s_client -connect your-domain.com:443 -servername your-domain.com
+
+# 检查 Nginx 配置
+nginx -t
+
+# 重新加载 Nginx
+nginx -s reload
+```
+
+## 最佳实践 [#best-practices]
+
+1. **在适当时使用通配符证书**用于多个子域名
+2. **使用自动化警报监控证书过期**
+3. **定期使用试运行测试续期流程**
+4. **保留证书文件的备份**
+5. **在生产部署前使用暂存环境**进行测试
+6. **为证书过期日期设置监控**
+7. **为团队参考记录您的域名配置**
+
+## 安全考虑 [#security-considerations]
+
+- **保护私钥**：确保证书私钥具有受限权限
+- **使用强 SSL 配置**：使用现代 SSL 设置配置 Nginx
+- **启用 HTTP 到 HTTPS 重定向**：强制安全连接
+- **实施 HSTS**：添加 HTTP 严格传输安全标头
+- **定期安全审计**：使用 SSL Labs 等工具测试您的 SSL 配置

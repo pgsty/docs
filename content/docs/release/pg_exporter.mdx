@@ -4,7 +4,7 @@ description: the pg_exporter metrics collector release note
 icon: SearchSlash
 ---
 
-> **Advanced [PostgreSQL](https://www.postgresql.org) & [pgBouncer](https://www.pgbouncer.org/) metrics [exporter](https://prometheus.io/docs/instrumenting/exporters/) for [Prometheus](https://prometheus.io/)**
+**Advanced [PostgreSQL](https://www.postgresql.org) & [pgBouncer](https://www.pgbouncer.org/) metrics [exporter](https://prometheus.io/docs/instrumenting/exporters/) for [Prometheus](https://prometheus.io/)**
 
 PG Exporter brings ultimate monitoring experience to your PostgreSQL with **declarative config**, **dynamic planning**, and **customizable collectors**.
 It provides **600+** metrics and ~3K time series per instance, covers everything you'll need for PostgreSQL observability.
@@ -13,36 +13,36 @@ Check the [GitHub Repo](https://github.com/pgsty/pg_exporter) for more details.
 The latest stable version of `pg_exporter` is [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1)
 
 
-|    Version     |    Date    | Summary                                                 |                               GitHub                               |
-|:--------------:|:----------:|---------------------------------------------------------|:------------------------------------------------------------------:|
-| [v1.0.1](v101) | 2023-07-17 | DockerHub images, Go 1.24.5, disable pg_tsdb_hypertable | [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1) |
-| [v1.0.0](v100) | 2023-05-06 | PostgreSQL 18 support, new WAL/checkpointer/I/O metrics | [v1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0) |
-| [v0.9.0](v090) | 2023-04-26 | TimescaleDB, Citus, pg_wait_sampling collectors         | [v0.9.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.9.0) |
-| [v0.8.1](v081) | 2024-02-14 | Dependencies update, docker image tags                  | [v0.8.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.1) |
-| [v0.8.0](v080) | 2024-02-14 | PgBouncer 1.24 support, Go 1.24, logging refactor       | [v0.8.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.0) |
-| [v0.7.1](v071) | 2022-08-13 | Routine update, configuration as Reader support         | [v0.7.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.1) |
-| [v0.7.0](v070) | 2022-08-13 | PostgreSQL 17 support, predicate queries feature        | [v0.7.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.0) |
-| [v0.6.0](v060) | 2022-10-18 | PostgreSQL 16 support, ARM64 packages, security fixes   | [v0.6.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.6.0) |
-| [v0.5.0](v050) | 2022-04-27 | RPM/DEB builds, column scaling, metrics enhancements    | [v0.5.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.5.0) |
-| [v0.4.1](v041) | 2022-03-08 | Collector updates, connect-timeout parameter            | [v0.4.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.1) |
-| [v0.4.0](v040) | 2021-07-12 | PostgreSQL 14 support, auto-discovery feature           | [v0.4.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.0) |
-| [v0.3.2](v032) | 2021-02-01 | Shadow DSN fixes, documentation updates                 | [v0.3.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.2) |
-| [v0.3.1](v031) | 2020-12-04 | Configuration fixes for older PostgreSQL versions       | [v0.3.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.1) |
-| [v0.3.0](v030) | 2020-10-29 | PostgreSQL 13 support, REST APIs, dummy server          | [v0.3.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.0) |
-| [v0.2.0](v020) | 2020-03-21 | YUM packages, configuration reload support              | [v0.2.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.2.0) |
-| [v0.1.2](v012) | 2020-02-20 | Dynamic configuration reload, bulky mode                | [v0.1.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.2) |
-| [v0.1.1](v011) | 2020-01-10 | Startup hang bug fix                                    | [v0.1.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.1) |
-| [v0.1.0](v010) | 2020-01-08 | Initial stable release                                  | [v0.1.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.0) |
-| [v0.0.4](v004) | 2019-12-20 | Production tested release                               | [v0.0.4](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.4) |
-| [v0.0.3](v003) | 2019-12-14 | Production environment testing                          | [v0.0.3](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.3) |
-| [v0.0.2](v002) | 2019-12-09 | Early testing release                                   | [v0.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.2) |
-| [v0.0.1](v001) | 2019-12-06 | Initial release with PgBouncer mode                     | [v0.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.1) |
+|     Version     |    Date    | Summary                                                 |                               GitHub                               |
+|:---------------:|:----------:|---------------------------------------------------------|:------------------------------------------------------------------:|
+| [v1.0.1](#v101) | 2023-07-17 | DockerHub images, Go 1.24.5, disable pg_tsdb_hypertable | [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1) |
+| [v1.0.0](#v100) | 2023-05-06 | PostgreSQL 18 support, new WAL/checkpointer/I/O metrics | [v1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0) |
+| [v0.9.0](#v090) | 2023-04-26 | TimescaleDB, Citus, pg_wait_sampling collectors         | [v0.9.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.9.0) |
+| [v0.8.1](#v081) | 2024-02-14 | Dependencies update, docker image tags                  | [v0.8.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.1) |
+| [v0.8.0](#v080) | 2024-02-14 | PgBouncer 1.24 support, Go 1.24, logging refactor       | [v0.8.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.0) |
+| [v0.7.1](#v071) | 2022-08-13 | Routine update, configuration as Reader support         | [v0.7.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.1) |
+| [v0.7.0](#v070) | 2022-08-13 | PostgreSQL 17 support, predicate queries feature        | [v0.7.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.0) |
+| [v0.6.0](#v060) | 2022-10-18 | PostgreSQL 16 support, ARM64 packages, security fixes   | [v0.6.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.6.0) |
+| [v0.5.0](#v050) | 2022-04-27 | RPM/DEB builds, column scaling, metrics enhancements    | [v0.5.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.5.0) |
+| [v0.4.1](#v041) | 2022-03-08 | Collector updates, connect-timeout parameter            | [v0.4.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.1) |
+| [v0.4.0](#v040) | 2021-07-12 | PostgreSQL 14 support, auto-discovery feature           | [v0.4.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.0) |
+| [v0.3.2](#v032) | 2021-02-01 | Shadow DSN fixes, documentation updates                 | [v0.3.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.2) |
+| [v0.3.1](#v031) | 2020-12-04 | Configuration fixes for older PostgreSQL versions       | [v0.3.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.1) |
+| [v0.3.0](#v030) | 2020-10-29 | PostgreSQL 13 support, REST APIs, dummy server          | [v0.3.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.0) |
+| [v0.2.0](#v020) | 2020-03-21 | YUM packages, configuration reload support              | [v0.2.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.2.0) |
+| [v0.1.2](#v012) | 2020-02-20 | Dynamic configuration reload, bulky mode                | [v0.1.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.2) |
+| [v0.1.1](#v011) | 2020-01-10 | Startup hang bug fix                                    | [v0.1.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.1) |
+| [v0.1.0](#v010) | 2020-01-08 | Initial stable release                                  | [v0.1.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.0) |
+| [v0.0.4](#v004) | 2019-12-20 | Production tested release                               | [v0.0.4](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.4) |
+| [v0.0.3](#v003) | 2019-12-14 | Production environment testing                          | [v0.0.3](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.3) |
+| [v0.0.2](#v002) | 2019-12-09 | Early testing release                                   | [v0.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.2) |
+| [v0.0.1](#v001) | 2019-12-06 | Initial release with PgBouncer mode                     | [v0.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.1) |
 
 
 
 ------
 
-## 1.0.1
+## v1.0.1
 
 - Add dockerhub images: [pgsty/pg_exporter](https://hub.docker.com/r/pgsty/pg_exporter)
 - Bump go dependencies to the latest version, build with go 1.24.5
@@ -66,7 +66,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1
 
 ------
 
-## 1.0.0
+## v1.0.0
 
 Add PostgreSQL 18 metrics support
 
@@ -107,7 +107,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0
 
 ------
 
-## 0.9.0
+## v0.9.0
 
 **Default Collectors**
 
@@ -153,7 +153,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.9.0
 
 ------
 
-## 0.8.1
+## v0.8.1
 
 * Bump dependencies to the latest version
 * [Bump golang.org/x/net from 0.35.0 to 0.36.0 #67](https://github.com/pgsty/pg_exporter/pull/67)
@@ -166,7 +166,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.8.1
 
 ------
 
-## 0.8.0
+## v0.8.0
 
 * Add PgBouncer 1.24 new metrics support (stat, pool, database)
 * Fix: `310-pg_size.yml` fails if log dir not set properly [#64](https://github.com/pgsty/pg_exporter/issues/64) by [@Süleyman Vurucu](https://github.com/suikast42)
@@ -180,7 +180,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.8.0
 
 ------
 
-## 0.7.1
+## v0.7.1
 
 Routine update with dependabot
 
@@ -195,7 +195,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.7.1
 
 ------
 
-## 0.7.0
+## v0.7.0
 
 Refactor codebase for the latest go version.
 
@@ -214,7 +214,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.7.0
 
 ------
 
-## 0.6.0
+## v0.6.0
 
 - Security Enhancement: Fix [security](https://github.com/pgsty/pg_exporter/security/dependabot?q=is%3Aclosed)
 dependent-bot issue
@@ -235,7 +235,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.6.0
 
 ------
 
-## 0.5.0
+## v0.5.0
 
 **Exporter Enhancement**
 
@@ -263,7 +263,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.5.0
 
 ------
 
-## 0.4.1
+## v0.4.1
 
 - update default collectors
   - omit citus & timescaledb schemas on object monitoring
@@ -283,7 +283,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.4.1
 
 ------
 
-## 0.4.0
+## v0.4.0
 
 - Add PG 14 support
 - Default metrics configuration overhaul. (BUT you can still use the old configuration)
@@ -298,7 +298,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.4.0
 
 ------
 
-## 0.3.2
+## v0.3.2
 
 - fix shadow DSN corner case
 - fix typo & docs
@@ -311,7 +311,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.3.2
 
 ------
 
-## 0.3.1
+## v0.3.1
 
 fix default configuration problems (especially for versions lower than 13)
 
@@ -328,7 +328,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.3.1
 
 ------
 
-## 0.3.0
+## v0.3.0
 
 https://github.com/pgsty/pg_exporter/releases/tag/v0.3.0
 
@@ -341,7 +341,7 @@ etc...)
 
 ------
 
-## 0.2.0
+## v0.2.0
 
 - add yum package and linux service definition
 - add a 'skip' flag into query config
@@ -357,7 +357,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.2.0
 
 ------
 
-## 0.1.2
+## v0.1.2
 
 * fix pgbouncer_up metrics
 * add dynamic configuration reload
@@ -371,7 +371,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.1.2
 
 ------
 
-## 0.1.1
+## v0.1.1
 
 Fix the bug that pg_exporter will hang during start-up if any query is failed.
 
@@ -381,7 +381,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.1.1
 
 ------
 
-## 0.1.0
+## v0.1.0
 
 It works, looks good to me.
 
@@ -390,7 +390,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.1.0
 
 ------
 
-## 0.0.4
+## v0.0.4
 
 Tested in real world production environment with 200+ nodes for about 2 weeks. Looks good !
 
@@ -400,7 +400,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.0.4
 
 ------
 
-## 0.0.3
+## v0.0.3
 
 v0.0.3 Release, Tested in Production Environment
 
@@ -414,7 +414,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.0.3
 
 ------
 
-## 0.0.2
+## v0.0.2
 
 It's ok to try now
 
@@ -424,7 +424,7 @@ https://github.com/pgsty/pg_exporter/releases/tag/v0.0.2
 
 ------
 
-## 0.0.1
+## v0.0.1
 
 Add pgbouncer mode
 

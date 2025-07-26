@@ -1,0 +1,105 @@
+---
+title: 监控
+description: etcd 模块的仪表板和告警规则
+icon: Telescope
+---
+
+
+## 仪表板 [#dashboards]
+
+ETCD 模块提供一个监控仪表板：Etcd Overview。
+
+[ETCD Overview](https://demo.pigsty.cc/d/etcd-overview)：ETCD 集群概览
+
+该仪表板提供有关 ETCD 状态的关键信息，其中最值得注意的是 ETCD Aliveness，它显示 ETCD 集群的整体服务状态。
+
+红色条带表示实例不可用的时期，而下方的蓝灰色条带显示整个集群不可用的时期。
+
+
+
+------
+
+## 告警规则 [#alert-rules]
+
+Pigsty 为 INFRA 模块提供以下两个告警规则：
+
+| 告警规则              | 描述                                | 严重程度 |
+|-------------------------|--------------------------------------------|:--------:|
+| `EtcdServerDown`        | Etcd 节点宕机，关键告警             | Critical |
+| `EtcdNoLeader`          | Etcd 集群没有领导者，关键告警 | Critical |
+| `EtcdQuotaFull`         | Etcd 配额使用率超过 90%，警告      | Warning  |
+| `EtcdNetworkPeerRTSlow` | Etcd 网络延迟慢，提醒       | Notice   |
+| `EtcdWalFsyncSlow`      | Etcd 磁盘 fsync 慢，提醒            | Notice   |
+
+您可以在 [`files/prometheus/rules/etcd.yml`](https://github.com/pgsty/pigsty/blob/main/files/prometheus/rules/etcd.yml) 中修改或添加新的 etcd 告警规则。
+
+```yaml
+#==============================================================#
+#                         Aliveness                            #
+#==============================================================#
+# etcd server instance down
+- alert: EtcdServerDown
+  expr: etcd_up < 1
+  for: 1m
+  labels: { level: 0, severity: CRIT, category: etcd }
+  annotations:
+    summary: "CRIT EtcdServerDown {{ $labels.ins }}@{{ $labels.instance }}"
+    description: |
+      etcd_up[ins={{ $labels.ins }}, instance={{ $labels.instance }}] = {{ $value }} < 1
+      http://g.pigsty/d/etcd-overview      
+
+#==============================================================#
+#                         Error                                #
+#==============================================================#
+# Etcd no Leader triggers a P0 alert immediately
+# if dcs_failsafe mode is not enabled, this may lead to global outage
+- alert: EtcdNoLeader
+  expr: min(etcd_server_has_leader) by (cls) < 1
+  for: 15s
+  labels: { level: 0, severity: CRIT, category: etcd }
+  annotations:
+    summary: "CRIT EtcdNoLeader: {{ $labels.cls }} {{ $value }}"
+    description: |
+      etcd_server_has_leader[cls={{ $labels.cls }}] = {{ $value }} < 1
+      http://g.pigsty/d/etcd-overview?from=now-5m&to=now&var-cls={{$labels.cls}}      
+
+#==============================================================#
+#                        Saturation                            #
+#==============================================================#
+- alert: EtcdQuotaFull
+  expr: etcd:cls:quota_usage > 0.90
+  for: 1m
+  labels: { level: 1, severity: WARN, category: etcd }
+  annotations:
+    summary: "WARN EtcdQuotaFull: {{ $labels.cls }}"
+    description: |
+      etcd:cls:quota_usage[cls={{ $labels.cls }}] = {{ $value | printf "%.3f" }} > 90%      
+
+#==============================================================#
+#                         Latency                              #
+#==============================================================#
+# etcd network peer rt p95 > 200ms for 1m
+- alert: EtcdNetworkPeerRTSlow
+  expr: etcd:ins:network_peer_rt_p95_5m > 0.200
+  for: 1m
+  labels: { level: 2, severity: INFO, category: etcd }
+  annotations:
+    summary: "INFO EtcdNetworkPeerRTSlow: {{ $labels.cls }} {{ $labels.ins }}"
+    description: |
+      etcd:ins:network_peer_rt_p95_5m[cls={{ $labels.cls }}, ins={{ $labels.ins }}] = {{ $value }} > 200ms
+      http://g.pigsty/d/etcd-instance?from=now-10m&to=now&var-cls={{ $labels.cls }}      
+
+# Etcd wal fsync rt p95 > 50ms
+- alert: EtcdWalFsyncSlow
+  expr: etcd:ins:wal_fsync_rt_p95_5m > 0.050
+  for: 1m
+  labels: { level: 2, severity: INFO, category: etcd }
+  annotations:
+    summary: "INFO EtcdWalFsyncSlow: {{ $labels.cls }} {{ $labels.ins }}"
+    description: |
+      etcd:ins:wal_fsync_rt_p95_5m[cls={{ $labels.cls }}, ins={{ $labels.ins }}] = {{ $value }} > 50ms
+      http://g.pigsty/d/etcd-instance?from=now-10m&to=now&var-cls={{ $labels.cls }}
+ 
+```
+
+------

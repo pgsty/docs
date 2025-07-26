@@ -1,0 +1,30 @@
+---
+title: 本地仓库
+description: 配置本地 APT / YUM 软件仓库
+icon: Warehouse
+---
+
+
+--------
+
+## 快速开始 [#quick-start]
+
+如果您想向本地仓库添加一些包，请将它们添加到：
+
+- [`repo_packages`](/zh/infra/param#repo_packages) 用于默认包
+- [`repo_extra_packages`](/zh/infra/param#repo_extra_packages) 用于额外包
+
+然后运行 `make repo` 快捷方式来更新本地仓库和节点仓库缓存：
+
+```bash title="make repo"
+./infra.yml -t repo_build
+./node.yml -t node_repo
+```
+
+
+
+--------
+
+## 使用别名 [#using-alias]
+
+您可以使用别名来指定一组包，查看 `roles/node_id/vars/<os>.<arch>.yml` 了解可用的别名：

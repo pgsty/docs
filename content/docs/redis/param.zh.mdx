@@ -1,0 +1,324 @@
+---
+title: 参数
+description: 使用 21 个参数定制 redis
+icon: Variable
+---
+
+redis 模块中有 21 个参数。
+
+| 参数                                               |   类型   | 级别 | 注释                                              |
+|-----------------------------------------------------|:--------:|:-----:|----------------------------------------------------|
+| [`redis_cluster`](#redis_cluster)                   |  string  |   C   | redis 集群名称，必需的身份参数    |
+| [`redis_instances`](#redis_instances)               |   dict   |   I   | 此 redis 节点上的 redis 实例定义      |
+| [`redis_node`](#redis_node)                         |   int    |   I   | redis 节点序列号，必需的节点整数 ID   |
+| [`redis_fs_main`](#redis_fs_main)                   |   path   |   C   | redis 主数据挂载点，默认为 `/data`     |
+| [`redis_exporter_enabled`](#redis_exporter_enabled) |   bool   |   C   | 在 redis 节点上安装 redis exporter？             |
+| [`redis_exporter_port`](#redis_exporter_port)       |   port   |   C   | redis exporter 监听端口，默认为 9121        |
+| [`redis_exporter_options`](#redis_exporter_options) |  string  |  C/I  | redis exporter 的 cli 参数和额外选项      |
+| [`redis_safeguard`](#redis_safeguard)               |   bool   | G/C/A | 防止清除正在运行的 redis 实例？            |
+| [`redis_clean`](#redis_clean)                       |   bool   | G/C/A | 初始化期间清除现有的 redis？                |
+| [`redis_rmdata`](#redis_rmdata)                     |   bool   | G/C/A | 清除 redis 服务器时移除 redis 数据？       |
+| [`redis_mode`](#redis_mode)                         |   enum   |   C   | redis 模式：standalone、cluster、sentinel            |
+| [`redis_conf`](#redis_conf)                         |  string  |   C   | redis 配置模板路径，除 sentinel 外        |
+| [`redis_bind_address`](#redis_bind_address)         |    ip    |   C   | redis 绑定地址，空字符串将使用主机 IP  |
+| [`redis_max_memory`](#redis_max_memory)             |   size   |  C/I  | 每个 redis 实例使用的最大内存             |
+| [`redis_mem_policy`](#redis_mem_policy)             |   enum   |   C   | redis 内存逐出策略                       |
+| [`redis_password`](#redis_password)                 | password |   C   | redis 密码，空字符串将禁用密码 |
+| [`redis_rdb_save`](#redis_rdb_save)                 | string[] |   C   | redis rdb 保存指令，使用空列表禁用 |
+| [`redis_aof_enabled`](#redis_aof_enabled)           |   bool   |   C   | 启用 redis 追加文件？                     |
+| [`redis_rename_commands`](#redis_rename_commands)   |   dict   |   C   | 重命名 redis 危险命令                    |
+| [`redis_cluster_replicas`](#redis_cluster_replicas) |   int    |   C   | redis 集群中一个主节点的副本数量     |
+| [`redis_sentinel_monitor`](#redis_sentinel_monitor) | master[] |   C   | sentinel 主节点列表，仅限 sentinel 集群        |
+
+------
+
+## 默认值 [#defaults]
+
+默认参数在 [`roles/redis/defaults/main.yml`](https://github.com/pgsty/pigsty/blob/main/roles/redis/defaults/main.yml) 中定义
+
+```yaml
+#redis_cluster:        <CLUSTER> # redis 集群名称，必需的身份参数
+#redis_node: 1            <NODE> # redis 节点序列号，必需的节点整数 ID
+#redis_instances: {}      <NODE> # 此 redis 节点上的 redis 实例定义
+redis_fs_main: /data              # redis 主数据挂载点，默认为 `/data`
+redis_exporter_enabled: true      # 在 redis 节点上安装 redis exporter？
+redis_exporter_port: 9121         # redis exporter 监听端口，默认为 9121
+redis_exporter_options: ''        # redis exporter 的 cli 参数和额外选项
+redis_safeguard: false            # 防止清除正在运行的 redis 实例？
+redis_clean: true                 # 初始化期间清除现有的 redis？
+redis_rmdata: true                # 清除 redis 服务器时移除 redis 数据？
+redis_mode: standalone            # redis 模式：standalone、cluster、sentinel
+redis_conf: redis.conf            # redis 配置模板路径，除 sentinel 外
+redis_bind_address: '0.0.0.0'     # redis 绑定地址，空字符串将使用主机 IP
+redis_max_memory: 1GB             # 每个 redis 实例使用的最大内存
+redis_mem_policy: allkeys-lru     # redis 内存逐出策略
+redis_password: ''                # redis 密码，空字符串将禁用密码
+redis_rdb_save: ['1200 1']        # redis rdb 保存指令，使用空列表禁用
+redis_aof_enabled: false          # 启用 redis 追加文件？
+redis_rename_commands: {}         # 重命名 redis 危险命令
+redis_cluster_replicas: 1         # redis 集群中一个主节点的副本数量
+redis_sentinel_monitor: []        # sentinel 主节点列表，仅在 sentinel 集群上工作
+```
+
+------
+
+## `redis_cluster` [#redis_cluster]
+
+名称：`redis_cluster`，类型：`string`，级别：`C`
+
+redis 集群名称，必需的身份参数。
+
+无默认值，您必须明确定义它。
+
+符合正则表达式 `[a-z][a-z0-9-]*`，建议使用与组名相同的名称并以 `redis-` 开头
+
+------
+
+## `redis_node` [#redis_node]
+
+名称：`redis_node`，类型：`int`，级别：`I`
+
+redis 节点序列号，在 redis 集群中需要唯一的整数
+
+您必须为每个 redis 节点明确定义节点 ID。整数从 0 或 1 开始。
+
+------
+
+## `redis_instances` [#redis_instances]
+
+名称：`redis_instances`，类型：`dict`，级别：`I`
+
+此 redis 节点上的 redis 实例定义
+
+无默认值，您必须使用此参数在每个 redis 节点上明确定义 redis 实例。
+
+这是一个原生 redis 集群定义的示例
+
+```yaml
+redis-test: # redis 原生集群：3m x 3s
+  hosts:
+    10.10.10.12: { redis_node: 1 ,redis_instances: { 6379: { } ,6380: { } ,6381: { } } }
+    10.10.10.13: { redis_node: 2 ,redis_instances: { 6379: { } ,6380: { } ,6381: { } } }
+  vars: { redis_cluster: redis-test ,redis_password: 'redis.test' ,redis_mode: cluster, redis_max_memory: 32MB }
+```
+
+端口号在**节点**中应该是唯一的，`value` 中的 `replica_of` 应该是同一 redis **集群**的实例成员。
+
+```yaml
+redis_instances:
+    6379: {}
+    6380: { replica_of: '10.10.10.13 6379' }
+    6381: { replica_of: '10.10.10.13 6379' }
+```
+
+------
+
+## `redis_fs_main` [#redis_fs_main]
+
+名称：`redis_fs_main`，类型：`path`，级别：`C`
+
+redis 主数据挂载点，默认为 `/data`
+
+默认值：`/data`，并且 `/data/redis` 将用作 redis 数据目录。
+
+------
+
+## `redis_exporter_enabled` [#redis_exporter_enabled]
+
+名称：`redis_exporter_enabled`，类型：`bool`，级别：`C`
+
+在 redis 节点上安装 redis exporter？
+
+默认值为 `true`，这将在此 redis_node 上启动一个 redis_exporter
+
+------
+
+## `redis_exporter_port` [#redis_exporter_port]
+
+名称：`redis_exporter_port`，类型：`port`，级别：`C`
+
+redis exporter 监听端口，默认为 9121
+
+默认值：`9121`
+
+------
+
+## `redis_exporter_options` [#redis_exporter_options]
+
+名称：`redis_exporter_options`，类型：`string`，级别：`C/I`
+
+redis exporter 的 cli 参数和额外选项，将添加到 `/etc/default/redis_exporter`。
+
+默认值为空字符串
+
+------
+
+## `redis_safeguard` [#redis_safeguard]
+
+名称：`redis_safeguard`，类型：`bool`，级别：`G/C/A`
+
+防止清除正在运行的 redis 实例？
+
+默认值为 `false`，如果设置为 `true`，且 redis 实例正在运行，初始化/移除 playbook 将立即中止。
+
+------
+
+## `redis_clean` [#redis_clean]
+
+名称：`redis_clean`，类型：`bool`，级别：`G/C/A`
+
+初始化期间清除现有的 redis？
+
+默认值为 `true`，这将在 redis 初始化或移除期间移除 redis 服务器。
+
+------
+
+## `redis_rmdata` [#redis_rmdata]
+
+名称：`redis_rmdata`，类型：`bool`，级别：`G/C/A`
+
+清除 redis 服务器时移除 redis 数据？
+
+默认值为 `true`，这将与 redis 实例一起移除 redis rdb / aof。
+
+------
+
+## `redis_mode` [#redis_mode]
+
+名称：`redis_mode`，类型：`enum`，级别：`C`
+
+redis 模式：standalone、cluster、sentinel
+
+默认值：`standalone`
+
+- `standalone`：将 redis 设置为独立（主从）模式
+- `cluster`：将此 redis 集群设置为 redis 原生集群
+- `sentinel`：为独立 redis HA 设置 redis 为 sentinel
+
+------
+
+## `redis_conf` [#redis_conf]
+
+名称：`redis_conf`，类型：`string`，级别：`C`
+
+redis 配置模板路径，除 sentinel 外
+
+默认值：`redis.conf`，这是 [`roles/redis/templates/redis.conf`](https://github.com/pgsty/pigsty/blob/main/roles/redis/templates/redis.conf) 中的模板文件。
+
+如果您想使用自己的 redis 配置模板，可以将其放在 `templates/` 目录中并将此参数设置为模板文件名。
+
+请注意，redis sentinel 使用不同的模板文件，即 [`roles/redis/templates/redis-sentinel.conf`](https://github.com/pgsty/pigsty/blob/main/roles/redis/templates/redis-sentinel.conf)
+
+------
+
+## `redis_bind_address` [#redis_bind_address]
+
+名称：`redis_bind_address`，类型：`ip`，级别：`C`
+
+redis 绑定地址，空字符串将使用清单主机名
+
+默认值：`0.0.0.0`，这将绑定到此主机上的所有可用 IPv4 地址
+
+> 请在生产环境中仅绑定到内网 IP，即将此值设置为 `''`
+
+------
+
+## `redis_max_memory` [#redis_max_memory]
+
+名称：`redis_max_memory`，类型：`size`，级别：`C/I`
+
+每个 redis 实例使用的最大内存，默认值：`1GB`
+
+------
+
+## `redis_mem_policy` [#redis_mem_policy]
+
+名称：`redis_mem_policy`，类型：`enum`，级别：`C`
+
+redis 内存逐出策略
+
+默认值：`allkeys-lru`，查看 redis [逐出策略](https://redis.io/docs/reference/eviction/) 获取更多详情
+
+- `noeviction`：达到内存限制时不保存新值。当数据库使用复制时，这适用于主数据库
+- `allkeys-lru`：保留最近使用的键；移除最少使用的（LRU）键
+- `allkeys-lfu`：保留经常使用的键；移除最少经常使用的（LFU）键
+- `volatile-lru`：移除过期字段设置为 true 的最少使用键。
+- `volatile-lfu`：移除过期字段设置为 true 的最少经常使用键。
+- `allkeys-random`：随机移除键以为添加的新数据腾出空间。
+- `volatile-random`：随机移除过期字段设置为 true 的键。
+- `volatile-ttl`：移除过期字段设置为 true 且剩余生存时间（TTL）值最短的键。
+
+------
+
+## `redis_password` [#redis_password]
+
+名称：`redis_password`，类型：`password`，级别：`C/N`
+
+redis 密码，空字符串将禁用密码，这是默认行为
+
+请注意，由于 redis_exporter 的实现限制，每个节点只能设置一个 `redis_password`。这通常不是问题，因为 pigsty 不允许在同一节点上部署两个不同的 redis 集群。
+
+> 请在生产环境中使用强密码
+
+------
+
+## `redis_rdb_save` [#redis_rdb_save]
+
+名称：`redis_rdb_save`，类型：`string[]`，级别：`C`
+
+redis rdb 保存指令，使用空列表禁用，查看 redis [持久化](https://redis.io/docs/management/persistence/) 获取详情。
+
+默认值为 `["1200 1"]`：如果至少 1 个键发生变化，每 20 分钟将数据集转储到磁盘：
+
+------
+
+## `redis_aof_enabled` [#redis_aof_enabled]
+
+名称：`redis_aof_enabled`，类型：`bool`，级别：`C`
+
+启用 redis 追加文件？默认值为 `false`。
+
+------
+
+## `redis_rename_commands` [#redis_rename_commands]
+
+名称：`redis_rename_commands`，类型：`dict`，级别：`C`
+
+重命名 redis 危险命令，这是一个 k:v `old: new` 的字典
+
+默认值：`{}`，您可以通过设置此值来隐藏像 `FLUSHDB` 和 `FLUSHALL` 这样的危险命令，这是一个示例：
+
+```yaml
+{
+  "keys": "op_keys",
+  "flushdb": "op_flushdb",
+  "flushall": "op_flushall",
+  "config": "op_config"
+}
+```
+
+------
+
+## `redis_cluster_replicas` [#redis_cluster_replicas]
+
+名称：`redis_cluster_replicas`，类型：`int`，级别：`C`
+
+redis 集群中一个主节点/主要节点的副本数量，默认值：`1`
+
+------
+
+## `redis_sentinel_monitor` [#redis_sentinel_monitor]
+
+名称：`redis_sentinel_monitor`，类型：`master[]`，级别：`C`
+
+只有当 [`redis_mode`](#redis_mode) 设置为 `sentinel` 时才能使用。
+
+此 sentinel 集群要监控的 redis 主节点列表。每个主节点定义为具有 `name`、`host`、`port`、`password`、`quorum` 键的字典。
+
+```yaml
+redis_sentinel_monitor:  # redis sentinel 的主节点列表，使用 cls 作为名称，主节点 ip:port
+  - { name: redis-src, host: 10.10.10.45, port: 6379 ,password: redis.src, quorum: 1 }
+  - { name: redis-dst, host: 10.10.10.48, port: 6379 ,password: redis.dst, quorum: 1 }
+```
+
+`name` 和 `host` 是必需的，`port`、`password`、`quorum` 是可选的，`quorum` 用于为此主节点设置法定人数，通常大于 sentinel 实例的一半。

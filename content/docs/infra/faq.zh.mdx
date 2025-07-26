@@ -1,0 +1,134 @@
+---
+title: FAQ
+description: 常见问题解答
+icon: MessageCircleQuestion
+---
+
+## INFRA 包含哪些组件 [#which-components-are-included-in-infra]
+
+- Ansible 用于自动化、部署和管理；
+- Nginx 用于公开任何 WebUI 服务并提供 YUM/APT 仓库；
+- 自签名 CA 用于 SSL/TLS 证书；
+- Prometheus 用于监控指标
+- Grafana 用于监控/可视化
+- Loki 用于日志收集
+- AlertManager 用于告警聚合
+- Chronyd 用于管理节点上的 NTP 时间同步。
+- DNSMasq 用于 DNS 注册和解析。
+- ETCD 作为 PostgreSQL HA 的 DCS（专用模块）；
+- 元节点上的 PostgreSQL 作为 CMDB（可选）；
+- Docker 用于无状态应用程序和工具（可选）。
+
+------
+
+## 如何恢复 Prometheus 目标 [#how-to-restore-prometheus-targets]
+
+如果您意外删除了 Prometheus 目标目录，您可以使用以下方式再次向 Prometheus 注册监控目标：
+
+```bash
+./infra.yml -t register_prometheus  # 在基础设施节点上向 prometheus 注册所有基础设施目标
+./node.yml  -t register_prometheus  # 在基础设施节点上向 prometheus 注册所有节点目标
+./etcd.yml  -t register_prometheus  # 在基础设施节点上向 prometheus 注册所有 etcd 目标
+./minio.yml -t register_prometheus  # 在基础设施节点上向 prometheus 注册所有 minio 目标
+./pgsql.yml -t register_prometheus  # 在基础设施节点上向 prometheus 注册所有 pgsql 目标
+```
+
+------
+
+## 如何恢复 Grafana 数据源 [#how-to-restore-grafana-datasource]
+
+[`pg_databases`](/zh/pgsql/param#pg_databases) 中的 PGSQL 数据库默认注册为 Grafana 数据源。
+
+如果您意外删除了 Grafana 中注册的 postgres 数据源，您可以使用以下方式再次注册它们：
+
+```bash
+./pgsql.yml -t register_grafana  # 将所有 pgsql 数据库（在 pg_databases 中）注册为 grafana 数据源
+```
+
+------
+
+## 如何恢复 HAProxy 管理页面代理 [#how-to-restore-the-haproxy-admin-page-proxy]
+
+haproxy 管理页面由默认服务器下的 Nginx 代理。
+
+如果您意外删除了 `/etc/nginx/conf.d/haproxy` 中注册的 haproxy 代理设置，您可以使用以下方式再次恢复它们：
+
+```bash
+./node.yml -t register_nginx     # 在基础设施节点上向 nginx 注册所有 haproxy 管理页面代理设置
+```
+
+------
+
+## 如何恢复 DNS 注册 [#how-to-restore-the-dns-registration]
+
+PGSQL 集群/实例域名默认注册到基础设施节点上的 `/etc/hosts.d/<name>`。
+
+您可以使用以下命令恢复它们：
+
+```bash
+./pgsql.yml -t pg_dns   # 在基础设施节点上向 dnsmasq 注册 pg DNS 名称
+```
+
+------
+
+## 如何公开新的 Nginx 上游服务 [#how-to-expose-a-new-nginx-upstream-service]
+
+如果您希望通过 Nginx 门户公开新的 WebUI 服务，您可以将服务定义添加到 [`infra_portal`](/zh/infra/param#infra_portal) 参数。
+
+并重新运行 `./infra.yml -t nginx_config,nginx_launch` 来更新和应用 Nginx 配置。
+
+如果您希望使用 HTTPS 访问，您必须删除 `files/pki/csr/pigsty.csr`、`files/pki/nginx/pigsty.{key,crt}` 以强制重新生成 Nginx SSL/TLS 证书以包含新上游的域名。
+
+------
+
+## 如何通过 Nginx 公开 Web 服务？ [#how-to-expose-a-web-service-through-nginx]
+
+虽然您可以通过 IP:Port 直接访问服务，但我们仍然建议通过使用域名并通过 Nginx 门户统一访问各种基于 Web 的服务来整合访问点。这种方法有助于集中访问、减少暴露的端口数量，并促进访问控制和审计。
+
+如果您希望通过 Nginx 门户公开新的 WebUI 服务，您可以将服务定义添加到 [`infra_portal`](/zh/infra/param#infra_portal) 参数。例如，这是公共演示站点使用的配置，它公开了几个额外的 Web 服务：
+
+```yaml
+infra_portal:
+  home         : { domain: home.pigsty.io }
+  grafana      : { domain: demo.pigsty.cc ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  prometheus   : { domain: p.pigsty.io ,endpoint: "${admin_ip}:9090" }
+  alertmanager : { domain: a.pigsty.io ,endpoint: "${admin_ip}:9093" }
+  blackbox     : { endpoint: "${admin_ip}:9115" }
+  loki         : { endpoint: "${admin_ip}:3100" }
+  # 额外的 Web 门户
+  minio        : { domain: sss.pigsty  ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
+  postgrest    : { domain: api.pigsty.io  ,endpoint: "127.0.0.1:8884"   }
+  pgadmin      : { domain: adm.pigsty.io  ,endpoint: "127.0.0.1:8885"   }
+  pgweb        : { domain: cli.pigsty.io  ,endpoint: "127.0.0.1:8886"   }
+  bytebase     : { domain: ddl.pigsty.io  ,endpoint: "127.0.0.1:8887"   }
+  gitea        : { domain: git.pigsty.io  ,endpoint: "127.0.0.1:8889"   }
+  wiki         : { domain: wiki.pigsty.io ,endpoint: "127.0.0.1:9002"   }
+  noco         : { domain: noco.pigsty.io ,endpoint: "127.0.0.1:9003"   }
+  supa         : { domain: supa.pigsty.io ,endpoint: "127.0.0.1:8000", websocket: true }
+```
+
+完成 Nginx 上游服务定义后，使用以下命令向 Nginx 注册新服务。
+
+```bash
+./infra.yml -t nginx_config           # 重新生成 Nginx 配置
+./infra.yml -t nginx_launch           # 更新和应用 nginx 配置
+
+# 您可以使用 ansible 重新加载 nginx
+ansible infra -b -a 'nginx -s reload'  # 使用 ansible 重新加载 nginx
+```
+
+如果您希望通过 HTTPS 访问，您必须删除 `files/pki/csr/pigsty.csr` 和 `files/pki/nginx/pigsty.{key,crt}` 以强制重新生成 Nginx SSL/TLS 证书以包含新的上游域名。如果您更愿意使用权威组织颁发的 SSL 证书而不是 Pigsty 自签名 CA 颁发的证书，您可以将其放在 `/etc/nginx/conf.d/cert/` 目录中并修改相应的配置：`/etc/nginx/conf.d/<name>.conf`。
+
+------
+
+## 如何手动添加上游仓库文件 [#how-to-manually-add-upstream-repo-files]
+
+Pigsty 有一个内置的包装脚本 `bin/repo-add`，它将调用 Ansible playbook `node.yml` 来向相应的节点添加仓库文件。
+
+```bash
+bin/repo-add <selector> [modules]
+bin/repo-add 10.10.10.10           # 为节点 10.10.10.10 添加节点仓库
+bin/repo-add infra   node,infra    # 为组 infra 添加节点和基础设施仓库
+bin/repo-add infra   node,local    # 添加节点仓库和本地 pigsty 仓库
+bin/repo-add pg-test node,pgsql    # 为组 pg-test 添加节点和 pgsql 仓库
+```
