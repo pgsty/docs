@@ -1,0 +1,158 @@
+---
+title: 可观测性
+description: 洞若观火的图形界面
+icon: Telescope
+full: true
+---
+
+import {
+    Activity,
+    BarChart3,
+    Star,
+    Globe,
+    Bell,
+    Zap,
+    Search,
+    Layout
+} from 'lucide-react';
+
+> 大局在胸，细微在握，为数字化管理与智能化运维提供坚实的支撑
+
+<Cards>
+    <Card icon={<Activity className="text-blue-600"/>} title='开箱即用' href={"#monitoring-infra"}>
+        自带监控基础设施
+    </Card>
+    <Card icon={<BarChart3 className="text-green-600"/>} title='数据驱动' href={"#data-driven"}>
+        为数智化转型奠基
+    </Card>
+    <Card icon={<Star className="text-purple-600"/>} title='极致体验' href={"#sota-experience"}>
+        PG监控版本答案
+    </Card>
+    <Card icon={<Globe className="text-orange-600"/>} title='通用监控' href={"#universal-monitoring"}>
+        不仅是PG与RDS
+    </Card>
+    <Card icon={<Bell className="text-cyan-600"/>} title='自动告警' href={"#automatic-alerts"}>
+        告别DBA人肉盯盘
+    </Card>
+    <Card icon={<Zap className="text-red-600"/>} title='性能优化' href={"#performance-tuning"}>
+        慢查询瓶颈轻松查
+    </Card>
+    <Card icon={<Search className="text-violet-600"/>} title='日志分析' href={"#log-analysis"}>
+        快速定位故障根因
+    </Card>
+    <Card icon={<Layout className="text-amber-600"/>} title='大屏报表' href={"#custom-dashboards"}>
+        低代码可视化开发
+    </Card>
+</Cards>
+
+--------
+
+## 开箱即用：自带监控基础设施 [#monitoring-infra]
+
+> 提供即用的 Prometheus & Grafana 可观测技术栈\
+> 自动对象发现，企业级监控无需额外配置
+
+Pigsty 内置完整的可观测性基础设施：
+
+- **Prometheus 技术栈**：完整的指标收集、存储和查询
+- **Grafana 仪表板**：200+ 预配置的专业仪表板
+- **自动发现**：无需配置的服务和目标自动发现
+- **企业级功能**：告警、通知、用户管理开箱即用
+
+--------
+
+## 数据驱动：为数智化转型奠基 [#data-driven]
+
+> 将数千个指标处理成精心设计的仪表板\
+> 从宏观到微观的全方位系统状态可见性
+
+完整的数据驱动管理体系：
+
+- **全栈监控**：从硬件到应用的完整监控栈
+- **指标体系**：数千个精心设计的监控指标
+- **数据血缘**：清晰的数据流向和依赖关系
+- **决策支持**：基于数据的运维决策支持
+
+--------
+
+## 极致体验：PG监控版本答案 [#sota-experience]
+
+> 五级联动：全局/集群/实例/数据库/对象\
+> 精细的历史指标，深入到单个数据库对象
+
+业界领先的 PostgreSQL 监控体验：
+
+- **五级钻取**：从全局视图深入到对象级别
+- **实时监控**：毫秒级的实时数据更新
+- **历史分析**：长期历史数据的趋势分析
+- **对象级监控**：表、索引级别的细粒度监控
+
+--------
+
+## 通用监控：不仅是PG与RDS [#universal-monitoring]
+
+> 可以监控云 RDS、PostgreSQL 兼容服务\
+> 支持监控主机、数据库、应用程序、负载均衡器
+
+广泛的监控能力覆盖：
+
+- **多数据库**：支持各种 PostgreSQL 变体和 RDS
+- **混合环境**：云端和本地环境统一监控
+- **基础设施**：服务器、网络、存储全面监控
+- **应用监控**：应用层面的性能和业务指标
+
+--------
+
+## 自动告警：告别DBA人肉盯盘 [#automatic-alerts]
+
+> 经过验证的预配置告警规则集\
+> 56 个预设告警覆盖所有 Pigsty 模块
+
+智能化的告警体系：
+
+- **预设规则**：基于最佳实践的告警规则
+- **分级告警**：根据严重程度分级处理
+- **多渠道通知**：邮件、短信、钉钉、微信通知
+- **告警抑制**：智能的告警合并和抑制机制
+
+--------
+
+## 性能优化：慢查询瓶颈轻松查 [#performance-tuning]
+
+> 识别资源消耗的慢查询\
+> 集成 pg_stat_statements 和 auto_explain 进行查询分析
+
+深度的性能分析能力：
+
+- **慢查询分析**：自动识别和分析慢查询
+- **执行计划**：查询执行计划的可视化分析
+- **资源消耗**：CPU、内存、IO 等资源使用分析
+- **优化建议**：基于分析结果的优化建议
+
+--------
+
+## 日志分析：快速定位故障根因 [#log-analysis]
+
+> 使用 Loki 和 Promtail 统一日志收集\
+> 像搜索引擎一样轻松检索和过滤日志
+
+强大的日志分析系统：
+
+- **统一收集**：所有组件日志的统一收集
+- **实时搜索**：ElasticSearch 级别的日志搜索
+- **关联分析**：日志与指标的关联分析
+- **故障溯源**：快速的问题根因定位
+
+--------
+
+## 大屏报表：低代码可视化开发 [#custom-dashboards]
+
+> 使用 PostgreSQL、Grafana、Echarts 的低代码可视化\
+> 交互式数据应用原型开发
+
+灵活的可视化开发平台：
+
+- **低代码开发**：拖拽式的仪表板开发
+- **丰富组件**：多样化的可视化组件库
+- **交互式设计**：支持复杂的交互式分析
+- **快速原型**：快速的数据应用原型开发

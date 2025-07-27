@@ -10,8 +10,9 @@ Pigsty has a series of playbooks for PostgreSQL:
 
 - [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
 - [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
-- [`pgsql-user.yml`](/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
 - [`pgsql-db.yml`](/pgsql/playbook/#pgsql-dbyml) : Add a new business database to existing PostgreSQL cluster
+- [`pgsql-user.yml`](/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
+- [`pgsql-pitr.yml`](/pgsql/playbook/#pgsql-pitryml) : Perform point-in-time recovery on existing PostgreSQL cluster
 - [`pgsql-monitor.yml`](/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
 - [`pgsql-migration.yml`](/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
 
@@ -216,13 +217,16 @@ Some arguments can affect the behavior of this playbook:
 
 </Callout>
 
-
-
-
-
-
-
 - When a replica is removed, it is still in the configuration file of the haproxy load balancer.
+
+------
+
+## `pgsql-db.yml`
+
+The playbook [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) can add new business database to existing PostgreSQL cluster.
+
+Check admin SOP: [`Create Database`](/pgsql/admin#create-database)
+
 
 ------
 
@@ -232,13 +236,16 @@ The playbook [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-
 
 Check admin SOP: [`Create User`](/pgsql/admin#create-user)
 
+
 ------
 
-## `pgsql-db.yml`
+## `pgsql-pitr.yml`
 
-The playbook [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) can add new business database to existing PostgreSQL cluster.
+The playbook [`pgsql-pitr.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-pitr.yml) can perform point-in-time recovery on existing PostgreSQL cluster.
 
-Check admin SOP: [`Create Database`](/pgsql/admin#create-database)
+Check admin SOP: [`Restore`](/pgsql/backup/restore)
+
+
 
 ------
 

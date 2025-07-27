@@ -12,7 +12,7 @@ Pigsty 有一系列 PostgreSQL playbook：
 - [`pgsql-rm.yml`](/zh/pgsql/playbook/#pgsql-rmyml)：删除 PostgreSQL 集群，或删除副本
 - [`pgsql-db.yml`](/zh/pgsql/playbook/#pgsql-dbyml)：向现有 PostgreSQL 集群添加新业务数据库
 - [`pgsql-user.yml`](/zh/pgsql/playbook/#pgsql-useryml)：向现有 PostgreSQL 集群添加新业务用户
-- [`pgsql-pitr.yml`](/zh/pgsql/playbook/#pgsql-pitryml)：将一个 PostgreSQL 回滚至特定时间点
+- [`pgsql-pitr.yml`](/zh/pgsql/playbook/#pgsql-pitryml)：将现有 PostgreSQL 集群回滚至特定时间点
 - [`pgsql-monitor.yml`](/zh/pgsql/playbook/#pgsql-monitoryml)：使用本地导出器监控远程 PostgreSQL 实例
 - [`pgsql-migration.yml`](/zh/pgsql/playbook/#pgsql-migrationyml)：为现有 PostgreSQL 生成迁移手册和脚本
 
@@ -35,7 +35,7 @@ Pigsty 有一系列 PostgreSQL playbook：
 
 ------
 
-## `pgsql.yml` [#pgsqlyml]
+## `pgsql.yml`
 
 [`pgsql.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql.yml) 用于初始化 HA PostgreSQL 集群或添加新副本。
 
@@ -146,7 +146,7 @@ pg_monitor              : # 设置 pgsql 监控并注册到基础设施
 
 ------
 
-## `pgsql-rm.yml` [#pgsql-rmyml]
+## `pgsql-rm.yml`
 
 playbook [`pgsql-rm.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-rm.yml) 可以删除 PostgreSQL 集群，或从集群中删除特定副本。
 
@@ -223,7 +223,7 @@ pg_pkg                   : # 卸载 pg 包（使用 `pg_rm_pkg=false` 禁用）
 
 ------
 
-## `pgsql-db.yml` [#pgsql-dbyml]
+## `pgsql-db.yml`
 
 剧本 [`pgsql-db.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-db.yml) 可以向现有 PostgreSQL 集群添加新业务数据库。
 
@@ -232,15 +232,26 @@ pg_pkg                   : # 卸载 pg 包（使用 `pg_rm_pkg=false` 禁用）
 
 ------
 
-## `pgsql-user.yml` [#pgsql-useryml]
+## `pgsql-user.yml`
 
 剧本 [`pgsql-user.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-user.yml) 可以向现有 PostgreSQL 集群添加新业务用户。
 
 查看管理 SOP：[**创建用户**](/zh/pgsql/admin#create-user)
 
+
 ------
 
-## `pgsql-pitr.yml` [#pgsql-pitryml]
+## `pgsql-pitr.yml`
+
+剧本 [`pgsql-pitr.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-pitr.yml) 可以在现有 PostgreSQL 集群上执行 **时间点恢复** （PITR）。
+
+查看管理 SOP: [**备份恢复**](/pgsql/backup/restore)
+
+
+
+------
+
+## `pgsql-pitr.yml`
 
 剧本 [`pgsql-pitr.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-pitr.yml) 可以向现有 PostgreSQL 集群添加新业务用户。
 
@@ -249,7 +260,7 @@ pg_pkg                   : # 卸载 pg 包（使用 `pg_rm_pkg=false` 禁用）
 
 ------
 
-## `pgsql-monitor.yml` [#pgsql-monitoryml]
+## `pgsql-monitor.yml`
 
 剧本 [`pgsql-monitor.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-monitor.yml) 可以将现有/远程 postgres / RDS 实例纳入监控。
 
@@ -258,7 +269,7 @@ pg_pkg                   : # 卸载 pg 包（使用 `pg_rm_pkg=false` 禁用）
 
 ------
 
-## `pgsql-migration.yml` [#pgsql-migrationyml]
+## `pgsql-migration.yml`
 
 剧本 [`pgsql-migration.yml`](https://github.com/pgsty/pigsty/blob/main/pgsql-migration.yml) 可以为现有 PostgreSQL 集群生成迁移手册和脚本。
 

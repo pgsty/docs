@@ -1,0 +1,165 @@
+---
+title: 可伸缩性
+description: 性能澎湃的弹性服务
+icon: ChartColumnIncreasing
+full: true
+---
+
+import {
+    Gauge,
+    BookOpen,
+    Network,
+    Scale,
+    GitBranch,
+    Archive,
+    Globe2,
+    Expand
+} from 'lucide-react';
+
+> 水行万变，张弛自如，滔天流量洪峰涌于眼前而丝毫不怵
+
+<Cards>
+    <Card icon={<Gauge className="text-red-600"/>} title='性能澎湃' href={"#great-performance"}>
+        新硬件红利尽享
+    </Card>
+    <Card icon={<BookOpen className="text-blue-600"/>} title='读写分离' href={"#rw-separation"}>
+        读请求无限扩容
+    </Card>
+    <Card icon={<Network className="text-green-600"/>} title='链接池化' href={"#connection-pooling"}>
+        高并发手到擒来
+    </Card>
+    <Card icon={<Scale className="text-purple-600"/>} title='负载均衡' href={"#load-balancing"}>
+        控制台流量管控
+    </Card>
+    <Card icon={<GitBranch className="text-orange-600"/>} title='水平扩展' href={"#horizontal-scaling"}>
+        分布式原地改造
+    </Card>
+    <Card icon={<Archive className="text-cyan-600"/>} title='存储扩容' href={"#storage-expansion"}>
+        外部表透明压缩
+    </Card>
+    <Card icon={<Globe2 className="text-violet-600"/>} title='批量管理' href={"#mass-deployment"}>
+        大规模集群部署
+    </Card>
+    <Card icon={<Expand className="text-amber-600"/>} title='弹性伸缩' href={"#elasticity"}>
+        云计算他山之石
+    </Card>
+</Cards>
+
+--------
+
+## 性能澎湃：新硬件红利尽享 [#great-performance]
+
+> PostgreSQL 的"令人惊叹的可伸缩性"\
+> 可以处理大规模事务处理
+
+充分发挥现代硬件的极致性能：
+
+- **单机极限**：200万行/秒查询速率
+- **写入性能**：100万行/秒写入速率  
+- **表容量**：单表支持 32TB 容量
+- **硬件优化**：针对 NVMe SSD 和多核 CPU 优化
+
+--------
+
+## 读写分离：读请求无限扩容 [#rw-separation]
+
+> 支持无限制的只读副本级联\
+> 支持只读和离线服务路由\
+> 可以实现"一主三十从"
+
+灵活的读写分离架构：
+
+- **级联复制**：支持多级复制拓扑
+- **读负载分发**：智能的读请求负载均衡
+- **离线查询**：专用的分析查询副本
+- **异步复制**：低延迟的异步数据同步
+
+--------
+
+## 链接池化：高并发手到擒来 [#connection-pooling]
+
+> 内置 PGBouncer\
+> 将数千个并发连接转换为最少的活动连接\
+> 自动配置同步
+
+高效的连接管理机制：
+
+- **连接复用**：大幅降低数据库连接开销
+- **并发控制**：支持数千并发连接
+- **智能路由**：基于负载的连接路由
+- **配置同步**：连接池配置自动同步
+
+--------
+
+## 负载均衡：控制台流量管控 [#load-balancing]
+
+> HAProxy Web 控制台实时流量管理\
+> 支持滚动连接排空\
+> 实现无缝在线迁移
+
+专业的流量管理能力：
+
+- **实时控制**：Web 界面的实时流量控制
+- **滚动迁移**：零停机的服务迁移
+- **健康检查**：智能的后端健康检测
+- **流量分配**：精细的流量权重控制
+
+--------
+
+## 水平扩展：分布式原地改造 [#horizontal-scaling]
+
+> Citus 扩展用于分布式 PostgreSQL\
+> 支持多租户、多写入场景\
+> 在线分片重平衡
+
+强大的分布式扩展能力：
+
+- **分布式查询**：跨节点的并行查询处理
+- **自动分片**：数据的自动分片和分布
+- **在线扩容**：无停机的集群扩容
+- **多租户支持**：原生的多租户数据隔离
+
+--------
+
+## 存储扩容：外部表透明压缩 [#storage-expansion]
+
+> 透明压缩（10:1 比率）\
+> 外部表和对象存储集成\
+> 支持冷热数据分离
+
+灵活的存储扩展方案：
+
+- **数据压缩**：高达 10:1 的压缩比率
+- **分层存储**：热数据本地，冷数据对象存储
+- **透明访问**：应用无感知的数据访问
+- **成本优化**：基于数据访问模式的成本优化
+
+--------
+
+## 批量管理：大规模集群部署 [#mass-deployment]
+
+> 为极端规模而设计\
+> 基于 Ansible 的大规模操作\
+> 最大部署：25,000 vCPU，3000+ 实例
+
+企业级的大规模管理能力：
+
+- **批量操作**：支持数千节点的批量管理
+- **自动化运维**：基于 Ansible 的自动化操作
+- **模板化部署**：标准化的部署模板
+- **监控覆盖**：大规模集群的统一监控
+
+--------
+
+## 弹性伸缩：云计算他山之石 [#elasticity]
+
+> 云服务器部署支持\
+> 灵活的多云策略\
+> 基线购买，峰时租赁模型
+
+云原生的弹性扩缩能力：
+
+- **多云支持**：AWS、阿里云、腾讯云等多云部署
+- **弹性计算**：基于负载的自动扩缩容
+- **混合云架构**：本地与云端的混合部署
+- **成本优化**：按需使用的成本控制模型

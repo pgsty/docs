@@ -1,0 +1,154 @@
+---
+title: 可维护性
+description: 简明易用的工具实践
+icon: PencilRuler
+full: true
+---
+
+import {
+    Code,
+    Zap,
+    Monitor,
+    CloudDownload,
+    BookOpen,
+    Shuffle,
+    Settings,
+    Cloud
+} from 'lucide-react';
+
+> 人生苦短，关爱运维，以最小的复杂度代价最大化可操作性与可演化性
+
+<Cards>
+    <Card icon={<Code className="text-blue-600"/>} title='言出法随' href={"#infra-as-code"}>
+        基础设施即代码
+    </Card>
+    <Card icon={<Zap className="text-green-600"/>} title='简单易用' href={"#simple-easy"}>
+        几分钟快速上手
+    </Card>
+    <Card icon={<Monitor className="text-purple-600"/>} title='裸机运行' href={"#bare-linux"}>
+        无需容器与K8S
+    </Card>
+    <Card icon={<CloudDownload className="text-orange-600"/>} title='离线安装' href={"#offline-install"}>
+        稳定顺畅的交付
+    </Card>
+    <Card icon={<BookOpen className="text-cyan-600"/>} title='体系配套' href={"#admin-sop"}>
+        开发规约与SOP
+    </Card>
+    <Card icon={<Shuffle className="text-red-600"/>} title='无需停服' href={"#no-downtime"}>
+        在线迁移与变配
+    </Card>
+    <Card icon={<Settings className="text-violet-600"/>} title='按需配置' href={"#rich-parameters"}>
+        丰富的定制参数
+    </Card>
+    <Card icon={<Cloud className="text-amber-600"/>} title='沙箱环境' href={"#provisioning"}>
+        一键置备服务机
+    </Card>
+</Cards>
+
+--------
+
+## 言出法随：基础设施即代码 [#infra-as-code]
+
+> Pigsty 采用声明式 API，让数据库部署和运维如写代码般灵活。支持 GitOps、批量管理和 PostgreSQL CMDB
+
+Infrastructure as Code 的最佳实践：
+
+- **声明式配置**：YAML 配置文件描述期望状态
+- **GitOps 工作流**：通过 Git 管理配置变更
+- **批量管理**：一套配置管理数千个实例
+- **版本控制**：配置的版本化管理和回滚
+
+--------
+
+## 简单易用：几分钟快速上手 [#simple-easy]
+
+> 一键下载安装，几分钟部署上线，一行命令搞定所有步骤。提供各种场景的开箱即用配置模板
+
+极致的用户体验设计：
+
+- **一键安装**：单条命令完成全部安装
+- **智能配置**：自动检测环境并生成配置
+- **场景模板**：针对不同场景的预设模板
+- **文档完善**：详细的操作指南和最佳实践
+
+--------
+
+## 裸机运行：无需容器与K8S [#bare-linux]
+
+> 运行于 Linux 裸系统上，避免 Docker 和 Kubernetes 的额外复杂度\
+> 支持主流 Linux 发行版和架构
+
+简单可靠的部署方式：
+
+- **原生部署**：直接运行在 Linux 系统上
+- **多发行版支持**：RHEL、Ubuntu、Debian 等
+- **多架构支持**：x86_64、ARM64 架构
+- **资源高效**：无容器开销的资源利用
+
+--------
+
+## 离线安装：稳定顺畅的交付 [#offline-install]
+
+> 提供离线安装包，可在无网络环境中一键完成自举安装\
+> 确保软件版本一致性，避免依赖问题
+
+企业级的交付保障：
+
+- **离线包**：完整的离线安装包
+- **版本锁定**：确保软件版本一致性
+- **依赖完整**：包含所有必需依赖
+- **快速部署**：无需网络的快速部署
+
+--------
+
+## 体系配套：开发规约与SOP [#admin-sop]
+
+> 将顶级 DBA 经验提炼为统一的开发运维指南
+
+完整的运维体系建设：
+
+- **标准规范**：统一的开发和运维规范
+- **操作手册**：详细的 SOP 操作手册
+- **最佳实践**：经过验证的最佳实践集合
+- **培训体系**：完整的技能培训体系
+
+--------
+
+## 无需停服：在线迁移与变配 [#no-downtime]
+
+> 依托基于逻辑复制的蓝绿部署方案，实现不停机在线迁移\
+> 支持滚动维护和精细的流量管理
+
+零停机的运维能力：
+
+- **蓝绿部署**：基于逻辑复制的零停机迁移
+- **滚动升级**：服务的渐进式升级
+- **在线扩容**：无停机的容量扩展
+- **流量控制**：精细的流量管理和切换
+
+--------
+
+## 按需配置：丰富的定制参数 [#rich-parameters]
+
+> 近 300+ 可配置参数，默认值即可满足绝大多数场景\
+> 支持多层级配置，丰富的文档说明
+
+灵活的配置管理系统：
+
+- **参数丰富**：300+ 可调节的配置参数
+- **默认优化**：开箱即用的优化默认值
+- **分层配置**：全局、集群、实例多层配置
+- **文档详尽**：每个参数都有详细说明
+
+--------
+
+## 沙箱环境：一键置备服务机 [#provisioning]
+
+> 自带沙箱环境，可在单台笔记本上完整体验
+
+快速的环境置备能力：
+
+- **沙箱模式**：单机完整功能演示
+- **快速体验**：5分钟快速体验完整功能
+- **开发环境**：本地开发测试环境
+- **云主机集成**：与云平台无缝集成

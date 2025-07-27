@@ -1,0 +1,150 @@
+---
+title: 可扩展性
+description: 百花齐放的 PostgreSQL
+icon: Puzzle
+full: true
+---
+
+import {
+    BarChart3,
+    BrainCircuit,
+    MapPin,
+    Clock,
+    Search,
+    Languages,
+    Network,
+    Wrench
+} from 'lucide-react';
+
+> 多模态，超融合，一条SQL顶应用千言万语，四百插件助PG征战天下！
+
+<Cards>
+    <Card icon={<BarChart3 className="text-blue-600"/>} title='数据分析' href={"#analytics"}>
+        大数据挑战者
+    </Card>
+    <Card icon={<BrainCircuit className="text-purple-600"/>} title='人工智能' href={"#ai-ready"}>
+        向量数据库基线
+    </Card>
+    <Card icon={<MapPin className="text-green-600"/>} title='地理空间' href={"#geospatial"}>
+        GIS事实标准
+    </Card>
+    <Card icon={<Clock className="text-orange-600"/>} title='时间序列' href={"#time-series"}>
+        玩转时序时态
+    </Card>
+    <Card icon={<Search className="text-cyan-600"/>} title='全文检索' href={"#text-search"}>
+        内置搜索引擎
+    </Card>
+    <Card icon={<Languages className="text-red-600"/>} title='存储过程' href={"#languages"}>
+        语言任君选择
+    </Card>
+    <Card icon={<Network className="text-violet-600"/>} title='外表封装' href={"#foreign-data"}>
+        打通数据孤岛
+    </Card>
+    <Card icon={<Wrench className="text-amber-600"/>} title='特色扩展' href={"#featured"}>
+        数据库即平台
+    </Card>
+</Cards>
+
+--------
+
+## 数据分析：大数据挑战者 [#analytics]
+
+> 一流的分析性能，DuckDB 集成，并行查询，分布式计算
+
+PostgreSQL 在数据分析领域表现出色，拥有强大的 SQL 功能和众多分析扩展：
+
+- **DuckDB 集成**：在 PostgreSQL 中直接使用 DuckDB 进行 OLAP 查询
+- **并行查询**：自动并行化复杂查询以提升性能
+- **分布式计算**：通过 Citus 实现横向扩展
+- **列式存储**：支持列式数据格式以优化分析工作负载
+
+--------
+
+## 人工智能：向量数据库基线 [#ai-ready]
+
+> AI 和数据库融合，向量存储，SQL 中的机器学习
+
+PostgreSQL 原生支持向量数据类型和 AI 工作负载：
+
+- **向量扩展**：pgvector 提供高效的向量相似性搜索
+- **嵌入存储**：原生支持高维向量数据存储
+- **机器学习**：MADlib 提供 SQL 中的机器学习算法
+- **AI 集成**：与主流 AI 框架无缝集成
+
+--------
+
+## 地理空间：GIS事实标准 [#geospatial]
+
+> 全面的地理空间处理，路由，索引
+
+PostGIS 是地理信息系统的黄金标准：
+
+- **PostGIS**：最成熟的开源地理空间数据库扩展
+- **空间索引**：高效的 GiST 和 SP-GiST 索引
+- **路径规划**：pgRouting 提供路径规划和网络分析
+- **坐标转换**：支持数千种空间参考系统
+
+--------
+
+## 时间序列：玩转时序时态 [#time-series]
+
+> 基于时间的数据处理，时态表，调度
+
+PostgreSQL 为时间序列数据提供强大支持：
+
+- **TimescaleDB**：时间序列数据库扩展
+- **时态表**：SQL 标准的时态数据功能
+- **分区表**：按时间自动分区以优化性能
+- **压缩存储**：时间序列数据的高效压缩
+
+--------
+
+## 全文检索：内置搜索引擎 [#text-search]
+
+> 多语言词典，混合搜索功能
+
+PostgreSQL 内置强大的全文搜索功能：
+
+- **多语言支持**：内置多种语言的词典和分词器
+- **模糊搜索**：支持相似性搜索和拼写纠错
+- **排序算法**：tf-idf 和其他相关性排序
+- **搜索高亮**：查询结果的文本高亮显示
+
+--------
+
+## 存储过程：语言任君选择 [#languages]
+
+> 20+ 编程语言支持数据库开发
+
+PostgreSQL 支持多种编程语言编写存储过程：
+
+- **PL/pgSQL**：PostgreSQL 原生过程语言
+- **Python**：通过 PL/Python 支持 Python 编程
+- **JavaScript**：PL/V8 提供 JavaScript 支持
+- **其他语言**：支持 Perl、Tcl、R、Java 等多种语言
+
+--------
+
+## 外表封装：打通数据孤岛 [#foreign-data]
+
+> 统一 SQL 访问异构数据源
+
+Foreign Data Wrapper (FDW) 允许访问外部数据：
+
+- **多数据源**：连接 MySQL、Oracle、MongoDB 等
+- **文件系统**：直接查询 CSV、JSON、Parquet 文件
+- **API 集成**：通过 HTTP FDW 访问 REST API
+- **统一查询**：在单个 SQL 中查询多个数据源
+
+--------
+
+## 特色扩展：数据库即平台 [#featured]
+
+> 从 HTTP 请求到 Web 应用开发的多样化扩展
+
+PostgreSQL 生态系统提供丰富的功能扩展：
+
+- **HTTP 客户端**：在数据库中直接发送 HTTP 请求
+- **消息队列**：pg_mq 提供消息队列功能
+- **作业调度**：pg_cron 实现定时任务调度
+- **Web 服务**：PostgREST 将数据库表自动转换为 REST API
