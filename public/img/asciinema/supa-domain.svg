@@ -1,0 +1,378 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1364.57999946" height="1138.666382" font-family="Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols'" font-size="14px">
+  <style>
+    .br { font-weight: bold }
+    .fa { fill-opacity: 0.5 }
+    .it { font-style: italic }
+    .un { text-decoration: underline }
+  </style>
+
+  <rect width="100%" height="100%" style="fill: #002b36" rx="4" ry="4"></rect>
+
+  <svg x="8.42333333" y="9.333331000000001" class="default-text-fill">
+    <g style="shape-rendering: optimizeSpeed">
+
+        <rect x="193.73666659" y="1101.3330580000002" width="303.23999988" height="18.666662000000002" style="fill: #eee8d5"></rect>
+
+
+    </g>
+
+    <text style="fill: #839496">
+      <tspan y="0.0">
+        <tspan dy="1em" x="0.0">
+          Warning: Permanently added &#39;supa.pigsty.cc&#39; (ED25519) to the list of known hosts.
+        </tspan>
+      </tspan><tspan y="18.666662000000002">
+        <tspan dy="1em" x="0.0">
+          Welcome to Ubuntu 24.04.2 LTS (GNU/Linux 6.8.0-63-generic x86_64)
+        </tspan>
+      </tspan><tspan y="55.99998600000001">
+        <tspan dy="1em" x="8.42333333">
+          * Documentation:
+        </tspan><tspan x="160.04333327">
+          https://help.ubuntu.com
+        </tspan>
+      </tspan><tspan y="74.66664800000001">
+        <tspan dy="1em" x="8.42333333">
+          * Management:
+        </tspan><tspan x="160.04333327">
+          https://landscape.canonical.com
+        </tspan>
+      </tspan><tspan y="93.33331000000001">
+        <tspan dy="1em" x="8.42333333">
+          * Support:
+        </tspan><tspan x="160.04333327">
+          https://ubuntu.com/pro
+        </tspan>
+      </tspan><tspan y="130.66663400000002">
+        <tspan dy="1em" x="8.42333333">
+          System information as of Sat Aug
+        </tspan><tspan x="294.81666655">
+          2 05:12:42 PM CST 2025
+        </tspan>
+      </tspan><tspan y="167.99995800000002">
+        <tspan dy="1em" x="16.84666666">
+          System load:
+        </tspan><tspan x="134.77333328">
+          0.29
+        </tspan><tspan x="294.81666655">
+          Temperature:
+        </tspan><tspan x="488.55333314">
+          19.9 C
+        </tspan>
+      </tspan><tspan y="186.66662000000002">
+        <tspan dy="1em" x="16.84666666">
+          Usage of /:
+        </tspan><tspan x="134.77333328">
+          31.8% of 39.01GB
+        </tspan><tspan x="294.81666655">
+          Processes:
+        </tspan><tspan x="488.55333314">
+          372
+        </tspan>
+      </tspan><tspan y="205.33328200000003">
+        <tspan dy="1em" x="16.84666666">
+          Memory usage: 16%
+        </tspan><tspan x="294.81666655">
+          Users logged in:
+        </tspan><tspan x="488.55333314">
+          1
+        </tspan>
+      </tspan><tspan y="223.99994400000003">
+        <tspan dy="1em" x="16.84666666">
+          Swap usage:
+        </tspan><tspan x="134.77333328">
+          0%
+        </tspan><tspan x="294.81666655">
+          IPv4 address for eth0: 10.10.10.10
+        </tspan>
+      </tspan><tspan y="261.33326800000003">
+        <tspan dy="1em" x="8.42333333">
+          * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+        </tspan>
+      </tspan><tspan y="279.99993">
+        <tspan dy="1em" x="25.269999990000002">
+          just raised the bar for easy, resilient and secure K8s cluster deployment.
+        </tspan>
+      </tspan><tspan y="317.333254">
+        <tspan dy="1em" x="25.269999990000002">
+          https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+        </tspan>
+      </tspan><tspan y="354.666578">
+        <tspan dy="1em" x="0.0">
+          Expanded Security Maintenance for Applications is not enabled.
+        </tspan>
+      </tspan><tspan y="391.999902">
+        <tspan dy="1em" x="0.0">
+          67 updates can be applied immediately.
+        </tspan>
+      </tspan><tspan y="410.66656400000005">
+        <tspan dy="1em" x="0.0">
+          36 of these updates are standard security updates.
+        </tspan>
+      </tspan><tspan y="429.333226">
+        <tspan dy="1em" x="0.0">
+          To see these additional updates run: apt list --upgradable
+        </tspan>
+      </tspan><tspan y="466.66655000000003">
+        <tspan dy="1em" x="0.0">
+          4 additional security updates can be applied with ESM Apps.
+        </tspan>
+      </tspan><tspan y="485.33321200000006">
+        <tspan dy="1em" x="0.0">
+          Learn more about enabling ESM Apps service at https://ubuntu.com/esm
+        </tspan>
+      </tspan><tspan y="559.99986">
+        <tspan dy="1em" x="0.0">
+          Welcome to Alibaba Cloud Elastic Compute Service !
+        </tspan>
+      </tspan><tspan y="597.3331840000001">
+        <tspan dy="1em" x="0.0">
+          Last login: Sat Aug
+        </tspan><tspan x="176.88999993000002">
+          2 17:11:11 2025 from 124.79.27.197
+        </tspan>
+      </tspan><tspan y="615.999846">
+        <tspan dy="1em" x="0.0">
+          root@pg-meta:~# cd pigsty/
+        </tspan>
+      </tspan><tspan y="634.666508">
+        <tspan dy="1em" x="0.0">
+          root@pg-meta:~/pigsty# vi pigsty.yml
+        </tspan>
+      </tspan><tspan y="653.33317">
+        <tspan dy="1em" x="0.0">
+          root@pg-meta:~/pigsty# grep supa.pigsty pigsty.yml -a2 -b2
+        </tspan>
+      </tspan><tspan y="671.9998320000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9077
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          -
+        </tspan>
+      </tspan><tspan y="690.6664940000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9078
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          -
+        </tspan><tspan x="160.04333327">
+          # expose supabase via domain name
+        </tspan>
+      </tspan><tspan y="709.333156">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9126
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          :
+        </tspan><tspan x="160.04333327">
+          SITE_URL: https://
+        </tspan><tspan x="311.66333321" class="br" style="fill: #cb4b16">
+          supa.pigsty
+        </tspan><tspan x="539.09333312">
+          # &lt;------- Change This to your external domain name
+        </tspan>
+      </tspan><tspan y="727.999818">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9237
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          :
+        </tspan><tspan x="160.04333327">
+          API_EXTERNAL_URL: https://
+        </tspan><tspan x="379.04999985" class="br" style="fill: #cb4b16">
+          supa.pigsty
+        </tspan><tspan x="539.09333312">
+          # &lt;------- Otherwise the storage api may not work!
+        </tspan>
+      </tspan><tspan y="746.6664800000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9347
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          :
+        </tspan><tspan x="160.04333327">
+          SUPABASE_PUBLIC_URL: https://
+        </tspan><tspan x="404.31999984000004" class="br" style="fill: #cb4b16">
+          supa.pigsty
+        </tspan><tspan x="539.09333312">
+          # &lt;------- DO NOT FORGET TO PUT IT IN infra_portal!
+        </tspan>
+      </tspan><tspan y="765.3331420000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9458
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          -
+        </tspan>
+      </tspan><tspan y="783.999804">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          9459
+        </tspan><tspan x="33.69333332" style="fill: #2aa198">
+          -
+        </tspan><tspan x="160.04333327">
+          # if using s3/minio as file storage
+        </tspan>
+      </tspan><tspan y="802.666466">
+        <tspan dy="1em" x="0.0" style="fill: #2aa198">
+          --
+        </tspan>
+      </tspan><tspan y="821.3331280000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12120
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="101.07999996000001">
+          # Nginx / Domain / HTTPS : https://doc.pgsty.com/admin/portal
+        </tspan>
+      </tspan><tspan y="839.9997900000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12188
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="101.07999996000001">
+          supa :
+        </tspan><tspan x="404.31999984000004">
+          # nginx server config for supabase
+        </tspan>
+      </tspan><tspan y="858.666452">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12265
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          :
+        </tspan><tspan x="117.92666662">
+          domain: 
+        </tspan><tspan x="185.31333326" class="br" style="fill: #cb4b16">
+          supa.pigsty
+        </tspan><tspan x="404.31999984000004">
+          # REPLACE IT WITH YOUR OWN DOMAIN!
+        </tspan>
+      </tspan><tspan y="877.333114">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12342
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="117.92666662">
+          endpoint: &quot;10.10.10.10:8000&quot;
+        </tspan><tspan x="404.31999984000004">
+          # supabase service endpoint: IP:PORT
+        </tspan>
+      </tspan><tspan y="895.9997760000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12421
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="117.92666662">
+          websocket: true
+        </tspan><tspan x="404.31999984000004">
+          # add websocket support
+        </tspan>
+      </tspan><tspan y="914.6664380000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12487
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          :
+        </tspan><tspan x="117.92666662">
+          certbot: 
+        </tspan><tspan x="193.73666659" class="br" style="fill: #cb4b16">
+          supa.pigsty
+        </tspan><tspan x="404.31999984000004">
+          # certbot cert name, apply with `make cert`
+        </tspan>
+      </tspan><tspan y="933.3331000000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12573
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan>
+      </tspan><tspan y="951.999762">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          12574
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="84.2333333">
+          #----------------------------------------------#
+        </tspan>
+      </tspan><tspan y="970.6664240000001">
+        <tspan dy="1em" x="0.0" style="fill: #2aa198">
+          --
+        </tspan>
+      </tspan><tspan y="989.3330860000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          13248
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="84.2333333">
+          node_tune: oltp
+        </tspan><tspan x="404.31999984000004">
+          # node tuning specs: oltp,olap,tiny,crit
+        </tspan>
+      </tspan><tspan y="1007.9997480000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          13331
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="84.2333333">
+          node_etc_hosts:
+        </tspan><tspan x="404.31999984000004">
+          # add static domains to all nodes /etc/hosts
+        </tspan>
+      </tspan><tspan y="1026.66641">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          13418
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          :
+        </tspan><tspan x="101.07999996000001">
+          - 10.10.10.10 h.pigsty a.pigsty p.pigsty g.pigsty sss.pigsty 
+        </tspan><tspan x="614.90333309" class="br" style="fill: #cb4b16">
+          supa.pigsty
+        </tspan>
+      </tspan><tspan y="1045.3330720000001">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          13497
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="84.2333333">
+          node_repo_modules: node,pgsql,infra
+        </tspan><tspan x="404.31999984000004">
+          # use pre-made local repo rather than install from upstream
+        </tspan>
+      </tspan><tspan y="1063.999734">
+        <tspan dy="1em" x="0.0" style="fill: #859900">
+          13599
+        </tspan><tspan x="42.11666665" style="fill: #2aa198">
+          -
+        </tspan><tspan x="84.2333333">
+          node_repo_remove: true
+        </tspan><tspan x="404.31999984000004">
+          # remove existing node repo for node managed by pigsty
+        </tspan>
+      </tspan><tspan y="1082.666396">
+        <tspan dy="1em" x="0.0">
+          root@pg-meta:~/pigsty# sed -ie &#39;s/supa.pigsty/supa.pigsty.cc/g&#39; pigsty.yml
+        </tspan><tspan x="640.17333308">
+          # rename old supa.pigsty domain placeholder to your domain name
+        </tspan>
+      </tspan><tspan y="1101.3330580000002">
+        <tspan dy="1em" x="0.0">
+          root@pg-meta:~/pigsty# 
+        </tspan><tspan x="193.73666659" style="fill: #073642">
+          grep supa.pigsty pigsty.yml -a2 -b2 
+        </tspan>
+      </tspan>
+    </text>
+  </svg>
+
+  <g transform="translate(-40 -40)">
+    <svg x="50%" y="50%" width="80" height="80">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000.0 1000.0" style="filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.4))">
+  <defs>
+    <mask id="small-triangle-mask">
+      <rect width="100%" height="100%" fill="white"></rect>
+      <polygon points="700.0 500.0, 400.00000000000006 326.7949192431122, 399.9999999999999 673.2050807568877" fill="black">
+      </polygon>
+    </mask>
+  </defs>
+  <polygon points="1000.0 500.0, 250.0000000000001 66.98729810778059, 249.99999999999977 933.0127018922192" mask="url(#small-triangle-mask)" fill="white">
+  </polygon>
+  <polyline points="673.2050807568878 400.0, 326.7949192431123 600.0" stroke="white" stroke-width="90">
+  </polyline>
+</svg>
+    </svg>
+  </g>
+</svg>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1364.57999946" height="951.999762" font-family="Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols'" font-size="14px">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1364.57999946" height="1138.666382" font-family="Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols'" font-size="14px">
   <style>
     .br { font-weight: bold }
     .fa { fill-opacity: 0.5 }
@@ -12,7 +12,7 @@
   <svg x="8.42333333" y="9.333331000000001" class="default-text-fill">
     <g style="shape-rendering: optimizeSpeed">
 
-        <rect x="185.31333326" y="914.6664380000001" width="8.42333333" height="18.666662000000002" style="fill: #eee8d5"></rect>
+        <rect x="0.0" y="671.9998320000001" width="8.42333333" height="18.666662000000002" style="fill: #eee8d5"></rect>
 
 
     </g>
@@ -20,147 +20,39 @@
     <text style="fill: #839496">
       <tspan y="0.0">
         <tspan dy="1em" x="0.0">
-          Activate the web console with: systemctl enable --now cockpit.socket
+          bash-5.2$ ssh meta
         </tspan>
-      </tspan><tspan y="37.333324000000005">
+      </tspan><tspan y="18.666662000000002">
         <tspan dy="1em" x="0.0">
-          Last login: Sun Aug 25 15:32:05 2024 from 192.168.0.104
+          Warning: Permanently added &#39;101.132.109.38&#39; (ED25519) to the list of known hosts.
         </tspan>
-      </tspan><tspan y="74.66664800000001">
-        <tspan dy="1em" x="0.0" class="br" style="fill: #93a1a1">
-          [08-25 15:32:31] 
-        </tspan><tspan x="143.19666661" class="br" style="fill: #cb4b16">
-          root
-        </tspan><tspan x="176.88999993000002" class="br" style="fill: #657b83">
-          @vonng-sv
-        </tspan><tspan x="252.6999999" class="br" style="fill: #586e75">
-          :~ 
+      </tspan><tspan y="55.99998600000001">
+        <tspan dy="1em" x="0.0">
+          Welcome to Alibaba Cloud Elastic Compute Service !
         </tspan>
       </tspan><tspan y="93.33331000000001">
-        <tspan dy="1em" x="0.0" class="br" style="fill: #6c71c4">
-          $ 
-        </tspan><tspan x="16.84666666">
-          s9
-        </tspan>
-      </tspan><tspan y="111.99997200000001">
         <tspan dy="1em" x="0.0">
-          Last login: Sun Aug 25 07:32:06 2024 from 192.168.121.1
+          Activate the web console with: systemctl enable --now cockpit.socket
         </tspan>
       </tspan><tspan y="130.66663400000002">
         <tspan dy="1em" x="0.0">
-          [vagrant@el9 ~]$ cat /etc/os-release
+          Last login: Sat Aug
+        </tspan><tspan x="176.88999993000002">
+          2 15:17:31 2025 from 124.79.27.197
         </tspan>
       </tspan><tspan y="149.33329600000002">
         <tspan dy="1em" x="0.0">
-          NAME=&quot;Rocky Linux&quot;
+          [root@pg-meta ~]# curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
         </tspan>
       </tspan><tspan y="167.99995800000002">
-        <tspan dy="1em" x="0.0">
-          VERSION=&quot;9.3 (Blue Onyx)&quot;
+        <tspan dy="1em" x="0.0" style="fill: #d33682">
+          [v3.6.0] ===========================================
         </tspan>
       </tspan><tspan y="186.66662000000002">
-        <tspan dy="1em" x="0.0">
-          ID=&quot;rocky&quot;
-        </tspan>
-      </tspan><tspan y="205.33328200000003">
-        <tspan dy="1em" x="0.0">
-          ID_LIKE=&quot;rhel centos fedora&quot;
-        </tspan>
-      </tspan><tspan y="223.99994400000003">
-        <tspan dy="1em" x="0.0">
-          VERSION_ID=&quot;9.3&quot;
-        </tspan>
-      </tspan><tspan y="242.66660600000003">
-        <tspan dy="1em" x="0.0">
-          PLATFORM_ID=&quot;platform:el9&quot;
-        </tspan>
-      </tspan><tspan y="261.33326800000003">
-        <tspan dy="1em" x="0.0">
-          PRETTY_NAME=&quot;Rocky Linux 9.3 (Blue Onyx)&quot;
-        </tspan>
-      </tspan><tspan y="279.99993">
-        <tspan dy="1em" x="0.0">
-          ANSI_COLOR=&quot;0;32&quot;
-        </tspan>
-      </tspan><tspan y="298.66659200000004">
-        <tspan dy="1em" x="0.0">
-          LOGO=&quot;fedora-logo-icon&quot;
-        </tspan>
-      </tspan><tspan y="317.333254">
-        <tspan dy="1em" x="0.0">
-          CPE_NAME=&quot;cpe:/o:rocky:rocky:9::baseos&quot;
-        </tspan>
-      </tspan><tspan y="335.99991600000004">
-        <tspan dy="1em" x="0.0">
-          HOME_URL=&quot;https://rockylinux.org/&quot;
-        </tspan>
-      </tspan><tspan y="354.666578">
-        <tspan dy="1em" x="0.0">
-          BUG_REPORT_URL=&quot;https://bugs.rockylinux.org/&quot;
-        </tspan>
-      </tspan><tspan y="373.33324000000005">
-        <tspan dy="1em" x="0.0">
-          SUPPORT_END=&quot;2032-05-31&quot;
-        </tspan>
-      </tspan><tspan y="391.999902">
-        <tspan dy="1em" x="0.0">
-          ROCKY_SUPPORT_PRODUCT=&quot;Rocky-Linux-9&quot;
-        </tspan>
-      </tspan><tspan y="410.66656400000005">
-        <tspan dy="1em" x="0.0">
-          ROCKY_SUPPORT_PRODUCT_VERSION=&quot;9.3&quot;
-        </tspan>
-      </tspan><tspan y="429.333226">
-        <tspan dy="1em" x="0.0">
-          REDHAT_SUPPORT_PRODUCT=&quot;Rocky Linux&quot;
-        </tspan>
-      </tspan><tspan y="447.99988800000006">
-        <tspan dy="1em" x="0.0">
-          REDHAT_SUPPORT_PRODUCT_VERSION=&quot;9.3&quot;
-        </tspan>
-      </tspan><tspan y="466.66655000000003">
-        <tspan dy="1em" x="0.0">
-          [vagrant@el9 ~]$ curl -fsSL https://repo.pigsty.io/get | bash
-        </tspan>
-      </tspan><tspan y="485.33321200000006">
-        <tspan dy="1em" x="0.0" style="fill: #d33682">
-          [v3.0.0] ===========================================
-        </tspan>
-      </tspan><tspan y="503.99987400000003">
         <tspan dy="1em" x="0.0" style="fill: #268bd2">
           $ curl -fsSL https://repo.pigsty.io/get | bash
         </tspan>
-      </tspan><tspan y="522.6665360000001">
-        <tspan dy="1em" x="0.0">
-          [
-        </tspan><tspan x="8.42333333" style="fill: #859900">
-          Site
-        </tspan><tspan x="42.11666665">
-          ] 
-        </tspan><tspan x="58.96333331" style="fill: #859900">
-          https://pigsty.io
-        </tspan>
-      </tspan><tspan y="541.333198">
-        <tspan dy="1em" x="0.0">
-          [
-        </tspan><tspan x="8.42333333" style="fill: #859900">
-          Demo
-        </tspan><tspan x="42.11666665">
-          ] 
-        </tspan><tspan x="58.96333331" style="fill: #859900">
-          https://demo.pigsty.cc
-        </tspan>
-      </tspan><tspan y="559.99986">
-        <tspan dy="1em" x="0.0">
-          [
-        </tspan><tspan x="8.42333333" style="fill: #859900">
-          Repo
-        </tspan><tspan x="42.11666665">
-          ] 
-        </tspan><tspan x="58.96333331" style="fill: #859900">
-          https://github.com/Vonng/pigsty
-        </tspan>
-      </tspan><tspan y="578.6665220000001">
+      </tspan><tspan y="205.33328200000003">
         <tspan dy="1em" x="0.0">
           [
         </tspan><tspan x="8.42333333" style="fill: #859900">
@@ -168,13 +60,33 @@
         </tspan><tspan x="42.11666665">
           ] 
         </tspan><tspan x="58.96333331" style="fill: #859900">
-          https://pigsty.io/docs/setup/install
+          https://doc.pgsty.com
         </tspan>
-      </tspan><tspan y="597.3331840000001">
+      </tspan><tspan y="223.99994400000003">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="8.42333333" style="fill: #859900">
+          Demo
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          https://demo.pigsty.io
+        </tspan>
+      </tspan><tspan y="242.66660600000003">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="8.42333333" style="fill: #859900">
+          Repo
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          https://github.com/pgsty/pigsty
+        </tspan>
+      </tspan><tspan y="261.33326800000003">
         <tspan dy="1em" x="0.0" style="fill: #d33682">
           [Download] ===========================================
         </tspan>
-      </tspan><tspan y="615.999846">
+      </tspan><tspan y="279.99993">
         <tspan dy="1em" x="0.0">
           [
         </tspan><tspan x="16.84666666" style="fill: #859900">
@@ -182,17 +94,17 @@
         </tspan><tspan x="42.11666665">
           ] 
         </tspan><tspan x="58.96333331" style="fill: #859900">
-          version = v3.0.0 (from default)
+          version = v3.6.0 (from default)
         </tspan>
-      </tspan><tspan y="634.666508">
+      </tspan><tspan y="298.66659200000004">
         <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          curl -fSL https://repo.pigsty.io/src/pigsty-v3.0.0.tgz -o /tmp/pigsty-v3.0.0.tgz
+          curl -fSL https://repo.pigsty.io/src/pigsty-v3.6.0.tgz -o /tmp/pigsty-v3.6.0.tgz
         </tspan>
-      </tspan><tspan y="653.33317">
+      </tspan><tspan y="317.333254">
         <tspan dy="1em" x="0.0">
           ######################################################################## 100.0%
         </tspan>
-      </tspan><tspan y="671.9998320000001">
+      </tspan><tspan y="335.99991600000004">
         <tspan dy="1em" x="0.0">
           [
         </tspan><tspan x="16.84666666" style="fill: #859900">
@@ -200,15 +112,15 @@
         </tspan><tspan x="42.11666665">
           ] 
         </tspan><tspan x="58.96333331" style="fill: #859900">
-          md5sums = 6cefb4113a3ac8eb50f408f976771eb5
+          md5sums = df64ac0c2b5aab39dd29698a640daf2e
         </tspan><tspan x="429.58999983" style="fill: #859900">
-          /tmp/pigsty-v3.0.0.tgz
+          /tmp/pigsty-v3.6.0.tgz
         </tspan>
-      </tspan><tspan y="690.6664940000001">
+      </tspan><tspan y="354.666578">
         <tspan dy="1em" x="0.0" style="fill: #d33682">
           [Install] ===========================================
         </tspan>
-      </tspan><tspan y="709.333156">
+      </tspan><tspan y="373.33324000000005">
         <tspan dy="1em" x="0.0">
           [
         </tspan><tspan x="8.42333333" style="fill: #b58900">
@@ -216,59 +128,147 @@
         </tspan><tspan x="42.11666665">
           ] 
         </tspan><tspan x="58.96333331" style="fill: #b58900">
-          pigsty already installed on &#39;/home/vagrant/pigsty&#39;, if you wish to overwrite:
+          os user = root , it&#39;s recommended to use a non-root sudo-able admin
         </tspan>
-      </tspan><tspan y="727.999818">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          sudo rm -rf /tmp/pigsty_bk; cp -r /home/vagrant/pigsty /tmp/pigsty_bk; # backup old
-        </tspan>
-      </tspan><tspan y="746.6664800000001">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          sudo rm -rf /tmp/pigsty;
-        </tspan><tspan x="235.85333324" style="fill: #268bd2">
-          tar -xf /tmp/pigsty-v3.0.0.tgz -C /tmp/; # extract new
-        </tspan>
-      </tspan><tspan y="765.3331420000001">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          rsync -av --exclude=&#39;/pigsty.yml&#39; --exclude=&#39;/files/pki/***&#39; /tmp/pigsty/ /home/vagrant/pigsty/; # rsync src
-        </tspan>
-      </tspan><tspan y="783.999804">
-        <tspan dy="1em" x="0.0" style="fill: #d33682">
-          [TodoList] ===========================================
-        </tspan>
-      </tspan><tspan y="802.666466">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          cd /home/vagrant/pigsty
-        </tspan>
-      </tspan><tspan y="821.3331280000001">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          ./bootstrap
-        </tspan><tspan x="143.19666661" style="fill: #268bd2">
-          # [OPTIONAL] install ansible &amp; use offline package
-        </tspan>
-      </tspan><tspan y="839.9997900000001">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          ./configure
-        </tspan><tspan x="143.19666661" style="fill: #268bd2">
-          # [OPTIONAL] preflight-check and config generation
-        </tspan>
-      </tspan><tspan y="858.666452">
-        <tspan dy="1em" x="0.0" style="fill: #268bd2">
-          ./install.yml
-        </tspan><tspan x="143.19666661" style="fill: #268bd2">
-          # install pigsty modules according to your config.
-        </tspan>
-      </tspan><tspan y="877.333114">
-        <tspan dy="1em" x="0.0" style="fill: #d33682">
-          [Complete] ===========================================
-        </tspan>
-      </tspan><tspan y="895.9997760000001">
+      </tspan><tspan y="391.999902">
         <tspan dy="1em" x="0.0">
-          [vagrant@el9 ~]$ cd pigsty/
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          install = /root/pigsty, from /tmp/pigsty-v3.6.0.tgz
         </tspan>
-      </tspan><tspan y="914.6664380000001">
+      </tspan><tspan y="410.66656400000005">
+        <tspan dy="1em" x="0.0" style="fill: #d33682">
+          [Bootstrap] ===========================================
+        </tspan>
+      </tspan><tspan y="429.333226">
         <tspan dy="1em" x="0.0">
-          [vagrant@el9 pigsty]$ 
+          [
+        </tspan><tspan x="8.42333333" style="fill: #b58900">
+          WARN
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #b58900">
+          ansible = not found, bootstrap
+        </tspan>
+      </tspan><tspan y="447.99988800000006">
+        <tspan dy="1em" x="0.0" style="fill: #268bd2">
+          bootstrap pigsty v3.6.0 begin
+        </tspan>
+      </tspan><tspan y="466.66655000000003">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          region = china
+        </tspan>
+      </tspan><tspan y="485.33321200000006">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          kernel
+        </tspan><tspan x="126.34999995" style="fill: #859900">
+          = Linux
+        </tspan>
+      </tspan><tspan y="503.99987400000003">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          machine = x86_64
+        </tspan>
+      </tspan><tspan y="522.6665360000001">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          package = rpm,dnf
+        </tspan>
+      </tspan><tspan y="541.333198">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          vendor = rocky (Rocky Linux)
+        </tspan>
+      </tspan><tspan y="559.99986">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          version = 9 (9.6)
+        </tspan>
+      </tspan><tspan y="578.6665220000001">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          sudo = root ok
+        </tspan>
+      </tspan><tspan y="597.3331840000001">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="8.42333333" style="fill: #b58900">
+          WARN
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #b58900">
+          ssh = root@127.0.0.1 fixed
+        </tspan>
+      </tspan><tspan y="615.999846">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="8.42333333" style="fill: #b58900">
+          WARN
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #b58900">
+          old repos = moved to /etc/yum.repos.d/backup
+        </tspan>
+      </tspan><tspan y="634.666508">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="16.84666666" style="fill: #859900">
+          OK 
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #859900">
+          repo file = add el9.x86_64 china upstream
+        </tspan>
+      </tspan><tspan y="653.33317">
+        <tspan dy="1em" x="0.0">
+          [
+        </tspan><tspan x="8.42333333" style="fill: #b58900">
+          WARN
+        </tspan><tspan x="42.11666665">
+          ] 
+        </tspan><tspan x="58.96333331" style="fill: #b58900">
+          rpm cache = updating, may take a while
         </tspan>
       </tspan>
     </text>
