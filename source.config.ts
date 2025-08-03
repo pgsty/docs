@@ -8,6 +8,7 @@ import {
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
+  dir: 'content',
   docs: {
     schema: frontmatterSchema,
   },
@@ -17,7 +18,7 @@ export const docs = defineDocs({
 });
 
 export const ext = defineDocs({
-  dir: 'content/docs',
+  dir: 'content',
   docs: {
     schema: frontmatterSchema,
   },

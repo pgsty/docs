@@ -125,3 +125,58 @@ c4fadf1645c8bbe3e83d5a01497fa9ca  pigsty-pkg-v3.6.0.u22.aarch64.tgz
 196169afc1be02f93fcc599d42d005ca  pigsty-pkg-v3.6.0.u24.aarch64.tgz
 dbe5c1e8a242a62fe6f6e1f6e6b6c281  pigsty-pkg-v3.6.0.u24.x86_64.tgz
 ```
+
+
+## Pigsty 3.6 — the meta-distribution for PostgreSQL
+
+The Pigsty team is thrilled to announce **Pigsty v3.6**, our latest step toward a true **meta-PostgreSQL distribution**.  From a single code base you can now launch near 10 distinct PostgreSQL kernels — Babelfish, IvorySQL, OpenHalo, OrioleDB, PolarDB, Supabase-PG, Citus, the brand-new **Percona TDE**, and more.
+
+- [PostgreSQL](https://doc.pgsty.com/pgsql/kernel/postgres) : Vanilla PostgreSQL with 420+ extensions
+- [Citus](https://doc.pgsty.com/pgsql/kernel/citus)         : Distributive PostgreSQL via native extension
+- [WiltonDB](https://doc.pgsty.com/pgsql/kernel/babelfish)  : SQL Server wire-compatibility
+- [IvorySQL](https://doc.pgsty.com/pgsql/kernel/ivorysql)   : Oracle Grammar and PL/SQL compatible
+- [OpenHalo](https://doc.pgsty.com/pgsql/kernel/openhalo)   : MySQL wire-protocol compatibility
+- [Percona](https://doc.pgsty.com/pgsql/kernel/percona)     : Percona Patched PG with pg_tde
+- [FerretDB](https://doc.pgsty.com/pgsql/kernel/ferretdb)   : MongoDB wire-protocol compatibility
+- [OrioleDB](https://doc.pgsty.com/pgsql/kernel/orioledb)   : PG without bloat, "cloud-native" with S3 Storage
+- [PolarDB](https://doc.pgsty.com/pgsql/kernel/polardb)     : RAC flavor Postgres
+- [Supabase](https://doc.pgsty.com/app/supabase)            : BaaS upon PostgreSQL
+
+
+Each kernel is wrapped as a production-ready, RDS-style service: HA with Patroni, PITR via pgBackRest, deep observability with Grafana / Prometheus, and fully repeatable infrastructure-as-code -- all without Docker or Kubernetes. Materialized with idemopent ansible playbooks on bare Linux.
+
+This release also introduces a standalone extension catalog ([ext.pgsty.com](https://ext.pgsty.com), **423** build-tested packages) and a completely rebuilt documentation site ([doc.pgsty.com](https://doc.pgsty.com)).
+
+------
+
+### Built for PostgreSQL 18 (and friends)
+
+Templates, exporters, and client tooling are ready for **PostgreSQL 18 Beta2**, while versions 17.5, 16.9, 15.13, 14.18, and 13.21 remain fully supported.  Percona TDE and OrioleDB 1.5 β12 bring our supported-kernel count into double digits.
+
+### Three-step install, one-command PITR
+
+Online installation is now the default; it just takes three steps to install everything:
+
+```bash
+curl -fsSL https://repo.pigsty.cc/get | bash -s v3.6.0; cd ~/pigsty && ./configure && ./install.yml
+```
+
+Need to rewind the clock?  The new `pgsql-pitr` playbook handles everything automatically — even on multi-node HA clusters. just supply the target timestamp, XID, or LSN, and it does the rest.
+
+### Supabase hardening & modern observability
+
+Pigsty tracks the latest Supabase containers, fixes Logflare replication-slot bloat, and wires up pgsodium keys by default.  The monitoring stack moves to **Grafana 12 + Prometheus 3.5**, with tuned OS profiles for NVMe servers and an optional plain-HTTP mode for MinIO.
+
+### 423 packaged extensions (and counting)
+
+Highlights include **pgactive 2.1.5**, TimescaleDB 2.21, Citus 13.1, FerretDB 2.4, DuckDB 1.3.2, and the new **genai-toolbox**.  Browse the catalog or run `pig install <name>` to get started.
+
+### Cleaner roles, clearer switches
+
+Destructive Etcd and MinIO actions are now isolated in dedicated `*-rm` playbooks, bucket/user provisioning is fully declarative, defaults are rationalised (`/data/postgres`, `/data/backups`), and self-signed-cert validity is controlled by a single variable—resulting in fewer surprises and smoother rolling upgrades.
+
+--------
+
+Pigsty 3.6 tarballs and architecture-specific offline package sets are available now.  This is the final stop before 4.0 — look forward to PostgreSQL 18 GA support, a vector-based log shipper, and a unified CLI that fronts every playbook.
+
+> Release Note: https://doc.pgsty.com/release/latest/

@@ -1,7 +1,7 @@
 {
   "root": true,
   "pages": [
-    "index",
+    "docs",
     "install",
     "prepare",
     "config",
@@ -11,9 +11,8 @@
     "feat",
     "intro",
     "release",
-    "service",
 
-    "---Module---",
+    "---模块---",
     "pgsql",
     "infra",
     "node",
@@ -24,13 +23,14 @@
     "docker",
     "app",
 
-    "---Links---",
-    "[Subscription](/about/service)",
-    "[PG Extension](https://ext.pgsty.com)",
-    "[GitHub Repo](https://github.com/pgsty/pigsty)",
-    "[Public Demo](https://demo.pigsty.cc)",
+    "---链接---",
+    "[订阅服务](/zh/service)",
+    "[扩展目录](https://ext.pgsty.com/zh/)",
+    "[代码仓库](https://github.com/pgsty/pigsty)",
+    "[公开演示](https://demo.pigsty.cc)",
+    "[官方博客](https://blog.vonng.com)",
     "[pigsty.io](https://pigsty.io)",
     "[pigsty.cc](https://pigsty.cc)",
-    "[语言：简体中文](/zh)"
+    "[Language: English](/)"
   ]
 }
