@@ -56,7 +56,7 @@ pg switchover  <cls>                    # switchover on cluster <cls>
 pg failover    <cls>                    # failover on cluster <cls>
 ```
 
-pgBackRest backup & restore command and shortcuts:
+pgBackRest [backup](/pgsql/backup) & [restore](/pgsql/backup/restore) command and shortcuts:
 
 ```bash
 pb info                                 # print pgbackrest repo info
@@ -64,14 +64,13 @@ pg-backup                               # make a backup, incr, or full backup if
 pg-backup full                          # make a full backup
 pg-backup diff                          # make a differential backup
 pg-backup incr                          # make a incremental backup
-pg-pitr -i                              # restore to the time of latest backup complete (not often used)
-pg-pitr --time="2022-12-30 14:44:44+08" # restore to specific time point (in case of drop db, drop table)
-pg-pitr --name="my-restore-point"       # restore TO a named restore point create by pg_create_restore_point
-pg-pitr --lsn="0/7C82CB8" -X            # restore right BEFORE a LSN
-pg-pitr --xid="1234567" -X -P           # restore right BEFORE a specific transaction id, then promote
-pg-pitr --backup=latest                 # restore to latest backup set
-pg-pitr --backup=20221108-105325        # restore to a specific backup set, which can be checked with pgbackrest info
+./pgsql-pitr.yml -e '{"pg_pitr": { "time": "2025-07-13 10:00:00+00" }}'
+./pgsql-pitr.yml -e '{"pg_pitr": { "name": "shit_incoming" }}'
+./pgsql-pitr.yml -e '{"pg_pitr": { "xid": "250000", exclusive: true }}'
+./pgsql-pitr.yml -e '{"pg_pitr": { "lsn": "0/4001C80", timeline: "1" }}'
 ```
+
+
 
 Systemd components quick reference
 
@@ -85,6 +84,7 @@ systemctl stop haproxy                  # start stop restart reload
 systemctl stop vip-manager              # start stop restart reload
 systemctl stop postgres                 # only when patroni_mode == 'remove'
 ```
+
 
 ------
 
@@ -264,16 +264,13 @@ Check [Backup](/pgsql/backup/) & PITR for details.
 To restore a cluster to a previous time point (PITR), run as local dbsu:
 
 ```bash
-pg-pitr -i                              # restore to the time of latest backup complete (not often used)
-pg-pitr --time="2022-12-30 14:44:44+08" # restore to specific time point (in case of drop db, drop table)
-pg-pitr --name="my-restore-point"       # restore TO a named restore point create by pg_create_restore_point
-pg-pitr --lsn="0/7C82CB8" -X            # restore right BEFORE a LSN
-pg-pitr --xid="1234567" -X -P           # restore right BEFORE a specific transaction id, then promote
-pg-pitr --backup=latest                 # restore to latest backup set
-pg-pitr --backup=20221108-105325        # restore to a specific backup set, which can be checked with pgbackrest info
+./pgsql-pitr.yml -e '{"pg_pitr": { "time": "2025-07-13 10:00:00+00" }}'
+./pgsql-pitr.yml -e '{"pg_pitr": { "name": "shit_incoming" }}'
+./pgsql-pitr.yml -e '{"pg_pitr": { "xid": "250000", exclusive: true }}'
+./pgsql-pitr.yml -e '{"pg_pitr": { "lsn": "0/4001C80", timeline: "1" }}'
 ```
 
-And follow the instructions wizard, Check Backup & [PITR](/pgsql/backup/) for details.
+Check Backup & [Restore](/pgsql/backup/restore) docs for more details.
 
 
 
@@ -281,7 +278,7 @@ And follow the instructions wizard, Check Backup & [PITR](/pgsql/backup/) for de
 
 ## Adding Packages
 
-To add newer version of RPM packages, you have to add them to [`repo_packages`](/infra/param#repo_packages) and [`repo_url_packages`](/infra/param#repo_url_packages)
+To add the newer version of RPM/DEB packages, you have to add them to [`repo_packages`](/infra/param#repo_packages) and [`repo_url_packages`](/infra/param#repo_url_packages)
 
 Then rebuild repo on infra nodes with `./infra.yml -t repo_build` subtask, Then you can install these packages with `ansible` module `package`:
 
@@ -298,16 +295,16 @@ ansible pg-test -b -m package -a "name=pg_cron_15,topn_15,pg_stat_monitor_15*"  
 If you want to install extension on pg clusters, Add them to [`pg_extensions`](/pgsql/param#pg_extensions) and make sure them installed with:
 
 ```bash
-./pgsql.yml -t pg_extension     # install extensions
+./pgsql.yml -t pg_ext     # install extensions
 ```
 
 Some extension needs to be loaded in `shared_preload_libraries`, You can add them to [`pg_libs`](/pgsql/param#pg_libs), or [Config](#config-cluster) an existing cluster.
 
 Finally, `CREATE EXTENSION <extname>;` on the cluster primary instance to install it.
 
-
-
 Check [PGSQL Extensions: Install](/pgsql/extension/install) for details.
+
+
 
 ------
 
@@ -332,9 +329,9 @@ pg restart --force <cls>                                # restart cluster
 
 The simplest way to achieve a major version upgrade is to create a new cluster with the new version, then [migration](/pgsql/migration/) with logical replication & green/blue deployment.
 
-You can also perform an in-place major upgrade, which is not recommended especially when certain extensions are installed. But it is possible.
+You can also perform an in-place major upgrade, which is not recommended, especially when certain extensions are installed. But it is possible.
 
-Assume you want to upgrade PostgreSQL 14 to 15, you have to [add packages](#adding-packages) to yum/apt repo, and guarantee the extensions has exact same version too.
+Assume you want to upgrade PostgreSQL 14 to 15, you have to [add packages](#adding-packages) to yum/apt repo, and guarantee the extensions have the exact same version too.
 
 ```bash
 ./pgsql.yml -t pg_pkg -e pg_version=15                         # install packages for pg 15

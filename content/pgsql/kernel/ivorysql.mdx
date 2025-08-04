@@ -19,6 +19,7 @@ Currently, IvorySQL’s latest version **4.4** maintains compatibility with Post
 Use the standard procedure to [**install**](/install/start) Pigsty with the [`ivory`](https://github.com/pgsty/pigsty/blob/main/conf/ivory.yml) configuration template:
 
 ```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 ./configure -c ivory     # Use IvorySQL configuration template
 ./install.yml            # Run installation playbook
 ```
@@ -60,13 +61,12 @@ IvorySQL also provides a series of [new GUC parameters](https://docs.ivorysql.or
 Most of the **PGSQL** modules’ [**extension**](/pgsql/extension/) (non-SQL classes) cannot be used directly on the IvorySQL kernel.
 If you need to use them, you need to recompile and install from source code for the new kernel.
 
-
 ------
 
 ## Caveats
 
 - The IvorySQL software package is located in the `pigsty-infra` repository, not in `pigsty-pgsql` or `pigsty-ivory` repositories.
 - The default FHS of IvorySQL 4.4 has changed, please pay attention to users upgrading from older versions.
-- IvorySQL 4.4 requires gibc version >= 2.17, which is currently supported by Pigsty.
-- The last IvorySQL version supporting EL7 is 3.3, corresponding to PostgreSQL 16.3, and IvorySQL 4.x no longer supports EL7.
+- IvorySQL 4.4 requires gibc version >= 2.17, which is currently supported by all Linux distributions in Pigsty.
 - Pigsty does not assume any warranty for using the IvorySQL kernel, and any issues or requests should be addressed to the manufacturer.
+

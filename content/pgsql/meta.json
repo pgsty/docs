@@ -3,7 +3,7 @@
   "description": "The Main Database Kernel",
   "icon": "Database",
   "root": false,
-  "defaultOpen": false,
+  "defaultOpen": true,
   "pages": [
     "arch",
     "usage",

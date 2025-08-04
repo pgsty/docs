@@ -6,7 +6,7 @@ icon: Database
 
 [PostgreSQL](https://www.postgresql.org/) is the most advanced & popular open source database in the world.
 
-Pigsty supports PostgreSQL 13 ~ 17, and provides 420+ extensions alone with it.
+Pigsty supports PostgreSQL 13 ~ 17 (and 18beta2), and provides 420+ extensions alone with it.
 
 
 ------
@@ -16,6 +16,7 @@ Pigsty supports PostgreSQL 13 ~ 17, and provides 420+ extensions alone with it.
 [**install**](/install/start) Pigsty’s with the [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) config template.
 
 ```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 ./configure -c pgsql     # use percona postgres kernel
 ./install.yml            # setup everything with pigsty
 ```
@@ -26,7 +27,8 @@ Most of the [config template](/config/template) is use the PostgreSQL kernel by 
 - [`rich`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) : postgres with all extensions installed
 - [`slim`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) : postgres only without monitor infra
 - [`full`](https://github.com/pgsty/pigsty/blob/main/conf/full.yml) : the 4-node sandbox for HA demonstration
-- [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) : the minimal postgres kernel config example
+- [`pgsql`](https://github.com/pgsty/pigsty/blob/main/conf/pgsql.yml) : the **minimal** postgres kernel config example (THIS CONFIG)
+
 
 ------
 
@@ -68,4 +70,35 @@ If PostgreSQL cluster is already installed, you'll need to uninstall it before i
 ./pgsql-rm.yml # -l pg-meta
 ```
 
+
+
+--------
+
+## PostgreSQL 18beta2
+
 To use PostgreSQL 18beta2, you'll also need to add the `beta` repo to your [`node_repo_modules`](/node/param/#node_repo_modules)
+(or [`repo_modules`](/infra/param/#repo_modules) if you are building a local repo)
+
+The [`configure`](/config/configure) will do that for you if you are use the `-v 18` argument:
+
+```bash
+./configure -c pgsql -v 18     # use the postgresql 18beta2 kernel
+./install.yml                  # setup everything with pigsty
+```
+
+Beware Pigsty is not build extensions for PostgreSQL 18beta2 yet, so only those existing extensions in the PGDG repo are currently available.
+We will start building them after the PostgreSQL 18 is released.
+
+So to install PG18 on EL-system (now), you'll have to replace the `pgsql-main` to `pgsql-core` to avoid installing the not-exists `pgvector` extensions.
+
+> Video Demo: Install PostgreSQL 18beta2 with Pigsty v3.6.0 on el9.aarch64
+
+
+--------
+
+## Multi-Node
+
+To setup a multi-node PostgreSQL cluster, you can check the [PGSQL: Configure](/pgsql/config) for details:
+
+This is the example 3-node `pg-test` cluster in the `full` config template:
+

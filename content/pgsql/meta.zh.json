@@ -3,7 +3,7 @@
   "description": "PostgreSQL：数据库内核",
   "icon": "Database",
   "root": false,
-  "defaultOpen": false,
+  "defaultOpen": true,
   "pages": [
     "arch",
     "usage",

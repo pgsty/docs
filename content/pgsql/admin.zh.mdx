@@ -222,7 +222,6 @@ bin/pgsql-rm <cls>                # ./pgsql-rm.yml -l <cls>
 
 
 
-
 ------
 
 ## 主从切换 [#switchover]
@@ -250,7 +249,7 @@ pg-backup incr                    # 进行增量备份
 pb info                           # 检查备份信息
 ```
 
-详情请查看 [备份](/zh/pgsql/backup/) 和 PITR。
+详情请查看 [备份](/zh/pgsql/backup/) 和 [PITR](/zh/pgsql/backup/restore)。
 
 
 
@@ -271,7 +270,7 @@ pg-pitr --backup=latest                 # 恢复到最新备份集
 pg-pitr --backup=20221108-105325        # 恢复到特定备份集，可通过 pgbackrest info 检查
 ```
 
-然后按照指导向导操作，详情请查看备份和 [PITR](/zh/pgsql/backup/)。
+然后按照指导向导操作，详情请查看备份和 [PITR](/zh/pgsql/backup/restore)。
 
 
 
@@ -296,16 +295,16 @@ ansible pg-test -b -m package -a "name=pg_cron_15,topn_15,pg_stat_monitor_15*"  
 如果您想在 PostgreSQL 集群上安装扩展，将它们添加到 [`pg_extensions`](/zh/pgsql/param#pg_extensions) 并确保它们被安装：
 
 ```bash
-./pgsql.yml -t pg_extension     # 安装扩展
+./pgsql.yml -t pg_ext     # 安装扩展
 ```
 
 一些扩展需要在 `shared_preload_libraries` 中加载，您可以将它们添加到 [`pg_libs`](/zh/pgsql/param#pg_libs)，或 [配置](#config-cluster) 现有集群。
 
 最后，在集群主实例上执行 `CREATE EXTENSION <extname>;` 来安装它。
 
-
-
 详情请查看 [PGSQL 扩展：安装](/zh/pgsql/extension/install)。
+
+
 
 ------
 
