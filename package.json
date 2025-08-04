@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fumadocs/mdx-remote": "^1.4.0",
+    "@next/third-parties": "^15.4.5",
     "@orama/orama": "^3.1.11",
     "@orama/tokenizers": "^3.1.11",
     "@oramacloud/client": "^2.1.4",
@@ -30,7 +31,7 @@
     "remark-gfm": "^4.0.1",
     "remark-rehype": "^11.1.2",
     "scroll-into-view-if-needed": "^3.1.0",
-    "shiki": "^3.9.1",
+    "shiki": "^3.9.2",
     "tailwind-merge": "^3.3.1",
     "zod": "^3.25.76"
   },

@@ -2,6 +2,7 @@ import "@/app/global.css"
 import { RootProvider } from 'fumadocs-ui/provider';
 import type { Translations } from 'fumadocs-ui/i18n';
 import { Analytics } from '@vercel/analytics/react';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 
 const zh: Partial<Translations> = {
@@ -128,6 +129,7 @@ export default async function RootLayout({
           {children}
         </RootProvider>
         <Analytics />
+        <GoogleAnalytics gaId="G-FK7D9PCZPP" />
       </body>
     </html>
   );
