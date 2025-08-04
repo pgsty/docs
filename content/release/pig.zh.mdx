@@ -4,12 +4,12 @@ description: pig 包管理器发布说明
 icon: PiggyBank
 ---
 
-[**pig**](https://ext.pgsty.com/pig) 是一个开源的 PostgreSQL（和扩展）包管理器，支持 [主流 Linux](/zh/prepare/linux) 发行版。
+[**pig**](https://pig.pgsty.com) 是一个开源的 PostgreSQL（和扩展）包管理器，支持 [主流 Linux](/zh/prepare/linux) 发行版。
 
 在 (`amd64` / `arm64`) 上使用原生 `apt`/`yum`/`dnf` 安装 PostgreSQL 13~17 以及 [423 个扩展](https://ext.pgsty.com/list)。
 
 最新稳定版本是 [v0.6.0](https://github.com/pgsty/pig/releases/tag/v0.6.0)，
-查看 [GitHub 仓库](https://github.com/pgsty/pig) 和 [pig 文档](https://ext.pgsty.com/pig) 了解更多详情。
+查看 [GitHub 仓库](https://github.com/pgsty/pig) 和 [pig 文档](https://pig.pgsty.com) 了解更多详情。
 
 |       版本        |     日期     | 摘要                             |                                                     GitHub |
 |:---------------:|:----------:|--------------------------------|-----------------------------------------------------------:|
@@ -362,7 +362,7 @@ e38e8a21ed73a37d4588053f8c900f7c  pig_0.3.1-1_arm64.deb
 
 ## v0.3.0
 
-[`pig`](/zh/pig/) 项目现在有了新的 [主页](https://ext.pgsty.com/pig)，以及 PostgreSQL 扩展 [目录](https://ext.pgsty.com/list)。
+[`pig`](/zh/pig/) 项目现在有了新的 [主页](https://pig.pgsty.com)，以及 PostgreSQL 扩展 [目录](https://ext.pgsty.com/list)。
 
 ```bash
 curl https://repo.pigsty.io/pig | bash    # cloudflare
@@ -374,7 +374,7 @@ pig v0.3 也嵌入并随最新的 Pigsty [v3.3.0](https://doc.pgsty.com/release)
 
 **新功能**
 
-`pig build` 子命令具有设置扩展构建环境的 [能力](https://ext.pgsty.com/pig/build/)
+`pig build` 子命令具有设置扩展构建环境的 [能力](https://ext.pgsty.com/cmd/build/)
 
 ```bash
 pig build repo     # 初始化构建仓库 (=repo set -ru)
