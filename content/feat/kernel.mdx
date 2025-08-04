@@ -6,7 +6,7 @@ icon: Cpu
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Badge } from '@/components/ui/badge';
-import { Network,Bird, Database, Shield, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand} from 'lucide-react';
+import { Network, Bird, Database, Leaf, Shield, Pyramid, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand} from 'lucide-react';
 
 Pigsty supports various PostgreSQL kernels and compatible forks,
 enabling you to simulate different database systems while leveraging PostgreSQL's ecosystem.
@@ -16,6 +16,12 @@ Each kernel provides unique capabilities and compatibility layers.
 ## Database Kernels
 
 <Cards>
+    <Card
+        title="PostgreSQL"
+        description="Vanilla Postgres with 423 Extensions"
+        href="/pgsql/kernel/citus"
+        icon={<Database className="text-sky-700"/>}
+    />
     <Card
         title="Citus"
         description="Native Distributive Extension"
@@ -41,6 +47,12 @@ Each kernel provides unique capabilities and compatibility layers.
         icon={<RefreshCcw className="text-red-600"/>}
     />
     <Card
+        title="Percona"
+        description="Transparent Data Encryption"
+        href="/pgsql/kernel/percona"
+        icon={<Pyramid className="text-red-600"/>}
+    />
+    <Card
         title="OrioleDB"
         description="OLTP-optimized cloud-native storage engine"
         href="/pgsql/kernel/orioledb"
@@ -48,7 +60,7 @@ Each kernel provides unique capabilities and compatibility layers.
     />
     <Card
         title="PolarDB PG"
-        description="Aurora-like shared storage, with china compliance"
+        description="Aurora-like RAC with china domestic compliance"
         href="/pgsql/kernel/polardb"
         icon={<PawPrint className="text-orange-500"/>}
     />
@@ -56,13 +68,13 @@ Each kernel provides unique capabilities and compatibility layers.
         title="Supabase"
         description="Backend as a Service, self-hosting Firebase"
         href="/pgsql/kernel/supabase"
-        icon={<Zap className="text-green-400"/>}
+        icon={<Zap className="text-green-500"/>}
     />
     <Card
-        title="Cloudberry"
-        description="Massively parallel processing data warehouse"
-        href="/pgsql/kernel/cloudberry"
-        icon={<Cherry className="text-emerald-700"/>}
+        title="FerretDB"
+        description="Mongo Wire-Compatibility over PostgreSQL"
+        href="/ferret"
+        icon={<Leaf className="text-gray-400"/>}
     />
 </Cards>
 
@@ -76,17 +88,20 @@ Each kernel provides unique capabilities and compatibility layers.
 **Flexible Kernel**: Choose the right kernel for your specific use case - whether you need MSSQL compatibility, Oracle features, or horizontal scaling capabilities.
 </Callout>
 
-|                Kernel                 | Key Feature              | Description                                               |
-|:-------------------------------------:|--------------------------|-----------------------------------------------------------|
-|      [Citus](/pgsql/kernel#citus)      | **Horizontal Scaling**   | Native Distributive PostgreSQL                            |
-|  [Babelfish](/pgsql/kernel#babelfish)  | **SQL Server Migration** | SQL Server wire-compatibility                             |
-|   [IvorySQL](/pgsql/kernel#ivorysql)   | **Oracle Migration**     | Oracle Grammar and PL/SQL compatible                      |
-|   [OpenHalo](/pgsql/kernel#openhalo)   | **MySQL Migration**      | MySQL wire-protocol compatibility                         |
-|          [FerretDB](/ferret)          | **MongoDB Migration**    | MongoDB wire-protocol compatibility                       |
-|   [OrioleDB](/pgsql/kernel#orioledb)   | **OLTP Optimization**    | PG without bloat & XID Wrap, cloud-native with S3 Storage |
-|  [PolarDB PG](/pgsql/kernel#polardb)   | **Aurora flavor RAC**    | RAC, China domestic compliance                            |
-|   [Supabase](/pgsql/kernel#supabase)   | **Backend as Service**   | BaaS based on PostgreSQL, Firebase alternative            |
-| [Cloudberry](/pgsql/kernel#cloudberry) | **MPP DW & Analytics**   | Massively parallel processing database warehouse          |
+|                    Kernel                    | Key Feature                     | Description                                      |
+|:--------------------------------------------:|---------------------------------|--------------------------------------------------|
+|     [PostgreSQL](/pgsql/kernel/postgres)     | **Original Flavor**             | Vanilla PostgreSQL with 420+ extensions          |
+|         [Citus](/pgsql/kernel/citus)         | **Horizontal Scaling**          | Distributive PostgreSQL via native extension     |
+|     [WiltonDB](/pgsql/kernel/babelfish)      | **SQL Server Migration**        | SQL Server wire-compatibility                    |
+|      [IvorySQL](/pgsql/kernel/ivorysql)      | **Oracle Migration**            | Oracle Grammar and PL/SQL compatible             |
+|      [OpenHalo](/pgsql/kernel/openhalo)      | **MySQL Migration**             | MySQL wire-protocol compatibility                |
+|       [Percona](/pgsql/kernel/percona)       | **Transparent Data Encryption** | Percona Distribution with pg_tde                 |
+|      [FerretDB](/pgsql/kernel/ferretdb)      | **MongoDB Migration**           | MongoDB wire-protocol compatibility              |
+|      [OrioleDB](/pgsql/kernel/orioledb)      | **OLTP Optimization**           | Zheap, No bloat, S3 Storage                      |
+|       [PolarDB](/pgsql/kernel/polardb)       | **Aurora flavor RAC**           | RAC, China domestic compliance                   |
+|      [Supabase](/pgsql/kernel/supabase)      | **Backend as Service**          | BaaS based on PostgreSQL, Firebase alternative   |
+| [Cloudberry (WIP)](/pgsql/kernel#cloudberry) | **MPP DW & Analytics**          | Massively parallel processing database warehouse |
+
 
 
 --------
@@ -96,7 +111,8 @@ Each kernel provides unique capabilities and compatibility layers.
 <Badge icon={<Network />} variant="blue-subtle"><a href="/pgsql/kernel/citus" className="no-underline">Citus</a></Badge>
 <Badge icon={<Network />} variant="blue-subtle">Native Distributive</Badge>
 
-Citus transforms PostgreSQL into a distributed database system, enabling horizontal scaling across multiple nodes. Deploy native HA Citus clusters with Pigsty for better throughput and performance.
+Citus transforms PostgreSQL into a distributed database system, enabling horizontal scaling across multiple nodes.
+Deploy native HA Citus clusters with Pigsty for better throughput and performance.
 
 ### Key Features [!toc]
 

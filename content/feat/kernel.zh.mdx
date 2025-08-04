@@ -6,65 +6,75 @@ icon: Cpu
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Badge } from '@/components/ui/badge';
-import { Network, Database, Shield, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand} from 'lucide-react';
-
+import { Network, Bird, Database, Leaf, Shield, Pyramid, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand} from 'lucide-react';
 
 
 Pigsty 支持各种 PostgreSQL 内核和兼容分支，
 使您能够模拟不同的数据库系统，同时利用 PostgreSQL 的生态系统。
 每个内核提供独特的功能和兼容性层。
 
-
 ## 数据库内核 [#database-kernels]
 
 <Cards>
     <Card
+        title="PostgreSQL"
+        description="带有 423 个扩展插件的原生 PostgreSQL 内核"
+        href="/pgsql/kernel/citus"
+        icon={<Database className="text-sky-700"/>}
+    />
+    <Card
         title="Citus"
-        description="原生分布式扩展"
-        href="#citus"
+        description="PG 原生分布式扩展"
+        href="/pgsql/kernel/citus"
         icon={<Network className="text-emerald-600"/>}
     />
     <Card
         title="Babelfish"
-        description="SQL Server 协议兼容"
-        href="#babelfish"
+        description="SQL Server 线缆协议兼容"
+        href="/pgsql/kernel/babelfish"
         icon={<Fish className="text-gray-600"/>}
     />
     <Card
         title="IvorySQL"
         description="Oracle 语法和 PL/SQL 兼容"
-        href="#ivorysql"
+        href="/pgsql/kernel/ivorysql"
         icon={<Target className="text-sky-700"/>}
     />
     <Card
         title="OpenHalo"
-        description="MySQL 协议兼容性"
-        href="#openhalo"
+        description="MySQL 线缆协议兼容"
+        href="/pgsql/kernel/openhalo"
         icon={<RefreshCcw className="text-red-600"/>}
+    />
+    <Card
+        title="Percona"
+        description="透明加密内核"
+        href="/pgsql/kernel/percona"
+        icon={<Pyramid className="text-red-600"/>}
     />
     <Card
         title="OrioleDB"
         description="OLTP 优化的云原生存储引擎"
-        href="#orioledb"
+        href="/pgsql/kernel/orioledb"
         icon={<Zap className="text-yellow-500"/>}
     />
     <Card
         title="PolarDB PG"
-        description="类似 Aurora 的共享存储，符合中国合规要求"
-        href="#polardb"
+        description="类 Aurora RAC 风味的信创内核"
+        href="/pgsql/kernel/polardb"
         icon={<PawPrint className="text-orange-500"/>}
     />
     <Card
         title="Supabase"
         description="后端即服务，自托管 Firebase"
-        href="#supabase"
+        href="/app/supabase"
         icon={<Zap className="text-green-400"/>}
     />
     <Card
-        title="Greenplum"
-        description="大规模并行处理数据仓库"
-        href="#greenplum"
-        icon={<Cherry className="text-emerald-700"/>}
+        title="FerretDB"
+        description="MongoDB 线缆协议兼容的内核"
+        href="/ferret"
+        icon={<Leaf className="text-gray-400"/>}
     />
 </Cards>
 

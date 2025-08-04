@@ -1,69 +1,80 @@
 ---
 title: 内核
-description: 用特殊的内核分支替换原版 PostgreSQL
+description: 您可以在 Pigsty 中使用特殊风味的 PostgreSQL 内核分支替代原生内核。
 icon: Cpu
 ---
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Badge } from '@/components/ui/badge';
-import { Network, Database, Shield, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand, Bird } from 'lucide-react';
+import { Network, Bird, Database, Leaf, Shield, Pyramid, CircleEqual, Zap, Layers, Flame, Clock, Fish, RefreshCcw, PawPrint, Cherry, Target , Expand} from 'lucide-react';
 
 
 Pigsty 支持各种 PostgreSQL 内核和兼容分支，
 使您能够模拟不同的数据库系统，同时利用 PostgreSQL 的生态系统。
-每个内核都提供独特的功能和兼容性层。
-
+每个内核都能提供独特的功能和兼容性层。
 
 ## 数据库内核 [#database-kernels]
 
 <Cards>
     <Card
+        title="PostgreSQL"
+        description="带有 423 个扩展插件的原生 PostgreSQL 内核"
+        href="/pgsql/kernel/citus"
+        icon={<Database className="text-sky-700"/>}
+    />
+    <Card
         title="Citus"
-        description="原生分布式扩展"
-        href="#citus"
+        description="PG 原生分布式扩展"
+        href="/pgsql/kernel/citus"
         icon={<Network className="text-emerald-600"/>}
     />
     <Card
         title="Babelfish"
-        description="SQL Server 线协议兼容"
-        href="#babelfish"
+        description="SQL Server 线缆协议兼容"
+        href="/pgsql/kernel/babelfish"
         icon={<Fish className="text-gray-600"/>}
     />
     <Card
         title="IvorySQL"
         description="Oracle 语法和 PL/SQL 兼容"
-        href="#ivorysql"
+        href="/pgsql/kernel/ivorysql"
         icon={<Target className="text-sky-700"/>}
     />
     <Card
         title="OpenHalo"
-        description="MySQL 线协议兼容"
-        href="#openhalo"
+        description="MySQL 线缆协议兼容"
+        href="/pgsql/kernel/openhalo"
         icon={<RefreshCcw className="text-red-600"/>}
+    />
+    <Card
+        title="Percona"
+        description="透明加密内核"
+        href="/pgsql/kernel/percona"
+        icon={<Pyramid className="text-red-600"/>}
     />
     <Card
         title="OrioleDB"
         description="OLTP 优化的云原生存储引擎"
-        href="#orioledb"
-        icon={<Bird className="text-yellow-500"/>}
+        href="/pgsql/kernel/orioledb"
+        icon={<Zap className="text-yellow-500"/>}
     />
     <Card
         title="PolarDB PG"
-        description="类似 Aurora 的共享存储，符合中国合规要求"
-        href="#polardb"
+        description="类 Aurora RAC 风味的信创内核"
+        href="/pgsql/kernel/polardb"
         icon={<PawPrint className="text-orange-500"/>}
     />
     <Card
         title="Supabase"
         description="后端即服务，自托管 Firebase"
-        href="#supabase"
+        href="/app/supabase"
         icon={<Zap className="text-green-400"/>}
     />
     <Card
-        title="Greenplum"
-        description="大规模并行处理数据仓库"
-        href="#greenplum"
-        icon={<Cherry className="text-emerald-700"/>}
+        title="FerretDB"
+        description="MongoDB 线缆协议兼容的内核"
+        href="/ferret"
+        icon={<Leaf className="text-gray-400"/>}
     />
 </Cards>
 
@@ -76,18 +87,19 @@ Pigsty 支持各种 PostgreSQL 内核和兼容分支，
     **灵活内核**：为您的特定用例选择合适的内核 - 无论您需要 MSSQL 兼容性、Oracle 功能还是水平扩展能力。
 </Callout>
 
-| 内核                              | 关键特性                     | 描述                                    |
-|-------------------------------------|---------------------------------|------------------------------------------------|
-| [PostgreSQL](/zh/pgsql/kernel/postgres)   | **原始版本**             | 原版 PostgreSQL 配备 420+ 扩展        |
-| [Citus](/zh/pgsql/kernel/citus)        | **水平扩展**          | 通过原生扩展实现分布式 PostgreSQL   |
-| [WiltonDB](/zh/pgsql/kernel/babelfish) | **SQL Server 迁移**        | SQL Server 线协议兼容                  |
-| [IvorySQL](/zh/pgsql/kernel/ivorysql)  | **Oracle 迁移**            | Oracle 语法和 PL/SQL 兼容           |
-| [OpenHalo](/zh/pgsql/kernel/openhalo)  | **MySQL 迁移**             | MySQL 线协议兼容              |
-| [Percona](/zh/pgsql/kernel/percona)    | **透明数据加密** | 带有 pg_tde 的 Percona 发行版               |
-| [FerretDB](/zh/pgsql/kernel/ferretdb)  | **MongoDB 迁移**           | MongoDB 线协议兼容            |
-| [OrioleDB](/zh/pgsql/kernel/orioledb)  | **OLTP 优化**           | Zheap，无膨胀，S3 存储                    |
-| [PolarDB](/zh/pgsql/kernel/polardb)    | **Aurora 风格 RAC**           | RAC，中国国产合规                 |
-| [Supabase](/zh/pgsql/kernel/supabase)  | **后端即服务**          | 基于 PostgreSQL 的 BaaS，Firebase 替代方案 |
+| 内核                                      | 关键特性                   | 描述                                 |
+|-----------------------------------------|------------------------|------------------------------------|
+| [PostgreSQL](/zh/pgsql/kernel/postgres) | **原始版本**               | 原版 PostgreSQL 配备 420+ 扩展           |
+| [Citus](/zh/pgsql/kernel/citus)         | **水平扩展**               | 通过原生扩展实现分布式 PostgreSQL             |
+| [WiltonDB](/zh/pgsql/kernel/babelfish)  | **SQL Server 迁移**      | SQL Server 线协议兼容                   |
+| [IvorySQL](/zh/pgsql/kernel/ivorysql)   | **Oracle 迁移**          | Oracle 语法和 PL/SQL 兼容               |
+| [OpenHalo](/zh/pgsql/kernel/openhalo)   | **MySQL 迁移**           | MySQL 线协议兼容                        |
+| [Percona](/zh/pgsql/kernel/percona)     | **透明数据加密**             | 带有 pg_tde 的 Percona 发行版            |
+| [FerretDB](/zh/pgsql/kernel/ferretdb)   | **MongoDB 迁移**         | MongoDB 线协议兼容                      |
+| [OrioleDB](/zh/pgsql/kernel/orioledb)   | **OLTP 优化**            | Zheap，无膨胀，S3 存储                    |
+| [PolarDB](/zh/pgsql/kernel/polardb)     | **Aurora 风格 RAC**      | RAC，中国国产合规                         |
+| [Supabase](/zh/pgsql/kernel/supabase)   | **后端即服务**              | 基于 PostgreSQL 的 BaaS，Firebase 替代方案 |
+| [Cloudberry](/pgsql/kernel#cloudberry)  | **MPP 数厂与数据分析** | 大规模并行处理数据仓库（等待2.0GA）               |
 
 
 
@@ -98,7 +110,6 @@ Pigsty 支持各种 PostgreSQL 内核和兼容分支，
 
 <Badge icon={<Clock />}  variant="blue-subtle"><a   href="#citus" className="no-underline">Citus</a></Badge>
 <Badge icon={<Expand />}  variant="blue-subtle">原生分布式</Badge>
-
 
 Citus 将 PostgreSQL 转换为分布式数据库系统，实现跨多个节点的水平扩展。使用 Pigsty 部署原生 HA Citus 集群以获得更好的吞吐量和性能。
 
@@ -125,7 +136,8 @@ Citus 将 PostgreSQL 转换为分布式数据库系统，实现跨多个节点�
 
 ## Babelfish（MSSQL） [#babelfish]
 
-<Callout variant="secondary">SQL Server 兼容</Callout> <Callout variant="outline">Beta</Callout>
+<Badge icon={<Fish />} variant="gray-subtle"><a href="/pgsql/kernel/babelfish" className="no-underline">Babelfish</a></Badge>
+<Badge icon={<Fish />} variant="gray-subtle">SQL Server 线缆协议兼容</Badge>
 
 使用 WiltonDB 和 Babelfish 创建 SQL Server 兼容的 PostgreSQL 集群，提供与 Microsoft SQL Server 的线协议级别兼容性。
 
@@ -152,7 +164,8 @@ Citus 将 PostgreSQL 转换为分布式数据库系统，实现跨多个节点�
 
 ## IvorySQL（Oracle） [#ivorysql]
 
-<Callout variant="secondary">Oracle 兼容</Callout> <Callout variant="outline">社区</Callout>
+<Badge icon={<Target />} variant="blue-subtle"><a href="/pgsql/kernel/ivorysql" className="no-underline">Babelfish</a></Badge>
+<Badge icon={<Target />} variant="blue-subtle">Oracle Grammar Compatible</Badge>
 
 使用 IvorySQL 内核运行 Oracle 兼容的 PostgreSQL 集群，由瀚高开源，提供 Oracle 语法和功能兼容性。
 
@@ -179,7 +192,8 @@ Citus 将 PostgreSQL 转换为分布式数据库系统，实现跨多个节点�
 
 ## OpenHalo（MySQL） [#openhalo]
 
-<Callout variant="secondary">MySQL 兼容</Callout> <Callout variant="outline">实验性</Callout>
+<Badge icon={<RefreshCcw />} variant="blue-subtle"><a href="/pgsql/kernel/openhalo" className="no-underline">OpenHalo</a></Badge>
+<Badge icon={<RefreshCcw />} variant="blue-subtle">MySQL Wire-Compatible</Badge>
 
 OpenHalo 内核提供 MySQL 兼容的 PostgreSQL 功能，可使用标准 MySQL 客户端和协议访问。
 
@@ -206,7 +220,8 @@ OpenHalo 内核提供 MySQL 兼容的 PostgreSQL 功能，可使用标准 MySQL 
 
 ## OrioleDB（OLTP） [#orioledb]
 
-<Callout variant="secondary">OLTP 优化</Callout> <Callout variant="outline">创新</Callout>
+<Badge icon={<Bird />} variant="blue-subtle"><a href="/pgsql/kernel/openhalo" className="no-underline">OrioleDB</a></Badge>
+<Badge icon={<Bird />} variant="blue-subtle">OLTP Optimized Cloud Native</Badge>
 
 为 OLTP 工作负载优化的 PostgreSQL 存储引擎，消除事务 ID 回绕问题和表膨胀，同时支持云存储。
 
@@ -235,7 +250,8 @@ OpenHalo 内核提供 MySQL 兼容的 PostgreSQL 功能，可使用标准 MySQL 
 
 ## PolarDB PG（RAC） [#polardb]
 
-<Callout variant="secondary">共享存储</Callout> <Callout variant="outline">阿里云</Callout>
+<Badge icon={<PawPrint />} variant="blue-subtle"><a href="/pgsql/kernel/polardb" className="no-underline">PolarDB</a></Badge>
+<Badge icon={<PawPrint />} variant="blue-subtle">Aurora Flavor RAC</Badge>
 
 用 PolarDB PG 替换原版 PostgreSQL，这是一个开源的类 Aurora 解决方案，类似于具有共享存储架构的 Oracle RAC。
 
@@ -262,7 +278,8 @@ OpenHalo 内核提供 MySQL 兼容的 PostgreSQL 功能，可使用标准 MySQL 
 
 ## Supabase（Firebase） [#supabase]
 
-<Callout variant="secondary">Firebase 替代方案</Callout> <Callout variant="outline">自托管</Callout>
+<Badge icon={<Zap />} variant="blue-subtle"><a href="/pgsql/kernel/supabase" className="no-underline">Supabase</a></Badge>
+<Badge icon={<Zap />} variant="blue-subtle">Backend as a Service</Badge>
 
 使用现有托管的 HA PostgreSQL 集群自托管 Supabase，使用 docker-compose 启动无状态组件以获得完整的 Firebase 替代方案。
 
@@ -289,7 +306,8 @@ OpenHalo 内核提供 MySQL 兼容的 PostgreSQL 功能，可使用标准 MySQL 
 
 ## Greenplum（MPP） [#greenplum]
 
-<Callout variant="secondary">大规模并行</Callout> <Callout variant="outline">分析</Callout>
+<Badge icon={<Cherry />} variant="blue-subtle"><a href="/pgsql/kernel/cloudberry" className="no-underline">Cloudberry</a></Badge>
+<Badge icon={<Cherry />} variant="blue-subtle">MPP Data Warehouse</Badge>
 
 使用 Pigsty 部署和监控 Greenplum/YMatrix MPP 集群，用于大规模分析处理和数据仓库。
 
