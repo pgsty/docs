@@ -19,6 +19,7 @@ Pigsty 在所有支持的 Linux 平台上为 OpenHalo 提供部署支持。
 使用 Pigsty 的 [**标准安装流程**](/zh/install/start/) 和 [`mysql`](https://github.com/pgsty/pigsty/blob/main/conf/mysql.yml) 配置模板。
 
 ```bash
+curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 ./configure -c mysql    # 使用 MySQL（openHalo）配置模板
 ./install.yml           # 安装，生产部署请先在 pigsty.yml 中修改密码
 ```
