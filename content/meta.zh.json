@@ -24,13 +24,17 @@
     "app",
 
     "---链接---",
-    "[扩展目录](https://ext.pgsty.com/zh)",
-    "[PIG包管理器](https://pig.pgsty.com/zh)",
-    "[代码仓库](https://github.com/pgsty/pigsty)",
-    "[公开演示](https://demo.pigsty.cc)",
-    "[官方博客](https://blog.vonng.com)",
-    "[pigsty.io](https://pigsty.io)",
-    "[pigsty.cc](https://pigsty.cc)",
-    "[Language: English](/)"
+    "[Pigsty 首页](https://pgsty.com)",
+    "[PG 扩展目录](https://ext.pgsty.com/zh)",
+    "[PIG CLI](https://pig.pgsty.com/zh)",
+    "[PG Exporter](https://exp.pgsty.com/zh)",
+    "[公开演示](https://g.pgsty.com)",
+    "[作者博客](https://vonng.com)",
+    "[English Docs](/)",
+
+    "---旧版文档---",
+    "[Pigsty v3.4](https://v34.pgsty.com)",
+    "[Pigsty v1.5](https://v15.pgsty.com)",
+    "[Pigsty v0.9](https://v09.pgsty.com)"
   ]
 }
