@@ -48,7 +48,6 @@ icon: Variable
 | [`node_hugepage_count`](#node_hugepage_count)         | [`NODE_TUNE`](#node_tune)         | `int`       | C     | 2MB 大页数量，优先于比率              |
 | [`node_hugepage_ratio`](#node_hugepage_ratio)         | [`NODE_TUNE`](#node_tune)         | `float`     | C     | 节点内存大页比率，默认 0 禁用                |
 | [`node_overcommit_ratio`](#node_overcommit_ratio)     | [`NODE_TUNE`](#node_tune)         | `float`     | C     | 节点内存过量使用比率，默认 0 禁用              |
-
 | [`node_tune`](#node_tune)                             | [`NODE_TUNE`](#node_tune)         | `enum`      | C     | 节点调优配置文件：none、oltp、olap、crit、tiny                    |
 | [`node_sysctl_params`](#node_sysctl_params)           | [`NODE_TUNE`](#node_tune)         | `dict`      | C     | 除调优外的 k:v 格式 sysctl 参数                        |
 | [`node_data`](#node_data)                             | [`NODE_ADMIN`](#node_admin)       | `path`      | C     | 节点主数据目录，默认为 `/data`                    |
@@ -355,7 +354,7 @@ node_disable_numa: false          # 禁用节点 numa，需要重启
 node_disable_swap: false          # 禁用节点交换分区，谨慎使用
 node_static_network: true         # 重启后保留 DNS 解析器设置
 node_disk_prefetch: false         # 在 HDD 上设置磁盘预取以提高性能
-node_kernel_modules: [ softdog, br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+node_kernel_modules: [ softdog, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
 node_hugepage_count: 0            # 2MB 大页数量，优先于比率
 node_hugepage_ratio: 0            # 节点内存大页比率，0 禁用它（默认）
 node_overcommit_ratio: 0          # 节点内存过量使用比率，0 禁用它（默认）
@@ -442,7 +441,7 @@ node_sysctl_params: { }           # 除调优外的 k:v 格式 sysctl 参数
 默认值：
 
 ```yaml
-node_kernel_modules: [ softdog, br_netfilter, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
+node_kernel_modules: [ softdog, ip_vs, ip_vs_rr, ip_vs_wrr, ip_vs_sh ]
 ```
 
 由内核模块名称组成的数组，声明需要在节点上安装的内核模块。

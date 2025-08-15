@@ -12,30 +12,63 @@ PG Exporter 通过**声明式配置**、**动态规划**和**可定制收集器*
 
 `pg_exporter` 的最新稳定版本是 [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1)
 
-|       版本        |     日期     | 摘要                                           |                               GitHub                               |
-|:---------------:|:----------:|----------------------------------------------|:------------------------------------------------------------------:|
-| [v1.0.1](#v101) | 2023-07-17 | DockerHub 镜像，Go 1.24.5，禁用 pg_tsdb_hypertable | [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1) |
-| [v1.0.0](#v100) | 2023-05-06 | PostgreSQL 18 支持，新的 WAL/checkpointer/I/O 指标  | [v1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0) |
-| [v0.9.0](#v090) | 2023-04-26 | TimescaleDB、Citus、pg_wait_sampling 收集器       | [v0.9.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.9.0) |
-| [v0.8.1](#v081) | 2024-02-14 | 依赖项更新，docker 镜像标签                            | [v0.8.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.1) |
-| [v0.8.0](#v080) | 2024-02-14 | PgBouncer 1.24 支持，Go 1.24，日志重构               | [v0.8.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.0) |
-| [v0.7.1](#v071) | 2022-08-13 | 常规更新，配置作为 Reader 支持                          | [v0.7.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.1) |
-| [v0.7.0](#v070) | 2022-08-13 | PostgreSQL 17 支持，谓词查询功能                      | [v0.7.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.0) |
-| [v0.6.0](#v060) | 2022-10-18 | PostgreSQL 16 支持，ARM64 包，安全修复                | [v0.6.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.6.0) |
-| [v0.5.0](#v050) | 2022-04-27 | RPM/DEB 构建，列缩放，指标增强                          | [v0.5.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.5.0) |
-| [v0.4.1](#v041) | 2022-03-08 | 收集器更新，connect-timeout 参数                     | [v0.4.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.1) |
-| [v0.4.0](#v040) | 2021-07-12 | PostgreSQL 14 支持，自动发现功能                      | [v0.4.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.0) |
-| [v0.3.2](#v032) | 2021-02-01 | Shadow DSN 修复，文档更新                           | [v0.3.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.2) |
-| [v0.3.1](#v031) | 2020-12-04 | 旧版 PostgreSQL 版本的配置修复                        | [v0.3.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.1) |
-| [v0.3.0](#v030) | 2020-10-29 | PostgreSQL 13 支持，REST API，虚拟服务器              | [v0.3.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.0) |
-| [v0.2.0](#v020) | 2020-03-21 | YUM 包，配置重载支持                                 | [v0.2.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.2.0) |
-| [v0.1.2](#v012) | 2020-02-20 | 动态配置重载，批量模式                                  | [v0.1.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.2) |
-| [v0.1.1](#v011) | 2020-01-10 | 启动挂起错误修复                                     | [v0.1.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.1) |
-| [v0.1.0](#v010) | 2020-01-08 | 初始稳定版本                                       | [v0.1.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.0) |
-| [v0.0.4](#v004) | 2019-12-20 | 生产测试版本                                       | [v0.0.4](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.4) |
-| [v0.0.3](#v003) | 2019-12-14 | 生产环境测试                                       | [v0.0.3](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.3) |
-| [v0.0.2](#v002) | 2019-12-09 | 早期测试版本                                       | [v0.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.2) |
-| [v0.0.1](#v001) | 2019-12-06 | 带有 PgBouncer 模式的初始版本                         | [v0.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.1) |
+|       版本        |     日期     | 摘要                                                |                               GitHub                               |
+|:---------------:|:----------:|---------------------------------------------------|:------------------------------------------------------------------:|
+| [v1.0.2](#v102) | 2023-08-14 | CI/CD 构建管道，使用 Go<br/> 1.25， https://exp.pgsty.com | [v1.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.2) |
+| [v1.0.1](#v101) | 2023-07-17 | DockerHub 镜像，Go 1.24.5，禁用 pg_tsdb_hypertable      | [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1) |
+| [v1.0.0](#v100) | 2023-05-06 | PostgreSQL 18 支持，新的 WAL/checkpointer/I/O 指标       | [v1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0) |
+| [v0.9.0](#v090) | 2023-04-26 | TimescaleDB、Citus、pg_wait_sampling 收集器            | [v0.9.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.9.0) |
+| [v0.8.1](#v081) | 2024-02-14 | 依赖项更新，docker 镜像标签                                 | [v0.8.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.1) |
+| [v0.8.0](#v080) | 2024-02-14 | PgBouncer 1.24 支持，Go 1.24，日志重构                    | [v0.8.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.8.0) |
+| [v0.7.1](#v071) | 2022-08-13 | 常规更新，配置作为 Reader 支持                               | [v0.7.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.1) |
+| [v0.7.0](#v070) | 2022-08-13 | PostgreSQL 17 支持，谓词查询功能                           | [v0.7.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.7.0) |
+| [v0.6.0](#v060) | 2022-10-18 | PostgreSQL 16 支持，ARM64 包，安全修复                     | [v0.6.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.6.0) |
+| [v0.5.0](#v050) | 2022-04-27 | RPM/DEB 构建，列缩放，指标增强                               | [v0.5.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.5.0) |
+| [v0.4.1](#v041) | 2022-03-08 | 收集器更新，connect-timeout 参数                          | [v0.4.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.1) |
+| [v0.4.0](#v040) | 2021-07-12 | PostgreSQL 14 支持，自动发现功能                           | [v0.4.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.4.0) |
+| [v0.3.2](#v032) | 2021-02-01 | Shadow DSN 修复，文档更新                                | [v0.3.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.2) |
+| [v0.3.1](#v031) | 2020-12-04 | 旧版 PostgreSQL 版本的配置修复                             | [v0.3.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.1) |
+| [v0.3.0](#v030) | 2020-10-29 | PostgreSQL 13 支持，REST API，虚拟服务器                   | [v0.3.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.3.0) |
+| [v0.2.0](#v020) | 2020-03-21 | YUM 包，配置重载支持                                      | [v0.2.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.2.0) |
+| [v0.1.2](#v012) | 2020-02-20 | 动态配置重载，批量模式                                       | [v0.1.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.2) |
+| [v0.1.1](#v011) | 2020-01-10 | 启动挂起错误修复                                          | [v0.1.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.1) |
+| [v0.1.0](#v010) | 2020-01-08 | 初始稳定版本                                            | [v0.1.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.1.0) |
+| [v0.0.4](#v004) | 2019-12-20 | 生产测试版本                                            | [v0.0.4](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.4) |
+| [v0.0.3](#v003) | 2019-12-14 | 生产环境测试                                            | [v0.0.3](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.3) |
+| [v0.0.2](#v002) | 2019-12-09 | 早期测试版本                                            | [v0.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.2) |
+| [v0.0.1](#v001) | 2019-12-06 | 带有 PgBouncer 模式的初始版本                              | [v0.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.1) |
+
+
+------
+
+## v1.0.2
+
+- 使用 Go 1.25 构建，更新依赖至最新版本。
+- 新网站首页：https://exp.pgsty.com
+- 使用 goreleaser 自动化构建，集成 GitHub Actions CI/CD
+- 添加 windows amd64 构建目标
+- 添加 linux ppc64le 构建目标
+
+**校验和**
+
+https://github.com/pgsty/pg_exporter/releases/download/v1.0.2/checksums.txt
+
+```bash
+683bf97f22173f2f2ec319a88e136939c2958a1f5ced4f4aa09a1357fc1c44c5  pg-exporter_1.0.2-1_amd64.deb
+f62d479a92be2d03211c162b8419f968cea87ceef5b1f25f2bcd390e0b72ccb5  pg-exporter_1.0.2-1_arm64.deb
+e1bbfc5a4c1b93e6f92bc7adcb4364583ab763e76e156aa5c979d6d1040f4c7a  pg-exporter_1.0.2-1_ppc64le.deb
+f51d5b45448e6bbec3467d1d1dc049b1e16976f723af713c4262541ac55a039c  pg_exporter-1.0.2-1.aarch64.rpm
+18380011543674e4c48b2410266b41165974d780cbc8918fc562152ba623939e  pg_exporter-1.0.2-1.ppc64le.rpm
+198372d894b9598c166a0e91ca36d3c9271cb65298415f63dbffcf6da611f2bb  pg_exporter-1.0.2-1.x86_64.rpm
+cbe7e07df6d180507c830cdab4cf86d40ccd62774723946307b5331d4270477d  pg_exporter-1.0.2.darwin-amd64.tar.gz
+20c4a35fa244287766c1d1a19cd2e393b3fa451a96a81e5635401e69bef04b97  pg_exporter-1.0.2.darwin-arm64.tar.gz
+d742111185f6a89fff34bfd304b851c8eb7a8e38444f0220786e11ed1934eff1  pg_exporter-1.0.2.linux-amd64.tar.gz
+0b1f4c97c1089c4767d92eb22419b8f29c9f46fb90ddfd1e8514cc42dc41054f  pg_exporter-1.0.2.linux-arm64.tar.gz
+895083fd2c7fc5409cc1a2dbaaef1e47ac7aa6a3fd5db2359012922d90bcdcc3  pg_exporter-1.0.2.linux-ppc64le.tar.gz
+5f751228e7120604af9a482fb70197489fa633c38a0f2b6a3489393fbc6a10aa  pg_exporter-1.0.2.windows-amd64.tar.gz
+```
+
+
 
 ------
 

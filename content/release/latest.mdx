@@ -5,6 +5,66 @@ icon: Sparkle
 ---
 
 
+## v3.6.1
+
+```bash
+curl https://repo.pigsty.cc/get | bash -s v3.6.1
+```
+
+**Highlights**
+
+- PostgreSQL 17.6, 16.10, 15.14, 14.19, 13.22, and 18 Beta 3 Released!
+- PGDG APT/YUM mirror for Mainland China Users
+- New home website https://pgsty.com
+- Add el10, debian 13 stub, add el10 terraform images
+
+**Infra Package Updates**
+
+- Grafana 12.1.0
+- pg_exporter 1.0.2
+- pig 0.6.1
+- vector 0.49.0
+- redis_exporter 1.75.0
+- mongo_exporter 0.47.0
+- victoriametrics 1.123.0
+- victorialogs: 1.28.0
+- grafana-victoriametrics-ds 0.18.3
+- grafana-victorialogs-ds 0.19.3
+- grafana-infinity-ds 3.4.1
+- etcd 3.6.4
+- ferretdb 2.5.0
+- tigerbeetle 0.16.54
+- genai-toolbox 0.12.0
+
+**Extension Package Updates**
+
+- pg_search 0.17.3
+
+**API Changes**
+
+- remove `br_filter` from default `node_kernel_modules`
+- do not use OS minor version dir for pgdg yum repos
+
+**Checksums**
+
+```bash
+045977aff647acbfa77f0df32d863739  pigsty-pkg-v3.6.1.d12.aarch64.tgz
+636b15c2d87830f2353680732e1af9d2  pigsty-pkg-v3.6.1.d12.x86_64.tgz
+700a9f6d0db9c686d371bf1c05b54221  pigsty-pkg-v3.6.1.el8.aarch64.tgz
+2aff03f911dd7be363ba38a392b71a16  pigsty-pkg-v3.6.1.el8.x86_64.tgz
+ce07261b02b02b36a307dab83e460437  pigsty-pkg-v3.6.1.el9.aarch64.tgz
+d598d62a47bbba2e811059a53fe3b2b5  pigsty-pkg-v3.6.1.el9.x86_64.tgz
+13fd68752e59f5fd2a9217e5bcad0acd  pigsty-pkg-v3.6.1.u22.aarch64.tgz
+c25ccfb98840c01eb7a6e18803de55bb  pigsty-pkg-v3.6.1.u22.x86_64.tgz
+0d71e58feebe5299df75610607bf428c  pigsty-pkg-v3.6.1.u24.aarch64.tgz
+4fbbab1f8465166f494110c5ec448937  pigsty-pkg-v3.6.1.u24.x86_64.tgz
+083d8680fa48e9fec3c3fcf481d25d2f  pigsty-v3.6.1.tgz
+```
+
+
+
+
+
 ## v3.6.0
 
 > Release Note: https://github.com/pgsty/pigsty/releases/tag/v3.6.0
@@ -125,6 +185,8 @@ c4fadf1645c8bbe3e83d5a01497fa9ca  pigsty-pkg-v3.6.0.u22.aarch64.tgz
 196169afc1be02f93fcc599d42d005ca  pigsty-pkg-v3.6.0.u24.aarch64.tgz
 dbe5c1e8a242a62fe6f6e1f6e6b6c281  pigsty-pkg-v3.6.0.u24.x86_64.tgz
 ```
+
+
 
 
 ## Pigsty 3.6 — the meta-distribution for PostgreSQL

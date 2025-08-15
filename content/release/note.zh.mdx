@@ -4,6 +4,62 @@ description: Pigsty 的历史版本发布说明
 icon: Archive
 ---
 
+## v3.6.1
+
+```bash
+curl https://repo.pigsty.cc/get | bash -s v3.6.1
+```
+
+**亮点特性**
+
+- PostgreSQL 17.6, 16.10, 15.14, 14.19, 13.22, 以及 18 Beta 3 支持
+- 在中国大陆地区使用 Pigsty 提供的 PGDG APT/YUM 镜像解决更新断供问题。
+- 新的网站首页： https://pgsty.com
+- 增加了 el10, debian 13 的实现存根，以及 el10 的 Terraform 镜像
+
+**基础设施软件包更新**
+
+- Grafana 12.1.0
+- pg_exporter 1.0.2
+- pig 0.6.1
+- vector 0.49.0
+- redis_exporter 1.75.0
+- mongo_exporter 0.47.0
+- victoriametrics 1.123.0
+- victorialogs: 1.28.0
+- grafana-victoriametrics-ds 0.18.3
+- grafana-victorialogs-ds 0.19.3
+- grafana-infinity-ds 3.4.1
+- etcd 3.6.4
+- ferretdb 2.5.0
+- tigerbeetle 0.16.54
+- genai-toolbox 0.12.0
+
+**数据库软件包更新**
+
+- pg_search 0.17.3
+
+**API变更**
+
+- 从 `node_kernel_modules` 默认值中移除 `br_filter` 内核模块。
+- 在添加 PGDG YUM 源时使用操作大版本号，不再使用小版本号。
+
+**校验和**
+
+```bash
+045977aff647acbfa77f0df32d863739  pigsty-pkg-v3.6.1.d12.aarch64.tgz
+636b15c2d87830f2353680732e1af9d2  pigsty-pkg-v3.6.1.d12.x86_64.tgz
+700a9f6d0db9c686d371bf1c05b54221  pigsty-pkg-v3.6.1.el8.aarch64.tgz
+2aff03f911dd7be363ba38a392b71a16  pigsty-pkg-v3.6.1.el8.x86_64.tgz
+ce07261b02b02b36a307dab83e460437  pigsty-pkg-v3.6.1.el9.aarch64.tgz
+d598d62a47bbba2e811059a53fe3b2b5  pigsty-pkg-v3.6.1.el9.x86_64.tgz
+13fd68752e59f5fd2a9217e5bcad0acd  pigsty-pkg-v3.6.1.u22.aarch64.tgz
+c25ccfb98840c01eb7a6e18803de55bb  pigsty-pkg-v3.6.1.u22.x86_64.tgz
+0d71e58feebe5299df75610607bf428c  pigsty-pkg-v3.6.1.u24.aarch64.tgz
+4fbbab1f8465166f494110c5ec448937  pigsty-pkg-v3.6.1.u24.x86_64.tgz
+083d8680fa48e9fec3c3fcf481d25d2f  pigsty-v3.6.1.tgz
+```
+
 
 
 ## v3.6.0

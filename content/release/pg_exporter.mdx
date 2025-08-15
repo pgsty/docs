@@ -15,6 +15,7 @@ The latest stable version of `pg_exporter` is [v1.0.1](https://github.com/pgsty/
 
 |     Version     |    Date    | Summary                                                 |                               GitHub                               |
 |:---------------:|:----------:|---------------------------------------------------------|:------------------------------------------------------------------:|
+| [v1.0.2](#v102) | 2023-08-14 | CI/CD Pipeline with go 1.25, https://exp.pgsty.com      | [v1.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.2) |
 | [v1.0.1](#v101) | 2023-07-17 | DockerHub images, Go 1.24.5, disable pg_tsdb_hypertable | [v1.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.1) |
 | [v1.0.0](#v100) | 2023-05-06 | PostgreSQL 18 support, new WAL/checkpointer/I/O metrics | [v1.0.0](https://github.com/pgsty/pg_exporter/releases/tag/v1.0.0) |
 | [v0.9.0](#v090) | 2023-04-26 | TimescaleDB, Citus, pg_wait_sampling collectors         | [v0.9.0](https://github.com/pgsty/pg_exporter/releases/tag/v0.9.0) |
@@ -38,6 +39,35 @@ The latest stable version of `pg_exporter` is [v1.0.1](https://github.com/pgsty/
 | [v0.0.2](#v002) | 2019-12-09 | Early testing release                                   | [v0.0.2](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.2) |
 | [v0.0.1](#v001) | 2019-12-06 | Initial release with PgBouncer mode                     | [v0.0.1](https://github.com/pgsty/pg_exporter/releases/tag/v0.0.1) |
 
+
+------
+
+## v1.0.2
+
+- Build with Go 1.25.0 and latest dependencies
+- Dedicate website and homepage: https://exp.pgsty.com
+- Release with goreleaser for more os/arch with GitHub CI/CD pipeline:
+- add windows amd64 support
+- add linux ppc64le support
+
+**Checksums**
+
+https://github.com/pgsty/pg_exporter/releases/download/v1.0.2/checksums.txt
+
+```bash
+683bf97f22173f2f2ec319a88e136939c2958a1f5ced4f4aa09a1357fc1c44c5  pg-exporter_1.0.2-1_amd64.deb
+f62d479a92be2d03211c162b8419f968cea87ceef5b1f25f2bcd390e0b72ccb5  pg-exporter_1.0.2-1_arm64.deb
+e1bbfc5a4c1b93e6f92bc7adcb4364583ab763e76e156aa5c979d6d1040f4c7a  pg-exporter_1.0.2-1_ppc64le.deb
+f51d5b45448e6bbec3467d1d1dc049b1e16976f723af713c4262541ac55a039c  pg_exporter-1.0.2-1.aarch64.rpm
+18380011543674e4c48b2410266b41165974d780cbc8918fc562152ba623939e  pg_exporter-1.0.2-1.ppc64le.rpm
+198372d894b9598c166a0e91ca36d3c9271cb65298415f63dbffcf6da611f2bb  pg_exporter-1.0.2-1.x86_64.rpm
+cbe7e07df6d180507c830cdab4cf86d40ccd62774723946307b5331d4270477d  pg_exporter-1.0.2.darwin-amd64.tar.gz
+20c4a35fa244287766c1d1a19cd2e393b3fa451a96a81e5635401e69bef04b97  pg_exporter-1.0.2.darwin-arm64.tar.gz
+d742111185f6a89fff34bfd304b851c8eb7a8e38444f0220786e11ed1934eff1  pg_exporter-1.0.2.linux-amd64.tar.gz
+0b1f4c97c1089c4767d92eb22419b8f29c9f46fb90ddfd1e8514cc42dc41054f  pg_exporter-1.0.2.linux-arm64.tar.gz
+895083fd2c7fc5409cc1a2dbaaef1e47ac7aa6a3fd5db2359012922d90bcdcc3  pg_exporter-1.0.2.linux-ppc64le.tar.gz
+5f751228e7120604af9a482fb70197489fa633c38a0f2b6a3489393fbc6a10aa  pg_exporter-1.0.2.windows-amd64.tar.gz
+```
 
 
 ------
