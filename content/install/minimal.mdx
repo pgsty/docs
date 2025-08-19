@@ -57,6 +57,7 @@ Packages are directly installed from the Internet upstream repo, [**offline inst
 
 Config file example: [`conf/slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) for slim installation:
 
+
 ```yaml
 all:
   children:
@@ -82,9 +83,9 @@ all:
 
   vars:
     #----------------------------------------------#
-    # INFRA : https://pgsty.com/docs/infra/param
+    # INFRA : https://doc.pgsty.com/infra/param
     #----------------------------------------------#
-    version: v3.5.1                   # pigsty version string
+    version: v3.6.1                   # pigsty version string
     admin_ip: 10.10.10.10             # admin node ip address
     region: default                   # upstream mirror region: default,china,europe
     infra_portal:                     # domain names and upstream servers
@@ -96,13 +97,14 @@ all:
       loki         : { endpoint: "${admin_ip}:3100" }
 
     #----------------------------------------------#
-    # NODE : https://pgsty.com/docs/node/param
+    # NODE : https://doc.pgsty.com/node/param
     #----------------------------------------------#
+    nodename_overwrite: false           # do not overwrite node hostname on single node mode
     node_repo_modules: node,infra,pgsql # add these repos directly to the singleton node
     node_tune: oltp                     # node tuning specs: oltp,olap,tiny,crit
 
     #----------------------------------------------#
-    # PGSQL : https://pgsty.com/docs/pgsql/param
+    # PGSQL : https://doc.pgsty.com/pgsql/param
     #----------------------------------------------#
     pg_version: 17                      # Default PostgreSQL Major Version is 17
     pg_conf: oltp.yml                   # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
@@ -110,7 +112,7 @@ all:
     #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ,pg17-olap]
 
     #----------------------------------------------#
-    # SLIM: http://localhost:3000/install/minimal
+    # SLIM: http://localhost:3000/docs/install/minimal
     #----------------------------------------------#
     nginx_enabled: false              # nginx not exists
     dns_enabled: false                # dnsmasq not exists
@@ -132,3 +134,9 @@ Use the [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/slim.yml) playboo
 ```bash
 ./slim.yml
 ```
+
+<Callout type="warn" title="Do not use install.yml here">
+
+    The `slim.yml` playbook is designed to replace the `install.yml` playbook for the minimal installations.
+
+</Callout>

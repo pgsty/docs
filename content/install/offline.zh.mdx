@@ -7,8 +7,8 @@ icon: FolderSymlink
 import {Step, Steps} from 'fumadocs-ui/components/steps';
 
 
-Pigsty 默认从互联网上游 [**安装**](/zh/install)，但有些环境与互联网隔离。
-为了解决这个问题，Pigsty 支持从 [**离线软件包**](#offline-package) 进行离线安装。
+Pigsty 默认从互联网上游 [**安装**](/zh/install) 所需软件包，但有些环境与互联网隔离。
+为了解决这个问题，Pigsty 支持使用 [**离线软件包**](#offline-package) 进行离线安装。
 
 <Steps>
     <Step>
@@ -16,7 +16,7 @@ Pigsty 默认从互联网上游 [**安装**](/zh/install)，但有些环境与�
     </Step>
 
     <Step>
-        下载 pigsty 源码包，解压（假设到 `~/pigsty`）
+        下载 pigsty 源码包，解压（假设解压到 `~/pigsty`）
     </Step>
 
     <Step>
@@ -56,74 +56,96 @@ c25ccfb98840c01eb7a6e18803de55bb  pigsty-pkg-v3.6.1.u22.x86_64.tgz
 083d8680fa48e9fec3c3fcf481d25d2f  pigsty-v3.6.1.tgz
 ```
 
-We usually release offline packages for the following [linux distro](/prepare/linux), with the latest OS minor version.
+我们通常为以下 [Linux 发行版](/zh/prepare/linux) 发布离线软件包，使用最新的操作系统次要版本。
 
 | EL Distribution |                        Code                         |                          Arch                          |                                            OS Code                                            |                                                              Package                                                              |
 |:----------------|:---------------------------------------------------:|:------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|
-| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`el9.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)  |  [`pigsty-pkg-v3.6.0.el9.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.el9.x86_64.tgz)  |
-| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`u24.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml)  |  [`pigsty-pkg-v3.6.0.u24.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.u24.x86_64.tgz)  |
-| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`d12.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml)  |  [`pigsty-pkg-v3.6.0.d12.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.d12.x86_64.tgz)  |
-| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> | [`el9.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) | [`pigsty-pkg-v3.6.0.el9.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.el9.aarch64.tgz) |
-| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> | [`u24.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) | [`pigsty-pkg-v3.6.0.u24.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.u24.aarch64.tgz) |
-| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | [`pigsty-pkg-v3.6.0.d12.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.d12.aarch64.tgz) |
+| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`el9.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.el9.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.x86_64.tgz)  |
+| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`u24.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.u24.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.u24.x86_64.tgz)  |
+| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`d12.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.d12.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.d12.x86_64.tgz)  |
+| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> | [`el9.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) | [`pigsty-pkg-v3.6.1.el9.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.aarch64.tgz) |
+| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> | [`u24.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) | [`pigsty-pkg-v3.6.1.u24.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.u24.aarch64.tgz) |
+| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | [`pigsty-pkg-v3.6.1.d12.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.d12.aarch64.tgz) |
 
-https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.el9.x86_64.tgz
+https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.x86_64.tgz
 
-<Callout title="Offline Package is made for specific Linux OS Major.Minor Version" type="warn">
+<Callout title="离线软件包是为特定的 Linux 操作系统小版本制作的" type="warn">
 
-    Using offline package on lower minor version may have a chance of success, but it is not guaranteed.
+    在较低的操作系统小版本上使用更高小版本的离线软件包，大概率可以使用，但也有失败的可能
 
 </Callout>
+
+
+------
+
+## 使用离线软件包？ [#use-offline-package]
+
+将离线软件包放置于 `/tmp/pkg.tgz` 路径下，进入 `~/pigsty` 目录执行 `./bootstrap`，即可解包使用离线安装包。
+Pigsty 会将其解压至 `/www/pigsty`，然后配置系统仓库列表启用此仓库，并从中安装 `ansible`。
+
+自从 Pigsty v3.6 版本起，大部份配置模板都默认不再构建本地软件仓库，而是直接从互联网上游安装软件包。
+少部分配置模板如 `rich` 与 `full` 依然保留了旧版本的行为 —— 先构建本地仓库再使用。
+
+如果您想要在自己的配置中使用已经解包配置好的离线软件包，请修改以下配置：
+
+- [`repo_enabled`](/zh/infra/param#repo_enabled)：将此参数打开，设置为 `true`，则会构建本地软件源（在大部份配置中被显式关闭）
+- [`node_repo_modules`](/zh/node/param#node_repo_modules)：将此参数设置为 `local`，则环境中所有节点都从本地软件仓库安装
+  - 在大部份模板中，此参数现在被显式配置为：`node,infra,pgsql`，即直接从这些上游软件仓库安装。
+  - 将其设置为 `local`，则会使用本地软件仓库安装所有软件包，速度最快，没有其他仓库的变数干扰。
+  - 如果你想同时使用本地软件仓库和上游软件仓库，可以将其设置为 `local,node,infra,pgsql`
 
 
 
 --------
 
-## Pros and Cons
+## 优缺点 [#pros-and-cons]
 
-If you are using the exact same OS minor version above, using offline packages is advised.
+如果您使用的是上述列表中给出的操作系统（精确匹配的小版本），那么建议使用离线软件包。
+Pigsty 为这些系统提供了开箱即用的预制离线软件包，在 GitHub 上提供免费下载。
 
-<Callout title="Advantages of using offline package" type="success">
+<Callout title="使用离线软件包的优点" type="success">
 
-    - Official offline packages are tested.
-    - The easiest way to deliver on Internet isolated environment.
-    - Speed up the installation process by pre-download all packages in one-pass.
-    - The snapshot is ensured working without worrying about upstream dependency breakage.
+    - 官方离线软件包经过测试。
+    - 在与互联网隔离的环境中交付的最简单方法。
+    - 通过一次性预下载所有软件包来加速安装过程。
+    - 快照确保可以正常工作，无需担心上游依赖项的变动导致依赖错漏。
+
+</Callout>
+
+
+<Callout title="使用离线软件包的缺点" type="warn">
+
+    - 如果操作系统次要版本不匹配，操作系统的 rpm/deb 软件包可能会出现问题
+    - 可能不包含最新的更新和操作系统安全补丁。
 
 </Callout>
 
-
-<Callout title="Disadvantages of using offline package" type="warn">
-
-    - If OS minor version not match, OS rpm/deb packages may break
-    - It may not contain the latest updates and OS security patches.
-
-</Callout>
+如果你使用的操作系统版本不在上述列表中，你可以考虑自制离线安装包，我们也提供针对更多操作系统大小版本的离线安装包预制服务（¥200）
 
 
 
 ------
 
-## Bootstrap
+## 引导程序 [#bootstrap]
 
-The `bootstrap` script will automatically detect `/tmp/pkg.tgz` and extract it to `/www/pigsty` by default.
-It will also set up the os package manager repo file and install `ansible` and other utils.
+`bootstrap` 脚本将自动检测 `/tmp/pkg.tgz` 并默认将其解压到 `/www/pigsty`。
+它还将设置操作系统软件包管理器的仓库文件，并安装 `ansible` 和其他工具。
 
-<Callout title="Where are my repo files?" type="warn">
+<Callout title="我的仓库文件在哪里？" type="warn">
 
-    Bootstrap will **wipe-out** existing repo by default to ensure only the required repos are installed.
+    引导程序默认会 **清除** 现有仓库，以确保只安装所需的仓库。
 
-    You can find them in `/etc/yum.repos.d/backup` (EL) or `/etc/apt/backup` (debian / ubuntu)
+    您可以在 `/etc/yum.repos.d/backup` (EL) 或 `/etc/apt/backup` (Debian / Ubuntu) 中找到它们
 
 </Callout>
 
 
-<Callout title="If you want to keep your existing repo">
+<Callout title="如果您想保留现有仓库">
 
-    You can use the `-k|--keep` parameter to keep the existing repo files intact:
+    您可以使用 `-k|--keep` 参数来保持现有仓库文件不变：
 
     ```bash
-    ./bootstrap -k # or --keep
+    ./bootstrap -k # 或 --keep
     ```
 
 </Callout>
@@ -132,46 +154,57 @@ It will also set up the os package manager repo file and install `ansible` and o
 
 ------
 
-## Make offline package
+## 制作离线软件包 [#make-offline-package]
 
-If your OS choice is not in the default offline package offering list,
-you can make your own offline package with the built-in [**`cache.yml`**](https://github.com/pgsty/pigsty/blob/main/cache.yml) playbook.
+如果您选择的操作系统不在默认列表中，
+您可以使用内置的 [**`cache.yml`**](https://github.com/pgsty/pigsty/blob/main/cache.yml) 剧本制作自己的离线软件包。
 
 <Steps>
     <Step>
-        Find a node running exact same OS version with the Internet access
+        找到一台运行完全相同操作系统版本，且可以访问互联网的节点
     </Step>
 
     <Step>
-        Run standard [online installation procedure](/install)
+        运行标准 [在线安装](/zh/install) （建议使用 `rich` 配置模板：`configure -c rich`）
     </Step>
 
     <Step>
-        `cd ~/pigsty; ./cache.yml`: make and fetch the offline package to `dist/${version}/`
+        `cd ~/pigsty; ./cache.yml`：制作并获取离线软件包到 `~/pigsty/dist/${version}/`
     </Step>
 
     <Step>
-        Copy the offline package to the environment without Internet access (ftp, scp, usb,...)
+        将离线软件包复制到没有互联网访问的环境中（ftp、scp、usb 等），通过 `bootstrap` 解包使用
     </Step>
 
 </Steps>
 
-We offer [paid service](/about/service) to make offline packages for precise Linux major.minor versions. (`$30`)
+
+<Callout title="v3.6 的行为变化">
+
+    自从 Pigsty v3.6 开始，大部份配置模板都直接从互联网上游安装软件包，而不是先下载到管理节点本地构建软件仓库，再从中安装。
+    你可以通过调整参数来恢复此前的默认行为，如果你需要构建自己的离线软件包，这很有用：
+
+    - [`repo_enabled`](/zh/infra/param#repo_enabled)：将此参数打开，则会构建本地软件源（在大部份配置中被显式关闭）
+    - [`node_repo_modules`](/zh/node/param#node_repo_modules)：将此参数设置为 `local`，则环境中所有节点都从本地软件仓库安装
+
+    部分配置模板，例如 `rich` 与 `full` 依然直接保留旧版本的行为 —— 先构建本地仓库再使用，故无需调整。
+
+</Callout>
+
+
+我们提供[付费服务](/zh/about/service)，提供经过测试的预制 Linux 主版本.次版本制作离线软件包。（¥200）
+
 
 
 
 ------
 
-## Hybrid Approach
+## 混合方法 [#hybrid-approach]
 
-There's a hybrid approach to using the offline package and do online install upon it.
-This could be useful if your OS repo is a local Intranet repo.
+有一种混合方法可以使用离线软件包作为基础，并在线补足不匹配的增量软件包，这种办法可以融合离线安装与在线安装的优点。
 
-Let's say you are using RockyLinux 9.5, but the official offline package is made for RockyLinux 9.6.
-
-You can use the `el9` offline packages, and remove the `/www/pigsty/repo_complete` marker file,
-to force Pigsty to perform a repo build stage (`infra.repo`) during installation.
-
-If you want to use the latest version or resolve any dependency conflict, you can remove these rpm/deb and run `make repo`,
-pigsty will re-download them from the upstream repo.
+例如，假设您使用的是 RockyLinux 9.5，但官方离线软件包是为 RockyLinux 9.6 制作的。
+您可以使用 `el9` 离线软件包，（虽然是针对 9.6 制作的）
+然后在执行正式安装前，执行 `make repo-build` 重新下载 9.5 对应的缺失软件包，
+Pigsty 将从上游仓库重新下载所需的增量。
 

@@ -124,7 +124,7 @@ bin/pgmon-rm <ins>      # 从所有基础设施节点删除 prometheus 目标
 -------------------            ^------------------^
 ```
 
-监控系统将不再有主机/池化器/负载均衡器指标。但 PostgreSQL 指标和目录信息仍然可用。Pigsty 为此有两个专用仪表板：[PGRDS 集群](https://demo.pigsty.cc/d/pgrds-cluster) 和 [PGRDS 实例](https://demo.pigsty.cc/d/pgrds-instance)。概览和数据库级别仪表板被重用。由于 Pigsty 无法管理您的 RDS，您必须提前在目标数据库上[设置监控](/zh/pgsql/monitor/#monitor-setup)。
+监控系统将不再有主机/池化器/负载均衡器指标。但 PostgreSQL 指标和目录信息仍然可用。Pigsty 为此有两个专用仪表板：[PGRDS 集群](https://g.pgsty.com/d/pgrds-cluster) 和 [PGRDS 实例](https://g.pgsty.com/d/pgrds-instance)。概览和数据库级别仪表板被重用。由于 Pigsty 无法管理您的 RDS，您必须提前在目标数据库上[设置监控](/zh/pgsql/monitor/#monitor-setup)。
 
 下面，我们使用沙箱环境作为示例：现在我们假设 `pg-meta` 集群是要监控的 RDS 实例 `pg-foo-1`，`pg-test` 集群是要监控的 RDS 集群 `pg-bar`：
 

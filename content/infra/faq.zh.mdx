@@ -90,7 +90,7 @@ PGSQL 集群/实例域名默认注册到基础设施节点上的 `/etc/hosts.d/<
 ```yaml
 infra_portal:
   home         : { domain: home.pigsty.io }
-  grafana      : { domain: demo.pigsty.cc ,endpoint: "${admin_ip}:3000" ,websocket: true }
+  grafana      : { domain: g.pgsty.com ,endpoint: "${admin_ip}:3000" ,websocket: true }
   prometheus   : { domain: p.pigsty.io ,endpoint: "${admin_ip}:9090" }
   alertmanager : { domain: a.pigsty.io ,endpoint: "${admin_ip}:9093" }
   blackbox     : { endpoint: "${admin_ip}:9115" }

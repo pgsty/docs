@@ -21,7 +21,7 @@ Or use local / public [Domain Names](/admin/domain) to access them via [Nginx Po
 |         Component          |   Port   |   Domain   | Comment                     | Public Demo                                |
 |:--------------------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
 | [**Nginx**](/admin/portal) | `80/443` | `h.pigsty` | Portal, Repo, HAProxy Admin | [`home.pigsty.io`](https://h.pigsty.io)    |
-|  [**Grafana**](#grafana)   |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`demo.pigsty.cc`](https://demo.pigsty.cc) |
+|  [**Grafana**](#grafana)   |  `3000`  | `g.pigsty` | Grafana Dashboards          | [`g.pgsty.com`](https://g.pgsty.com) |
 |         Prometheus         |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
 |        AlertManager        |  `9093`  | `a.pigsty` | Alert Management            | [`a.pigsty.io`](https://a.pigsty.io)       |
 
@@ -146,7 +146,7 @@ Grafana is the platform for monitoring and observability, it listens on port `30
 
 <Callout title="Access via domain name" type="warning">
 
-    Pigsty has static local (fake) domain names for web components, you can access Grafana via `http://g.pigsty` through Nginx
+    Pigsty support static [local domain (fake)](/zh/admin/domain#local-static-resolution) for web components, you can access Grafana via `http://g.pigsty` through Nginx
     It's advised to use domain names, Since you can expose all services via Nginx with domain names, and use SSL certs for them.
 
 </Callout>
@@ -161,11 +161,7 @@ Default credential: `admin:pigsty`. If you have changed the default credentials,
 
 </Callout>
 
-You can check our public demo site to see what it looks like:
-
-|                       Default                       |                       Mirror                        |
-|:---------------------------------------------------:|:---------------------------------------------------:|
-| [`https://demo.pigsty.cc`](https://demo.pigsty.cc/) | [`https://demo.pigsty.cc`](https://demo.pigsty.cc/) |
+You can check our public demo site to see what it looks like: https://g.pgsty.com
 
 ![pigsty-home.jpg](/img/pigsty/home.jpg)
 

@@ -5,7 +5,7 @@ icon: Search
 full: true
 ---
 
-安装完成后，您在当前节点上将拥有四个核心模块：
+安装完成后，您在当前节点上将安装有四个核心模块：
 [**`PGSQL`**](/zh/pgsql/)、[**`INFRA`**](/zh/infra/)、[**`NODE`**](/zh/node/) 和 [**`ETCD`**](/zh/etcd/)。
 
 | ID | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
@@ -13,19 +13,19 @@ full: true
 | 1  |     `node-1`     |    `pg-meta-1`     |     `infra-1`      |       `etcd-1`       |
 
 
-您可以直接通过以下 **端口** 访问 [WebUI](#grafana) 服务（不推荐用于生产环境）。
+您可以直接通过以下 **端口** 直接访问 [WebUI](#grafana) 服务（不推荐用于生产环境）。
 或使用本地/公共 [域名](/zh/admin/domain) 通过 [Nginx 门户](/zh/admin/portal) 访问它们。
-[SSL 证书](/zh/admin/cert) 只能与域名一起使用。
 
+请注意，[SSL 证书](/zh/admin/cert) 需要与域名一起使用。
 
-|           组件              |   端口   |    域名    | 备注                        | 公共演示                                   |
-|:--------------------------:|:--------:|:----------:|-----------------------------|--------------------------------------------|
-| [**Nginx**](/zh/admin/portal) | `80/443` | `h.pigsty` | 门户、仓库、HAProxy 管理       | [`home.pigsty.io`](https://h.pigsty.io)    |
-|  [**Grafana**](#grafana)   |  `3000`  | `g.pigsty` | Grafana 仪表盘              | [`demo.pigsty.cc`](https://demo.pigsty.cc) |
-|         Prometheus         |  `9090`  | `p.pigsty` | Prometheus Web UI           | [`p.pigsty.io`](https://p.pigsty.io)       |
-|        AlertManager        |  `9093`  | `a.pigsty` | 告警管理                    | [`a.pigsty.io`](https://a.pigsty.io)       |
+|              组件               |    端口    |     域名     | 备注                | 公共演示                                    |
+|:-----------------------------:|:--------:|:----------:|-------------------|-----------------------------------------|
+| [**Nginx**](/zh/admin/portal) | `80/443` | `h.pigsty` | 门户、仓库、HAProxy 管理  | [`home.pigsty.io`](https://h.pigsty.io) |
+|    [**Grafana**](#grafana)    |  `3000`  | `g.pigsty` | Grafana 仪表盘       | [`g.pgsty.com`](https://g.pgsty.com)    |
+|          Prometheus           |  `9090`  | `p.pigsty` | Prometheus Web UI | [`p.pigsty.io`](https://p.pigsty.io)    |
+|         AlertManager          |  `9093`  | `a.pigsty` | 告警管理              | [`a.pigsty.io`](https://a.pigsty.io)    |
 
-您可以通过以下用户和相应的 `PGURL` 访问默认端口 `5432` 上的默认 PostgreSQL 数据库（`meta`）：
+您可以通过以下数据库用户和相应的 `PGURL` 访问默认端口 `5432` 上的默认 PostgreSQL 数据库（`meta`）：
 
 ```bash tab="dbuser_dba"
 psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10:5432/meta
@@ -42,7 +42,7 @@ psql postgres://dbuser_view:DBUser.Viewer@10.10.10.10:5432/meta
 
 ## PostgreSQL [#postgresql]
 
-对于个人使用，您可以直接使用默认超级用户和 IP:端口来访问 PostgreSQL：
+个人用户开发测试使用时，可以直接使用默认超级用户和 IP:端口来访问 PostgreSQL：
 
 ### DBSU [#dbsu]
 
@@ -58,7 +58,7 @@ psql postgres://dbuser_view:DBUser.Viewer@10.10.10.10:5432/meta
 
 ### CLI [#cli]
 
-内置的 `psql` CLI 已经为管理员用户配置了 `.pgpass` 和 `.pg_service.conf`
+内置的 `psql` CLI 已经为管理员用户（安装 Pigsty 使用的用户）配置了 `.pgpass` 和 `.pg_service.conf`
 
 ```bash tab="别名"
 p   # 别名：操作系统管理员用户 @ 当前节点
@@ -69,48 +69,51 @@ psql postgres://dbuser_dba:DBUser.DBA@10.10.10.10/postgres  # 替换为您的 IP
 
 ### GUI [#gui]
 
-要使用图形界面访问您的数据库，您可以使用您喜欢的 GUI 工具，我们也有一些内置模板。
+您可以使用您喜欢的 GUI 工具来访问数据库，Pigsty 也提供了一些 GUI 工具的内置模板。
 
-| 名称                                                                                          | 描述                                        | Pigsty 支持               |
-|-----------------------------------------------------------------------------------------------|--------------------------------------------------|-------------------------------|
-| [PgAdmin](https://www.pgadmin.org/)                                                           | 官方 PostgreSQL 管理工具                | 内置 Docker 模板，OSS |
-| [Supabase Studio](https://supabase.com/blog/supabase-studio)                                  | 精美的第三方 PostgreSQL 管理 UI       | 内置 Docker 模板，OSS |
-| [PgWeb](https://sosedoff.github.io/pgweb/)                                                    | 轻量级基于 Web 的 PostgreSQL 客户端     | 内置 Docker 模板，OSS |
-| [Bytebase](https://www.bytebase.com/)                                                         | 具有良好 GUI 的模式迁移工具             | 内置 Docker 模板，OSS |
-| [DataGrip](https://www.jetbrains.com/datagrip/) / [IntelliJ](https://www.jetbrains.com/idea/) | 具有强大功能的专业数据库 IDE           | 商业 / 社区版            |
-| [Navicat](https://www.navicat.com/)                                                           | 流行的商业数据库管理工具                | 商业版                    |
-| [DBeaver](https://dbeaver.io/)                                                                | 开源通用数据库 GUI                    | OSS                           |
+| 名称                                                                                            | 描述                         | Pigsty 支持        |
+|-----------------------------------------------------------------------------------------------|----------------------------|------------------|
+| [PgAdmin](https://www.pgadmin.org/)                                                           | 官方 PostgreSQL 管理工具         | 内置 Docker 模板，OSS |
+| [Supabase Studio](https://supabase.com/blog/supabase-studio)                                  | 精美的第三方 PostgreSQL 管理 UI    | 内置 Docker 模板，OSS |
+| [PgWeb](https://sosedoff.github.io/pgweb/)                                                    | 轻量级基于 Web 的 PostgreSQL 客户端 | 内置 Docker 模板，OSS |
+| [Bytebase](https://www.bytebase.com/)                                                         | 具有良好 GUI 的模式迁移工具           | 内置 Docker 模板，OSS |
+| [DataGrip](https://www.jetbrains.com/datagrip/) / [IntelliJ](https://www.jetbrains.com/idea/) | 具有强大功能的专业数据库 IDE           | 商业 / 社区版         |
+| [Navicat](https://www.navicat.com/)                                                           | 流行的商业数据库管理工具               | 商业版              |
+| [DBeaver](https://dbeaver.io/)                                                                | 开源通用数据库 GUI                | OSS              |
+
+
 
 ### 默认设置 [#defaults]
 
-您可以定义业务 [**数据库**](/zh/pgsql/db) 和 [**用户**](/zh/pgsql/user)。这些 [配置模板](/zh/config/template) 有一些预定义的示例供您参考。
+您可以定义业务 [**数据库**](/zh/pgsql/db) 和 [**用户**](/zh/pgsql/user)。[配置模板](/zh/config/template) 中有一些预定义的示例供您参考。
 
-例如，默认的 [`meta`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml#L51) 配置模板预定义了一个带有 Pigsty [CMDB](/zh/config/cmdb) 模式（可选）和向量扩展的 `meta` 数据库。
-它定义了 `dbuser_meta` 作为具有 DDL 权限的业务管理员用户，和一个 `dbuser_view` 作为只读查看者用户。
+例如，默认的 [`meta`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml#L51) 配置模板预定义了一个 `meta` 数据库：
+
+- 带有 Pigsty [CMDB](/zh/config/cmdb) 模式（可选）
+- 预装来 `timescaledb`, `postgis`, `citus`, `pgvector` 四个业务扩展
+- 它定义了 `dbuser_meta` 作为具有 DDL 权限的业务管理员用户，和一个 `dbuser_view` 作为只读查看者用户。
 
 
 ```yaml
 pg-meta:
   hosts:
-    10.10.10.10: { pg_seq: 1, pg_role: primary } # <---- primary instance with read-write capability
+    10.10.10.10: { pg_seq: 1, pg_role: primary } # <---- 这个集群中只有一个实例，主库
   vars:
-    pg_cluster: pg-meta                 # required identity parameter, usually same as group name
+    pg_cluster: pg-meta                 # 必选参数，集群名
 
-    pg_databases:                       # define business databases on this cluster, array of database definition
-      - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
-        baseline: cmdb.sql              # optional, database sql baseline path, (relative to files/)
-        schemas: [ pigsty ]             # optional, additional schemas to be created, array of schema names
-        extensions: [ vector ]          # optional, additional extensions to be installed: array of `{name[,schema]}`
-        comment: pigsty meta database   # optional, comment string for this database
+    pg_databases:                       # 数据库列表
+      - name: meta
+        baseline: cmdb.sql
+        comment: "pigsty meta database"
+        schemas: [pigsty]
+        extensions: [ postgis, timescaledb, vector ]   # 安装了三个扩展
 
-    pg_users:                           # define business users/roles on this cluster, array of user definition
-      - name: dbuser_meta               # REQUIRED, `name` is the only mandatory field of a user definition
-        password: DBUser.Meta           # optional, password can be a scram-sha-256 hash string or plain text
-      - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly], comment: read-only viewer for meta database }
+    pg_users:                           # 数据库用户列表
+      - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+      - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
 
     pg_hba_rules:                       # example hba rules
       - {user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes'}
-
 ```
 
 这意味着您也可以使用这两个用户访问 `meta` 数据库：
@@ -129,7 +132,7 @@ psql postgres://dbuser_view:DBUser.Viewer@10.10.10.10:5432/meta
 - [特性：PostgreSQL 高可用性](/zh/feat/ha)
 - [服务：访问 Postgres 集群](/zh/pgsql/service)
 
-在这种情况下，您的流量通常在到达数据库之前会通过 haproxy 其配并由 pgbouncer 池化。
+在这种情况下，您的流量在到达数据库之前会通过 haproxy 进行分发，并由 pgbouncer 池化。
 
 ![](/img/pigsty/ha.png)
 
@@ -140,13 +143,13 @@ psql postgres://dbuser_view:DBUser.Viewer@10.10.10.10:5432/meta
 
 ## Grafana [#grafana]
 
-Grafana 是监控和可观测性平台，默认监听端口 `3000`：
+Grafana 是监控和可观测性平台，提供可视化面板能力，默认监听 `3000` 端口：
 
 - http://10.10.10.10:3000（替换为您的 IP）
 
 <Callout title="通过域名访问" type="warning">
 
-    Pigsty 为 Web 组件提供了静态本地（虚假）域名，您可以通过 Nginx 访问 `http://g.pigsty` 来使用 Grafana
+    Pigsty 为 Web 组件提供了 [静态本地域名](/zh/admin/domain#local-static-resolution)，您可以通过 Nginx 访问 `http://g.pigsty` 来使用 Grafana
     建议使用域名，因为您可以通过域名经由 Nginx 暴露所有服务，并为它们使用 SSL 证书。
 
 </Callout>
@@ -161,25 +164,21 @@ Grafana 是监控和可观测性平台，默认监听端口 `3000`：
 
 </Callout>
 
-您可以查看我们的公共演示站点来看看它是什么样子：
-
-|                       默认                       |                       镜像                        |
-|:---------------------------------------------------:|:---------------------------------------------------:|
-| [`https://demo.pigsty.cc`](https://demo.pigsty.cc/) | [`https://demo.pigsty.cc`](https://demo.pigsty.cc/) |
+您可以查看我们的公共演示站点来看看它是什么样子： https://g.pgsty.com
 
 ![pigsty-home.jpg](/img/pigsty/home.jpg)
 
-<Callout title="本地虚假域名的 SSL" type="warning">
+<Callout title="本地域名的自签名 SSL 证书" type="warning">
 
-    Pigsty 为本地静态域名颁发自签名 SSL 证书，但您必须在浏览器中 [信任自签名 CA](/zh/admin/domain#trust-self-signed-ca)。
+    Pigsty 默认会自动为[本地静态域名](/zh/admin/domain#local-static-resolution) 颁发自签名 [SSL 证书](/zh/admin/cert)，但您必须在浏览器中 [信任自签名 CA](/zh/admin/domain#trust-self-signed-ca) 才不会弹窗报错。
 
 </Callout>
 
 <Callout title="使用真实域名和证书" type="info">
 
-    Pigsty 支持使用 [真实域名](/zh/admin/domain#public-domain-resolution) 和 [SSL 证书](/zh/admin/cert)
+    Pigsty 支持使用 [真实域名](/zh/admin/domain#public-domain-resolution) 和 [真正的免费 SSL 证书](/zh/admin/cert)
 
-    只需替换 [`infra_portal`](/zh/infra/param#infra_portal) 中的 `domain` 条目，并使用 [`make cert`](/zh/admin/cert) 免费申请真实证书
+    只需替换 [`infra_portal`](/zh/infra/param#infra_portal) 中的 `domain` 条目为你的真实域名，并使用 [`make cert`](/zh/admin/cert) 命令即可免费申请真实证书
 
 </Callout>
 

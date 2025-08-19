@@ -43,37 +43,56 @@ it is essentially a snapshot tarball of local APT / YUM repo, taken after a norm
 You can find these packages from the [GitHub release page](https://github.com/pgsty/pigsty/releases/latest), for example:
 
 ```
-df64ac0c2b5aab39dd29698a640daf2e  pigsty-v3.6.0.tgz
-cea861e2b4ec7ff5318e1b3c30b470cb  pigsty-pkg-v3.6.0.d12.aarch64.tgz
-2f253af87e19550057c0e7fca876d37c  pigsty-pkg-v3.6.0.d12.x86_64.tgz
-0158145b9bbf0e4a120b8bfa8b44f857  pigsty-pkg-v3.6.0.el8.aarch64.tgz
-07330d687d04d26e7d569c8755426c5a  pigsty-pkg-v3.6.0.el8.x86_64.tgz
-311df5a342b39e3288ebb8d14d81e0d1  pigsty-pkg-v3.6.0.el9.aarch64.tgz
-92aad54cc1822b06d3e04a870ae14e29  pigsty-pkg-v3.6.0.el9.x86_64.tgz
-c4fadf1645c8bbe3e83d5a01497fa9ca  pigsty-pkg-v3.6.0.u22.aarch64.tgz
-5477ed6be96f156a43acd740df8a9b9b  pigsty-pkg-v3.6.0.u22.x86_64.tgz
-196169afc1be02f93fcc599d42d005ca  pigsty-pkg-v3.6.0.u24.aarch64.tgz
-dbe5c1e8a242a62fe6f6e1f6e6b6c281  pigsty-pkg-v3.6.0.u24.x86_64.tgz
+045977aff647acbfa77f0df32d863739  pigsty-pkg-v3.6.1.d12.aarch64.tgz
+636b15c2d87830f2353680732e1af9d2  pigsty-pkg-v3.6.1.d12.x86_64.tgz
+700a9f6d0db9c686d371bf1c05b54221  pigsty-pkg-v3.6.1.el8.aarch64.tgz
+2aff03f911dd7be363ba38a392b71a16  pigsty-pkg-v3.6.1.el8.x86_64.tgz
+ce07261b02b02b36a307dab83e460437  pigsty-pkg-v3.6.1.el9.aarch64.tgz
+d598d62a47bbba2e811059a53fe3b2b5  pigsty-pkg-v3.6.1.el9.x86_64.tgz
+13fd68752e59f5fd2a9217e5bcad0acd  pigsty-pkg-v3.6.1.u22.aarch64.tgz
+c25ccfb98840c01eb7a6e18803de55bb  pigsty-pkg-v3.6.1.u22.x86_64.tgz
+0d71e58feebe5299df75610607bf428c  pigsty-pkg-v3.6.1.u24.aarch64.tgz
+4fbbab1f8465166f494110c5ec448937  pigsty-pkg-v3.6.1.u24.x86_64.tgz
+083d8680fa48e9fec3c3fcf481d25d2f  pigsty-v3.6.1.tgz
 ```
 
 We usually release offline packages for the following [linux distro](/prepare/linux), with the latest OS minor version.
 
 | EL Distribution |                        Code                         |                          Arch                          |                                            OS Code                                            |                                                              Package                                                              |
 |:----------------|:---------------------------------------------------:|:------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|
-| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`el9.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)  |  [`pigsty-pkg-v3.6.0.el9.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.el9.x86_64.tgz)  |
-| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`u24.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml)  |  [`pigsty-pkg-v3.6.0.u24.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.u24.x86_64.tgz)  |
-| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`d12.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml)  |  [`pigsty-pkg-v3.6.0.d12.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.d12.x86_64.tgz)  |
-| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> | [`el9.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) | [`pigsty-pkg-v3.6.0.el9.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.el9.aarch64.tgz) |
-| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> | [`u24.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) | [`pigsty-pkg-v3.6.0.u24.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.u24.aarch64.tgz) |
-| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | [`pigsty-pkg-v3.6.0.d12.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.d12.aarch64.tgz) |
+| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`el9.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.el9.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.x86_64.tgz)  |
+| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`u24.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.u24.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.u24.x86_64.tgz)  |
+| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`d12.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.d12.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.d12.x86_64.tgz)  |
+| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> | [`el9.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) | [`pigsty-pkg-v3.6.1.el9.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.aarch64.tgz) |
+| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> | [`u24.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) | [`pigsty-pkg-v3.6.1.u24.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.u24.aarch64.tgz) |
+| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | [`pigsty-pkg-v3.6.1.d12.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.d12.aarch64.tgz) |
 
-https://github.com/pgsty/pigsty/releases/download/v3.6.0/pigsty-pkg-v3.6.0.el9.x86_64.tgz
+https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.x86_64.tgz
 
 <Callout title="Offline Package is made for specific Linux OS Major.Minor Version" type="warn">
 
     Using offline package on lower minor version may have a chance of success, but it is not guaranteed.
 
 </Callout>
+
+
+------
+
+## Using Offline Package [#use-offline-package]
+
+Place the offline package at `/tmp/pkg.tgz`, navigate to the `~/pigsty` directory and execute `./bootstrap` to extract and use the offline package.
+Pigsty will extract it to `/www/pigsty`, configure the system repository list to enable this repository, and install `ansible` from it.
+
+Since Pigsty v3.6, most configuration templates no longer build local software repositories by default, but install packages directly from Internet upstream.
+A few configuration templates such as `rich` and `full` still retain the old behavior — building local repositories first before using them.
+
+If you want to use the extracted and configured offline package in your own configuration, please modify the following settings:
+
+- [`repo_enabled`](/infra/param#repo_enabled): Set this to `true` to build local software repo (explicitly disabled in most templates)
+- [`node_repo_modules`](/node/param#node_repo_modules): Set this to `local` to install from local software repo for all nodes in the env
+  - In most templates, this parameter is now explicitly configured as: `node,infra,pgsql`, which installs software packages directly from upstream repos.
+  - Setting it to `local` will use the local repo alone, which is fastest and more reliable if applicable.
+  - If you want to use both local and upstream repositories, you can set it to `local,node,infra,pgsql`
 
 
 
@@ -143,7 +162,7 @@ you can make your own offline package with the built-in [**`cache.yml`**](https:
     </Step>
 
     <Step>
-        Run standard [online installation procedure](/install)
+        Run standard [online installation procedure](/install) (use the `rich` template: `configure -c rich`)
     </Step>
 
     <Step>
@@ -155,6 +174,19 @@ you can make your own offline package with the built-in [**`cache.yml`**](https:
     </Step>
 
 </Steps>
+
+<Callout title="Behavior Change in v3.6">
+
+    Since Pigsty v3.6, most configuration templates install packages directly from Internet upstream, rather than downloading to the admin node first to build a local repository and then installing from it.
+    You can restore the previous default behavior by adjusting parameters, which is useful if you need to build your own offline packages:
+
+    - [`repo_enabled`](/infra/param#repo_enabled): set to `true` to build local software repo
+    - [`node_repo_modules`](/node/param#node_repo_modules): set to `local` to install from local repo
+
+    Some configuration templates, such as `rich` and `full`, still retain the old behavior — building local repositories first before using them, so no adjustment is needed.
+
+</Callout>
+
 
 We offer [paid service](/about/service) to make offline packages for precise Linux major.minor versions. (`$30`)
 
@@ -169,9 +201,9 @@ This could be useful if your OS repo is a local Intranet repo.
 
 Let's say you are using RockyLinux 9.5, but the official offline package is made for RockyLinux 9.6.
 
-You can use the `el9` offline packages, and remove the `/www/pigsty/repo_complete` marker file,
-to force Pigsty to perform a repo build stage (`infra.repo`) during installation.
+You can use the `el9` offline packages, and run the `make repo-build` before the `./install.yml`,
+to force Pigsty to perform a repo build task (`infra.repo`).
 
-If you want to use the latest version or resolve any dependency conflict, you can remove these rpm/deb and run `make repo`,
+If you want to use the latest version or resolve any dependency conflict, you can remove these rpm/deb and run `make repo-build`,
 pigsty will re-download them from the upstream repo.
 

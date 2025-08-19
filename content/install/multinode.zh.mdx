@@ -1,30 +1,29 @@
 ---
 title: 多节点部署
-description: 如何在多个节点上安装 Pigsty
+description: 如何在多个节点上安装 Pigsty，实现生产级别高可用？
 icon: CloudDownload
 defaultOpen: false
 ---
 
-
-有一个配置 [教程](/zh/config/tutorial) 可以将 Pigsty 从单节点扩展到多节点。
-但最简单的方法始终是预先规划一切并一次性置备它们。
+你可以参考 [配置教程](/zh/config/tutorial) ，将一个单机 Pigsty 节点逐步扩展为多节点高可用部署。
+但是完成这些工作最简单的办法，始终是在部署前就预先规划一切，并且一次性完成整个环境的置备。
 
 
 --------
 
 ## 单节点部署 [#1-node-setup]
 
-我们已经在 [快速开始](/zh/install/start) 部分演示了单节点安装，这可能是最简单的设置。
+我们已经在 [快速上手](/zh/install/start) 一节中演示了单节点安装的流程 —— 最简单的部署方式。
 
 | ID |     IP 地址     | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
 |:--:|:-------------:|:----------------:|:------------------:|:------------------:|:--------------------:|
 | 1  | `10.10.10.10` |      `meta`      |    `pg-meta-1`     |     `infra-1`      |       `etcd-1`       |
 
-不建议把所有鸡蛋放在一个篮子里，但即使是这种单节点设置也可以用于生产环境，
-只要为 [PG](/zh/pgsql/backup) 配置了外部 [MinIO](/zh/minio) / S3 / NFS... 作为远程备份仓库。
+单节点没有高可用性，也没有冗余，如果您确实要将其用于生产环境，请为 [PG](/zh/pgsql/backup) 配置外部 [MinIO](/zh/minio) / S3 / NFS... 作为远程备份仓库，这样能提供最低数据完整性灾难恢复能力。
 
-有很多单节点 [配置模板](/zh/config/template) 供您参考。
-
+Pigsty 有很多单节点 [配置模板](/zh/config/template) 供您参考。
+你可以使用 [Vagrant](/zh/prepare/vagrant) 默认的 [`meta.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/meta.rb) 来在本地置备此环境所需的虚拟机。
+或者使用 [Terraform](/zh/prepare/terraform) 默认的 [`meta.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-meta.tf) 来在阿里云上置备此环境。
 
 
 ---------
@@ -33,22 +32,21 @@ defaultOpen: false
 
 > 半高可用设置
 
-双节点设置可实现数据库复制和半高可用功能：
+双节点设置可实现一主一从的数据库物理复制和半高可用功能：
 
 | ID |     IP 地址     | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) |
 |:--:|:-------------:|:----------------:|:------------------:|:------------------:|:--------------------:|
 | 1  | `10.10.10.10` |      `meta`      |    `pg-meta-1`     |     `infra-1`      |       `etcd-1`       |
 | 2  | `10.10.10.11` |     `node-1`     |    `pg-meta-2`     |                    |                      |
 
-虽然比单节点设置更加健壮，但高可用性有限制：
+虽然比单节点设置更加健壮，但双节点架构的高可用性有限制：
 
-- 如果 `node-1` 故障，无法自动故障转移 - 需要手动提升 `node-2`
 - 如果 `node-2` 故障，自动故障转移正常工作 - `node-1` 会自动被提升
+- 如果 `node-1` 故障，无法进行自动故障切换 - 需要手动提升 `node-2`
 
-这种"半高可用"设置只能从特定的节点故障中自动恢复。
+也就是说，这种"半高可用"设置只能从 **特定的节点故障** 中自动恢复，只允许坏其中一台特定的节点2。
 
-
-您可以使用 [`dual.yml`](https://github.com/pgsty/pigsty/blob/main/conf/dual.yml) 配置模板，并使用
+您可以使用 [`dual.yml`](https://github.com/pgsty/pigsty/blob/main/conf/ha/dual.yml) 配置模板，并使用
 [Vagrant](/zh/prepare/vagrant) [`dual.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/dual.rb) 来置备此环境所需的虚拟机。
 
 
@@ -87,7 +85,7 @@ defaultOpen: false
 | 3  | `10.10.10.12` |     `node-2`     |    `pg-test-1`     |                    |                      |                        |
 | 4  | `10.10.10.13` |     `node-3`     |    `pg-test-1`     |                    |                      |                        |
 
-您可以使用 [`full.yml`](https://github.com/pgsty/pigsty/blob/main/conf/full.yml) 配置模板，并使用
+您可以使用 [`full.yml`](https://github.com/pgsty/pigsty/blob/main/conf/ha/full.yml) 配置模板，并使用
 [Vagrant](/zh/prepare/vagrant) [`full.rb`](https://github.com/pgsty/pigsty/blob/main/vagrant/spec/full.rb) 或 [Terraform](/zh/prepare/terraform) [`full.tf`](https://github.com/pgsty/pigsty/blob/main/terraform/spec/aliyun-full.tf) 来置备此环境。
 
 
@@ -112,7 +110,7 @@ defaultOpen: false
 
 ## 三十六节点仿真 [#36-node-simulation]
 
-一个包含 36 个节点的生产仿真环境（[`simu.yml`](https://github.com/pgsty/pigsty/blob/main/conf/simu.yml)），涵盖了所有 Pigsty 组件
+一个包含 36 个节点的生产仿真环境（[`simu.yml`](https://github.com/pgsty/pigsty/blob/main/conf/ha/simu.yml)），涵盖了所有 Pigsty 组件
 
 | IP 地址         |  规格   | [NODE](/zh/node) | [PGSQL](/zh/pgsql) | [INFRA](/zh/infra) | [**ETCD**](/zh/etcd) | [**MINIO**](/zh/minio) | [**REDIS**](/zh/redis) |
 |:--------------|:-----:|:----------------:|:------------------:|:------------------:|:--------------------:|:----------------------:|:----------------------:|
