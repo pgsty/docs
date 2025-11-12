@@ -14,3 +14,35 @@ curl -fsSL https://repo.pigsty.cc/beta | bash; cd ~/pigsty   # 中国的镜像�
 ```
 
 不过目前并没有可用的 Pigsty beta 版本，因为 [最新的稳定版本](/release/latest)：[v3.6.0](/release/note#v360) 刚刚发布。
+
+
+## Pigsty v3.7.0 (beta)
+
+- PostgreSQL 18 深度支持，扩展已就位！
+- 修复了 Ansible 2.19 引入的大量兼容性问题，确保在新老版本上正常运行。
+  - 为 seq 类变量添加了 int 类型转换，确保兼容
+  - 将大量 with_items 修改为 loop 语法，确保兼容
+  - 为密钥交换变量添加一层列表嵌套，避免在新版本下针对字符串进行字符迭代。
+  - 将 range 用例显式转换为 list 后使用
+  - 修改了 name，port 等标记保留的变量命名
+  - 将 `play_hosts` 修改为 `ansible_play_hosts`
+  - 为部分字符串类型添加了 string 强制类型转换，避免运行时错误。
+
+**应用适配**
+
+- supabase
+- odoo
+- dify
+
+**版本更新**
+
+详情请参考 INFRA 变更日志， RPM 变更日志，以及 DEB 变更日志。
+
+**API变化**
+
+- 为并行执行的相关参数设置了更合理的优化策略，详见 [**调参说明**](/zh/pgsql/admin/tune)
+- 在 `rich` 与 `full` 模板中，不再默认安装 citus 扩展，因为 citus 尚未支持 PG 18
+- PG 参数模板中，新增 duckdb 系列扩展存根。
+- 为 `min_wal_size`, `max_wal_size`, `max_slot_wal_keep_size` 设置 200，2000，3000 GB 的封顶上限值。
+- 为 `temp_file_limit` 设置 200 GB 的封顶上限，OLAP 设置为 2 TB。
+- 适当增大连接池默认链接数量

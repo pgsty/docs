@@ -1,0 +1,124 @@
+---
+title: Tuning
+description: Tuning PostgreSQL parameters
+icon: Wrench
+---
+
+
+Pigsty provides four scenario-specific parameter templates by default, which can be specified and used via the [`pg_conf`](/pgsql/param#pg_conf) parameter.
+
+- `tiny.yml`: Optimized for small nodes, virtual machines, and small demos (1-8 cores, 1-16GB)
+- `oltp.yml`: Optimized for OLTP workloads and latency-sensitive applications (4C8GB+) (default template)
+- `olap.yml`: Optimized for OLAP workloads and throughput (4C8G+)
+- `crit.yml`: Optimized for data consistency and critical applications (4C8G+)
+
+Pigsty adopts different parameter optimization strategies for these four default scenarios, as shown below:
+
+
+--------
+
+## Memory Parameter Tuning
+
+Pigsty automatically detects system memory size and uses it as the basis for setting maximum connections and memory-related parameters.
+
+- [`pg_max_conn`](/pgsql/param#pg_max_conn): PostgreSQL maximum connections, `auto` will use recommended values for different scenarios
+- [`pg_shared_buffer_ratio`](/pgsql/param#pg_shared_buffer_ratio): Shared buffer memory ratio, defaults to 0.25
+
+By default, Pigsty uses 25% of memory as PostgreSQL shared buffers, leaving the remaining 75% for the operating system cache.
+
+By default, if users don't set a [`pg_max_conn`](/pgsql/param#pg_max_conn) maximum connection count, Pigsty will use default values according to these rules:
+
+- oltp: 500 (pgbouncer) / 1000 (postgres)
+- crit: 500 (pgbouncer) / 1000 (postgres)
+- tiny: 300
+- olap: 300
+
+For OLTP and CRIT templates, if services point directly to the PostgreSQL database instead of the pgbouncer connection pool, maximum connections double to 1000.
+
+After determining maximum connections, `work_mem` is calculated based on shared memory amount / maximum connections, constrained within a 64MB ~ 1GB range.
+
+```yaml
+{% if pg_max_conn != 'auto' and pg_max_conn|int >= 20 %}{% set pg_max_connections = pg_max_conn|int %}{% else %}{% if pg_default_service_dest|default('postgres') == 'pgbouncer' %}{% set pg_max_connections = 500 %}{% else %}{% set pg_max_connections = 1000 %}{% endif %}{% endif %}
+{% set pg_max_prepared_transactions = pg_max_connections if 'citus' in pg_libs else 0 %}
+{% set pg_max_locks_per_transaction = (2 * pg_max_connections)|int if 'citus' in pg_libs or 'timescaledb' in pg_libs else pg_max_connections %}
+{% set pg_shared_buffers = (node_mem_mb|int * pg_shared_buffer_ratio|float) | round(0, 'ceil') | int %}
+{% set pg_maintenance_mem = (pg_shared_buffers|int * 0.25)|round(0, 'ceil')|int %}
+{% set pg_effective_cache_size = node_mem_mb|int - pg_shared_buffers|int  %}
+{% set pg_workmem =  ([ ([ (pg_shared_buffers / pg_max_connections)|round(0,'floor')|int , 64 ])|max|int , 1024])|min|int %}
+```
+
+Please evaluate whether my current memory and connection parameter configuration strategy is reasonable and if there are areas for improvement.
+
+
+
+--------
+
+## CPU Parameter Tuning
+
+In PostgreSQL, there are 4 important parameters related to parallel queries. Pigsty automatically optimizes these parameters based on the current system's CPU core count.
+Across all strategies, the total parallel process count (total budget) is typically set to CPU cores + 8, with a minimum of 16, thus reserving sufficient background worker capacity for logical replication and extensions. OLAP and TINY templates vary slightly based on scenario.
+
+| OLTP                               | Configuration Logic                 | Range Constraints                          |
+|------------------------------------|-------------------------------------|-------------------------------------------|
+| `max_worker_processes`             | max(100% CPU + 8, 16)              | Cores + 4, minimum 12                     |
+| `max_parallel_workers`             | max(ceil(50% CPU), 2)              | 1/2 CPU rounded up, minimum 2             |
+| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 2)              | 1/3 CPU rounded up, minimum 2             |
+| `max_parallel_workers_per_gather`  | min(max(ceil(20% CPU), 2),8)      | 1/5 CPU rounded down, minimum 2, maximum 8|
+
+| OLAP                               | Configuration Logic          | Range Constraints              |
+|------------------------------------|------------------------------|--------------------------------|
+| `max_worker_processes`             | max(100% CPU + 12, 20)       | Cores + 12, minimum 20         |
+| `max_parallel_workers`             | max(ceil(80% CPU, 2))        | 4/5 CPU rounded up, minimum 2  |
+| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 2)        | 1/3 CPU rounded up, minimum 2  |
+| `max_parallel_workers_per_gather`  | max(floor(50% CPU), 2)       | 1/2 CPU rounded up, minimum 2  |
+
+| CRIT                               | Configuration Logic          | Range Constraints              |
+|------------------------------------|------------------------------|--------------------------------|
+| `max_worker_processes`             | max(100% CPU + 8, 16)        | Cores + 8, minimum 16          |
+| `max_parallel_workers`             | max(ceil(50% CPU), 2)        | 1/2 CPU rounded up, minimum 2  |
+| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 2)        | 1/3 CPU rounded up, minimum 2  |
+| `max_parallel_workers_per_gather`  | 0, enable as needed          |                                |
+
+| TINY                               | Configuration Logic          | Range Constraints              |
+|------------------------------------|------------------------------|--------------------------------|
+| `max_worker_processes`             | max(100% CPU + 4, 12)        | Cores + 4, minimum 12          |
+| `max_parallel_workers`             | max(ceil(50% CPU) 1)         | 50% CPU rounded down, minimum 1|
+| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 1)        | 33% CPU rounded down, minimum 1|
+| `max_parallel_workers_per_gather`  | 0, enable as needed          |                                |
+
+Note that CRIT and TINY templates disable parallel queries directly by setting `max_parallel_workers_per_gather = 0`.
+Users can set this parameter as needed to enable parallel queries.
+
+Both OLTP and CRIT templates set the following additional parameters, doubling parallel query costs to reduce the tendency to use parallel queries:
+
+```yaml
+parallel_setup_cost: 2000           # double from 100 to increase parallel cost
+parallel_tuple_cost: 0.2            # double from 0.1 to increase parallel cost
+min_parallel_table_scan_size: 16MB  # double from 8MB to increase parallel cost
+min_parallel_index_scan_size: 1024  # double from 512 to increase parallel cost
+```
+
+Note that `max_worker_processes` parameter adjustments only take effect after a restart. Additionally, when a replica's configuration value for this parameter exceeds the primary's, the replica cannot start.
+This parameter must be adjusted through Patroni configuration management. The parameter is managed by Patroni to ensure consistent primary-replica configuration and prevent new replicas from failing to start during failover.
+
+
+
+--------
+
+## Storage Space Parameters
+
+Pigsty automatically detects the total disk space where the `/data/postgres` main data directory resides and uses it as the basis for specifying the following parameters:
+
+```yaml
+min_wal_size: {{ ([pg_size_twentieth, 200])|min }}GB                  # 1/20 disk size, max 200GB
+max_wal_size: {{ ([pg_size_twentieth * 4, 2000])|min }}GB             # 2/10 disk size, max 2000GB
+max_slot_wal_keep_size: {{ ([pg_size_twentieth * 6, 3000])|min }}GB   # 3/10 disk size, max 3000GB
+temp_file_limit: {{ ([pg_size_twentieth, 200])|min }}GB               # 1/20 of disk size, max 200GB
+```
+
+- `temp_file_limit` defaults to 5% of disk space, capped at 200GB maximum.
+- `min_wal_size` defaults to 5% of disk space, capped at 200GB maximum.
+- `max_wal_size` defaults to 20% of disk space, capped at 2TB maximum.
+- `max_slot_wal_keep_size` defaults to 30% of disk space, capped at 3TB maximum.
+
+As a special case, the OLAP template allows 20% for `temp_file_limit`, capped at 2TB maximum.

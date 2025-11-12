@@ -1,0 +1,29 @@
+---
+title: Data Loss Recovery
+description: Handling accidental deletion of data, tables, and databases
+icon: Wrench
+---
+
+
+## Accidental Data Deletion
+
+For small-batch `DELETE` operations performed in error, consider using the `pg_surgery` extension for in-place surgical recovery.
+
+If the deleted data has already been reclaimed by VACUUM, follow the general data loss recovery workflow.
+
+
+## Accidental Object Deletion
+
+When `DROP/DELETE` operations are performed in error, follow this workflow to determine the recovery approach:
+
+1. Verify if the data can be recovered through business systems or other data sources. If possible, recover directly from the business side.
+2. Check for delayed replica availability. If available, advance the delayed replica to the point before deletion and query the data for recovery.
+3. If data is confirmed deleted, verify backup coverage for the deletion timepoint. If covered, initiate PITR.
+4. Determine whether to perform in-place PITR rollback on the entire cluster, replay on a new server, or use a replica for replay, then execute the recovery strategy.
+
+
+## Accidental Cluster Deletion
+
+In cases where an entire database cluster is accidentally deleted, such as mistakenly executing the `pgsql-rm.yml` playbook:
+Unless you explicitly specified `pg_rm_backup: false` beforehand, backups will typically be deleted along with the database cluster.
+
