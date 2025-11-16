@@ -1,7 +1,7 @@
 ---
-title: Tuning
+title: Parameter Tuning
 description: Tuning PostgreSQL parameters
-icon: Wrench
+icon: CircleGauge
 ---
 
 
@@ -17,7 +17,7 @@ Pigsty adopts different parameter optimization strategies for these four default
 
 --------
 
-## Memory Parameter Tuning
+## Memory Parameters
 
 Pigsty automatically detects system memory size and uses it as the basis for setting maximum connections and memory-related parameters.
 
@@ -47,23 +47,20 @@ After determining maximum connections, `work_mem` is calculated based on shared 
 {% set pg_workmem =  ([ ([ (pg_shared_buffers / pg_max_connections)|round(0,'floor')|int , 64 ])|max|int , 1024])|min|int %}
 ```
 
-Please evaluate whether my current memory and connection parameter configuration strategy is reasonable and if there are areas for improvement.
-
-
 
 --------
 
-## CPU Parameter Tuning
+## CPU Parameters
 
 In PostgreSQL, there are 4 important parameters related to parallel queries. Pigsty automatically optimizes these parameters based on the current system's CPU core count.
 Across all strategies, the total parallel process count (total budget) is typically set to CPU cores + 8, with a minimum of 16, thus reserving sufficient background worker capacity for logical replication and extensions. OLAP and TINY templates vary slightly based on scenario.
 
-| OLTP                               | Configuration Logic                 | Range Constraints                          |
-|------------------------------------|-------------------------------------|-------------------------------------------|
-| `max_worker_processes`             | max(100% CPU + 8, 16)              | Cores + 4, minimum 12                     |
-| `max_parallel_workers`             | max(ceil(50% CPU), 2)              | 1/2 CPU rounded up, minimum 2             |
-| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 2)              | 1/3 CPU rounded up, minimum 2             |
-| `max_parallel_workers_per_gather`  | min(max(ceil(20% CPU), 2),8)      | 1/5 CPU rounded down, minimum 2, maximum 8|
+| OLTP                               | Configuration Logic          | Range Constraints                          |
+|------------------------------------|------------------------------|--------------------------------------------|
+| `max_worker_processes`             | max(100% CPU + 8, 16)        | Cores + 4, minimum 12                      |
+| `max_parallel_workers`             | max(ceil(50% CPU), 2)        | 1/2 CPU rounded up, minimum 2              |
+| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 2)        | 1/3 CPU rounded up, minimum 2              |
+| `max_parallel_workers_per_gather`  | min(max(ceil(20% CPU), 2),8) | 1/5 CPU rounded down, minimum 2, maximum 8 |
 
 | OLAP                               | Configuration Logic          | Range Constraints              |
 |------------------------------------|------------------------------|--------------------------------|
@@ -79,12 +76,12 @@ Across all strategies, the total parallel process count (total budget) is typica
 | `max_parallel_maintenance_workers` | max(ceil(33% CPU), 2)        | 1/3 CPU rounded up, minimum 2  |
 | `max_parallel_workers_per_gather`  | 0, enable as needed          |                                |
 
-| TINY                               | Configuration Logic          | Range Constraints              |
-|------------------------------------|------------------------------|--------------------------------|
-| `max_worker_processes`             | max(100% CPU + 4, 12)        | Cores + 4, minimum 12          |
-| `max_parallel_workers`             | max(ceil(50% CPU) 1)         | 50% CPU rounded down, minimum 1|
-| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 1)        | 33% CPU rounded down, minimum 1|
-| `max_parallel_workers_per_gather`  | 0, enable as needed          |                                |
+| TINY                               | Configuration Logic   | Range Constraints               |
+|------------------------------------|-----------------------|---------------------------------|
+| `max_worker_processes`             | max(100% CPU + 4, 12) | Cores + 4, minimum 12           |
+| `max_parallel_workers`             | max(ceil(50% CPU) 1)  | 50% CPU rounded down, minimum 1 |
+| `max_parallel_maintenance_workers` | max(ceil(33% CPU), 1) | 33% CPU rounded down, minimum 1 |
+| `max_parallel_workers_per_gather`  | 0, enable as needed   |                                 |
 
 Note that CRIT and TINY templates disable parallel queries directly by setting `max_parallel_workers_per_gather = 0`.
 Users can set this parameter as needed to enable parallel queries.
@@ -105,7 +102,7 @@ This parameter must be adjusted through Patroni configuration management. The pa
 
 --------
 
-## Storage Space Parameters
+## Storage Parameters
 
 Pigsty automatically detects the total disk space where the `/data/postgres` main data directory resides and uses it as the basis for specifying the following parameters:
 

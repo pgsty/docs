@@ -1,7 +1,7 @@
 ---
 title: 参数优化
 description: 调整 postgres 参数
-icon: Wrench
+icon: CircleGauge
 ---
 
 
@@ -17,7 +17,7 @@ Pigsty 会针对这四种默认场景，采取不同的参数优化策略，如�
 
 --------
 
-## 内存参数调整
+## 内存参数调整 [#memory-paramters]
 
 Pigsty 默认会检测系统的内存大小，并以此为依据设定最大连接数量与内存相关参数。
 
@@ -47,14 +47,10 @@ Pigsty 默认会检测系统的内存大小，并以此为依据设定最大连�
 {% set pg_workmem =  ([ ([ (pg_shared_buffers / pg_max_connections)|round(0,'floor')|int , 64 ])|max|int , 1024])|min|int %}
 ```
 
-请你评估一下目前我这一套内存和连接数参数设置策略是否合理，有没有能改进的地方？
-
-
-
 
 --------
 
-## CPU参数调整
+## CPU参数调整 [#cpu-paramters]
 
 在 PostgreSQL 中，有 4 个与并行查询相关的重要参数，Pigsty 会自动根据当前系统的 CPU 核数进行参数优化。
 在所有策略中，总并行进程数量（总预算）通常设置为 CPU 核数 + 8，且保底为 16 个，从而为逻辑复制与扩展预留足够的后台 worker 数量，OLAP 和 TINY 模板根据场景略有不同。
@@ -106,7 +102,7 @@ min_parallel_index_scan_size: 1024  # double from 512 to increase parallel cost
 
 --------
 
-## 存储空间参数
+## 存储空间参数 [#storage-parameters]
 
 Pigsty 默认检测 `/data/postgres` 主数据目录所在磁盘的总空间，并以此作为依据指定下列参数：
 

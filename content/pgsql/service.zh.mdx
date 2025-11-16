@@ -183,16 +183,16 @@ psql postgres://dbuser_view:DBUser.View@pg-meta/meta       # 默认只读用户
 
 ------
 
-## 默认服务 [#default-service]
+## 默认服务 [#default-services]
 
 Pigsty 将为每个 PostgreSQL 集群启用四个默认服务：
 
-| 服务                                    | 端口 | 描述                                           |
-|--------------------------------------------|------|-------------------------------------------------------|
+| 服务                                            | 端口   | 描述                              |
+|-----------------------------------------------|------|---------------------------------|
 | [primary](/zh/pgsql/service/#primary-service) | 5433 | pgbouncer 读写，连接到主节点 5432 或 6432 |
 | [replica](/zh/pgsql/service/#replica-service) | 5434 | pgbouncer 只读，连接到副本 5432/6432    |
 | [default](/zh/pgsql/service/#default-service) | 5436 | 管理员或直接访问主节点                     |
-| [offline](/zh/pgsql/service/#offline-service) | 5438 | OLAP、ETL、个人用户、交互式查询         |
+| [offline](/zh/pgsql/service/#offline-service) | 5438 | OLAP、ETL、个人用户、交互式查询             |
 
 以默认的 `pg-meta` 集群为例，您可以通过以下方式访问这些服务：
 

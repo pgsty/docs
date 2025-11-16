@@ -2,6 +2,8 @@
   "title": "Admin",
   "icon": "Wrench",
   "pages": [
-    "tune"
+    "tune",
+    "maintain",
+    "failure"
   ]
 }

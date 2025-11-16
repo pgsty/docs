@@ -1,62 +1,66 @@
 ---
 title: Maintenance
-description: 常见系统维护任务
-icon: Landmark
+description: Common system maintenance tasks
+icon: BrushCleaning
 ---
 
-要确保 Pigsty 与 PostgreSQL 集群健康稳定运行，需要进行一些例行维护保养工作。
+Ensuring healthy and stable operation of Pigsty and PostgreSQL clusters requires routine maintenance work.
 
 
-## 定期查阅监控
+--------
 
-Pigsty 提供了开箱即用的监控平台，我们建议您每天浏览一次监控大盘，关注系统状态。
-在极端的情况下，我们建议您也需要至少每周查阅一次监控，关注出现的告警事件，这样做可以提前规避绝大多数故障与问题。
+## Regular Monitoring Review
 
-这里列举了 Pigsty 中预先定义的 [告警规则](https://p.pgsty.com/alerts) 列表。
+Pigsty provides an out-of-the-box monitoring platform. We recommend reviewing monitoring dashboards daily to track system status.
+At minimum, we suggest weekly monitoring reviews, focusing on alert events to proactively avoid most failures and issues.
 
-
-
-
-## 故障切换善后
-
-Pigsty 的高可用架构允许 PostgreSQL 集群自动进行主从切换，这意味着运维与 DBA 无需即时介入与响应。
-然而对于生产环境的多节点集群而言，您仍然需要在合适的时机（例如第二天工作日），进行善后工作，包括：
-
-- 调查并确认故障出现的原因，避免再次出现
-- 视情况恢复集群原本的主从拓扑，或者修改配置清单以匹配新的主从状态。
-- 通过 `bin/pgsql-svc` 刷新负载均衡器配置，更新服务的路由状态
-- 通过 `bin/pgsql-hba` 刷新集群的 HBA 规则，避免主从特定的规则漂移
-- 如果有必要，使用 `bin/pgsql-rm` 移除故障服务器，并通过 `bin/pgsql-add` 扩容一台新从库
+Here's a list of predefined [alert rules](https://p.pgsty.com/alerts) in Pigsty.
 
 
+--------
 
-## REPACK
+## Failover Follow-up
 
-长时间运行的 PostgreSQL 会出现 “表膨胀” / “索引膨胀” 现象， 导致系统性能劣化。
+Pigsty's high availability architecture allows PostgreSQL clusters to automatically perform primary-replica switching, meaning operations and DBAs don't require immediate intervention.
+However, users still need to perform follow-up tasks at appropriate times (e.g., next business day), including:
 
-定期使用 [`pg_repack`](https://reorg.github.io/pg_repack/) 对表与索引进行在线重建，有助于维护 PostgreSQL 的良好性能表现。
-Pigsty 已经默认在所有数据库中安装并启用了此扩展，因此您可以直接使用。
+- Investigate and confirm failure root cause to prevent recurrence
+- Optionally restore original primary-replica topology or update configuration manifest to match new state
+- Refresh load balancer configuration via `bin/pgsql-svc` to update service routing state
+- Refresh cluster HBA rules via `bin/pgsql-hba` to prevent primary-replica specific rule drift
+- If necessary, remove failed servers with `bin/pgsql-rm` and expand with new replicas using `bin/pgsql-add`
 
-您可以首先通过 Pigsty 的 [PGCAT Database - Table Bloat](https://g.pgsty.com/d/pgcat-database?viewPanel=panel-190) 面板，确认数据库中的表膨胀情况与索引膨胀情况。
-并选择膨胀率较高（建议优先处理那些膨胀率高于 50% 的较大表）的表与索引，使用 `pg_repack` 进行在线重整：
+
+--------
+
+## Bloat Control
+
+Long-running PostgreSQL instances develop "table bloat" / "index bloat", degrading system performance.
+
+Regular online rebuilding of tables and indexes using [`pg_repack`](https://reorg.github.io/pg_repack/) helps maintain optimal PostgreSQL performance.
+Pigsty installs and enables this extension by default in all databases, ready for immediate use.
+
+You can check table and index bloat through Pigsty's [PGCAT Database - Table Bloat](https://g.pgsty.com/d/pgcat-database?viewPanel=panel-190) panel.
+Select tables and indexes with high bloat rates (larger tables with >50% bloat) for online reorganization using `pg_repack`:
 
 ```bash
 pg_repack dbname -t schema.table
 ```
 
-重整期间不会影响正常写入，但是在重整完毕之后的瞬间需要获取表上的最强 AccessExclusive 锁以完成表更名替换。
-因此对于高吞吐量业务，建议在业务低峰期或者维护窗口进行。更多细节，请参考：[关系膨胀的治理](https://vonng.com/pg/bloat/)
+Normal reads/writes continue during reorganization, but the **switch moment** at completion requires an AccessExclusive lock, blocking all access.
+For high-throughput operations, schedule during low-traffic periods or maintenance windows. For more details, see: [Managing Relation Bloat](https://vonng.com/pg/bloat/)
+
+
+--------
+
+## VACUUM FREEZE
+
+Freezing expired transaction IDs (VACUUM FREEZE) is a critical PostgreSQL maintenance task preventing transaction ID (XID) exhaustion outages.
+While PostgreSQL provides AutoVacuum mechanisms, for high-standard production environments,
+we recommend combining automatic and manual approaches, regularly executing database-wide VACUUM FREEZE to ensure XID safety.
 
 
 
-
-
-
-## VACUUM
-
-冻结过期事务ID（VACUUM FREEZE）是PostgreSQL重要的维护任务，用于防止事务ID (XID) 用尽导致停机。
-尽管 PostgreSQL 已经提供了自动垃圾回收（AutoVacuum）机制，然而对于高标准的生产环境，
-我们依然建议结合自动和手动两种方式，定期执行全库级别的 VACUUM FREEZE ，以确保 XID 安全。
 
 
 

@@ -4,6 +4,7 @@
   "pages": [
     "tune",
     "maintain",
-    "failure"
+    "failure",
+    "drop"
   ]
 }

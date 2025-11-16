@@ -67,7 +67,7 @@ pg-test:
 它与 Postgres 服务器 1:1 部署，默认被主库/从库服务使用。
 
 [服务](/zh/pgsql/service) 由 [HAProxy](https://www.haproxy.org/) 暴露，这是一个高性能的 TCP/HTTP 负载均衡器，它是 [NODE](/zh/node/) 模块的一部分。
-4 个 [默认服务](/zh/pgsql/service/#default-service) 以**幂等**的方式在所有集群节点上自动暴露。
+4 个 [默认服务](/zh/pgsql/service/#default-services) 以**幂等**的方式在所有集群节点上自动暴露。
 
 应用程序可以访问任何 haproxy 来访问 Postgres 集群，流量将根据 patroni 健康检查端点路由到正确的实例。
 因此故障转移对应用程序是透明的。

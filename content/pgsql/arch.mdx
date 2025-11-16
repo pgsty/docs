@@ -67,7 +67,7 @@ The [pgbouncer](https://www.pgbouncer.org/) is a lightweight connection pooler w
 It is 1:1 deployed with the Postgres server and used by primary / replica services by default.
 
 The [services](/pgsql/service) are exposed by [HAProxy](https://www.haproxy.org/), which is a high-performance TCP/HTTP load balancer, it's part of [NODE](/node/) module.
-And 4 [default services](/pgsql/service/#default-service) are auto exposed in an **idempotent** way on all cluster nodes.
+And 4 [default services](/pgsql/service/#default-services) are auto exposed in an **idempotent** way on all cluster nodes.
 
 The application can visit any of the haproxy to access the Postgres cluster, and the traffic will be routed to the correct instance based on patroni health check endpoints.
 So failover is transparent to the apps.
