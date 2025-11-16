@@ -46,3 +46,5 @@ curl -fsSL https://repo.pigsty.cc/beta | bash; cd ~/pigsty   # 中国的镜像�
 - 为 `min_wal_size`, `max_wal_size`, `max_slot_wal_keep_size` 设置 200，2000，3000 GB 的封顶上限值。
 - 为 `temp_file_limit` 设置 200 GB 的封顶上限，OLAP 设置为 2 TB。
 - 适当增大连接池默认链接数量
+- 新增 `prometheus_port` 参数，且默认值为 `9058`，避开与 EL10 RHEL Web Console 端口的冲突。
+- 修改 `alertmanager_port` 参数的默认值为 `9059`，避开与 Kafka SSL 端口的潜在冲突。
