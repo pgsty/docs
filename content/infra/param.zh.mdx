@@ -23,69 +23,70 @@ Pigsty 基础设施组件的参数：本地 YUM 仓库、Nginx、DNSMasq、Prome
 
 ## 参数 [#parameters]
 
-| 名称                                                        | 部分                               | 类型         | 级别 | 注释                                            |
-|-------------------------------------------------------------|-----------------------------------|--------------|-------|----------------------------------------------------|
-| [`version`](#version)                                       | [`META`](#meta)                   | `string`     | G     | pigsty 版本字符串                              |
-| [`admin_ip`](#admin_ip)                                     | [`META`](#meta)                   | `ip`         | G     | 管理员节点 IP 地址                              |
-| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | 上游镜像区域：default、china、europe     |
-| [`proxy_env`](#proxy_env)                                   | [`META`](#meta)                   | `dict`       | G     | 下载包时的全局代理环境         |
-| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create、recreate、copy；默认为 create          |
+| 名称                                                          | 部分                                | 类型           | 级别    | 注释                                    |
+|-------------------------------------------------------------|-----------------------------------|--------------|-------|---------------------------------------|
+| [`version`](#version)                                       | [`META`](#meta)                   | `string`     | G     | pigsty 版本字符串                          |
+| [`admin_ip`](#admin_ip)                                     | [`META`](#meta)                   | `ip`         | G     | 管理员节点 IP 地址                           |
+| [`region`](#region)                                         | [`META`](#meta)                   | `enum`       | G     | 上游镜像区域：default、china、europe           |
+| [`proxy_env`](#proxy_env)                                   | [`META`](#meta)                   | `dict`       | G     | 下载包时的全局代理环境                           |
+| [`ca_method`](#ca_method)                                   | [`CA`](#ca)                       | `enum`       | G     | create、recreate、copy；默认为 create       |
 | [`ca_cn`](#ca_cn)                                           | [`CA`](#ca)                       | `string`     | G     | CA 通用名称，固定为 pigsty-ca                 |
-| [`cert_validity`](#cert_validity)                           | [`CA`](#ca)                       | `interval`   | G     | 证书有效期，默认 20 年                 |
-| [`infra_seq`](#infra_seq)                                   | [`INFRA_ID`](#infra_id)           | `int`        | I     | 基础设施节点身份，必需                      |
-| [`infra_portal`](#infra_portal)                             | [`INFRA_ID`](#infra_id)           | `dict`       | G     | 通过门户暴露的基础设施服务                  |
-| [`repo_enabled`](#repo_enabled)                             | [`REPO`](#repo)                   | `bool`       | G/I   | 在此基础设施节点上创建 yum 仓库？              |
-| [`repo_home`](#repo_home)                                   | [`REPO`](#repo)                   | `path`       | G     | 仓库主目录，默认 `/www`                   |
+| [`cert_validity`](#cert_validity)                           | [`CA`](#ca)                       | `interval`   | G     | 证书有效期，默认 20 年                         |
+| [`infra_seq`](#infra_seq)                                   | [`INFRA_ID`](#infra_id)           | `int`        | I     | 基础设施节点身份，必需                           |
+| [`infra_portal`](#infra_portal)                             | [`INFRA_ID`](#infra_id)           | `dict`       | G     | 通过门户暴露的基础设施服务                         |
+| [`repo_enabled`](#repo_enabled)                             | [`REPO`](#repo)                   | `bool`       | G/I   | 在此基础设施节点上创建 yum 仓库？                   |
+| [`repo_home`](#repo_home)                                   | [`REPO`](#repo)                   | `path`       | G     | 仓库主目录，默认 `/www`                       |
 | [`repo_name`](#repo_name)                                   | [`REPO`](#repo)                   | `string`     | G     | 仓库名称，默认为 pigsty                       |
-| [`repo_endpoint`](#repo_endpoint)                           | [`REPO`](#repo)                   | `url`        | G     | 通过域名或 IP:端口访问此仓库的接入点     |
-| [`repo_remove`](#repo_remove)                               | [`REPO`](#repo)                   | `bool`       | G/A   | 移除现有上游仓库                      |
-| [`repo_modules`](#repo_modules)                             | [`REPO`](#repo)                   | `string`     | G/A   | 在 repo_upstream 中安装哪些仓库模块  |
-| [`repo_upstream`](#repo_upstream)                           | [`REPO`](#repo)                   | `upstream[]` | G     | 从哪里下载上游包                |
-| [`repo_packages`](#repo_packages)                           | [`REPO`](#repo)                   | `string[]`   | G     | 包含哪些包                      |
-| [`repo_extra_packages`](#repo_extra_packages)               | [`REPO`](#repo)                   | `string[]`   | G/C/I | 要包含的额外包                      |
-| [`repo_url_packages`](#repo_url_packages)                   | [`REPO`](#repo)                   | `string[]`   | G     | 来自 URL 的额外包                            |
-| [`infra_packages`](#infra_packages)                         | [`INFRA_PACKAGE`](#infra_package) | `string[]`   | G     | 要在基础设施节点上安装的包            |
-| [`infra_packages_pip`](#infra_packages_pip)                 | [`INFRA_PACKAGE`](#infra_package) | `string`     | G     | 为基础设施节点安装的 pip 包             |
-| [`nginx_enabled`](#nginx_enabled)                           | [`NGINX`](#nginx)                 | `bool`       | G/I   | 在此基础设施节点上启用 nginx？                   |
-| [`nginx_exporter_enabled`](#nginx_enabled)                  | [`NGINX`](#nginx)                 | `bool`       | G/I   | 在此基础设施节点上启用 nginx_exporter？          |
-| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx SSL 模式？disable、enable、enforce           |
-| [`nginx_cert_validity`](#nginx_cert_validity)               | [`NGINX`](#nginx)                 | `duration`   | G     | nginx 自签名证书有效期，默认 397 天   |
-| [`nginx_home`](#nginx_home)                                 | [`NGINX`](#nginx)                 | `path`       | G     | nginx 内容目录，默认 `/www`               |
-| [`nginx_port`](#nginx_port)                                 | [`NGINX`](#nginx)                 | `port`       | G     | nginx 监听端口，默认 80                   |
-| [`nginx_ssl_port`](#nginx_ssl_port)                         | [`NGINX`](#nginx)                 | `port`       | G     | nginx SSL 监听端口，默认 443              |
-| [`nginx_navbar`](#nginx_navbar)                             | [`NGINX`](#nginx)                 | `index[]`    | G     | nginx 索引页导航链接                  |
-| [`certbot_sign`](#certbot_sign)                             | [`NGINX`](#nginx)                 | `bool`       | G/A   | 设置期间使用 certbot 签名 nginx 证书？         |
-| [`certbot_email`](#certbot_email)                           | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot 邮箱地址，用于免费 SSL           |
-| [`certbot_option`](#certbot_option)                         | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot 额外选项                              |
+| [`repo_endpoint`](#repo_endpoint)                           | [`REPO`](#repo)                   | `url`        | G     | 通过域名或 IP:端口访问此仓库的接入点                  |
+| [`repo_remove`](#repo_remove)                               | [`REPO`](#repo)                   | `bool`       | G/A   | 移除现有上游仓库                              |
+| [`repo_modules`](#repo_modules)                             | [`REPO`](#repo)                   | `string`     | G/A   | 在 repo_upstream 中安装哪些仓库模块             |
+| [`repo_upstream`](#repo_upstream)                           | [`REPO`](#repo)                   | `upstream[]` | G     | 从哪里下载上游包                              |
+| [`repo_packages`](#repo_packages)                           | [`REPO`](#repo)                   | `string[]`   | G     | 包含哪些包                                 |
+| [`repo_extra_packages`](#repo_extra_packages)               | [`REPO`](#repo)                   | `string[]`   | G/C/I | 要包含的额外包                               |
+| [`repo_url_packages`](#repo_url_packages)                   | [`REPO`](#repo)                   | `string[]`   | G     | 来自 URL 的额外包                           |
+| [`infra_packages`](#infra_packages)                         | [`INFRA_PACKAGE`](#infra_package) | `string[]`   | G     | 要在基础设施节点上安装的包                         |
+| [`infra_packages_pip`](#infra_packages_pip)                 | [`INFRA_PACKAGE`](#infra_package) | `string`     | G     | 为基础设施节点安装的 pip 包                      |
+| [`nginx_enabled`](#nginx_enabled)                           | [`NGINX`](#nginx)                 | `bool`       | G/I   | 在此基础设施节点上启用 nginx？                    |
+| [`nginx_exporter_enabled`](#nginx_enabled)                  | [`NGINX`](#nginx)                 | `bool`       | G/I   | 在此基础设施节点上启用 nginx_exporter？           |
+| [`nginx_sslmode`](#nginx_sslmode)                           | [`NGINX`](#nginx)                 | `enum`       | G     | nginx SSL 模式？disable、enable、enforce   |
+| [`nginx_cert_validity`](#nginx_cert_validity)               | [`NGINX`](#nginx)                 | `duration`   | G     | nginx 自签名证书有效期，默认 397 天               |
+| [`nginx_home`](#nginx_home)                                 | [`NGINX`](#nginx)                 | `path`       | G     | nginx 内容目录，默认 `/www`                  |
+| [`nginx_port`](#nginx_port)                                 | [`NGINX`](#nginx)                 | `port`       | G     | nginx 监听端口，默认 80                      |
+| [`nginx_ssl_port`](#nginx_ssl_port)                         | [`NGINX`](#nginx)                 | `port`       | G     | nginx SSL 监听端口，默认 443                 |
+| [`nginx_navbar`](#nginx_navbar)                             | [`NGINX`](#nginx)                 | `index[]`    | G     | nginx 索引页导航链接                         |
+| [`certbot_sign`](#certbot_sign)                             | [`NGINX`](#nginx)                 | `bool`       | G/A   | 设置期间使用 certbot 签名 nginx 证书？           |
+| [`certbot_email`](#certbot_email)                           | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot 邮箱地址，用于免费 SSL                 |
+| [`certbot_option`](#certbot_option)                         | [`NGINX`](#nginx)                 | `string`     | G/A   | certbot 额外选项                          |
 | [`dns_enabled`](#dns_enabled)                               | [`DNS`](#dns)                     | `bool`       | G/I   | 在此基础设施节点上设置 dnsmasq？                  |
-| [`dns_port`](#dns_port)                                     | [`DNS`](#dns)                     | `port`       | G     | DNS 服务器监听端口，默认 53              |
-| [`dns_records`](#dns_records)                               | [`DNS`](#dns)                     | `string[]`   | G     | 由 dnsmasq 解析的动态 DNS 记录            |
-| [`prometheus_enabled`](#prometheus_enabled)                 | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上启用 prometheus？              |
-| [`prometheus_clean`](#prometheus_clean)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/A   | 初始化期间清理 prometheus 数据？                 |
+| [`dns_port`](#dns_port)                                     | [`DNS`](#dns)                     | `port`       | G     | DNS 服务器监听端口，默认 53                     |
+| [`dns_records`](#dns_records)                               | [`DNS`](#dns)                     | `string[]`   | G     | 由 dnsmasq 解析的动态 DNS 记录                |
+| [`prometheus_enabled`](#prometheus_enabled)                 | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上启用 prometheus？               |
+| [`prometheus_port`](#prometheus_port)                       | [`PROMETHEUS`](#prometheus)       | `port`       | G     | prometheus 监听端口号，默认为 `9058`           |
+| [`prometheus_clean`](#prometheus_clean)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/A   | 初始化期间清理 prometheus 数据？                |
 | [`prometheus_data`](#prometheus_data)                       | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus 数据目录，默认 `/data/prometheus` |
-| [`prometheus_sd_dir`](#prometheus_sd_dir)                   | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus 文件服务发现目录        |
-| [`prometheus_sd_interval`](#prometheus_sd_interval)         | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 目标刷新间隔，默认 5 秒  |
-| [`prometheus_scrape_interval`](#prometheus_scrape_interval) | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 抓取和评估间隔，默认 10 秒  |
-| [`prometheus_scrape_timeout`](#prometheus_scrape_timeout)   | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 全局抓取超时，默认 8 秒    |
+| [`prometheus_sd_dir`](#prometheus_sd_dir)                   | [`PROMETHEUS`](#prometheus)       | `path`       | G     | prometheus 文件服务发现目录                   |
+| [`prometheus_sd_interval`](#prometheus_sd_interval)         | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 目标刷新间隔，默认 5 秒              |
+| [`prometheus_scrape_interval`](#prometheus_scrape_interval) | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 抓取和评估间隔，默认 10 秒            |
+| [`prometheus_scrape_timeout`](#prometheus_scrape_timeout)   | [`PROMETHEUS`](#prometheus)       | `interval`   | G     | prometheus 全局抓取超时，默认 8 秒              |
 | [`prometheus_options`](#prometheus_options)                 | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | prometheus 额外服务器选项                    |
 | [`pushgateway_enabled`](#pushgateway_enabled)               | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 pushgateway？              |
 | [`pushgateway_options`](#pushgateway_options)               | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | pushgateway 额外服务器选项                   |
 | [`blackbox_enabled`](#blackbox_enabled)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 blackbox_exporter？        |
 | [`blackbox_options`](#blackbox_options)                     | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | blackbox_exporter 额外服务器选项             |
 | [`alertmanager_enabled`](#alertmanager_enabled)             | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 alertmanager？             |
-| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager 监听端口，默认 `9093`        |
+| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager 监听端口，默认 `9093`           |
 | [`alertmanager_options`](#alertmanager_options)             | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | alertmanager 额外服务器选项                  |
-| [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter 指标路径，默认 `/metrics`        |
+| [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter 指标路径，默认 `/metrics`           |
 | [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | 如何安装 exporter？none、yum、binary         |
-| [`exporter_repo_url`](#exporter_repo_url)                   | [`PROMETHEUS`](#prometheus)       | `url`        | G     | 如果通过 yum 安装 exporter 的仓库文件 URL |
-| [`grafana_enabled`](#grafana_enabled)                       | [`GRAFANA`](#grafana)             | `bool`       | G/I   | 在此基础设施节点上启用 grafana？                 |
-| [`grafana_clean`](#grafana_clean)                           | [`GRAFANA`](#grafana)             | `bool`       | G/A   | 初始化期间清理 grafana 数据？                    |
-| [`grafana_admin_username`](#grafana_admin_username)         | [`GRAFANA`](#grafana)             | `username`   | G     | grafana 管理员用户名，默认 `admin`         |
-| [`grafana_admin_password`](#grafana_admin_password)         | [`GRAFANA`](#grafana)             | `password`   | G     | grafana 管理员密码，默认 `pigsty`        |
-| [`loki_enabled`](#loki_enabled)                             | [`LOKI`](#loki)                   | `bool`       | G/I   | 在此基础设施节点上启用 loki？                    |
-| [`loki_clean`](#loki_clean)                                 | [`LOKI`](#loki)                   | `bool`       | G/A   | 是否移除现有 loki 数据？                 |
+| [`exporter_repo_url`](#exporter_repo_url)                   | [`PROMETHEUS`](#prometheus)       | `url`        | G     | 如果通过 yum 安装 exporter 的仓库文件 URL        |
+| [`grafana_enabled`](#grafana_enabled)                       | [`GRAFANA`](#grafana)             | `bool`       | G/I   | 在此基础设施节点上启用 grafana？                  |
+| [`grafana_clean`](#grafana_clean)                           | [`GRAFANA`](#grafana)             | `bool`       | G/A   | 初始化期间清理 grafana 数据？                   |
+| [`grafana_admin_username`](#grafana_admin_username)         | [`GRAFANA`](#grafana)             | `username`   | G     | grafana 管理员用户名，默认 `admin`             |
+| [`grafana_admin_password`](#grafana_admin_password)         | [`GRAFANA`](#grafana)             | `password`   | G     | grafana 管理员密码，默认 `pigsty`             |
+| [`loki_enabled`](#loki_enabled)                             | [`LOKI`](#loki)                   | `bool`       | G/I   | 在此基础设施节点上启用 loki？                     |
+| [`loki_clean`](#loki_clean)                                 | [`LOKI`](#loki)                   | `bool`       | G/A   | 是否移除现有 loki 数据？                       |
 | [`loki_data`](#loki_data)                                   | [`LOKI`](#loki)                   | `path`       | G     | loki 数据目录，默认 `/data/loki`             |
-| [`loki_retention`](#loki_retention)                         | [`LOKI`](#loki)                   | `interval`   | G     | loki 日志保留期，默认 15 天          |
+| [`loki_retention`](#loki_retention)                         | [`LOKI`](#loki)                   | `interval`   | G     | loki 日志保留期，默认 15 天                    |
 
 ------
 
@@ -94,7 +95,7 @@ Pigsty 基础设施组件的参数：本地 YUM 仓库、Nginx、DNSMasq、Prome
 本部分包含当前 Pigsty 部署的元数据，如版本字符串、管理员节点 IP 地址、仓库镜像 [`region`](#region) 和下载包时的 HTTP(S) 代理。
 
 ```yaml
-version: v3.4.1                   # Pigsty 版本字符串
+version: v3.7.0                   # Pigsty 版本字符串
 admin_ip: 10.10.10.10             # 管理员节点 IP 地址
 region: default                   # 上游镜像区域：default、china、europe
 proxy_env:                        # 下载包时的全局代理环境
@@ -112,7 +113,7 @@ proxy_env:                        # 下载包时的全局代理环境
 
 pigsty 版本字符串
 
-默认值：`v3.6.1`
+默认值：`v3.7.0`
 
 它将用于 pigsty 内省和内容渲染。
 
@@ -418,7 +419,7 @@ repo_url_packages: []             # 来自 URL 的额外包
 
 留空时，Pigsty 将根据您的操作系统使用在 [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 中定义的 `repo_upstream_default` 的默认值。
 
-对于 EL（7、8、9）系统，默认值为：
+对于 EL（8、9、10）系统，默认值为：
 
 ```yaml
 - { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [7,8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty'  }} # 内网节点使用
@@ -459,40 +460,45 @@ repo_url_packages: []             # 来自 URL 的额外包
 - { name: gitlab         ,description: 'Gitlab'             ,module: gitlab  ,releases: [  8,9] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/el/$releasever/$basearch' }}
 ```
 
-对于 Debian（11,12）或 Ubuntu（22.04, 22.04）系统，默认值为：
+对于 Debian（11，12，13）或 Ubuntu（22.04, 24.04）系统，默认值为：
 
 ```yaml
-- { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty ./' }}
-- { name: pigsty-pgsql   ,description: 'Pigsty PgSQL'       ,module: pgsql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/pgsql/${distro_codename} ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/pgsql/${distro_codename} ${distro_codename} main' }}
-- { name: pigsty-infra   ,description: 'Pigsty Infra'       ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/infra/ generic main' ,china: 'https://repo.pigsty.cc/apt/infra/ generic main' }}
-- { name: nginx          ,description: 'Nginx'              ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://nginx.org/packages/${distro_name} ${distro_codename} nginx' }}
-- { name: docker-ce      ,description: 'Docker'             ,module: infra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.docker.com/linux/${distro_name} ${distro_codename} stable'                               ,china: 'https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux//${distro_name} ${distro_codename} stable' }}
-- { name: base           ,description: 'Debian Basic'       ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename} main non-free-firmware'                                  ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename} main restricted universe multiverse' }}
-- { name: updates        ,description: 'Debian Updates'     ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename}-updates main non-free-firmware'                          ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename}-updates main restricted universe multiverse' }}
-- { name: security       ,description: 'Debian Security'    ,module: node    ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://security.debian.org/debian-security ${distro_codename}-security main non-free-firmware'            ,china: 'https://mirrors.aliyun.com/debian-security/ ${distro_codename}-security main non-free-firmware' }}
-- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}           main universe multiverse restricted' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}           main restricted universe multiverse' }}
-- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' }}
-- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' }}
-- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [      20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' }}
-- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}           main universe multiverse restricted'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}           main restricted universe multiverse' }}
-- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse' }}
-- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse' }}
-- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [      20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse'   ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse' }}
-- { name: pgdg           ,description: 'PGDG'               ,module: pgsql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://apt.postgresql.org/pub/repos/apt/ ${distro_codename}-pgdg main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/postgresql/repos/apt/ ${distro_codename}-pgdg main' }}
-- { name: timescaledb    ,description: 'Timescaledb'        ,module: extra   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/timescale/timescaledb/${distro_name}/ ${distro_codename} main' }}
-- { name: citus          ,description: 'Citus'              ,module: extra   ,releases: [11,12,20,22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/citusdata/community/${distro_name}/ ${distro_codename} main' } }
-- { name: pgml           ,description: 'PostgresML'         ,module: pgml    ,releases: [         22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.postgresml.org ${distro_codename} main'  }}
-- { name: wiltondb       ,description: 'WiltonDB'           ,module: mssql   ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/mssql/ ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/mssql/ ${distro_codename} main' , origin: 'https://ppa.launchpadcontent.net/wiltondb/wiltondb/ubuntu/ ${distro_codename} main'  }}
-- { name: groonga        ,description: 'Groonga Debian'     ,module: groonga ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.groonga.org/debian/ ${distro_codename} main' }}
-- { name: groonga        ,description: 'Groonga Ubuntu'     ,module: groonga ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/groonga/ppa/ubuntu/ ${distro_codename} main' }}
-- { name: mysql          ,description: 'MySQL'              ,module: mysql   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mysql.com/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools', china: 'https://mirrors.tuna.tsinghua.edu.cn/mysql/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools' }}
-- { name: mongo          ,description: 'MongoDB'            ,module: mongo   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mongodb.org/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse', china: 'https://mirrors.aliyun.com/mongodb/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse' }}
-- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.redis.io/deb ${distro_codename} main' }}
-- { name: haproxyd       ,description: 'Haproxy Debian'     ,module: haproxy ,releases: [11,12         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://haproxy.debian.net/ ${distro_codename}-backports-3.1 main' }}
-- { name: haproxyu       ,description: 'Haproxy Ubuntu'     ,module: haproxy ,releases: [      20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/vbernat/haproxy-3.1/ubuntu/ ${distro_codename} main' }}
-- { name: grafana        ,description: 'Grafana'            ,module: grafana ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.grafana.com stable main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/grafana/apt/ stable main' }}
-- { name: kubernetes     ,description: 'Kubernetes'         ,module: kube    ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /', china: 'https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.31/deb/ /' }}
-- { name: gitlab         ,description: 'Gitlab'             ,module: gitlab  ,releases: [11,12,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/${distro_name}/ ${distro_codename} main' }}
+- { name: pigsty-local   ,description: 'Pigsty Local'       ,module: local   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://${admin_ip}/pigsty ./' }}
+- { name: pigsty-pgsql   ,description: 'Pigsty PgSQL'       ,module: pgsql   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/pgsql/${distro_codename} ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/pgsql/${distro_codename} ${distro_codename} main' }}
+- { name: pigsty-infra   ,description: 'Pigsty Infra'       ,module: infra   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/infra/ generic main' ,china: 'https://repo.pigsty.cc/apt/infra/ generic main' }}
+- { name: nginx          ,description: 'Nginx'              ,module: infra   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://nginx.org/packages/${distro_name} ${distro_codename} nginx' }}
+- { name: docker-ce      ,description: 'Docker'             ,module: infra   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://download.docker.com/linux/${distro_name} ${distro_codename} stable'                               ,china: 'https://mirrors.aliyun.com/docker-ce/linux/${distro_name} ${distro_codename} stable' }}
+- { name: base           ,description: 'Debian Basic'       ,module: node    ,releases: [11,12,13         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename} main non-free-firmware'                                  ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename} main restricted universe multiverse' }}
+- { name: updates        ,description: 'Debian Updates'     ,module: node    ,releases: [11,12,13         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://deb.debian.org/debian/ ${distro_codename}-updates main non-free-firmware'                          ,china: 'https://mirrors.aliyun.com/debian/ ${distro_codename}-updates main restricted universe multiverse' }}
+- { name: security       ,description: 'Debian Security'    ,module: node    ,releases: [11,12,13         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://security.debian.org/debian-security ${distro_codename}-security main non-free-firmware'            ,china: 'https://mirrors.aliyun.com/debian-security/ ${distro_codename}-security main non-free-firmware' }}
+- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [         20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}           main universe multiverse restricted' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}           main restricted universe multiverse' }}
+- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [         20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' }}
+- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [         20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-backports main restricted universe multiverse' }}
+- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [         20,22,24] ,arch: [x86_64         ] ,baseurl: { default: 'https://mirrors.edge.kernel.org/ubuntu/ ${distro_codename}-updates   main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu/ ${distro_codename}-security  main restricted universe multiverse' }}
+- { name: base           ,description: 'Ubuntu Basic'       ,module: node    ,releases: [         20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}             main universe multiverse restricted' ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}           main restricted universe multiverse' }}
+- { name: updates        ,description: 'Ubuntu Updates'     ,module: node    ,releases: [         20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-backports   main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-updates   main restricted universe multiverse' }}
+- { name: backports      ,description: 'Ubuntu Backports'   ,module: node    ,releases: [         20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-security    main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-backports main restricted universe multiverse' }}
+- { name: security       ,description: 'Ubuntu Security'    ,module: node    ,releases: [         20,22,24] ,arch: [        aarch64] ,baseurl: { default: 'http://ports.ubuntu.com/ubuntu-ports/ ${distro_codename}-updates     main restricted universe multiverse' ,china: 'https://mirrors.aliyun.com/ubuntu-ports/ ${distro_codename}-security  main restricted universe multiverse' }}
+- { name: pgdg           ,description: 'PGDG'               ,module: pgsql   ,releases: [11,12,13,   22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://apt.postgresql.org/pub/repos/apt/ ${distro_codename}-pgdg main' ,china: 'https://repo.pigsty.cc/apt/pgdg/ ${distro_codename}-pgdg main' }}
+- { name: pgdg-beta      ,description: 'PGDG Beta'          ,module: beta    ,releases: [11,12,13,   22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://apt.postgresql.org/pub/repos/apt/ ${distro_codename}-pgdg-testing main 19' ,china: 'https://mirrors.aliyun.com/postgresql/repos/apt/ ${distro_codename}-pgdg-testing main 19' }}
+- { name: timescaledb    ,description: 'TimescaleDB'        ,module: extra   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/timescale/timescaledb/${distro_name}/ ${distro_codename} main' }}
+- { name: citus          ,description: 'Citus'              ,module: extra   ,releases: [11,12,   20,22   ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packagecloud.io/citusdata/community/${distro_name}/ ${distro_codename} main' } }
+- { name: percona        ,description: 'Percona TDE'        ,module: percona ,releases: [11,12,   20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/percona ${distro_codename} main' ,china: 'https://repo.pigsty.cc/apt/percona ${distro_codename} main' ,origin: 'http://repo.percona.com/ppg-17.6/apt ${distro_codename} main' }}
+- { name: wiltondb       ,description: 'WiltonDB'           ,module: mssql   ,releases: [         20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.pigsty.io/apt/mssql/ ${distro_codename} main', china: 'https://repo.pigsty.cc/apt/mssql/ ${distro_codename} main'   ,origin: 'https://ppa.launchpadcontent.net/wiltondb/wiltondb/ubuntu/ ${distro_codename} main'  }}
+- { name: groonga        ,description: 'Groonga Debian'     ,module: groonga ,releases: [11,12,13         ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.groonga.org/debian/ ${distro_codename} main' }}
+- { name: groonga        ,description: 'Groonga Ubuntu'     ,module: groonga ,releases: [         20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/groonga/ppa/ubuntu/ ${distro_codename} main' }}
+- { name: mysql          ,description: 'MySQL'              ,module: mysql   ,releases: [11,12,   20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mysql.com/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools', china: 'https://mirrors.tuna.tsinghua.edu.cn/mysql/apt/${distro_name} ${distro_codename} mysql-8.0 mysql-tools' }}
+- { name: mongo          ,description: 'MongoDB'            ,module: mongo   ,releases: [11,12,   20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://repo.mongodb.org/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse', china: 'https://mirrors.aliyun.com/mongodb/apt/${distro_name} ${distro_codename}/mongodb-org/8.0 multiverse' }}
+- { name: redis          ,description: 'Redis'              ,module: redis   ,releases: [11,12,   20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.redis.io/deb ${distro_codename} main' }}
+- { name: llvm           ,description: 'LLVM'               ,module: llvm    ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://apt.llvm.org/${distro_codename}/ llvm-toolchain-${distro_codename} main' ,china: 'https://mirrors.tuna.tsinghua.edu.cn/llvm-apt/${distro_codename}/ llvm-toolchain-${distro_codename} main' }}
+- { name: haproxyd       ,description: 'Haproxy Debian'     ,module: haproxy ,releases: [11,12            ] ,arch: [x86_64, aarch64] ,baseurl: { default: 'http://haproxy.debian.net/ ${distro_codename}-backports-3.1 main' }}
+- { name: haproxyu       ,description: 'Haproxy Ubuntu'     ,module: haproxy ,releases: [         20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://ppa.launchpadcontent.net/vbernat/haproxy-3.1/ubuntu/ ${distro_codename} main' }}
+- { name: grafana        ,description: 'Grafana'            ,module: grafana ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://apt.grafana.com stable main' ,china: 'https://mirrors.aliyun.com/grafana/apt/ stable main' }}
+- { name: kubernetes     ,description: 'Kubernetes'         ,module: kube    ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /', china: 'https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.33/deb/ /' }}
+- { name: gitlab-ee      ,description: 'Gitlab EE'          ,module: gitlab  ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ee/${distro_name}/ ${distro_codename} main' }}
+- { name: gitlab-ce      ,description: 'Gitlab CE'          ,module: gitlab  ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.gitlab.com/gitlab/gitlab-ce/${distro_name}/ ${distro_codename} main' }}
+- { name: clickhouse     ,description: 'ClickHouse'         ,module: click   ,releases: [11,12,13,20,22,24] ,arch: [x86_64, aarch64] ,baseurl: { default: 'https://packages.clickhouse.com/deb/ stable main', china: 'https://mirrors.aliyun.com/clickhouse/deb/ stable main' }}
+
 ```
 
 ------
@@ -873,7 +879,21 @@ exporter_repo_url: ''             # 如果通过 yum 安装 exporter 的仓库�
 
 在此基础设施节点上启用 prometheus？
 
-默认值：`true`
+默认值：`true`，如果关闭，这个基础设施上将不会部署 Prometheus。
+
+
+
+------
+
+### `prometheus_port` [#prometheus_port]
+
+类型：`port`，级别：`G`
+
+Prometheus 监听的端口号，默认值为 `9058`。
+
+在 3.7 版本中新加入此参数，此前的默认值为 `9090`。
+不使用先前默认值 `9090` 的原因是 EL10 在此端口上启动了一个默认 Web 服务。
+
 
 ------
 
@@ -983,9 +1003,9 @@ blackbox_exporter 额外服务器选项，默认值为空字符串
 
 类型：`port`，级别：`G`
 
-AlertManager 的监听端口，默认值为 `9093`。
+AlertManager 的监听端口，默认值为 `9059`。
 
-允许对 AlertManager 端口进行特殊设置的原因是 Kafka 的默认端口也使用 `9093`，容易造成冲突。
+默认值自 Pigsty v3.7 以来从 `9093` 修改为 `9059`，因为 Kafka 的默认端口之一也使用 `9093`。
 
 ------
 
