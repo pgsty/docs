@@ -64,7 +64,7 @@ There are **120** parameters about the `PGSQL` module.
 | [`pg_dbsu_sudo`](#pg_dbsu_sudo)                 | `enum`     | C     | dbsu sudo privilege, none,limit,all,nopass. limit by default    |
 | [`pg_dbsu_home`](#pg_dbsu_home)                 | `path`     | C     | postgresql home directory, `/var/lib/pgsql` by default          |
 | [`pg_dbsu_ssh_exchange`](#pg_dbsu_ssh_exchange) | `bool`     | C     | exchange postgres dbsu ssh key among same pgsql cluster         |
-| [`pg_version`](#pg_version)                     | `enum`     | C     | postgres major version to be installed, 16 by default           |
+| [`pg_version`](#pg_version)                     | `enum`     | C     | postgres major version to be installed, 18 by default           |
 | [`pg_bin_dir`](#pg_bin_dir)                     | `path`     | C     | postgres binary dir, `/usr/pgsql/bin` by default                |
 | [`pg_log_dir`](#pg_log_dir)                     | `path`     | C     | postgres log dir, `/pg/log/postgres` by default                 |
 | [`pg_packages`](#pg_packages)                   | `string[]` | C     | pg packages to be installed, `${pg_version}` will be replaced   |
@@ -640,7 +640,7 @@ pg_dbsu_uid: 26                   # os dbsu uid and gid, 26 for default postgres
 pg_dbsu_sudo: limit               # dbsu sudo privilege, none,limit,all,nopass. limit by default
 pg_dbsu_home: /var/lib/pgsql      # postgresql home directory, `/var/lib/pgsql` by default
 pg_dbsu_ssh_exchange: true        # exchange postgres dbsu ssh key among same pgsql cluster
-pg_version: 16                    # postgres major version to be installed, 16 by default
+pg_version: 18                    # postgres major version to be installed, 18 by default
 pg_bin_dir: /usr/pgsql/bin        # postgres binary dir, `/usr/pgsql/bin` by default
 pg_log_dir: /pg/log/postgres      # postgres log dir, `/pg/log/postgres` by default
 pg_packages:                      # pg packages to be installed, alias can be used
@@ -728,11 +728,11 @@ If any instance involved in the key exchange does not have the [`pg_dbsu`](#pg_d
 
 name: `pg_version`, type: `enum`, level: `C`
 
-postgres major version to be installed, `17` by default
+postgres major version to be installed, `18` by default
 
 Note that PostgreSQL physical stream replication cannot cross major versions, so do not configure this on instance level.
 
-You can use the parameters in [`pg_packages`](#pg_packages) and [`pg_extensions`](#pg_extensions) to install rpms for the specific pg major version.
+You can use the parameters in [`pg_packages`](#pg_packages) and [`pg_extensions`](#pg_extensions) to install rpm/deb for the specific pg major version.
 
 ------
 
@@ -796,7 +796,7 @@ pg_extensions: []
 
 The complete list of extensions can be found in [auto generated](https://github.com/pgsty/pigsty/tree/main/roles/node_id/vars) config
 
-The full extension list can be found in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) and listed in [Extension List](https://ext.pgsty.com/list/).
+The full extension list can be found in [`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) and listed in [Extension List](https://pgext.cloud/list/).
 
 
 
@@ -1665,7 +1665,6 @@ pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/conf
     cipher_pass: pgBackRest       # AES encryption password, default is 'pgBackRest'
     retention_full_type: time     # retention full backup by time on minio repo
     retention_full: 14            # keep full backup for the last 14 days
-
 ```
 
 ------
@@ -2074,7 +2073,7 @@ Your config file should be placed in `files/<filename>.yml`. For example, if you
 
 name: `pg_exporter_cache_ttls`, type: `string`, level: `C`
 
-pg_exporter collector ttl stage in seconds, ‘1,10,60,300’ by default
+pg_exporter collector ttl stage in seconds, `1,10,60,300` by default
 
 default values: `1,10,60,300`, which will use 1s, 10s, 60s, 300s for different metric collectors.
 
@@ -2084,6 +2083,14 @@ ttl_norm: "{{ pg_exporter_cache_ttls.split(',')[1]|int }}"         # common quer
 ttl_slow: "{{ pg_exporter_cache_ttls.split(',')[2]|int }}"         # slow queries (e.g table size)
 ttl_slowest: "{{ pg_exporter_cache_ttls.split(',')[3]|int }}"      # ver slow queries (e.g bloat)
 ```
+
+This should be set in pair with  [`prometheus_scrape_interval`](/zh/infra/param#prometheus_scrape_interval)
+
+- fast : 1~10s, critical metrics, never cache
+- norm : same as prometheus scrape internal
+- slow : slow and bulky metrics like object metrics
+- slowest : very slow metrics like table size, bloat rate
+
 
 ------
 
@@ -2172,7 +2179,11 @@ overwrite extra options for pg_exporter
 the default value is empty string, which will fall back the following default options:
 
 ```bash
---log.level=info
+{% if pg_exporter_port != '' %}
+PG_EXPORTER_OPTS='--web.listen-address=:{{ pg_exporter_port }} {{ pg_exporter_options }}'
+{% else %}
+PG_EXPORTER_OPTS='--web.listen-address=:{{ pg_exporter_port }} --log.level=info'
+{% endif %}
 ```
 
 If you want to customize logging options or other pg_exporter options, you can set it here.
@@ -2193,9 +2204,8 @@ default value is `true`, which will enable pg_exporter for pgbouncer connection 
 
 name: `pgbouncer_exporter_port`, type: `port`, level: `C`
 
-pgbouncer_exporter listen port, 9631 by default
+pgbouncer_exporter listen port, `9631` by default
 
-default values: `9631`
 
 ------
 
@@ -2221,13 +2231,18 @@ name: `pgbouncer_exporter_options`, type: `arg`, level: `C`
 
 overwrite extra options for pgbouncer_exporter, default value is empty string.
 
-```
---log.level=info
-```
-
 the default value is empty string, which will fall back the following default options:
 
+```bash
+{% if pgbouncer_exporter_options != '' %}
+PG_EXPORTER_OPTS='--web.listen-address=:{{ pgbouncer_exporter_port }} {{ pgbouncer_exporter_options }}'
+{% else %}
+PG_EXPORTER_OPTS='--web.listen-address=:{{ pgbouncer_exporter_port }} --log.level=info'
+{% endif %}
+```
+
 If you want to customize logging options or other pgbouncer_exporter options, you can set it here.
+but do not overwrite [`pgbouncer_exporter_port`](#pgbouncer_exporter_port) here.
 
 ------
 

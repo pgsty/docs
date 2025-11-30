@@ -64,7 +64,7 @@ icon: Variable
 | [`pg_dbsu_sudo`](#pg_dbsu_sudo)                 | `enum`     | C  | dbsu sudo 权限，none,limit,all,nopass。默认为 limit |
 | [`pg_dbsu_home`](#pg_dbsu_home)                 | `path`     | C  | postgresql 主目录，默认为 `/var/lib/pgsql`          |
 | [`pg_dbsu_ssh_exchange`](#pg_dbsu_ssh_exchange) | `bool`     | C  | 在同一 pgsql 集群间交换 postgres dbsu ssh 密钥         |
-| [`pg_version`](#pg_version)                     | `enum`     | C  | 要安装的 postgres 主版本，默认为 16                     |
+| [`pg_version`](#pg_version)                     | `enum`     | C  | 要安装的 postgres 主版本，默认为 18                     |
 | [`pg_bin_dir`](#pg_bin_dir)                     | `path`     | C  | postgres 二进制目录，默认为 `/usr/pgsql/bin`          |
 | [`pg_log_dir`](#pg_log_dir)                     | `path`     | C  | postgres 日志目录，默认为 `/pg/log/postgres`         |
 | [`pg_packages`](#pg_packages)                   | `string[]` | C  | 要安装的 pg 包，`${pg_version}` 将被替换               |
@@ -72,90 +72,130 @@ icon: Variable
 
 [`PG_BOOTSTRAP`](#pg_bootstrap)：使用 Patroni 启动 HA Postgres 集群
 
-| 名称                                                  | 类型         | 级别  | 注释                                           |
-|-----------------------------------------------------|------------|-----|----------------------------------------------|
-| [`pg_data`](#pg_data)                               | `path`     | C   | postgres 数据目录，默认为 `/pg/data`                 |
-| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C   | postgres 备份数据目录，默认为 `/data/postgres`         |
-| [`pg_fs_backup`](#pg_fs_backup)                     | `path`     | C   | pg 备份数据的挂载点/路径，默认为 `/data/backup`            |
-| [`pg_storage_type`](#pg_storage_type)               | `enum`     | C   | pg 主数据的存储类型，SSD,HDD，默认为 SSD                  |
-| [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C   | `/pg/dummy` 的大小，为紧急使用保留 64MB 磁盘空间            |
-| [`pg_listen`](#pg_listen)                           | `ip(s)`    | C/I | postgres/pgbouncer 监听地址，逗号分隔列表               |
-| [`pg_port`](#pg_port)                               | `port`     | C   | postgres 监听端口，默认为 5432                       |
-| [`pg_localhost`](#pg_localhost)                     | `path`     | C   | postgres unix socket 目录，用于本地连接               |
-| [`pg_namespace`](#pg_namespace)                     | `path`     | C   | etcd 中的顶级键命名空间，由 patroni 和 vip 使用            |
-| [`patroni_enabled`](#patroni_enabled)               | `bool`     | C   | 如果禁用，初始化期间不会创建 postgres 集群                   |
-| [`patroni_mode`](#patroni_mode)                     | `enum`     | C   | patroni 工作模式：default,pause,remove            |
-| [`patroni_port`](#patroni_port)                     | `port`     | C   | patroni 监听端口，默认为 8008                        |
-| [`patroni_log_dir`](#patroni_log_dir)               | `path`     | C   | patroni 日志目录，默认为 `/pg/log/patroni`           |
-| [`patroni_ssl_enabled`](#patroni_ssl_enabled)       | `bool`     | G   | 使用 SSL 保护 patroni RestAPI 通信？                |
-| [`patroni_watchdog_mode`](#patroni_watchdog_mode)   | `enum`     | C   | patroni 看门狗模式：automatic,required,off。默认为 off |
-| [`patroni_username`](#patroni_username)             | `username` | C   | patroni restapi 用户名，默认为 `postgres`           |
-| [`patroni_password`](#patroni_password)             | `password` | C   | patroni restapi 密码，默认为 `Patroni.API`         |
-| [`pg_primary_db`](#pg_primary_db)                   | `string`   | C   | 主数据库名称，由 citus 等使用，默认为 postgres              |
-| [`pg_parameters`](#pg_parameters)                   | `dict`     | C   | postgresql.auto.conf 中的额外参数                  |
-| [`pg_files`](#pg_files)                             | `path[]`   | C   | 要复制到 postgres 数据目录的额外文件（例如许可证）               |
-| [`pg_conf`](#pg_conf)                               | `enum`     | C   | 配置模板：oltp,olap,crit,tiny。默认为 `oltp.yml`      |
-| [`pg_max_conn`](#pg_max_conn)                       | `int`      | C   | postgres 最大连接数，`auto` 将使用推荐值                 |
-| [`pg_shared_buffer_ratio`](#pg_shared_buffer_ratio) | `float`    | C   | postgres 共享缓冲区内存比例，默认为 0.25，0.1~0.4          |
-| [`pg_rto`](#pg_rto)                                 | `int`      | C   | 恢复时间目标（秒），默认为 `30s`                          |
+| 名称                                                  | 类型         | 级别  | 注释                                                     |
+|-----------------------------------------------------|------------|-----|--------------------------------------------------------|
+| [`pg_data`](#pg_data)                               | `path`     | C   | postgres 数据目录，默认为 `/pg/data`                           |
+| [`pg_fs_main`](#pg_fs_main)                         | `path`     | C   | postgres 备份数据目录，默认为 `/data/postgres`                   |
+| [`pg_fs_backup`](#pg_fs_backup)                     | `path`     | C   | pg 备份数据的挂载点/路径，默认为 `/data/backup`                      |
+| [`pg_storage_type`](#pg_storage_type)               | `enum`     | C   | pg 主数据的存储类型，SSD,HDD，默认为 SSD                            |
+| [`pg_dummy_filesize`](#pg_dummy_filesize)           | `size`     | C   | `/pg/dummy` 的大小，为紧急使用保留 64MB 磁盘空间                      |
+| [`pg_listen`](#pg_listen)                           | `ip(s)`    | C/I | postgres/pgbouncer 监听地址，逗号分隔列表                         |
+| [`pg_port`](#pg_port)                               | `port`     | C   | postgres 监听端口，默认为 5432                                 |
+| [`pg_localhost`](#pg_localhost)                     | `path`     | C   | postgres unix socket 目录，用于本地连接                         |
+| [`pg_namespace`](#pg_namespace)                     | `path`     | C   | etcd 中的顶级键命名空间，由 patroni 和 vip 使用                      |
+| [`patroni_enabled`](#patroni_enabled)               | `bool`     | C   | 如果禁用，初始化期间不会创建 postgres 集群                             |
+| [`patroni_mode`](#patroni_mode)                     | `enum`     | C   | patroni 工作模式：default,pause,remove                      |
+| [`patroni_port`](#patroni_port)                     | `port`     | C   | patroni 监听端口，默认为 8008                                  |
+| [`patroni_log_dir`](#patroni_log_dir)               | `path`     | C   | patroni 日志目录，默认为 `/pg/log/patroni`                     |
+| [`patroni_ssl_enabled`](#patroni_ssl_enabled)       | `bool`     | G   | 使用 SSL 保护 patroni RestAPI 通信？                          |
+| [`patroni_watchdog_mode`](#patroni_watchdog_mode)   | `enum`     | C   | patroni 看门狗模式：automatic,required,off。默认为 off           |
+| [`patroni_username`](#patroni_username)             | `username` | C   | patroni restapi 用户名，默认为 `postgres`                     |
+| [`patroni_password`](#patroni_password)             | `password` | C   | patroni restapi 密码，默认为 `Patroni.API`                   |
+| [`pg_primary_db`](#pg_primary_db)                   | `string`   | C   | 主数据库名称，由 citus 等使用，默认为 postgres                        |
+| [`pg_parameters`](#pg_parameters)                   | `dict`     | C   | postgresql.auto.conf 中的额外参数                            |
+| [`pg_files`](#pg_files)                             | `path[]`   | C   | 要复制到 postgres 数据目录的额外文件（例如许可证）                         |
+| [`pg_conf`](#pg_conf)                               | `enum`     | C   | 配置模板：oltp,olap,crit,tiny。默认为 `oltp.yml`                |
+| [`pg_max_conn`](#pg_max_conn)                       | `int`      | C   | postgres 最大连接数，`auto` 将使用推荐值                           |
+| [`pg_shared_buffer_ratio`](#pg_shared_buffer_ratio) | `float`    | C   | postgres 共享缓冲区内存比例，默认为 0.25，0.1~0.4                    |
+| [`pg_rto`](#pg_rto)                                 | `int`      | C   | 恢复时间目标（秒），默认为 `30s`                                    |
+| [`pg_rpo`](#pg_rpo)                                 | `int`      | C   | 恢复点目标（字节），默认最多 `1MiB`                                  |
+| [`pg_libs`](#pg_libs)                               | `string`   | C   | 预加载库，默认为 `timescaledb,pg_stat_statements,auto_explain` |
+| [`pg_delay`](#pg_delay)                             | `interval` | I   | 备集群领导者的复制应用延迟                                          |
+| [`pg_checksum`](#pg_checksum)                       | `bool`     | C   | 为 postgres 集群启用数据校验和？                                  |
+| [`pg_pwd_enc`](#pg_pwd_enc)                         | `enum`     | C   | 密码加密算法：md5,scram-sha-256                               |
+| [`pg_encoding`](#pg_encoding)                       | `enum`     | C   | 数据库集群编码，默认为 `UTF8`                                     |
+| [`pg_locale`](#pg_locale)                           | `enum`     | C   | 数据库集群区域设置，默认为 `C`                                      |
+| [`pg_lc_collate`](#pg_lc_collate)                   | `enum`     | C   | 数据库集群排序规则，默认为 `C`                                      |
+| [`pg_lc_ctype`](#pg_lc_ctype)                       | `enum`     | C   | 数据库字符类型，默认为 `en_US.UTF8`                               |
+| [`pgsodium_key`](#pgsodium_key)                     | `string`   | C   | pgsodium 密钥，64位十六进制数字，如果未指定则默认为 sha256(pg_cluster)     |
+| [`pgsodium_getkey_script`](#pgsodium_getkey_script) | `path`     | C   | pgsodium getkey 脚本路径，默认为模板中的 `pgsodium_getkey`         |
 
 
-## `PGSQL`
+[`PG_PROVISION`](#pg_provision)：创建用户、数据库和数据库内对象
 
-[`PGSQL`](https://pigsty.cc/docs/pgsql/) 模块需要在 Pigsty 管理的节点上安装（即节点已经配置了 [`NODE`](https://pigsty.cc/docs/node/) 模块），同时还要求您的部署中有一套可用的 [`ETCD`](https://pigsty.cc/docs/etcd/) 集群来存储集群元数据。
+| 名称                                                  | 类型            | 级别  | 注释                                  |
+|-----------------------------------------------------|---------------|-----|-------------------------------------|
+| [`pg_provision`](#pg_provision)                     | `bool`        | C   | 引导后置备 postgres 集群                   |
+| [`pg_init`](#pg_init)                               | `string`      | G/C | 集群模板的置备初始化脚本，默认为 `pg-init`           |
+| [`pg_default_roles`](#pg_default_roles)             | `role[]`      | G/C | postgres 集群中的默认角色和用户                |
+| [`pg_default_privileges`](#pg_default_privileges)   | `string[]`    | G/C | 管理员用户创建时的默认权限                        |
+| [`pg_default_schemas`](#pg_default_schemas)         | `string[]`    | G/C | 要创建的默认模式                             |
+| [`pg_default_extensions`](#pg_default_extensions)   | `extension[]` | G/C | 要创建的默认扩展                             |
+| [`pg_reload`](#pg_reload)                           | `bool`        | A   | hba 更改后重新加载 postgres                |
+| [`pg_default_hba_rules`](#pg_default_hba_rules)     | `hba[]`       | G/C | postgres 默认基于主机的身份验证规则              |
+| [`pgb_default_hba_rules`](#pgb_default_hba_rules)   | `hba[]`       | G/C | pgbouncer 默认基于主机的身份验证规则             |
 
-在单个节点上安装 `PGSQL` 模块将创建一个独立的 PGSQL 服务器/实例，即[主实例](https://pigsty.cc/docs/pgsql/config/#读写主库)。 在额外节点上安装将创建[只读副本](https://pigsty.cc/docs/pgsql/config/#只读从库)，可以作为备用实例，并用于承载分担只读请求。 您还可以创建用于 ETL/OLAP/交互式查询的[离线](https://pigsty.cc/docs/pgsql/config/#离线从库)实例， 使用[同步备库](https://pigsty.cc/docs/pgsql/config/#同步备库) 和 [法定人数提交](https://pigsty.cc/docs/pgsql/config/#法定人数提交) 来提高数据一致性， 甚至搭建[备份集群](https://pigsty.cc/docs/pgsql/config/#备份集群) 和 [延迟集群](https://pigsty.cc/docs/pgsql/config/#延迟集群) 以快速应对人为失误与软件缺陷导致的数据损失。
+[`PG_BACKUP`](#pg_backup)：使用 pgbackrest 设置备份仓库
 
-您可以定义多个 PGSQL 集群并进一步组建一个水平分片集群： Pigsty 支持原生的 [citus 集群组](https://pigsty.cc/docs/pgsql/config/#citus集群)，可以将您的标准 PGSQL 集群原地升级为一个分布式的数据库集群。
+| 名称                                          | 类型     | 级别  | 注释                                                                         |
+|---------------------------------------------|--------|-----|----------------------------------------------------------------------------|
+| [`pgbackrest_enabled`](#pgbackrest_enabled) | `bool` | C   | 在 pgsql 主机上启用 pgbackrest？                                                 |
+| [`pgbackrest_clean`](#pgbackrest_clean)     | `bool` | C   | 初始化期间删除 pg 备份数据？                                                          |
+| [`pgbackrest_log_dir`](#pgbackrest_log_dir) | `path` | C   | pgbackrest 日志目录，默认为 `/pg/log/pgbackrest`                                  |
+| [`pgbackrest_method`](#pgbackrest_method)   | `enum` | C   | pgbackrest 仓库方法：local,minio,等…                                             |
+| [`pgbackrest_repo`](#pgbackrest_repo)       | `dict` | G/C | pgbackrest 仓库配置：https://pgbackrest.org/configuration.html#section-repository |
+
+[`PG_ACCESS`](#pg_access)：暴露 pg 服务，绑定 VIP 和注册 DNS
+
+| 名称                                                    | 类型          | 级别  | 注释                                                  |
+|-------------------------------------------------------|-------------|-----|-----------------------------------------------------|
+| [`pgbouncer_enabled`](#pgbouncer_enabled)             | `bool`      | C   | 如果禁用，pgsql 主机上将不会启动 pgbouncer                       |
+| [`pgbouncer_port`](#pgbouncer_port)                   | `port`      | C   | pgbouncer 监听端口，默认为 6432                             |
+| [`pgbouncer_log_dir`](#pgbouncer_log_dir)             | `path`      | C   | pgbouncer 日志目录，默认为 `/pg/log/pgbouncer`              |
+| [`pgbouncer_auth_query`](#pgbouncer_auth_query)       | `bool`      | C   | 查询 postgres 以检索未列出的业务用户？                            |
+| [`pgbouncer_poolmode`](#pgbouncer_poolmode)           | `enum`      | C   | 连接池模式：transaction,session,statement，默认为 transaction |
+| [`pgbouncer_sslmode`](#pgbouncer_sslmode)             | `enum`      | C   | pgbouncer 客户端 ssl 模式，默认禁用                           |
+| [`pgbouncer_ignore_param`](#pgbouncer_ignore_param)   | `string[]`  | G/C | pgbouncer 启动时忽略这些参数                                 |
+| [`pg_weight`](#pg_weight)                             | `int`       | I   | 服务中的相对负载均衡权重，默认为 100，范围 0-255                       |
+| [`pg_service_provider`](#pg_service_provider)         | `string`    | G/C | 专用 haproxy 节点组名称，或默认为本地节点的空字符串                      |
+| [`pg_default_service_dest`](#pg_default_service_dest) | `enum`      | G/C | 如果 svc.dest='default' 时的默认服务目标                      |
+| [`pg_default_services`](#pg_default_services)         | `service[]` | G/C | postgres 默认服务定义                                     |
+| [`pg_vip_enabled`](#pg_vip_enabled)                   | `bool`      | C   | 为 pgsql 主库启用 L2 VIP？默认为 false                       |
+| [`pg_vip_address`](#pg_vip_address)                   | `cidr4`     | C   | `<ipv4>/<mask>` 格式的 VIP 地址，如果启用 VIP 则必需             |
+| [`pg_vip_interface`](#pg_vip_interface)               | `string`    | C/I | VIP 监听的网络接口，默认为 eth0                                |
+| [`pg_dns_suffix`](#pg_dns_suffix)                     | `string`    | C   | pgsql dns 后缀，默认为 ''                                 |
+| [`pg_dns_target`](#pg_dns_target)                     | `enum`      | C   | auto, primary, vip, none, 或自定义 IP 地址                |
+
+[`PG_MONITOR`](#pg_monitor)：为 PGSQL 实例添加监控
+
+| 名称                                                              | 类型       | 级别 | 注释                                          |
+|-----------------------------------------------------------------|----------|----|---------------------------------------------|
+| [`pg_exporter_enabled`](#pg_exporter_enabled)                   | `bool`   | C  | 在 pgsql 主机上启用 pg_exporter？                  |
+| [`pg_exporter_config`](#pg_exporter_config)                     | `string` | C  | pg_exporter 配置文件名                           |
+| [`pg_exporter_cache_ttls`](#pg_exporter_cache_ttls)             | `string` | C  | pg_exporter 收集器 ttl 阶段（秒），默认为 '1,10,60,300' |
+| [`pg_exporter_port`](#pg_exporter_port)                         | `port`   | C  | pg_exporter 监听端口，默认为 9630                   |
+| [`pg_exporter_params`](#pg_exporter_params)                     | `string` | C  | pg_exporter dsn 的额外 URL 参数                  |
+| [`pg_exporter_url`](#pg_exporter_url)                           | `pgurl`  | C  | 如果指定，覆盖自动生成的 pg dsn                         |
+| [`pg_exporter_auto_discovery`](#pg_exporter_auto_discovery)     | `bool`   | C  | 启用自动数据库发现？默认启用                              |
+| [`pg_exporter_exclude_database`](#pg_exporter_exclude_database) | `string` | C  | 自动发现期间不会监控的数据库的 CSV 列表                      |
+| [`pg_exporter_include_database`](#pg_exporter_include_database) | `string` | C  | 自动发现期间将被监控的数据库的 CSV 列表                      |
+| [`pg_exporter_connect_timeout`](#pg_exporter_connect_timeout)   | `int`    | C  | pg_exporter 连接超时（毫秒），默认为 200                |
+| [`pg_exporter_options`](#pg_exporter_options)                   | `arg`    | C  | 覆盖 pg_exporter 的额外选项                        |
+| [`pgbouncer_exporter_enabled`](#pgbouncer_exporter_enabled)     | `bool`   | C  | 在 pgsql 主机上启用 pgbouncer_exporter？           |
+| [`pgbouncer_exporter_port`](#pgbouncer_exporter_port)           | `port`   | C  | pgbouncer_exporter 监听端口，默认为 9631            |
+| [`pgbouncer_exporter_url`](#pgbouncer_exporter_url)             | `pgurl`  | C  | 如果指定，覆盖自动生成的 pgbouncer dsn                  |
+| [`pgbouncer_exporter_options`](#pgbouncer_exporter_options)     | `arg`    | C  | 覆盖 pgbouncer_exporter 的额外选项                 |
+| [`pgbackrest_exporter_enabled`](#pgbackrest_exporter_enabled)   | `bool`   | C  | 在 pgsql 主机上启用 pgbackrest_exporter？          |
+| [`pgbackrest_exporter_port`](#pgbackrest_exporter_port)         | `port`   | C  | pgbackrest_exporter 监听端口，默认为 9854           |
+| [`pgbackrest_exporter_options`](#pgbackrest_exporter_options)   | `arg`    | C  | pgbackrest_exporter 的额外 CLI 参数              |
+
+
+[`PG_REMOVE`](#pg_remove)：删除 Postgres 集群
+
+| 名称                              | 类型     | 级别    | 注释                                         |
+|---------------------------------|--------|-------|--------------------------------------------|
+| [`pg_safeguard`](#pg_safeguard) | `bool` | G/C/A | 如果启用 pg_safeguard，停止运行 pg_remove，默认为 false |
+| [`keep_data`](#keep_data)       | `bool` | G/C/A | 删除期间保留 postgres 数据？默认为 false               |
+| [`keep_backup`](#keep_backup)   | `bool` | G/C/A | 删除期间保留 pgbackrest 备份？默认为 false             |
+| [`keep_package`](#keep_package) | `bool` | G/C/A | 删除期间保留 postgres 包？默认为 false                |
+
+
 
 ------
 
 ## `PG_ID`
 
-以下是一些常用的参数，用于标识 PGSQL 模块中的[实体](https://pigsty.cc/docs/pgsql/concept/#实体概念图)：集群、实例、服务等…
-
-```yaml
-# pg_cluster:           #CLUSTER  # pgsql 集群名称，必需的标识参数
-# pg_seq: 0             #INSTANCE # pgsql 实例序列号，必需的标识参数
-# pg_role: replica      #INSTANCE # pgsql 角色，必需的，可以是 primary,replica,offline
-# pg_instances: {}      #INSTANCE # 在节点上定义多个 pg 实例，使用 `{port:ins_vars}` 格式
-# pg_upstream:          #INSTANCE # 备用集群或级联副本的 repl 上游 ip 地址
-# pg_shard:             #CLUSTER  # pgsql 分片名称，分片集群的可选标识
-# pg_group: 0           #CLUSTER  # pgsql 分片索引号，分片集群的可选标识
-# gp_role: master       #CLUSTER  # 此集群的 greenplum 角色，可以是 master 或 segment
-pg_offline_query: false #INSTANCE # 设置为 true 以在此实例上启用离线查询
-```
-
-您必须显式指定这些**身份参数**，它们没有默认值：
-
-|                             名称                             |   类型   | 级别  | 扩展说明              |
-| :----------------------------------------------------------: | :------: | :---: | --------------------- |
-| [`pg_cluster`](https://pigsty.cc/docs/pgsql/param/#pg_cluster) | `string` | **C** | **PG 数据库集群名称** |
-|    [`pg_seq`](https://pigsty.cc/docs/pgsql/param/#pg_seq)    | `number` | **I** | **PG 数据库实例 ID**  |
-|   [`pg_role`](https://pigsty.cc/docs/pgsql/param/#pg_role)   |  `enum`  | **I** | **PG 数据库实例角色** |
-|  [`pg_shard`](https://pigsty.cc/docs/pgsql/param/#pg_shard)  | `string` | **C** | **数据库分片名称**    |
-|  [`pg_group`](https://pigsty.cc/docs/pgsql/param/#pg_group)  | `number` | **C** | **数据库分片序号**    |
-
-- [`pg_cluster`](https://pigsty.cc/docs/pgsql/param/#pg_cluster): 它标识集群的名称，该名称在集群级别配置。
-- [`pg_role`](https://pigsty.cc/docs/pgsql/param/#pg_role): 在实例级别配置，标识 ins 的角色。只有 `primary` 角色会特别处理。如果不填写，默认为 `replica` 角色和特殊的 `delayed` 和 `offline` 角色。
-- [`pg_seq`](https://pigsty.cc/docs/pgsql/param/#pg_seq): 用于在集群内标识 ins，通常是从 0 或 1 递增的整数，一旦分配就不会更改。
-- `{{ pg_cluster }}-{{ pg_seq }}` 用于唯一标识 ins，即 `pg_instance`。
-- `{{ pg_cluster }}-{{ pg_role }}` 用于标识集群内的服务，即 `pg_service`。
-- [`pg_shard`](https://pigsty.cc/docs/pgsql/param/#pg_shard) 和 [`pg_group`](https://pigsty.cc/docs/pgsql/param/#pg_group) 用于水平分片集群，仅用于 citus、greenplum 和 matrixdb。
-
-[`pg_cluster`](https://pigsty.cc/docs/pgsql/param/#pg_cluster)、[`pg_role`](https://pigsty.cc/docs/pgsql/param/#pg_role)、[`pg_seq`](https://pigsty.cc/docs/pgsql/param/#pg_seq) 是核心**标识参数**，对于任何 Postgres 集群都是**必选**的，并且必须显式指定。以下是一个示例：
-
-```yaml
-pg-test:
-  hosts:
-    10.10.10.11: {pg_seq: 1, pg_role: replica}
-    10.10.10.12: {pg_seq: 2, pg_role: primary}
-    10.10.10.13: {pg_seq: 3, pg_role: replica}
-  vars:
-    pg_cluster: pg-test
-```
-
-所有其他参数都可以从全局配置或默认配置继承，但标识参数必须**明确指定**和**手动分配**。
+以下是一些常用的参数，用于标识 PGSQL [实体](/zh/pgsql/config#identity-parameters)：实例、服务等…
 
 ------
 
@@ -163,21 +203,17 @@ pg-test:
 
 参数名称： `pg_mode`， 类型： `enum`， 层次：`C`
 
-PostgreSQL 集群模式，默认值为 `pgsql`，即标准的 PostgreSQL 集群。
+pgsql 集群模式，默认为 `pgsql`，即标准 PostgreSQL 集群。
 
-可用的模式选项包括：
+- `pgsql`: 标准 PostgreSQL 集群，默认值。
+- `citus`: 使用 citus 扩展的水平分片集群。
+- `mssql`: Babelfish MSSQL 线缆协议兼容内核。
+- `ivory`: IvorySQL Oracle 兼容内核。
+- `polar`: PolarDB for PostgreSQL 内核。
+- `oracle`: PolarDB for Oracle 内核。
+- `gpsql`: Greenplum / Cloudberry
 
-- `pgsql`：标准的 PostgreSQL 集群
-- `citus`：Citus 分布式数据库集群
-- `mssql`：Babelfish MSSQL 线缆协议兼容内核
-- `ivory`：IvorySQL Oracle 兼容内核
-- `polar`：PolarDB for PostgreSQL 内核
-- `oracle`：PolarDB for Oracle 内核
-- `gpsql`：Greenplum 并行数据库集群（监控）
-
-如果 `pg_mode` 设置为 `citus` 或 `gpsql`，则需要两个额外的必选身份参数 [`pg_shard`](https://pigsty.cc/docs/pgsql/param/#pg_shard) 和 [`pg_group`](https://pigsty.cc/docs/pgsql/param/#pg_group) 来定义水平分片集群的身份。
-
-在这两种情况下，每一个 PostgreSQL 集群都是一组更大的业务单元的一部分。
+如果 `pg_mode` 设置为 `citus` 或 `gpsql`，则需要 [`pg_shard`](#pg_shard) 和 [`pg_group`](#pg_group) 用于水平分片集群。
 
 ------
 
@@ -207,13 +243,16 @@ PostgreSQL 实例序列号，必选的身份标识参数，无默认值。
 
 参数名称： `pg_role`， 类型： `enum`， 层次：`I`
 
-PostgreSQL 实例角色，必选的身份标识参数，无默认值。取值可以是：`primary`, `replica`, `offline`
+pgsql 角色，必需，可以是 primary,replica,offline
 
-PGSQL 实例的角色，可以是：`primary`、`replica`、`standby` 或 `offline`。
+PostgreSQL 实例的角色，可以是：`primary`、`replica`、`standby` 或 `offline`。
 
-- `primary`: 主实例，在集群中有且仅有一个。
-- `replica`: 用于承载在线只读流量的副本，高负载下可能会有轻微复制延迟（10ms~100ms, 100KB）。
-- `offline`: 用于处理离线只读流量的离线副本，如统计分析/ETL/个人查询等。
+- `primary`: 主库，集群中有且仅有一个。
+- `replica`: 用于承载在线只读流量的副本，可能会有轻微复制延迟（10ms~100ms, 100KB）。
+- `standby`: 始终与主库同步的特殊副本，没有复制延迟和数据丢失。（目前与 `replica` 相同）
+- `offline`: 用于承接离线只读流量的离线副本，如统计分析/ETL/个人查询等。
+
+**身份参数，必需参数，实例级参数。**
 
 ------
 
@@ -231,9 +270,9 @@ PGSQL 实例的角色，可以是：`primary`、`replica`、`standby` 或 `offli
 
 参数名称： `pg_upstream`， 类型： `ip`， 层次：`I`
 
-[备份集群](https://pigsty.cc/docs/pgsql/config/#备份集群)或级联从库的上游实例 IP 地址。
+[备份集群](/zh/pgsql/config/#standby-cluster)或级联从库的上游实例 IP 地址。
 
-在集群的 `primary` 实例上设置 `pg_upstream` ，表示此集群是一个[备份集群](https://pigsty.cc/docs/pgsql/config/#备份集群)，该实例将作为 `standby leader`，从上游集群接收并应用更改。
+在集群的 `primary` 实例上设置 `pg_upstream` ，表示此集群是一个[备份集群](/zh/pgsql/config/#standby-cluster)，该实例将作为 `standby leader`，从上游集群接收并应用更改。
 
 对非 `primary` 实例设置 `pg_upstream` 参数将指定一个具体实例作为物理复制的上游，如果与主实例 ip 地址不同，此实例将成为 **级联副本** 。确保上游 IP 地址是同一集群中的另一个实例是用户的责任。
 
@@ -247,7 +286,7 @@ PostgreSQL 水平分片名称，对于分片集群来说（例如 citus 集群�
 
 当多个标准的 PostgreSQL 集群一起以水平分片方式为同一业务提供服务时，Pigsty 将此组集群标记为 **水平分片集群**。
 
-[`pg_shard`](https://pigsty.cc/docs/pgsql/param/#pg_shard) 是分片组名称。它通常是 [`pg_cluster`](https://pigsty.cc/docs/pgsql/param/#pg_cluster) 的前缀。
+[`pg_shard`](#pg_shard) 是分片组名称。它通常是 [`pg_cluster`](#pg_cluster) 的前缀。
 
 例如，如果我们有一个分片组 `pg-citus`，并且其中有4个集群，它们的标识参数将是：
 
@@ -267,7 +306,7 @@ cls pg_group = 3:   pg-citus3
 
 PostgreSQL 水平分片集群的分片索引号，对于分片集群来说（例如 citus 集群），这是的必选标识参数。
 
-此参数与 [pg_shard](https://pigsty.cc/docs/pgsql/param/#pg_shard) 配对使用，通常可以使用非负整数作为索引号。
+此参数与 [pg_shard](#pg_shard) 配对使用，通常可以使用非负整数作为索引号。
 
 ------
 
@@ -280,7 +319,7 @@ PostgreSQL 集群的 Greenplum/Matrixdb 角色，可以是 `master` 或 `segment
 - `master`: 标记 postgres 集群为 greenplum 主实例（协调节点），这是默认值。
 - `segment` 标记 postgres 集群为 greenplum 段集群（数据节点）。
 
-此参数仅用于 Greenplum/MatrixDB 数据库 （[`pg_mode`](https://pigsty.cc/docs/pgsql/param/#pg_mode) 为 `gpsql`），对于普通的 PostgreSQL 集群没有意义。
+此参数仅用于 Greenplum/MatrixDB 数据库 （[`pg_mode`](#pg_mode) 为 `gpsql`），对于普通的 PostgreSQL 集群没有意义。
 
 ------
 
@@ -288,9 +327,9 @@ PostgreSQL 集群的 Greenplum/Matrixdb 角色，可以是 `master` 或 `segment
 
 参数名称： `pg_exporters`， 类型： `dict`， 层次：`C`
 
-额外用于[监控](https://pigsty.cc/docs/pgsql/monitor/)远程 PostgreSQL 实例的 Exporter 定义，默认值：`{}`
+额外用于[监控](/zh/docs/pgsql/monitor/)远程 PostgreSQL 实例的 Exporter 定义，默认值：`{}`
 
-如果您希望监控远程 PostgreSQL 实例，请在监控系统所在节点（Infra节点）集群上的 `pg_exporters` 参数中定义它们，并使用 [`pgsql-monitor.yml`](https://pigsty.cc/docs/pgsql/playbook/#pgsql-monitoryml) 剧本来完成部署。
+如果您希望监控远程 PostgreSQL 实例，请在监控系统所在节点（Infra节点）集群上的 `pg_exporters` 参数中定义它们，并使用 [`pgsql-monitor.yml`](/zh/pgsql/playbook/#pgsql-monitoryml) 剧本来完成部署。
 
 ```yaml
 pg_exporters: # list all remote instances here, alloc a unique unused local port as k
@@ -322,17 +361,17 @@ pg_exporters: # list all remote instances here, alloc a unique unused local port
 
 用户需**重点关注**此部分参数，因为这里是业务声明自己所需数据库对象的地方。
 
-- 业务用户定义： [`pg_users`](https://pigsty.cc/docs/pgsql/param/#pg_users)
-- 业务数据库定义： [`pg_databases`](https://pigsty.cc/docs/pgsql/param/#pg_databases)
-- 集群专有服务定义： [`pg_services`](https://pigsty.cc/docs/pgsql/param/#pg_services) （全局定义：[`pg_default_services`](https://pigsty.cc/docs/pgsql/param/#pg_default_services)）
-- PostgreSQL集群/实例特定的HBA规则： [`pg_default_services`](https://pigsty.cc/docs/pgsql/param/#pg_default_services)
-- Pgbouncer连接池特定HBA规则： [`pgb_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pgb_hba_rules)
+- 业务用户定义： [`pg_users`](#pg_users)
+- 业务数据库定义： [`pg_databases`](#pg_databases)
+- 集群专有服务定义： [`pg_services`](#pg_services) （全局定义：[`pg_default_services`](#pg_default_services)）
+- PostgreSQL集群/实例特定的HBA规则： [`pg_default_services`](#pg_default_services)
+- Pgbouncer连接池特定HBA规则： [`pgb_hba_rules`](#pgb_hba_rules)
 
-[默认](https://pigsty.cc/docs/pgsql/acl/#默认用户)的数据库用户及其凭据，强烈建议在生产环境中修改这些用户的密码。
+[默认](/zh/pgsql/acl/#默认用户)的数据库用户及其凭据，强烈建议在生产环境中修改这些用户的密码。
 
-- PG管理员用户：[`pg_admin_username`](https://pigsty.cc/docs/pgsql/param/#pg_admin_username) / [`pg_admin_password`](https://pigsty.cc/docs/pgsql/param/#pg_admin_password)
-- PG复制用户： [`pg_replication_username`](https://pigsty.cc/docs/pgsql/param/#pg_replication_username) / [`pg_replication_password`](https://pigsty.cc/docs/pgsql/param/#pg_replication_password)
-- PG监控用户：[`pg_monitor_username`](https://pigsty.cc/docs/pgsql/param/#pg_monitor_username) / [`pg_monitor_password`](https://pigsty.cc/docs/pgsql/param/#pg_monitor_password)
+- PG管理员用户：[`pg_admin_username`](#pg_admin_username) / [`pg_admin_password`](#pg_admin_password)
+- PG复制用户： [`pg_replication_username`](#pg_replication_username) / [`pg_replication_password`](#pg_replication_password)
+- PG监控用户：[`pg_monitor_username`](#pg_monitor_username) / [`pg_monitor_password`](#pg_monitor_password)
 
 ```yaml
 # postgres business object definition, overwrite in group vars
@@ -359,7 +398,7 @@ pg_monitor_password: DBUser.Monitor
 
 PostgreSQL 业务用户列表，需要在 PG 集群层面进行定义。默认值为：`[]` 空列表。
 
-每一个数组元素都是一个 [用户/角色](https://pigsty.cc/docs/pgsql/user/) 定义，例如：
+每一个数组元素都是一个 [用户/角色](/zh/pgsql/user) 定义，例如：
 
 ```yaml
 - name: dbuser_meta               # 必需，`name` 是用户定义的唯一必选字段
@@ -391,7 +430,7 @@ PostgreSQL 业务用户列表，需要在 PG 集群层面进行定义。默认�
 
 PostgreSQL 业务数据库列表，需要在 PG 集群层面进行定义。默认值为：`[]` 空列表。
 
-每一个数组元素都是一个 [业务数据库](https://pigsty.cc/docs/pgsql/db/) 定义，例如：
+每一个数组元素都是一个 [业务数据库](/zh/pgsql/db/) 定义，例如：
 
 ```yaml
 - name: meta                      # 必选，`name` 是数据库定义的唯一必选字段
@@ -432,7 +471,7 @@ PostgreSQL 业务数据库列表，需要在 PG 集群层面进行定义。默�
 
 PostgreSQL 服务列表，需要在 PG 集群层面进行定义。默认值为：`[]` ，空列表。
 
-用于在数据库集群层面定义额外的服务，数组中的每一个对象定义了一个[服务](https://pigsty.cc/docs/pgsql/svc/#定义服务)，一个完整的服务定义样例如下：
+用于在数据库集群层面定义额外的服务，数组中的每一个对象定义了一个[服务](/zh/pgsql/svc/#定义服务)，一个完整的服务定义样例如下：
 
 ```yaml
 - name: standby                   # 必选，服务名称，最终的 svc 名称会使用 `pg_cluster` 作为前缀，例如：pg-meta-standby
@@ -447,7 +486,7 @@ PostgreSQL 服务列表，需要在 PG 集群层面进行定义。默认值为�
   options: 'inter 3s fastinter 1s downinter 5s rise 3 fall 3 on-marked-down shutdown-sessions slowstart 30s maxconn 3000 maxqueue 128 weight 100'
 ```
 
-请注意，本参数用于在集群层面添加额外的服务。如果您想在全局定义所有 PostgreSQL 数据库都要提供的服务，可以使用 [`pg_default_services`](https://pigsty.cc/docs/pgsql/param/#pg_default_services) 参数。
+请注意，本参数用于在集群层面添加额外的服务。如果您想在全局定义所有 PostgreSQL 数据库都要提供的服务，可以使用 [`pg_default_services`](#pg_default_services) 参数。
 
 ------
 
@@ -457,7 +496,7 @@ PostgreSQL 服务列表，需要在 PG 集群层面进行定义。默认值为�
 
 数据库集群/实例的客户端IP黑白名单规则。默认为：`[]` 空列表。
 
-对象数组，每一个对象都代表一条规则， [hba](https://pigsty.cc/docs/pgsql/hba/#定义hba) 规则对象的定义形式如下：
+对象数组，每一个对象都代表一条规则， [hba](/zh/pgsql/hba/#定义hba) 规则对象的定义形式如下：
 
 ```yaml
 - title: allow intranet password access
@@ -469,18 +508,11 @@ PostgreSQL 服务列表，需要在 PG 集群层面进行定义。默认值为�
 ```
 
 - `title`： 规则的标题名称，会被渲染为 HBA 文件中的注释。
-
 - `rules`：规则数组，每个元素是一条标准的 HBA 规则字符串。
-
-- ```
-role
-  ```
-
-：规则的应用范围，哪些实例角色会启用这条规则？
-
+- `role` ：规则的应用范围，哪些实例角色会启用这条规则？
 - `common`：对于所有实例生效
-- `primary`, `replica`,`offline`： 只针对特定的角色 [`pg_role`](https://pigsty.cc/docs/pgsql/param/#pg_role) 实例生效。
-- 特例：`role: 'offline'` 的规则除了会应用在 `pg_role : offline` 的实例上，对于带有 [`pg_offline_query`](https://pigsty.cc/docs/pgsql/param/#pg_offline_query) 标记的实例也生效。
+- `primary`, `replica`,`offline`： 只针对特定的角色 [`pg_role`](#pg_role) 实例生效。
+- 特例：`role: 'offline'` 的规则除了会应用在 `pg_role : offline` 的实例上，对于带有 [`pg_offline_query`](#pg_offline_query) 标记的实例也生效。
 
 除了上面这种原生 HBA 规则定义形式，Pigsty 还提供了另外一种更为简便的别名形式：
 
@@ -493,7 +525,7 @@ role
   title: allow intranet password access
 ```
 
-[`pg_default_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pg_default_hba_rules) 与本参数基本类似，但它是用于定义全局的 HBA 规则，而本参数通常用于定制某个集群/实例的 HBA 规则。
+[`pg_default_hba_rules`](#pg_default_hba_rules) 与本参数基本类似，但它是用于定义全局的 HBA 规则，而本参数通常用于定制某个集群/实例的 HBA 规则。
 
 ------
 
@@ -503,9 +535,9 @@ role
 
 Pgbouncer 业务HBA规则，默认值为： `[]`， 空数组。
 
-此参数与 [`pg_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pg_hba_rules) 基本类似，都是 [hba](https://pigsty.cc/docs/pgsql/hba/#定义hba) 规则对象的数组，区别在于本参数是为 Pgbouncer 准备的。
+此参数与 [`pg_hba_rules`](#pg_hba_rules) 基本类似，都是 [hba](/zh/pgsql/hba/#定义hba) 规则对象的数组，区别在于本参数是为 Pgbouncer 准备的。
 
-[`pgb_default_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pgb_default_hba_rules) 与本参数基本类似，但它是用于定义全局连接池 HBA 规则，而本参数通常用于定制某个连接池集群/实例的 HBA 规则。
+[`pgb_default_hba_rules`](#pgb_default_hba_rules) 与本参数基本类似，但它是用于定义全局连接池 HBA 规则，而本参数通常用于定制某个连接池集群/实例的 HBA 规则。
 
 ------
 
@@ -575,15 +607,15 @@ PostgreSQL/Pgbouncer 监控用户使用的密码，默认为：`DBUser.Monitor`�
 
 参数名称： `pg_dbsu_password`， 类型： `password`， 层次：`G/C`
 
-PostgreSQL [`pg_dbsu`](https://pigsty.cc/docs/pgsql/param/#pg_dbsu) 超级用户密码，默认是空字符串，即不为其设置密码。
+PostgreSQL [`pg_dbsu`](#pg_dbsu) 超级用户密码，默认是空字符串，即不为其设置密码。
 
-我们不建议为 dbsu 配置密码登陆，这会增大攻击面。例外情况是：[`pg_mode`](https://pigsty.cc/docs/pgsql/param/#pg_mode) = `citus`，这时候需要为每个分片集群的 dbsu 配置密码，以便在分片集群内部进行连接。
+我们不建议为 dbsu 配置密码登陆，这会增大攻击面。例外情况是：[`pg_mode`](#pg_mode) = `citus`，这时候需要为每个分片集群的 dbsu 配置密码，以便在分片集群内部进行连接。
 
 ------
 
 ## `PG_INSTALL`
 
-本节负责安装 PostgreSQL 及其扩展。如果您希望安装不同大版本与扩展插件，修改 [`pg_version`](https://pigsty.cc/docs/pgsql/param/#pg_version) 与 [`pg_extensions`](https://pigsty.cc/docs/pgsql/param/#pg_extensions) 即可，不过请注意，并不是所有扩展都在所有大版本可用。
+本节负责安装 PostgreSQL 及其扩展。如果您希望安装不同大版本与扩展插件，修改 [`pg_version`](#pg_version) 与 [`pg_extensions`](#pg_extensions) 即可，不过请注意，并不是所有扩展都在所有大版本可用。
 
 ```yaml
 pg_dbsu: postgres                 # os 数据库超级用户名称，默认为 postgres，最好不要更改
@@ -591,7 +623,7 @@ pg_dbsu_uid: 26                   # os 数据库超级用户 uid 和 gid，默�
 pg_dbsu_sudo: limit               # 数据库超级用户 sudo 权限，可选 none,limit,all,nopass。默认为 limit
 pg_dbsu_home: /var/lib/pgsql      # postgresql 主目录，默认为 `/var/lib/pgsql`
 pg_dbsu_ssh_exchange: true        # 是否在相同的 pgsql 集群中交换 postgres 数据库超级用户的 ssh 密钥
-pg_version: 16                    # 要安装的 postgres 主版本，默认为 15
+pg_version: 18                    # 要安装的 postgres 主版本，默认为 18
 pg_bin_dir: /usr/pgsql/bin        # postgres 二进制目录，默认为 `/usr/pgsql/bin`
 pg_log_dir: /pg/log/postgres      # postgres 日志目录，默认为 `/pg/log/postgres`
 pg_packages:                      # 待安装的软件包列表，可以使用别名
@@ -665,7 +697,9 @@ postgresql 主目录，默认为 `/var/lib/pgsql`，与官方的 pgdg RPM 保持
 
 对于严格限制 ssh 访问的场景，您可以将其设置为 `false`。
 
-请注意，SSH 密钥交换发生在同时执行剧本的实例之间，如果您针对一个 PostgreSQL 集群运行 `pgsql` 角色，密钥交换将发生在这个集群中的所有实例之间。 如果您针对所有 PostgreSQL 集群运行 `pgsql` 角色，密钥交换将发生在 **所有** 实例之间，对于大规模集群，O(n2) 复杂度交换可能导致严重的组合爆炸。 如果任何参与交换的实例没有 [`pg_dbsu`](https://pigsty.cc/docs/pgsql/param/#pg_dbsu) 用户，与该实例相关的密钥交换将失败，但不影响其他实例的密钥交换。
+请注意，SSH 密钥交换发生在同时执行剧本的实例之间，如果您针对一个 PostgreSQL 集群运行 `pgsql` 角色，密钥交换将发生在这个集群中的所有实例之间。
+如果您针对所有 PostgreSQL 集群运行 `pgsql` 角色，密钥交换将发生在 **所有** 实例之间，对于大规模集群，O(n2) 复杂度交换可能导致严重的组合爆炸。
+如果任何参与交换的实例没有 [`pg_dbsu`](#pg_dbsu) 用户，与该实例相关的密钥交换将失败，但不影响其他实例的密钥交换。
 
 ------
 
@@ -673,11 +707,11 @@ postgresql 主目录，默认为 `/var/lib/pgsql`，与官方的 pgdg RPM 保持
 
 参数名称： `pg_version`， 类型： `enum`， 层次：`C`
 
-要安装的 postgres 主版本，默认为 `17`。
+要安装的 postgres 主版本，默认为 `18`。
 
 请注意，PostgreSQL 的物理流复制不能跨主要版本，因此最好不要在实例级别上配置此项。
 
-您可以使用 [`pg_packages`](https://pigsty.cc/docs/pgsql/param/#pg_packages) 和 [`pg_extensions`](https://pigsty.cc/docs/pgsql/param/#pg_extensions) 中的参数来为特定的 PG 大版本安装不同的软件包与扩展。
+您可以使用 [`pg_packages`](#pg_packages) 和 [`pg_extensions`](#pg_extensions) 中的参数来为特定的 PG 大版本安装不同的软件包与扩展。
 
 ------
 
@@ -691,7 +725,7 @@ PostgreSQL 二进制程序目录，默认为 `/usr/pgsql/bin`。
 
 例如 `/usr/pgsql -> /usr/pgsql-17`。在 Ubuntu/Debian 上则指向 `/usr/lib/postgresql/15/bin`。
 
-更多详细信息，请查看 [PGSQL 文件结构](https://pigsty.cc/docs/reference/fhs/#postgres-fhs)。
+更多详细信息，请查看 [PGSQL 文件结构](/zh/reference/fhs/#postgres-fhs)。
 
 ------
 
@@ -699,9 +733,9 @@ PostgreSQL 二进制程序目录，默认为 `/usr/pgsql/bin`。
 
 参数名称： `pg_log_dir`， 类型： `path`， 层次：`C`
 
-PostgreSQL 日志目录，默认为：`/pg/log/postgres`，[Promtail](https://pigsty.cc/docs/node/param/#promtail) 会使用此变量收集 PostgreSQL 日志。
+PostgreSQL 日志目录，默认为：`/pg/log/postgres`，[Promtail](/zh/node/param/#promtail) 会使用此变量收集 PostgreSQL 日志。
 
-请注意，如果日志目录 [`pg_log_dir`](https://pigsty.cc/docs/pgsql/param/#pg_log_dir) 以数据库目录 [`pg_data`](https://pigsty.cc/docs/pgsql/param/#pg_data) 作为前缀，则不会显式创建（数据库目录初始化时自动创建）。
+请注意，如果日志目录 [`pg_log_dir`](#pg_log_dir) 以数据库目录 [`pg_data`](#pg_data) 作为前缀，则不会显式创建（数据库目录初始化时自动创建）。
 
 ------
 
@@ -721,7 +755,7 @@ PostgreSQL 日志目录，默认为：`/pg/log/postgres`，[Promtail](https://pi
 
 定义在这里的软件包会首先经过 `package_map` 的翻译，然后经过 PG 大版本号的替换，最后安装实际的 RPM/DEB 包。
 
-您也可以直接指定最终安装的 RPM/DEB 包名称，包名中的 `${pg_version}` 或 `$v` 版本号占位符将被替换为具体的大版本号 [`pg_version`](https://pigsty.cc/docs/pgsql/param/#pg_version) 。
+您也可以直接指定最终安装的 RPM/DEB 包名称，包名中的 `${pg_version}` 或 `$v` 版本号占位符将被替换为具体的大版本号 [`pg_version`](#pg_version) 。
 
 ------
 
@@ -731,7 +765,7 @@ PostgreSQL 日志目录，默认为：`/pg/log/postgres`，[Promtail](https://pi
 
 要安装的 PostgreSQL 扩展包（rpm/deb），这是一个由扩展包名组成的数组，每个元素都是逗号或空格分割的 PG 扩展包名。
 
-本参数在形式上与 [`pg_packages`](https://pigsty.cc/docs/pgsql/param/#pg_packages) 一致，但是通常用于指定需要安装的扩展插件，而且在这里指定的软件包会升级到可用的最新版本。
+本参数在形式上与 [`pg_packages`](#pg_packages) 一致，但是通常用于指定需要安装的扩展插件，而且在这里指定的软件包会升级到可用的最新版本。
 
 ```yaml
 pg_extensions: []
@@ -739,7 +773,7 @@ pg_extensions: []
 
 完整可用的扩展列表，已经在 Pigsty 默认生成的配置文件中给出，用户按需使用即可。
 
-完整列表请参考：[`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 与 Pigsty [扩展目录](https://pigsty.cc/ext/list/)
+完整列表请参考：[`roles/node_id/vars`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/) 与 Pigsty [扩展目录](https://pgext.cloud/list/)
 
 ------
 
@@ -747,11 +781,9 @@ pg_extensions: []
 
 使用 Patroni 引导拉起 PostgreSQL 集群，并设置 1:1 对应的 Pgbouncer 连接池。
 
-它还会使用 [`PG_PROVISION`](https://pigsty.cc/docs/pgsql/param/#pg_provision) 中定义的默认角色、用户、权限、模式、扩展来初始化数据库集群
+它还会使用 [`PG_PROVISION`](#pg_provision) 中定义的默认角色、用户、权限、模式、扩展来初始化数据库集群
 
 ```yaml
-pg_safeguard: false               # 保护正在运行的 postgres 实例不被清除？默认值为 `false`
-pg_clean: true                    # 在 pgsql 初始化期间清除现有的 PG 实例？默认值为 `true`
 pg_data: /pg/data                 # postgres 数据目录，默认值为 `/pg/data`
 pg_fs_main: /data/postgres        # postgres 主数据盘挂载点/路径，默认值为 `/data/postgres`
 pg_fs_bkup: /data/backups         # postgres 备份数据盘挂载点/路径，默认值为 `/data/backups`
@@ -785,35 +817,10 @@ pg_encoding: UTF8                 # 数据库集群编码，默认为 `UTF8`
 pg_locale: C                      # 数据库集群区域设置，默认为 `C`
 pg_lc_collate: C                  # 数据库集群排序规则，默认为 `C`
 pg_lc_ctype: C                    # 数据库字符类型，默认为 `C`
-pgbouncer_enabled: true           # 如果禁用，将不会在 pgsql 主机上启动 pgbouncer
-pgbouncer_port: 6432              # pgbouncer 监听端口，默认为 6432
-pgbouncer_log_dir: /pg/log/pgbouncer  # pgbouncer 日志目录，默认为 `/pg/log/pgbouncer`
-pgbouncer_auth_query: false       # 查询 postgres 以检索未列出的业务用户？
-pgbouncer_poolmode: transaction   # 连接池模式：transaction,session,statement，默认为 transaction
-pgbouncer_sslmode: disable        # pgbouncer client ssl mode, disable by default
+#pgsodium_key: ""                 # pgsodium key, 64 hex digits, default to sha256(pg_cluster)
+#pgsodium_getkey_script: ""       # pgsodium getkey script path, pgsodium_getkey by default
 ```
 
-------
-
-### `pg_safeguard`
-
-参数名称： `pg_safeguard`， 类型： `bool`， 层次：`G/C/A`
-
-是否防止清除正在运行的Postgres实例？默认为：`false`。
-
-如果启用，[`pgsql.yml`](https://pigsty.cc/docs/pgsql/playbook/#pgsqlyml) 和 [`pgsql-rm.yml`](https://pigsty.cc/docs/pgsql/playbook/#pgsql-rmyml) 在检测到任何正在运行的postgres实例时将立即中止。
-
-------
-
-### `pg_clean`
-
-参数名称： `pg_clean`， 类型： `bool`， 层次：`G/C/A`
-
-在 PostgreSQL 初始化期间清除现有的 PG 实例吗？默认为：`true`。
-
-默认值为`true`，在 [`pgsql.yml`](https://pigsty.cc/docs/pgsql/playbook/#pgsqlyml) 初始化期间它将清除现有的postgres实例，这使得playbook具有幂等性。
-
-如果设置为 `false`，[`pgsql.yml`](https://pigsty.cc/docs/pgsql/playbook/#pgsqlyml) 会在遇到正在运行的 PostgreSQL 实例时中止。而 [`pgsql-rm.yml`](https://pigsty.cc/docs/pgsql/playbook/#pgsql-rmyml) 将不会删除 PostgreSQL 的数据目录（只会停止服务器）。
 
 ------
 
@@ -823,7 +830,7 @@ pgbouncer_sslmode: disable        # pgbouncer client ssl mode, disable by defaul
 
 Postgres 数据目录，默认为 `/pg/data`。
 
-这是一个指向底层实际数据目录的符号链接，在多处被使用，请不要修改它。参阅 [PGSQL文件结构](https://pigsty.cc/docs/reference/fhs/) 获取详细信息。
+这是一个指向底层实际数据目录的符号链接，在多处被使用，请不要修改它。参阅 [PGSQL文件结构](/zh/reference/fhs/) 获取详细信息。
 
 ------
 
@@ -837,7 +844,7 @@ PostgreSQL 主数据盘的挂载点/文件系统路径，默认为`/data/postgre
 
 建议使用 NVME SSD 作为 PostgreSQL 主数据存储，Pigsty默认为SSD存储进行了优化，但是也支持HDD。
 
-您可以更改[`pg_storage_type`](https://pigsty.cc/docs/pgsql/param/#pg_storage_type)为`HDD`以针对HDD存储进行优化。
+您可以更改[`pg_storage_type`](#pg_storage_type)为`HDD`以针对HDD存储进行优化。
 
 
 ------
@@ -848,7 +855,7 @@ PostgreSQL 主数据盘的挂载点/文件系统路径，默认为`/data/postgre
 
 PostgreSQL 备份数据盘的挂载点/文件系统路径，默认为`/data/backup`。
 
-如果您使用的是默认的 [`pgbackrest_method`](https://pigsty.cc/docs/pgsql/param/#pgbackrest_method) = `local`，建议为备份存储使用一个单独的磁盘。
+如果您使用的是默认的 [`pgbackrest_method`](#pgbackrest_method) = `local`，建议为备份存储使用一个单独的磁盘。
 
 备份磁盘应足够大，以容纳所有的备份，至少足以容纳3个基础备份+2天的WAL归档。 通常容量不是什么大问题，因为您可以使用便宜且大的机械硬盘作为备份盘。
 
@@ -885,7 +892,7 @@ PostgreSQL / Pgbouncer 的监听地址，默认为`0.0.0.0`（所有ipv4地址�
 您可以在此变量中使用占位符，例如：`'${ip},${lo}'`或`'${ip},${vip},${lo}'`：
 
 - `${ip}`：转换为 `inventory_hostname`，它是配置清单中定义的首要内网IP地址。
-- `${vip}`：如果启用了[`pg_vip_enabled`](https://pigsty.cc/docs/pgsql/param/#pg_vip_enabled)，将使用[`pg_vip_address`](https://pigsty.cc/docs/pgsql/param/#pg_vip_address)的主机部分。
+- `${vip}`：如果启用了[`pg_vip_enabled`](#pg_vip_enabled)，将使用[`pg_vip_address`](#pg_vip_address)的主机部分。
 - `${lo}`：将替换为`127.0.0.1`
 
 对于高安全性要求的生产环境，建议限制监听的IP地址。
@@ -906,7 +913,7 @@ PostgreSQL 服务器监听的端口，默认为 `5432`。
 
 本地主机连接 PostgreSQL 使用的 Unix套接字目录，默认值为`/var/run/postgresql`。
 
-PostgreSQL 和 Pgbouncer 本地连接的Unix套接字目录，[`pg_exporter`](https://pigsty.cc/docs/pgsql/param/#pg_exporter) 和 patroni 都会优先使用 Unix 套接字访问 PostgreSQL。
+PostgreSQL 和 Pgbouncer 本地连接的Unix套接字目录，[`pg_exporter`](#pg_exporter) 和 patroni 都会优先使用 Unix 套接字访问 PostgreSQL。
 
 ------
 
@@ -914,7 +921,7 @@ PostgreSQL 和 Pgbouncer 本地连接的Unix套接字目录，[`pg_exporter`](ht
 
 参数名称： `pg_namespace`， 类型： `path`， 层次：`C`
 
-在 [etcd](https://pigsty.cc/docs/etcd/) 中使用的顶级命名空间，由 patroni 和 vip-manager 使用，默认值是：`/pg`，不建议更改。
+在 [etcd](/zh/etcd/) 中使用的顶级命名空间，由 patroni 和 vip-manager 使用，默认值是：`/pg`，不建议更改。
 
 ------
 
@@ -954,7 +961,7 @@ Patroni API服务器在此端口上监听健康检查和API请求。
 
 参数名称： `patroni_log_dir`， 类型： `path`， 层次：`C`
 
-patroni日志目录，默认为`/pg/log/patroni`，由[`promtail`](https://pigsty.cc/docs/node/param/#promtail)收集。
+patroni日志目录，默认为`/pg/log/patroni`，由[`promtail`](/zh/node/param/#promtail)收集。
 
 ------
 
@@ -982,7 +989,7 @@ patroni看门狗模式：`automatic`，`required`，`off`，默认值为 `off`�
 
 默认值为`off`，您不应该在 Infra节点 启用看门狗，数据一致性优先于可用性的关键系统，特别是与钱有关的业务集群可以考虑打开此选项。
 
-请注意，如果您的所有访问流量都使用 HAproxy 健康检查[服务接入](https://pigsty.cc/docs/pgsql/svc/#接入服务)，正常是不存在脑裂风险的。
+请注意，如果您的所有访问流量都使用 HAproxy 健康检查[服务接入](/zh/pgsql/svc/#接入服务)，正常是不存在脑裂风险的。
 
 ------
 
@@ -990,9 +997,9 @@ patroni看门狗模式：`automatic`，`required`，`off`，默认值为 `off`�
 
 参数名称： `patroni_username`， 类型： `username`， 层次：`C`
 
-Patroni REST API 用户名，默认为`postgres`，与[`patroni_password`](https://pigsty.cc/docs/pgsql/param/#patroni_password) 配对使用。
+Patroni REST API 用户名，默认为`postgres`，与[`patroni_password`](#patroni_password) 配对使用。
 
-Patroni的危险 REST API （比如重启集群）由额外的用户名/密码保护，查看[配置集群](https://pigsty.cc/docs/pgsql/admin/#配置集群)和[Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html)以获取详细信息。
+Patroni的危险 REST API （比如重启集群）由额外的用户名/密码保护，查看[配置集群](/zh/pgsql/admin/#配置集群)和[Patroni RESTAPI](https://patroni.readthedocs.io/en/latest/rest_api.html)以获取详细信息。
 
 ------
 
@@ -1094,7 +1101,7 @@ pg_files: [ license.lic ]
 - `olap.yml`：为OLAP工作负载和吞吐量优化（4C8G+）
 - `crit.yml`：为数据一致性和关键应用优化（4C8G+）
 
-默认值：`oltp.yml`，但是[配置](https://pigsty.cc/docs/setup/install/#配置)程序将在当前节点为小节点时将此值设置为 `tiny.yml`。
+默认值：`oltp.yml`，但是[配置](/zh/setup/install/#配置)程序将在当前节点为小节点时将此值设置为 `tiny.yml`。
 
 您可以拥有自己的模板，只需将其放在`templates/<mode>.yml`下，并将此值设置为模板名称即可使用。
 
@@ -1106,7 +1113,7 @@ pg_files: [ license.lic ]
 
 PostgreSQL 服务器最大连接数。你可以选择一个介于 50 到 5000 之间的值，或使用 `auto` 选择推荐值。
 
-默认值为 `auto`，会根据 [`pg_conf`](https://pigsty.cc/docs/pgsql/param/#pg_conf) 和 [`pg_default_service_dest`](https://pigsty.cc/docs/pgsql/param/#pg_default_service_dest) 来设定最大连接数。
+默认值为 `auto`，会根据 [`pg_conf`](#pg_conf) 和 [`pg_default_service_dest`](#pg_default_service_dest) 来设定最大连接数。
 
 - tiny: 250
 - olap: 500
@@ -1117,7 +1124,7 @@ PostgreSQL 服务器最大连接数。你可以选择一个介于 50 到 5000 �
 
 Pgbouncer 的事务池可以缓解过多的 OLTP 连接问题，因此默认情况下不建议设置很大的连接数。
 
-对于 OLAP 场景， [`pg_default_service_dest`](https://pigsty.cc/docs/pgsql/param/#pg_default_service_dest) 修改为 `postgres` 可以绕过连接池。
+对于 OLAP 场景， [`pg_default_service_dest`](#pg_default_service_dest) 修改为 `postgres` 可以绕过连接池。
 
 ------
 
@@ -1127,7 +1134,7 @@ Pgbouncer 的事务池可以缓解过多的 OLTP 连接问题，因此默认情�
 
 Postgres 共享缓冲区内存比例，默认为 `0.25`，正常范围在 `0.1`~`0.4` 之间。
 
-默认值：`0.25`，意味着节点内存的 25% 将被用作 PostgreSQL 的分片缓冲区。如果您想为 PostgreSQL 启用大页，那么此参数值应当适当小于 [`node_hugepage_ratio`](https://pigsty.cc/docs/node/param/#node_hugepage_ratio)。
+默认值：`0.25`，意味着节点内存的 25% 将被用作 PostgreSQL 的分片缓冲区。如果您想为 PostgreSQL 启用大页，那么此参数值应当适当小于 [`node_hugepage_ratio`](/zh/node/param/#node_hugepage_ratio)。
 
 将此值设定为大于 0.4（40%）通常不是好主意，但在极端情况下可能有用。
 
@@ -1176,7 +1183,7 @@ primary_start_timeout: {{ (pg_rto / 3)|round(0, 'ceil')|int }}
 - 提升一个从库成为新的主库，并尽快将系统恢复服务，但要付出可接受的数据丢失代价（例如，少于 1MB）。
 - 等待主库重新上线（可能永远不会），或人工干预以避免任何数据丢失。
 
-你可以使用 `crit.yml` [conf](https://pigsty.cc/docs/pgsql/param/#pg_conf) 模板来确保在故障转移期间没有数据丢失，但这会牺牲一些性能。
+你可以使用 `crit.yml` [conf](#pg_conf) 模板来确保在故障转移期间没有数据丢失，但这会牺牲一些性能。
 
 ------
 
@@ -1186,7 +1193,7 @@ primary_start_timeout: {{ (pg_rto / 3)|round(0, 'ceil')|int }}
 
 预加载的动态共享库，默认为 `pg_stat_statements,auto_explain`，这是两个 PostgreSQL 自带的扩展，强烈建议启用。
 
-对于现有集群，您可以直接[配置集群](https://pigsty.cc/docs/pgsql/admin/#配置集群)的 `shared_preload_libraries` 参数并应用生效。
+对于现有集群，您可以直接[配置集群](/zh/pgsql/admin/#配置集群)的 `shared_preload_libraries` 参数并应用生效。
 
 如果您想使用 TimescaleDB 或 Citus 扩展，您需要将 `timescaledb` 或 `citus` 添加到此列表中。`timescaledb` 和 `citus` 应当放在这个列表的最前面，例如：
 
@@ -1206,7 +1213,7 @@ citus,timescaledb,pg_stat_statements,auto_explain
 
 如果此值被设置为一个正值，备用集群主库在应用 WAL 变更之前将被延迟这个时间。设置为 `1h` 意味着该集群中的数据将始终滞后原集群一个小时。
 
-查看 [延迟备用集群](https://pigsty.cc/docs/pgsql/config/#延迟集群) 以获取详细信息。
+查看 [延迟备用集群](/zh/pgsql/config/#延迟集群) 以获取详细信息。
 
 ------
 
@@ -1218,7 +1225,7 @@ citus,timescaledb,pg_stat_statements,auto_explain
 
 这个参数只能在 PGSQL 部署之前设置（但你可以稍后手动启用它）。
 
-如果使用 [`pg_conf`](https://pigsty.cc/docs/pgsql/param/#pg_conf) `crit.yml` 模板，无论此参数如何，都会始终启用数据校验和，以确保数据完整性。
+如果使用 [`pg_conf`](#pg_conf) `crit.yml` 模板，无论此参数如何，都会始终启用数据校验和，以确保数据完整性。
 
 ------
 
@@ -1254,7 +1261,7 @@ PostgreSQL 使用的本地化规则集，默认为 `C`。会在数据库初始�
 
 除非你非常清楚自己在做什么，否则强烈建议您使用默认的 `C` 或 `C.UTF-8` 配置。
 
-通常应当与 [`pg_lc_collate`](https://pigsty.cc/docs/pgsql/param/#pg_lc_collate) 和 [`pg_lc_ctype`](https://pigsty.cc/docs/pgsql/param/#pg_lc_ctype) 配置保持一致。
+通常应当与 [`pg_lc_collate`](#pg_lc_collate) 和 [`pg_lc_ctype`](#pg_lc_ctype) 配置保持一致。
 
 ------
 
@@ -1266,7 +1273,7 @@ PostgreSQL 使用的本地化排序规则集，默认为 `C`，一旦确定，�
 
 当 `configure` 检测到当前 PG 版本大于等于 17，或者当前系统明确支持 `C.utf8` 时，会自动配置此参数为 `C.UTF-8`。
 
-配置规则与 [`pg_locale`](https://pigsty.cc/docs/pgsql/param/#pg_locale) 一致，但针对排序规则。
+配置规则与 [`pg_locale`](#pg_locale) 一致，但针对排序规则。
 
 ------
 
@@ -1278,83 +1285,41 @@ PostgreSQL 使用的本地化字符集定义 CTYPE，默认为 `C`，一旦确�
 
 当 `configure` 检测到当前 PG 版本大于等于 17，或者当前系统明确支持 `C.utf8` 时，会自动配置此参数为 `C.UTF-8`。
 
-配置规则与 [`pg_locale`](https://pigsty.cc/docs/pgsql/param/#pg_locale) 一致，但针对字符类型。
+配置规则与 [`pg_locale`](#pg_locale) 一致，但针对字符类型。
 
 ------
 
-### `pgbouncer_enabled`
+### `pgsodium_key`
 
-参数名称： `pgbouncer_enabled`， 类型： `bool`， 层次：`C`
+参数名称： `pgsodium_key`， 类型： `string`， 层次：`C`
 
-默认值为 `true`，如果禁用，将不会在 PGSQL节点上配置连接池 Pgbouncer。
+默认值未定义，将使用 [`pg_cluster`](#pg_cluster) 的 SHA256 哈希值作为密钥。
 
-------
+你可以提供自定义的 [pgsodium](https://github.com/michelp/pgsodium) 密钥，应该是 64 位十六进制数字字符串。
 
-### `pgbouncer_port`
-
-参数名称： `pgbouncer_port`， 类型： `port`， 层次：`C`
-
-Pgbouncer 监听端口，默认为 `6432`。
+密钥将被写入 `/pg/conf/pgsodium.key`。
 
 ------
 
-### `pgbouncer_log_dir`
+### `pgsodium_getkey_script`
 
-参数名称： `pgbouncer_log_dir`， 类型： `path`， 层次：`C`
+参数名称： `pgsodium_getkey_script`， 类型： `path`， 层次：`C`
 
-Pgbouncer 日志目录，默认为 `/pg/log/pgbouncer`，日志代理 [promtail](https://pigsty.cc/docs/node/param/#promtail) 会根据此参数收集 Pgbouncer 日志。
+默认值为 `pgsodium_getkey`，它将 [`roles/pgsql/templates/pgsodium_getkey`](https://github.com/pgsty/pigsty/blob/main/roles/pgsql/templates/pgsodium_getkey) 渲染到 `/pg/bin/pgsodium_getkey`。
 
-------
-
-### `pgbouncer_auth_query`
-
-参数名称： `pgbouncer_auth_query`， 类型： `bool`， 层次：`C`
-
-是否允许 Pgbouncer 查询 PostgreSQL，以允许未显式列出的用户通过连接池访问 PostgreSQL？默认值是 `false`。
-
-如果启用，pgbouncer 用户将使用 `SELECT username, password FROM monitor.pgbouncer_auth($1)` 对 postgres 数据库进行身份验证，否则，只有带有 `pgbouncer: true` 的业务用户才被允许连接到 Pgbouncer 连接池。
-
-------
-
-### `pgbouncer_poolmode`
-
-参数名称： `pgbouncer_poolmode`， 类型： `enum`， 层次：`C`
-
-Pgbouncer 连接池池化模式：`transaction`,`session`,`statement`，默认为 `transaction`。
-
-- `session`：会话级池化，具有最佳的功能兼容性。
-- `transaction`：事务级池化，具有更好的性能（许多小连接），可能会破坏某些会话级特性，如`NOTIFY/LISTEN` 等…
-- `statements`：语句级池化，用于简单的只读查询。
-
-如果您的应用出现功能兼容性问题，可以考虑修改此参数为 `session`。
-
-------
-
-### `pgbouncer_sslmode`
-
-参数名称： `pgbouncer_sslmode`， 类型： `enum`， 层次：`C`
-
-Pgbouncer 客户端 ssl 模式，默认为 `disable`。
-
-注意，启用 SSL 可能会对你的 pgbouncer 产生巨大的性能影响。
-
-- `disable`：如果客户端请求 TLS 则忽略（默认）
-- `allow`：如果客户端请求 TLS 则使用。如果没有则使用纯TCP。不验证客户端证书。
-- `prefer`：与 allow 相同。
-- `require`：客户端必须使用 TLS。如果没有则拒绝客户端连接。不验证客户端证书。
-- `verify-ca`：客户端必须使用有效的客户端证书的TLS。
-- `verify-full`：与 verify-ca 相同。
+默认的 getkey 脚本只是从 `/pg/conf/pgsodium.key` 读取 [`pgsodium_key`](#pgsodium_key) 并返回它。
+如果你的密钥由外部系统（如 KMS、IAM 等）管理，你可以实现自己的 getkey 脚本从那里获取密钥：[示例](https://github.com/michelp/pgsodium/tree/main/getkey_scripts)。
 
 ------
 
 ## `PG_PROVISION`
 
-如果说 [`PG_BOOTSTRAP`](https://pigsty.cc/docs/pgsql/param/#pg_bootstrap) 是创建一个新的集群，那么 PG_PROVISION 就是在集群中创建默认的对象，包括：
+如果说 [`PG_BOOTSTRAP`](#pg_bootstrap) 是创建一个新的集群，那么 PG_PROVISION 就是在集群中创建默认的对象，包括：
 
-- [默认角色](https://pigsty.cc/docs/pgsql/acl/#默认角色)
-- [默认用户](https://pigsty.cc/docs/pgsql/acl/#默认用户)
-- [默认权限](https://pigsty.cc/docs/pgsql/acl/#默认权限)
-- [默认HBA规则](https://pigsty.cc/docs/pgsql/hba/#默认hba)
+- [默认角色](/zh/pgsql/acl/#默认角色)
+- [默认用户](/zh/pgsql/acl/#默认用户)
+- [默认权限](/zh/pgsql/acl/#默认权限)
+- [默认HBA规则](/zh/pgsql/hba/#默认hba)
 - 默认模式
 - 默认扩展
 
@@ -1459,7 +1424,7 @@ pgb_default_hba_rules:            # pgbouncer 默认 HBA 规则集
 
 Postgres 集群中的默认角色和用户。
 
-Pigsty有一个内置的角色系统，请查看[PGSQL访问控制：角色系统](https://pigsty.cc/docs/pgsql/acl/#角色系统)了解详情。
+Pigsty有一个内置的角色系统，请查看[PGSQL访问控制：角色系统](/zh/pgsql/acl/#角色系统)了解详情。
 
 ```yaml
 pg_default_roles:                 # default roles and users in postgres cluster
@@ -1502,7 +1467,7 @@ pg_default_privileges:            # 管理员用户创建时的默认权限
   - GRANT CREATE     ON SCHEMAS   TO dbrole_admin
 ```
 
-Pigsty 基于默认角色系统提供了相应的默认权限设置，请查看[PGSQL访问控制：权限](https://pigsty.cc/docs/pgsql/acl/#默认权限)了解详情。
+Pigsty 基于默认角色系统提供了相应的默认权限设置，请查看[PGSQL访问控制：权限](/zh/pgsql/acl/#默认权限)了解详情。
 
 ------
 
@@ -1541,7 +1506,7 @@ pg_default_extensions: # default extensions to be created
 
 唯一的三方扩展是 [`pg_repack`](https://pigsty.cc/ext/admin/pg_repack/)，这对于数据库维护很重要，所有其他扩展都是内置的 PostgreSQL Contrib 扩展插件。
 
-监控相关的扩展默认安装在 `monitor` 模式中，该模式由[`pg_default_schemas`](https://pigsty.cc/docs/pgsql/param/#pg_default_schemas)创建。
+监控相关的扩展默认安装在 `monitor` 模式中，该模式由[`pg_default_schemas`](#pg_default_schemas)创建。
 
 ------
 
@@ -1577,9 +1542,9 @@ pg_default_hba_rules:             # postgres default host-based authentication r
   - {user: '+dbrole_offline' ,db: all    ,addr: intra     ,auth: pwd   ,title: 'allow etl offline tasks from intranet'}
 ```
 
-默认值为常见场景提供了足够的安全级别，请查看[PGSQL身份验证](https://pigsty.cc/docs/pgsql/hba/)了解详情。
+默认值为常见场景提供了足够的安全级别，请查看[PGSQL身份验证](/zh/pgsql/hba/)了解详情。
 
-本参数为 [HBA](https://pigsty.cc/docs/pgsql/hba/#定义hba)规则对象组成的数组，在形式上与 [`pg_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pg_hba_rules) 完全一致。 建议在全局配置统一的 [`pg_default_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pg_default_hba_rules)，针对特定集群使用 [`pg_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pg_hba_rules) 进行额外定制。两个参数中的规则都会依次应用，后者优先级更高。
+本参数为 [HBA](/zh/pgsql/hba/#定义hba)规则对象组成的数组，在形式上与 [`pg_hba_rules`](#pg_hba_rules) 完全一致。 建议在全局配置统一的 [`pg_default_hba_rules`](#pg_default_hba_rules)，针对特定集群使用 [`pg_hba_rules`](#pg_hba_rules) 进行额外定制。两个参数中的规则都会依次应用，后者优先级更高。
 
 ------
 
@@ -1587,9 +1552,9 @@ pg_default_hba_rules:             # postgres default host-based authentication r
 
 参数名称： `pgb_default_hba_rules`， 类型： `hba[]`， 层次：`G/C`
 
-Pgbouncer 默认的基于主机的认证规则，数组或 [hba](https://pigsty.cc/docs/pgsql/hba/#定义hba) 规则对象。
+Pgbouncer 默认的基于主机的认证规则，数组或 [hba](/zh/pgsql/hba/#定义hba) 规则对象。
 
-默认值提供了一套对于常见场景足够的安全级别，查看 [PGSQL Authentication](https://pigsty.cc/docs/pgsql/hba/) 了解详情。
+默认值提供了一套对于常见场景足够的安全级别，查看 [PGSQL Authentication](/zh/pgsql/hba/) 了解详情。
 
 ```yaml
 pgb_default_hba_rules:            # pgbouncer default host-based authentication rules
@@ -1609,7 +1574,7 @@ pgb_default_hba_rules:            # pgbouncer default host-based authentication 
 
 用户可以按照自己的需求进行定制。
 
-本参数在形式上与 [`pgb_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pgb_hba_rules) 完全一致，建议在全局配置统一的 [`pgb_default_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pgb_default_hba_rules)，针对特定集群使用 [`pgb_hba_rules`](https://pigsty.cc/docs/pgsql/param/#pgb_hba_rules) 进行额外定制。两个参数中的规则都会依次应用，后者优先级更高。
+本参数在形式上与 [`pgb_hba_rules`](#pgb_hba_rules) 完全一致，建议在全局配置统一的 [`pgb_default_hba_rules`](#pgb_default_hba_rules)，针对特定集群使用 [`pgb_hba_rules`](#pgb_hba_rules) 进行额外定制。两个参数中的规则都会依次应用，后者优先级更高。
 
 ------
 
@@ -1617,7 +1582,7 @@ pgb_default_hba_rules:            # pgbouncer default host-based authentication 
 
 本节定义了用于 [pgBackRest](https://pgbackrest.org/) 的变量，它被用于 PGSQL 时间点恢复 PITR 。
 
-查看 [PGSQL 备份 & PITR](https://pigsty.cc/docs/pgsql/pitr/) 以获取详细信息。
+查看 [PGSQL 备份 & PITR](/zh/pgsql/pitr/) 以获取详细信息。
 
 ```yaml
 pgbackrest_enabled: true          # 在 pgsql 主机上启用 pgBackRest 吗？
@@ -1674,7 +1639,7 @@ pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/c
 
 参数名称： `pgbackrest_log_dir`， 类型： `path`， 层次：`C`
 
-pgBackRest 日志目录，默认为 `/pg/log/pgbackrest`，[`promtail`](https://pigsty.cc/docs/node/param/#promtail) 日志代理会引用此参数收集日志。
+pgBackRest 日志目录，默认为 `/pg/log/pgbackrest`，[`promtail`](/zh/node/param/#promtail) 日志代理会引用此参数收集日志。
 
 ------
 
@@ -1684,9 +1649,25 @@ pgBackRest 日志目录，默认为 `/pg/log/pgbackrest`，[`promtail`](https://
 
 pgBackRest 仓库方法：默认可选项为：`local`、`minio` 或其他用户定义的方法，默认为 `local`。
 
-此参数用于确定用于 pgBackRest 的仓库，所有可用的仓库方法都在 [`pgbackrest_repo`](https://pigsty.cc/docs/pgsql/param/#pgbackrest_repo) 中定义。
+此参数用于确定用于 pgBackRest 的仓库，所有可用的仓库方法都在 [`pgbackrest_repo`](#pgbackrest_repo) 中定义。
 
-Pigsty 默认使用 `local` 备份仓库，这将在主实例的 `/pg/backup` 目录上创建一个备份仓库。底层存储路径由 [`pg_fs_bkup`](https://pigsty.cc/docs/pgsql/param/#pg_fs_bkup) 指定。
+Pigsty 默认使用 `local` 备份仓库，这将在主实例的 `/pg/backup` 目录上创建一个备份仓库。底层存储路径由 [`pg_fs_bkup`](#pg_fs_bkup) 指定。
+
+------
+
+### `pgbackrest_init_backup`
+
+name: `pgbackrest_init_backup`, type: `bool`, level: `C`
+
+Take a full backup after pgBackRest is initialized? default value is `true`.
+
+An initial pgbackrest backup is created after repo init if:
+
+- `pgbackrest_init_backup` is `true` (and `pgbackrest_enabled` is `true` of course)
+- The `/etc/pgbackrest/initial.done` marker file doesn't exist (will be created after the initial backup is done).
+
+If you don't want to take an initial full backup at all, just set this parameter to`false`.
+
 
 ------
 
@@ -1729,9 +1710,11 @@ pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/c
 
 在备份仓库定义参数中，你可以使用 `${pg_cluster}` 变量来引用集群名称，例如作为备份路径或加密密钥的一部分。 但如果你有跨集群 PITR 的需求，则应该保持备份仓库路径与加密密钥相同。
 
+
+
 ------
 
-## `PG_SERVICE`
+## `PG_ACCESS`
 
 本节介绍如何将PostgreSQL服务暴露给外部世界，包括：
 
@@ -1740,9 +1723,16 @@ pgbackrest_repo:                  # pgbackrest 仓库：https://pgbackrest.org/c
 - 在基础设施节点上使用`dnsmasq`注册集群/实例DNS记录
 
 ```yaml
-pg_weight: 100          #实例 # 服务中的相对负载均衡权重，默认为100，范围0-255
-pg_default_service_dest: pgbouncer # 如果svc.dest='default'，则此为默认服务目的地
-pg_default_services:              # postgres默认服务定义
+pgbouncer_enabled: true           # if disabled, pgbouncer will not be launched on pgsql host
+pgbouncer_port: 6432              # pgbouncer listen port, 6432 by default
+pgbouncer_log_dir: /pg/log/pgbouncer  # pgbouncer log dir, `/pg/log/pgbouncer` by default
+pgbouncer_auth_query: false       # query postgres to retrieve unlisted business users?
+pgbouncer_poolmode: transaction   # pooling mode: transaction,session,statement, transaction by default
+pgbouncer_sslmode: disable        # pgbouncer client ssl mode, disable by default
+
+pg_weight: 100          #INSTANCE # relative load balance weight in service, 100 by default, 0-255
+pg_default_service_dest: pgbouncer # default service destination if svc.dest='default'
+pg_default_services:              # postgres default service definitions
   - { name: primary ,port: 5433 ,dest: default  ,check: /primary   ,selector: "[]" }
   - { name: replica ,port: 5434 ,dest: default  ,check: /read-only ,selector: "[]" , backup: "[? pg_role == `primary` || pg_role == `offline` ]" }
   - { name: default ,port: 5436 ,dest: postgres ,check: /primary   ,selector: "[]" }
@@ -1754,6 +1744,88 @@ pg_dns_suffix: ''                 # pgsql dns后缀，默认为空
 pg_dns_target: auto               # auto、primary、vip、none或特定的ip
 ```
 
+
+
+------
+
+### `pgbouncer_enabled`
+
+name: `pgbouncer_enabled`, type: `bool`, level: `C`
+
+default value is `true`, if disabled, pgbouncer will not be launched on pgsql host
+
+------
+
+### `pgbouncer_port`
+
+name: `pgbouncer_port`, type: `port`, level: `C`
+
+pgbouncer listen port, `6432` by default
+
+------
+
+### `pgbouncer_log_dir`
+
+name: `pgbouncer_log_dir`, type: `path`, level: `C`
+
+pgbouncer log dir, `/pg/log/pgbouncer` by default, referenced by promtail the logging agent.
+
+------
+
+### `pgbouncer_auth_query`
+
+name: `pgbouncer_auth_query`, type: `bool`, level: `C`
+
+query postgres to retrieve unlisted business users? default value is `false`
+
+If enabled, pgbouncer user will be authenticated against postgres databases with `SELECT username, password FROM monitor.pgbouncer_auth($1)`, otherwise, only the users with `pgbouncer: true` will be allowed to connect to pgbouncer.
+
+
+------
+
+### `pgbouncer_poolmode`
+
+name: `pgbouncer_poolmode`, type: `enum`, level: `C`
+
+Pgbouncer pooling mode: `transaction`, `session`, `statement`, `transaction` by default
+
+- `session`: Session-level pooling with the best compatibility.
+- `transaction`: Transaction-level pooling with better performance (lots of small conns), could break some session level features such as notify/listen, etc…
+- `statements`: Statement-level pooling which is used for simple read-only queries.
+
+If your application has some compatibility issues with pgbouncer, you can try to change this value to `session` instead.
+
+
+------
+
+### `pgbouncer_sslmode`
+
+name: `pgbouncer_sslmode`, type: `enum`, level: `C`
+
+pgbouncer client ssl mode, `disable` by default
+
+default values: `disable`, beware that this may have a huge performance impact on your pgbouncer.
+
+- `disable`: Plain TCP. If a client requests TLS, it’s ignored. Default.
+- `allow`: If a client requests TLS, it is used. If not, plain TCP is used. If the client presents a client certificate, it is not validated.
+- `prefer`: Same as allow.
+- `require`: Client must use TLS. If not, the client connection is rejected. If the client presents a client certificate, it is not validated.
+- `verify-ca`: Client must use TLS with valid client certificate.
+- `verify-full`: Same as verify-ca.
+
+------
+
+### `pgbouncer_ignore_param`
+
+name: `pgbouncer_ignore_param`, type: `string[]`, level: `G/C`
+
+default values: `[ extra_float_digits, application_name, TimeZone, DateStyle, IntervalStyle, search_path ]`
+
+This will be used as value of [**`ignore_startup_parameters`**](https://www.pgbouncer.org/config.html#ignore_startup_parameters) in pgbouncer.
+
+
+
+
 ------
 
 ### `pg_weight`
@@ -1762,7 +1834,7 @@ pg_dns_target: auto               # auto、primary、vip、none或特定的ip
 
 服务中的相对负载均衡权重，默认为100，范围0-255。
 
-默认值： `100`。您必须在实例变量中定义它，并[重载服务](https://pigsty.cc/docs/pgsql/admin/#重载服务)以生效。
+默认值： `100`。您必须在实例变量中定义它，并[重载服务](/zh/pgsql/admin/#重载服务)以生效。
 
 ------
 
@@ -1791,7 +1863,7 @@ pg_default_services:             # alloc port 10001 and 10002 for pg-test primar
 
 参数名称： `pg_default_service_dest`， 类型： `enum`， 层次：`G/C`
 
-当定义一个[服务](https://pigsty.cc/docs/pgsql/svc/#定义服务)时，如果 `svc.dest='default'`，此参数将用作默认值。
+当定义一个[服务](/zh/pgsql/svc/#定义服务)时，如果 `svc.dest='default'`，此参数将用作默认值。
 
 默认值： `pgbouncer`，意味着 `5433` 读写服务和 `5434` 只读服务将默认将流量路由到 pgbouncer。
 
@@ -1805,7 +1877,7 @@ pg_default_services:             # alloc port 10001 and 10002 for pg-test primar
 
 postgres默认服务定义
 
-默认值是四个默认服务定义，如[PGSQL Service](https://pigsty.cc/docs/pgsql/svc/#服务概述)所述
+默认值是四个默认服务定义，如[PGSQL Service](/zh/pgsql/svc/#服务概述)所述
 
 ```yaml
 pg_default_services:               # postgres default service definitions
@@ -1889,7 +1961,7 @@ PostgreSQL DNS 名称后缀，默认为空字符串。
 
 - `vip`：绑定到`pg_vip_address`
 - `primary`：解析为集群主实例IP地址
-- `auto`：如果 [`pg_vip_enabled`](https://pigsty.cc/docs/pgsql/param/#pg_vip_enabled)，解析为 [`pg_vip_address`](https://pigsty.cc/docs/pgsql/param/#pg_vip_address)，或回退到集群主实例ip地址。
+- `auto`：如果 [`pg_vip_enabled`](#pg_vip_enabled)，解析为 [`pg_vip_address`](#pg_vip_address)，或回退到集群主实例ip地址。
 - `none`：不绑定到任何ip地址
 - `<ipv4>`：绑定到指定的IP地址
 
@@ -1948,7 +2020,7 @@ pg_exporter 配置文件名，PG Exporter 和 PGBouncer Exporter 都会使用这
 
 参数名称： `pg_exporter_cache_ttls`， 类型： `string`， 层次：`C`
 
-pg_exporter 收集器 TTL 阶梯（秒），默认为 ‘1,10,60,300’
+pg_exporter 收集器 TTL 阶梯（秒），默认为 `1,10,60,300`
 
 默认值：`1,10,60,300`，它将为不同的度量收集器使用不同的TTL值： 1s, 10s, 60s, 300s。
 
@@ -1961,7 +2033,8 @@ ttl_slow: "{{ pg_exporter_cache_ttls.split(',')[2]|int }}"         # slow querie
 ttl_slowest: "{{ pg_exporter_cache_ttls.split(',')[3]|int }}"      # ver slow queries (e.g bloat)
 ```
 
-例如，在默认配置下，存活类指标默认最多缓存 `1s`，大部分普通指标会缓存 `10s`（应当与 [`prometheus_scrape_interval`](https://pigsty.cc/docs/infra/param/#prometheus_scrape_interval) 相同）。 少量变化缓慢的查询会有 `60s` 的TTL，极个别大开销监控查询会有 `300s` 的TTL。
+例如，在默认配置下，存活类指标默认最多缓存 `1s`，大部分普通指标会缓存 `10s`（应当与 [`prometheus_scrape_interval`](/zh/infra/param#prometheus_scrape_interval) 相同）。
+少量变化缓慢的查询会有 `60s` 的TTL，极个别大开销监控查询会有 `300s` 的TTL。
 
 ------
 
@@ -2060,7 +2133,7 @@ PG_EXPORTER_OPTS='--web.listen-address=:{{ pg_exporter_port }} --log.level=info'
 {% endif %}
 ```
 
-注意，请不要在本参数中覆盖 [`pg_exporter_port`](https://pigsty.cc/docs/pgsql/param/#pg_exporter_port) 的端口配置。
+注意，请不要在本参数中覆盖 [`pg_exporter_port`](#pg_exporter_port) 的端口配置。
 
 ------
 
@@ -2069,6 +2142,8 @@ PG_EXPORTER_OPTS='--web.listen-address=:{{ pg_exporter_port }} --log.level=info'
 参数名称： `pgbouncer_exporter_enabled`， 类型： `bool`， 层次：`C`
 
 在 PGSQL 节点上，是否启用 pgbouncer_exporter ？默认值为：`true`。
+
+
 
 ------
 
@@ -2112,7 +2187,7 @@ PG_EXPORTER_OPTS='--web.listen-address=:{{ pgbouncer_exporter_port }} --log.leve
 {% endif %}
 ```
 
-注意，请不要在本参数中覆盖 [`pgbouncer_exporter_port`](https://pigsty.cc/docs/pgsql/param/#pgbouncer_exporter_port) 的端口配置。
+注意，请不要在本参数中覆盖 [`pgbouncer_exporter_port`](#pgbouncer_exporter_port) 的端口配置。
 
 ------
 
@@ -2122,7 +2197,7 @@ PG_EXPORTER_OPTS='--web.listen-address=:{{ pgbouncer_exporter_port }} --log.leve
 
 在 PGSQL 节点上，是否启用 pgbackrest_exporter ？默认值为：`true`。
 
-如果 [`pgbackrest_enabled`](https://pigsty.cc/docs/pgsql/param/#pgbackrest_enabled) 为 `false`，则本参数因短路无效。
+如果 [`pgbackrest_enabled`](#pgbackrest_enabled) 为 `false`，则本参数因短路无效。
 
 ------
 
@@ -2140,3 +2215,60 @@ pgbackrest_exporter 监听端口号，默认值为：`9854`
 
 传给 Pgbouncer Exporter 的命令行参数，默认值为：`""` 空字符串。
 
+
+
+------
+
+## `PG_REMOVE`
+
+These flags control the behavior of [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) playbook, which is used to remove postgres instance or cluster.
+
+```yaml
+pg_safeguard: false               # stop pg_remove running if pg_safeguard is enabled, false by default
+keep_data: false                  # keep postgres data during remove? false by default
+keep_backup: false                # keep pgbackrest backup during remove? false by default
+keep_package: false               # keep postgres packages during remove? false by default
+```
+
+
+------
+
+### `pg_safeguard`
+
+name: `pg_safeguard`, type: `bool`, level: `G/C/A`
+
+prevent purging running postgres instance? false by default
+
+If enabled, [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) & [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) will abort immediately if any postgres instance is running.
+
+------
+
+### `keep_data`
+
+name: `keep_data`, type: `bool`, level: `G/C/A`
+
+keep postgres data during remove? `false` by default.
+If set to `true`, the postgres data directory will be preserved during the remove playbook.
+
+
+------
+
+### `keep_backup`
+
+name: `keep_backup`, type: `bool`, level: `G/C/A`
+
+keep pgbackrest backup during remove? `false` by default.
+If set to `true`, the pgbackrest backup repository will be preserved during the remove playbook.
+
+This only applies to primary instance. (backup will be remove when primary instance is removed)
+
+
+
+------
+
+### `keep_package`
+
+name: `keep_package`, type: `bool`, level: `G/C/A`
+
+keep postgres packages during remove? `false` by default.
+If set to `true`, the postgres and extension packages will be preserved during the remove playbook.
