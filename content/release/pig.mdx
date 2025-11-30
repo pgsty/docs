@@ -4,15 +4,17 @@ description: the pig package manager release note
 icon: PiggyBank
 ---
 
-[**pig**](https://pig.pgsty.com) is an open-source PostgreSQL (& Extension) Package Manager for [Mainstream Linux](/prepare/linux).
+[**pig**](https://pgext.cloud/pig) is an open-source PostgreSQL (& Extension) Package Manager for [Mainstream Linux](/prepare/linux).
 
-Install PostgreSQL 13~17 along with [437 extensions](https://pgext.cloud/list) on (`amd64` / `arm64`) with native `apt`/`yum`/`dnf`.
+Install PostgreSQL 13 ~ 18 along with [437 extensions](https://pgext.cloud/list) on (`amd64` / `arm64`) with native `apt`/`yum`/`dnf`.
 
 The latest stable version is [v0.6.0](https://github.com/pgsty/pig/releases/tag/v0.6.0),
-Check the [GitHub Repo](https://github.com/pgsty/pig) and [pig documentation](https://pig.pgsty.com) for more details.
+Check the [GitHub Repo](https://github.com/pgsty/pig) and [pig documentation](https://pgext.cloud/pig) for more details.
 
 |     Version     |    Date    | Summary                                    |                           GitHub                           |
 |:---------------:|:----------:|--------------------------------------------|:----------------------------------------------------------:|
+| [v0.7.3](#v073) | 2025-11-24 | fix repo for el10 & debian13               | [v0.7.3](https://github.com/pgsty/pig/releases/tag/v0.7.3) |
+| [v0.7.2](#v072) | 2025-11-20 | 437 extensions, fix pig build issue        | [v0.7.2](https://github.com/pgsty/pig/releases/tag/v0.7.2) |
 | [v0.7.1](#v071) | 2025-11-10 | New Website, improve in-docker experience  | [v0.7.1](https://github.com/pgsty/pig/releases/tag/v0.7.1) |
 | [v0.7.0](#v070) | 2025-11-05 | Build Enhancement and massive upgrade      | [v0.7.0](https://github.com/pgsty/pig/releases/tag/v0.7.0) |
 | [v0.6.2](#v062) | 2025-10-03 | PG 18 official Repo                        | [v0.6.2](https://github.com/pgsty/pig/releases/tag/v0.6.2) |
@@ -36,6 +38,52 @@ Check the [GitHub Repo](https://github.com/pgsty/pig) and [pig documentation](ht
 | [v0.1.0](#v010) | 2024-12-29 | repo, ext, sty, and self-update            | [v0.1.0](https://github.com/pgsty/pig/releases/tag/v0.1.0) |
 | [v0.0.1](#v001) | 2024-12-23 | Genesis Release                            | [v0.0.1](https://github.com/pgsty/pig/releases/tag/v0.0.1) |
 
+--------
+
+## v0.7.3
+
+- add new command: `pig repo reload` to update `repo.yml`
+- fix EL PGDG sysupdate aarch64 repo issue (now aarch64 repo ready)
+- fix EL10.aarch64 PGDG repo issue (rhel-10-aarch64 to rhel-10.0-aarch64)
+- update extension version and meta data
+- bump Pigsty version to 3.7.0
+
+**Checksums**
+
+```bash
+786d72f6b685d6d6abf5f255f0a7de9204988a05630a26a53bfc7631823c0c6f  pig-0.7.3-1.aarch64.rpm
+da59e24ef79d1164e348bacc43e3222e8e2778ec0e103e7ffc0c6df064758e8f  pig-0.7.3-1.x86_64.rpm
+73062a979749095e89abc07dd583d34d4f57908bb4ee935cf7640f129ca6a2cb  pig-v0.7.3.darwin-amd64.tar.gz
+ca5f5576f6d0d9be1d10cad769821be9daa62220b2fb56b94d6e4c0cede6da61  pig-v0.7.3.darwin-arm64.tar.gz
+d193b4b87cf9a6e4775b1b07709802d30f0233ccb1b728843a09decb545168d3  pig-v0.7.3.linux-amd64.tar.gz
+e7f612df0e8e4d9fac6df3765862b9e491bb50aad651856abf7a6935986e6f99  pig-v0.7.3.linux-arm64.tar.gz
+3d5306ce95dcf704dd498b05325d942637564b13115f1e5a5bb9ef6781df1ba6  pig_0.7.3-1_amd64.deb
+32e695ba2d49a741d8cd92008f8f2dec29f10754d35b732035f48517b382c30d  pig_0.7.3-1_arm64.deb
+```
+
+--------
+
+## v0.7.2
+
+- Extension list update, + 6 new extensions, 437 total
+- Add PGDG EL10 Sysupdate repo
+- Add LLVM APT repo
+- use local extension.csv catalog in pig build sub command
+- update: vchord pg_later pgvectorscale pglite_fusion pgx_ulid pg_search citus timescaledb pg_profile pg_stat_monitor documentdb
+- new: pglinter pg_typeid pg_enigma pg_retry pg_biscuit pg_weighted_statistics
+
+**Checksums**
+
+```bash
+f303c391fc28bc74832712e0aa58319abe0ebcae4f6c07fdf9a9e542b735d2ec  pig-0.7.2-1.aarch64.rpm
+c096a61a4e3a49b1238659664bbe2cd7f29954c43fb6bb8e8e9fb271f95a612e  pig-0.7.2-1.x86_64.rpm
+5e037c891dff23b46856485108d6f64bede5216dfbd4f38a481f0d0672ee910b  pig-v0.7.2.darwin-amd64.tar.gz
+736b4b47999c543c3c886781f4d8dddbf4276f363c35c7bf50094b6f18d14600  pig-v0.7.2.darwin-arm64.tar.gz
+20b13f059efed29dd76f6927b3e8d7b597c0c8d734f9e22ba3d0a2af6dbcd3bf  pig-v0.7.2.linux-amd64.tar.gz
+9548b530c05f2ffdc8d73b8f890718d47b74a51eb62852a99c08b1b52e47f014  pig-v0.7.2.linux-arm64.tar.gz
+b6faad9f92b926546a10f590274f2cb2afff21b9cea878094cfc5caf09e67d2c  pig_0.7.2-1_amd64.deb
+452f73f1fa035e5417ab49fc51d797925550179ffcc023e8f03d80144309212a  pig_0.7.2-1_arm64.deb
+```
 
 
 --------
@@ -120,7 +168,7 @@ ad4f02993c7d7d8eec142f0224551bb4  pig-v0.6.2.linux-amd64.tar.gz
 ## v0.6.1
 
 - Add el10 and debian 13 trixie support stub
-- Dedicate website: https://pig.pgsty.com
+- Dedicate website: https://pgext.cloud/pig
 - rebuild with go 1.25 and CI/CD pipeline
 - Use the PIGSTY mirror in mainland china due to pgdg ftp rsync mirror break
 - Remove unused `pgdg-el10fix` repo
@@ -457,7 +505,7 @@ Release: https://github.com/pgsty/pig/releases/tag/v0.3.1
 
 ## v0.3.0
 
-The [`pig`](/pig/) project now has a new [homepage](https://pig.pgsty.com), alone with the PostgreSQL Extension [Catalog](https://pgext.cloud/list).
+The [`pig`](/pig/) project now has a new [homepage](https://pgext.cloud/pig), alone with the PostgreSQL Extension [Catalog](https://pgext.cloud/list).
 
 ```bash
 curl https://repo.pigsty.io/pig | bash    # cloudflare
@@ -469,7 +517,7 @@ pig v0.3 is also embedded & shipped with the latest Pigsty [v3.3.0](https://doc.
 
 **New Features**
 
-`pig build` subcommand with the [ability](https://pig.pgsty.com/cmd/build/) to set up extension building environment
+`pig build` subcommand with the [ability](https://pgext.cloud/pig/cmd/build/) to set up extension building environment
 
 ```bash
 pig build repo     # init build repo (=repo set -ru)
@@ -959,12 +1007,12 @@ sudo yum makecache; sudo yum install -y pig
 
 Here are some bad cases and limitations for the above distros:
 
-- [`citus`](https://ext.pgsty.com/e/citus) is not available on `aarch64` and ubuntu 24.04
-- [`pljava`](https://ext.pgsty.com/e/pljava) is missing on `el8`
-- [`jdbc_fdw`](https://ext.pgsty.com/e/jdbc_fdw) is missing on `el8.aarch64` and `el9.aarch64`
-- [`pllua`](https://ext.pgsty.com/e/pllua) is missing on `el8.aarch64` for pg 13,14,15
-- [`topn`](https://ext.pgsty.com/e/topn) is missing on `el8.aarch64` and `el9.aarch64` for pg13, and all `deb.aarch64`
-- [`pg_partman`](https://ext.pgsty.com/e/pg_partman) and [`timeseries`](https://ext.pgsty.com/e/timeseries) is missing on `u24` for pg13
-- [`wiltondb`](https://ext.pgsty.com/e/wiltondb) is missing on `d12`
+- [`citus`](https://pgext.cloud/e/citus) is not available on `aarch64` and ubuntu 24.04
+- [`pljava`](https://pgext.cloud/e/pljava) is missing on `el8`
+- [`jdbc_fdw`](https://pgext.cloud/e/jdbc_fdw) is missing on `el8.aarch64` and `el9.aarch64`
+- [`pllua`](https://pgext.cloud/e/pllua) is missing on `el8.aarch64` for pg 13,14,15
+- [`topn`](https://pgext.cloud/e/topn) is missing on `el8.aarch64` and `el9.aarch64` for pg13, and all `deb.aarch64`
+- [`pg_partman`](https://pgext.cloud/e/pg_partman) and [`timeseries`](https://pgext.cloud/e/timeseries) is missing on `u24` for pg13
+- [`wiltondb`](https://pgext.cloud/e/babelfishpg_common) is missing on `d12`
 
 Release: https://github.com/pgsty/pig/releases/tag/v0.0.1

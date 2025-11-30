@@ -28,7 +28,7 @@ apt upgrade extname...
 
 ------
 
-## 升级包 [#upgrade-packages]
+## 升级扩展 [#upgrade-packages]
 
 在 [`pg_extensions`](/zh/pgsql/param#pg_extensions) 中列出的扩展（[包别名](/zh/pgsql/extension/pkg)）将通过 [`pgsql.yml`](/zh/pgsql/admin/) 的 `pg_ext` 子任务升级：
 
@@ -45,10 +45,10 @@ yum upgrade extname...
 apt upgrade extname...
 ```
 
-Pigsty 的 [`pig`](https://pig.pgsty.com) CLI 也可以帮助您完成此操作，无需指定完整包名称的负担：
+Pigsty 的 [`pig`](https://pgext.cloud/pig) CLI 也可以帮助您完成此操作，无需指定完整包名称的负担：
 
 ```bash
-pig ext update extname|pkgalias
+pig ext update ext|pkg
 ```
 
 

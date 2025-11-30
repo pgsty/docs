@@ -71,7 +71,7 @@ During PGSQL cluster init, Pigsty will automatically install packages (& alias) 
 
 Both parameters can be used to install PostgreSQL-related packages. Typically, `pg_packages` is used to globally specify packages that should be installed across all PostgreSQL clusters in your environment: such as the PostgreSQL kernel, high-availability agent like Patroni, connection pooling with pgBouncer, monitoring with pgExporter, etc.
 
-By default, Pigsty also specifies 3 important extensions here: [`pgvector`](https://ext.pgsty.com/e/vector), [`pg_repack`](https://ext.pgsty.com/e/pg_repack), and [`wal2json`](https://ext.pgsty.com/e/wal2json) for vector search, bloat management, and CDC change extraction.
+By default, Pigsty also specifies 3 important extensions here: [`pgvector`](https://pgext.cloud/e/vector), [`pg_repack`](https://pgext.cloud/e/pg_repack), and [`wal2json`](https://pgext.cloud/e/wal2json) for vector search, bloat management, and CDC change extraction.
 
 Meanwhile, `pg_extensions` is usually used to specify extension for a specific cluster. The default is an empty list, indicating no other extensions will be installed by default.
 
@@ -137,7 +137,7 @@ and translated to the corresponding RPM/DEB package names by [**alias translatio
 ## Caveats
 
 - There are two known conflicts:
-  - [`citus`](https://ext.pgsty.com/e/citus/) and [`hydra`](https://ext.pgsty.com/e/columnar) are mutually exclusive, since hydra is a fork of citus columnar without renaming
-  - Only install one from [`pg_duckdb`](https://ext.pgsty.com/e/pg_duckdb), [`pg_mooncake`](https://ext.pgsty.com/e/pg_mooncake), [`duckdb_fdw`](https://ext.pgsty.com/e/duckdb_fdw), they all use their own libduckdb
+  - [`citus`](https://pgext.cloud/e/citus/) and [`hydra`](https://pgext.cloud/e/columnar) are mutually exclusive, since hydra is a fork of citus columnar without renaming
+  - Only install one from [`pg_duckdb`](https://pgext.cloud/e/pg_duckdb), [`pg_mooncake`](https://pgext.cloud/e/pg_mooncake), [`duckdb_fdw`](https://pgext.cloud/e/duckdb_fdw), they all use their own libduckdb
 - `pgaudit` got a different naming pattern on el for pg 15-: pg16+ = pgaudit, pg15=pgaudit17, pg14=pgaudit16 pg13=pgaudit15 pg12=pgaudit14
 - `postgis` got its own version in el package name: postgis35 by default, and postgis33 for legacy el7

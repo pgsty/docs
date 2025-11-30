@@ -94,7 +94,7 @@ pg_databases:
 
 ## 默认扩展 [#default-extension]
 
-Pigsty 默认创建一些内置扩展和一个特殊的 [`pg_repack`](https://ext.pgsty.com/e/pg_repack)。
+Pigsty 默认创建一些内置扩展和一个特殊的 [`pg_repack`](https://pgext.cloud/e/pg_repack)。
 
 这些扩展由 [**`pg_default_extensions`**](/zh/pgsql/param#pg_default_extensions) 定义，默认在 `template1` 数据库和 `postgres` 数据库中创建。
 新创建的数据库将从 `template1` 继承这些扩展，因此您无需再次创建它们。
@@ -123,18 +123,18 @@ pg_default_extensions:
 
 在 Pigsty 中默认可用的有三个**第三方**扩展：
 
-|                    扩展                      | 作用                          | 位置                                                                                                                      |
-|:------------------------------------------------:|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| [`pg_repack`](https://ext.pgsty.com/e/pg_repack) | 在线膨胀控制工具               | 在 [`pg_default_extensions`](/zh/pgsql/param#pg_default_extensions) 中                                                    |
-|  [`wal2json`](https://ext.pgsty.com/e/wal2json)  | JSON 格式的变更数据捕获        | [无 DDL](https://ext.pgsty.com/list/attr#without-ddl) 扩展，[安装](/zh/pgsql/extension/install)意味着可用                |
-|    [`vector`](https://ext.pgsty.com/e/vector)    | 向量数据类型和索引             | 在 [`pg_databases`](/zh/pgsql/param#pg_databases) 中作为示例                                                              |
+|                       扩展                       | 作用             | 位置                                                                                             |
+|:----------------------------------------------:|----------------|------------------------------------------------------------------------------------------------|
+| [`pg_repack`](https://pgext.cloud/e/pg_repack) | 在线膨胀控制工具       | 在 [`pg_default_extensions`](/zh/pgsql/param#pg_default_extensions) 中                           |
+|  [`wal2json`](https://pgext.cloud/e/wal2json)  | JSON 格式的变更数据捕获 | [无 DDL](https://ext.pgsty.com/list/attr#without-ddl) 扩展，[安装](/zh/pgsql/extension/install)意味着可用 |
+|    [`vector`](https://pgext.cloud/e/vector)    | 向量数据类型和索引      | 在 [`pg_databases`](/zh/pgsql/param#pg_databases) 中作为示例                                         |
 
-[`pg_repack`](https://ext.pgsty.com/e/pg_repack) 扩展是在线维护膨胀表的重要工具。
+[`pg_repack`](https://pgext.cloud/e/pg_repack) 扩展是在线维护膨胀表的重要工具。
 
-[**`vector`**](https://ext.pgsty.com/e/vector) 是用于 RAG 的非常流行的扩展，
+[**`vector`**](https://pgext.cloud/e/vector) 是用于 RAG 的非常流行的扩展，
 它默认[**安装**](/zh/pgsql/extension/install)（在 `pgsql-main` [别名](/zh/pgsql/extension/pkg)中）并在大多数[配置模板](/zh/config/template)的占位符 `meta` 数据库中创建。
 
-[`wal2json`](https://ext.pgsty.com/e/wal2json) 是用于变更数据捕获（CDC）的另一个重要扩展。它默认[安装](/zh/pgsql/extension/install)，但它是一个[**无 DDL 的扩展**](#extension-without-ddl)，
+[`wal2json`](https://pgext.cloud/e/wal2json) 是用于变更数据捕获（CDC）的另一个重要扩展。它默认[安装](/zh/pgsql/extension/install)，但它是一个[**无 DDL 的扩展**](#extension-without-ddl)，
 因此您无需显式 `CREATE` 它。
 
 

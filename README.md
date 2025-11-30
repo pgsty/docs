@@ -4,7 +4,7 @@ Source Directory for Pigsty Documentation
 
 Documentation Site: https://doc.pgsty.com
 
-Extension Catalog: https://ext.pgsty.com
+Extension Catalog: https://pgext.cloud
 
 Pigsty Repo: https://github.com/pgsty/pigsty
 

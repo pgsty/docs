@@ -68,10 +68,10 @@ If you want to configure preloading manually, you can just change the `postgresq
 ## Default
 
 The default value of [`pg_libs`](/pgsql/param#pg_libs) is `pg_stat_statements, auto_explain`,
-which preload these two [Contrib extensions](https://ext.pgsty.com/list/repo#contrib) by default, these two extensions provide essential observability:
+which preload these two [Contrib extensions](https://pgext.cloud/list) by default, these two extensions provide essential observability:
 
-- [**`auto_explain`**](https://ext.pgsty.com/e/auto_explain): Automatic logging of slow query execution plans
-- [**`pg_stat_statements`**](https://ext.pgsty.com/e/pg_stat_statements): Tracks planning and execution statistics for grouped SQL statements
+- [**`auto_explain`**](https://pgext.cloud/e/auto_explain): Automatic logging of slow query execution plans
+- [**`pg_stat_statements`**](https://pgext.cloud/e/pg_stat_statements): Tracks planning and execution statistics for grouped SQL statements
 
 
 --------
@@ -82,10 +82,10 @@ Preload libraries are loaded one by one, so the order of extensions in `shared_p
 Here are some known rules to follow:
 
 - For [**STAT**](https://pgext.cloud/list) extension, add them **AFTER** `pg_stat_statements` to ensure using the same query_id.
-- [`timescaledb`](https://ext.pgsty.com/e/timescaledb) and [`citus`](https://ext.pgsty.com/e/citus) should be placed at the **BEGINNING** of `shared_preload_libraries`
-- If you use [`citus`](https://ext.pgsty.com/e/citus) and [`timescaledb`](https://ext.pgsty.com/e/timescaledb) together, place `citus` before `timescaledb`.
-- Use `pg_documentdb` and `pg_documentdb_core` as library name for [**documentdb**](https://ext.pgsty.com/e/documentdb).
-- [`pg_search`](https://ext.pgsty.com/e/pg_search) does not require preloading in PostgreSQL 17 and later, but earlier versions do.
+- [`timescaledb`](https://pgext.cloud/e/timescaledb) and [`citus`](https://pgext.cloud/e/citus) should be placed at the **BEGINNING** of `shared_preload_libraries`
+- If you use [`citus`](https://pgext.cloud/e/citus) and [`timescaledb`](https://pgext.cloud/e/timescaledb) together, place `citus` before `timescaledb`.
+- Use `pg_documentdb` and `pg_documentdb_core` as library name for [**documentdb**](https://pgext.cloud/e/documentdb).
+- [`pg_search`](https://pgext.cloud/e/pg_search) does not require preloading in PostgreSQL 17 and later, but earlier versions do.
 
 -------
 

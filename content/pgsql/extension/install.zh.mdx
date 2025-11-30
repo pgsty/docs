@@ -71,7 +71,7 @@ all:
 
 这两个参数都可以用来安装 PostgreSQL 相关的包。通常，`pg_packages` 用于全局指定应在环境中所有 PostgreSQL 集群上安装的包：如 PostgreSQL 内核、高可用代理（如 Patroni）、连接池（pgBouncer）、监控（pgExporter）等。
 
-默认情况下，Pigsty 还在这里指定了 3 个重要扩展：[`pgvector`](https://ext.pgsty.com/e/vector)、[`pg_repack`](https://ext.pgsty.com/e/pg_repack) 和 [`wal2json`](https://ext.pgsty.com/e/wal2json)，分别用于向量搜索、膨胀管理和 CDC 变更提取。
+默认情况下，Pigsty 还在这里指定了 3 个重要扩展：[`pgvector`](https://pgext.cloud/e/vector)、[`pg_repack`](https://pgext.cloud/e/pg_repack) 和 [`wal2json`](https://pgext.cloud/e/wal2json)，分别用于向量搜索、膨胀管理和 CDC 变更提取。
 
 同时，`pg_extensions` 通常用于为特定集群指定扩展。默认值是一个空列表，表示默认不会安装其他扩展。
 
@@ -137,7 +137,7 @@ pg_extensions: []                 # 要安装的 pg 扩展，可以使用别名�
 ## 注意事项 [#caveats]
 
 - 有两个已知冲突：
-  - [`citus`](https://ext.pgsty.com/e/citus/) 和 [`hydra`](https://ext.pgsty.com/e/columnar) 是互斥的，因为 hydra 是 citus columnar 的分支，未重命名
-  - 只从 [`pg_duckdb`](https://ext.pgsty.com/e/pg_duckdb)、[`pg_mooncake`](https://ext.pgsty.com/e/pg_mooncake)、[`duckdb_fdw`](https://ext.pgsty.com/e/duckdb_fdw) 中安装一个，它们都使用自己的 libduckdb
+  - [`citus`](https://pgext.cloud/e/citus/) 和 [`hydra`](https://pgext.cloud/e/columnar) 是互斥的，因为 hydra 是 citus columnar 的分支，未重命名
+  - 只从 [`pg_duckdb`](https://pgext.cloud/e/pg_duckdb)、[`pg_mooncake`](https://pgext.cloud/e/pg_mooncake)、[`duckdb_fdw`](https://pgext.cloud/e/duckdb_fdw) 中安装一个，它们都使用自己的 libduckdb
 - `pgaudit` 在 el 系统的 pg 15- 版本中有不同的命名模式：pg16+ = pgaudit，pg15=pgaudit17，pg14=pgaudit16，pg13=pgaudit15，pg12=pgaudit14
 - `postgis` 在 el 包名中有自己的版本：默认为 postgis35，遗留 el7 为 postgis33
