@@ -12,7 +12,7 @@ Pigsty 使用 [Ansible](https://docs.ansible.com/ansible/) 实现管理控制器
 ## 安装 [#install]
 
 Pigsty 将在[**引导**](/zh/install/start#bootstrap)期间尽力安装 `ansible` 及其依赖项。
-但您始终可以手动安装它，它在大多数操作系统的官方仓库中都可用，可以用一个命令安装。
+但您始终可以手动安装它，它在大多数操作系统的官方仓库中都可用，如果使用 Pigsty，则可以用以下命令安装。
 
 <Callout title="安装 Ansible" type="info">
 
@@ -23,6 +23,9 @@ Pigsty 将在[**引导**](/zh/install/start#bootstrap)期间尽力安装 `ansibl
     ```
     ```bash tab="Debian / Ubuntu"
     sudo apt install -y ansible python3-jmespath
+    ```
+    ```bash tab="EL 10"
+    sudo dnf install -y ansible python-jmespath
     ```
     ```bash tab="EL 8/9"
     sudo dnf install -y ansible python3.12-jmespath
@@ -36,6 +39,8 @@ Pigsty 将在[**引导**](/zh/install/start#bootstrap)期间尽力安装 `ansibl
     ```
 
 </Callout>
+
+请注意，目前 EL10 EPEL 仓库尚未提供完整的 Ansible 包，[Pigsty PGSQL](https://pgext.cloud/zh/repo/pgsql) EL10 仓库中补充了这个包。
 
 ### macOS
 
@@ -55,28 +60,27 @@ Ansible 在 macOS 上也可用。您可以使用 [**Homebrew**](https://brew.sh/
 
 ## 基础知识 [#basics]
 
-了解 Ansible 知识是好的，但**不是必需的**。您只需要知道如何运行 [**Ansible Playbooks**](/zh/admin/playbook)。
-Playbooks 是包含要执行的一系列任务的可执行 YAML 文件。
+了解 Ansible 知识有助于使用，但 **并非必须**。您只需要知道如何运行 [**Ansible 剧本**](/zh/admin/playbook) 即可。
+剧本（Playbook）是包含要执行的一系列任务的可执行 YAML 文件。
 
-运行 `./node.yml` playbook 本质上转换为 `ansible-playbook node.yml`。
-文件顶部的 hashbang 使其可直接执行。
-您可以使用参数来控制 playbook 执行：
+运行 `./node.yml` playbook 本质上是执行 `ansible-playbook node.yml` 命令。剧本顶部的 hashbang 使其可直接执行。
+您可以使用一些参数来精细控制剧本的执行：
 
 ```bash title="~/pigsty"
-./node.yml                         # 在所有主机上运行 infra playbook
-./pgsql.yml -l pg-test             # 在 pg-test 集群上运行 pgsql playbook
+./node.yml                         # 在所有主机上运行 node 剧本
+./pgsql.yml -l pg-test             # 在 pg-test 集群上运行 pgsql 剧本
 ./infra.yml -t repo                # 运行 infra.yml 的子任务 repo
 ./pgsql-rm.yml -e pg_rm_pkg=false  # 删除 pgsql，但保留包
 ```
 
-以下 **4 个参数** 需要您注意，以有效使用 ansible：
+以下 **4 个参数** 需要您注意，以便有效使用 ansible：
 
-| 目的                            | 参数                 | 描述                                           |
-|------------------------------------|---------------------------|-------------------------------------------------------|
-| [**在哪里**](#limit-host)           | `-l\|--limit <pattern>`   | 限制在特定组/主机/模式上的执行目标 |
-| [**什么**](#limit-task)            | `-t\|--tags <tags>`       | 只运行具有特定标签的任务                     |
-| [**如何**](#extra-vars)             | `-e\|--extra-vars <vars>` | 额外的命令行参数                          |
-| [**配置**](#designate-inventory) | `-i\|--inventory <path>`  | 使用特定的清单文件                       |
+| 目的                             | 参数                        | 描述                 |
+|--------------------------------|---------------------------|--------------------|
+| [**对象**](#limit-host)          | `-l\|--limit <pattern>`   | 限制在特定组/主机/模式上的执行目标 |
+| [**任务**](#limit-task)          | `-t\|--tags <tags>`       | 只运行具有特定标签的任务       |
+| [**参数**](#extra-vars)          | `-e\|--extra-vars <vars>` | 额外的命令行参数           |
+| [**配置**](#designate-inventory) | `-i\|--inventory <path>`  | 使用特定的清单文件          |
 
 
 

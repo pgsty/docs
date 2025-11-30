@@ -28,3 +28,103 @@ icon: Warehouse
 ## 使用别名 [#using-alias]
 
 您可以使用别名来指定一组包，查看 `roles/node_id/vars/<os>.<arch>.yml` 了解可用的别名：
+
+### EL
+
+```yaml
+node-bootstrap: "ansible python3 python3-pip python3-virtualenv python3-requests python3-jmespath python3-cryptography dnf-utils modulemd-tools createrepo_c sshpass"
+infra-package:  "nginx dnsmasq etcd haproxy vip-manager node_exporter keepalived_exporter pg_exporter pgbackrest_exporter redis_exporter redis minio mcli pig"
+infra-addons:   "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox_exporter nginx_exporter pev2 certbot python3-certbot-nginx"
+extra-modules:  "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:  "lz4 unzip bzip2 zlib yum pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl grubby sysstat iotop htop rsync tcpdump perf flamegraph chkconfig"
+node-package2:  "netcat socat ftp lrzsz net-tools ipvsadm bind-utils telnet audit ca-certificates readline vim-minimal keepalived chrony openssl openssh-server openssh-clients"
+pgsql-utility:  "patroni patroni-etcd pgbouncer pgbackrest pgbadger pg_activity pg_timetable pgFormatter pg_filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb pgloader"
+
+postgresql:     "postgresql$v*"
+pgsql:          "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit"
+pgsql-mini:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib"
+pgsql-core:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit"
+pgsql-full:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit postgresql$v-test postgresql$v-devel"
+pgsql-main:     "postgresql$v postgresql$v-server postgresql$v-libs postgresql$v-contrib postgresql$v-plperl postgresql$v-plpython3 postgresql$v-pltcl postgresql$v-llvmjit pg_repack_$v* wal2json_$v* pgvector_$v*"
+pgsql-client:   "postgresql$v"
+pgsql-server:   "postgresql$v-server postgresql$v-libs postgresql$v-contrib"
+pgsql-devel:    "postgresql$v-devel"
+pgsql-basic:    "pg_repack_$v* wal2json_$v* pgvector_$v*"
+# ......
+```
+
+| 发行版 | x86_64                                                                                            | aarch64                                                                                             |
+|--------|---------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| EL 7   | [`el7.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el7.x86_64.yml)   | -                                                                                                   |
+| EL 8   | [`el8.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el8.x86_64.yml)   | [`el8.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el8.aarch64.yml)   |
+| EL 9   | [`el9.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)   | [`el9.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml)   |
+| EL 10  | [`el10.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el10.x86_64.yml) | [`el10.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el10.aarch64.yml) |
+
+
+
+### Debian
+
+```yaml
+node-bootstrap: "ansible python3 python3-pip python3-venv python3-jmespath dpkg-dev sshpass tnftp linux-perf"
+infra-package:  "nginx dnsmasq etcd haproxy vip-manager node-exporter keepalived-exporter pg-exporter pgbackrest-exporter redis-exporter redis minio mcli pig"
+infra-addons:   "grafana grafana-plugins loki logcli promtail prometheus alertmanager pushgateway blackbox-exporter nginx-exporter pev2 certbot python3-certbot-nginx"
+extra-modules:  "docker-ce docker-compose-plugin ferretdb2 duckdb restic juicefs vray grafana-infinity-ds"
+node-package1:  "lz4 unzip bzip2 zlib1g pv jq git ncdu make patch bash lsof wget uuid tuned nvme-cli numactl sysstat iotop htop rsync tcpdump acl chrony"
+node-package2:  "netcat-openbsd socat lrzsz net-tools ipvsadm dnsutils telnet ca-certificates libreadline-dev vim-tiny keepalived openssl openssh-server openssh-client"
+pgsql-utility:  "patroni pgbouncer pgbackrest pgbadger pg-activity pg-timetable pgformatter postgresql-filedump pgxnclient timescaledb-tools timescaledb-event-streamer pgcopydb pgloader"
+
+postgresql:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-server-dev-$v"
+pgsql:          "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v"
+pgsql-mini:     "postgresql-$v postgresql-client-$v"
+pgsql-core:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v"
+pgsql-full:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-server-dev-$v"
+pgsql-main:     "postgresql-$v postgresql-client-$v postgresql-plpython3-$v postgresql-plperl-$v postgresql-pltcl-$v postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector"
+pgsql-client:   "postgresql-client-$v"
+pgsql-server:   "postgresql-$v"
+pgsql-devel:    "postgresql-server-dev-$v"
+pgsql-basic:    "postgresql-$v-repack postgresql-$v-wal2json postgresql-$v-pgvector"
+# ......
+```
+
+| 发行版       | x86_64                                                                                          | aarch64                                                                                           |
+|--------------|-------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| Debian 11    | [`d11.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d11.x86_64.yml) | -                                                                                                 |
+| Debian 12    | [`d12.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml) | [`d12.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) |
+| Debian 13    | [`d13.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d13.x86_64.yml) | [`d13.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d13.aarch64.yml) |
+| Ubuntu 22.04 | [`u22.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u22.x86_64.yml) | [`u22.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u22.aarch64.yml) |
+| Ubuntu 24.04 | [`u24.x86_64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml) | [`u24.aarch64.yml`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) |
+
+
+
+--------
+
+## 参考 [#reference]
+
+使用以下 Playbook 任务来管理基础设施节点上的本地软件包仓库（YUM/APT）：
+
+```bash
+./infra.yml -t repo              # 从互联网或离线包创建本地仓库
+
+./infra.yml -t repo_dir          # 创建本地仓库目录
+./infra.yml -t repo_check        # 检查本地仓库是否存在
+./infra.yml -t repo_prepare      # 如果可用则使用现有的本地仓库
+./infra.yml -t repo_build        # 如果不存在则从上游构建本地仓库
+./infra.yml     -t repo_upstream     # 添加上游 repo/list 文件
+./infra.yml     -t repo_remove       # 如果 repo_remove=true 则移除现有仓库文件
+./infra.yml     -t repo_add          # 添加上游仓库文件到 /etc/yum.repos.d（或 apt）
+./infra.yml     -t repo_url_pkg      # 下载 repo_url_packages 中定义的软件包
+./infra.yml     -t repo_cache        # 使用 yum makecache / apt update 创建元数据缓存
+./infra.yml     -t repo_boot_pkg     # 安装引导软件包（createrepo_c、yum-utils 等）
+./infra.yml     -t repo_pkg          # 从上游下载软件包及依赖项
+./infra.yml     -t repo_create       # 使用 createrepo_c / dpkg-dev 创建本地仓库
+./infra.yml     -t repo_use          # 添加新仓库到 /etc/yum.repos.d | apt sources
+./infra.yml -t repo_nginx        # 如果未运行则启动 nginx 作为文件服务器
+```
+
+常用命令：
+
+```bash
+./infra.yml     -t repo_upstream     # 添加 repo_upstream 中定义的上游仓库
+./infra.yml     -t repo_pkg          # 下载软件包及其依赖项
+./infra.yml     -t repo_create       # 创建/更新本地 yum/apt 仓库
+```

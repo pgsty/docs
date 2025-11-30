@@ -15,7 +15,8 @@ e.g. the `~/pigsty/conf/rich.yml` can be specified as `rich`
 ./configure -c meta             # use the meta.yml 1-node template explicitly
 ./configure -c rich             # use the 1-node template with all extensions & minio
 ./configure -c slim             # use the minimal 1-node template
-./configure -c app/supa         # use the supabase 1-node template
+./configure -c supabase         # use the Supabase 1-node template
+./configure -c app/dify         # use the dify app template
 ```
 
 If no `-c|--conf` is given, the single-node `meta` config template will be automatically selected by default.
@@ -29,12 +30,12 @@ If no `-c|--conf` is given, the single-node `meta` config template will be autom
 
 Here are one-node templates, which provide different features and configurations.
 
-| Template                                                              | Node | Description                                                  |
-|:----------------------------------------------------------------------|:----:|--------------------------------------------------------------|
-| [`meta.yml`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) |  1   | Default 1-node config, pgsql, infra, node, etcd, minimal ext |
-| [`rich.yml`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) |  1   | meta + minio + all  extensions                               |
-| [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) |  1   | meta - infra - node monitor, minimal install                 |
-| [`pg18.yml`](https://github.com/pgsty/pigsty/blob/main/conf/pg18.yml) |  1   | PostgreSQL 18 cluster (beta)                                 |
+| Template                                                              | Node | Description                                                   |
+|:----------------------------------------------------------------------|:----:|---------------------------------------------------------------|
+| [`meta.yml`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) |  1   | Default 1-node config, pgsql, infra, node, etcd, minimal ext  |
+| [`rich.yml`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) |  1   | meta + minio + all  extensions                                |
+| [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) |  1   | meta - infra - node monitor, minimal install                  |
+| [`fat.yml`](https://github.com/pgsty/pigsty/blob/main/conf/fat.yml)   |  1   | PG 13-18 packages, and install all extensions for current ver |
 
 
 --------
@@ -88,7 +89,7 @@ Using exotic Postgres kernel forks:
 | [`demo/remote.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/remote.yml) | Example config for monitoring a remote pgsql cluster or RDS PG    |
 | [`demo/redis.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/redis.yml)   | Example config for redis clusters                                 |
 | [`demo/minio.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/minio.yml)   | Example config for a 3-node minio clusters                        |
-| [`demo/demo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/demo.yml)     | Config file for the pigsty [public demo](https://g.pgsty.com)  |
+| [`demo/demo.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/demo.yml)     | Config file for the pigsty [public demo](https://g.pgsty.com)     |
 | [`demo/citus.yml`](https://github.com/pgsty/pigsty/blob/main/conf/demo/citus.yml)   | Citus cluster example: 1 coordinator and 3 data nodes (4-node)    |
 
 

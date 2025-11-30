@@ -22,7 +22,7 @@ Pigsty 提供对自托管 Dify 的支持，允许您使用单个命令部署 Dif
 
 ## 快速开始 [#quick-start]
 
-在运行 [**兼容发行版**](/zh/prepare/linux) 的全新 Linux x86 / ARM 服务器上执行：
+在运行 [**兼容操作系统**](/zh/prepare/linux) 的全新 Linux x86 / ARM 服务器上执行：
 
 ```bash
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty
@@ -47,7 +47,7 @@ Dify 启动后，您可以安装各种扩展、配置系统模型并开始使用
 
 Pigsty 为 Dify 优雅地解决了这些问题，基于配置文件使用单个命令部署所有组件，并使用镜像解决中国地区访问挑战。这使得 Dify 部署和交付变得非常顺畅。它一次性处理 PostgreSQL 主数据库、PGVector 向量数据库、MinIO 对象存储、Redis、Prometheus 监控、Grafana 可视化、Nginx 反向代理和免费 HTTPS 证书。
 
-Pigsty 确保所有 Dify 状态都存储在外部管理的服务中，包括 PostgreSQL 中的元数据和文件系统中的其他数据。因此，通过 Docker Compose 启动的 Dify 实例成为可以随时销毁和重建的无状态应用程序，大大简化了运维。
+Pigsty 确保所有 Dify 状态都存储在外部管理的服务中，包括 PostgreSQL 中的元数据和文件系统中的其他数据。通过 Docker Compose 启动的 Dify 实例成为可以随时销毁和重建的无状态应用程序，大大简化了运维。
 
 ------
 
@@ -65,7 +65,8 @@ vi pigsty.yml             # 编辑配置文件，修改域名和密码
 ./install.yml             # 安装 Pigsty 和各种数据库
 ```
 
-当您使用 `./configure -c app/dify` 命令时，Pigsty 会根据 [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) 模板和您当前的环境自动生成配置文件。您应该根据实际需要在生成的 `pigsty.yml` 配置文件中修改密码、域名和其他相关参数，然后使用 `./install.yml` 执行标准安装过程。
+当您使用 `./configure -c app/dify` 命令时，Pigsty 会根据 [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) 模板和您当前的环境自动生成配置文件。
+您应该根据实际需要在生成的 `pigsty.yml` 配置文件中修改密码、域名和其他相关参数，然后使用 `./install.yml` 执行标准安装过程。
 
 接下来，运行 [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml) 安装 Docker 和 Docker Compose，然后使用 [`app.yml`](https://github.com/pgsty/pigsty/blob/main/app.yml) 完成 Dify 部署：
 
@@ -277,7 +278,7 @@ make cert
 
 ## 文件备份 [#file-backup]
 
-您可以使用 `restic` 备份 Dify 的文件系统。Dify 的数据文件在 `/data/dify` 目录中。您可以使用以下命令进行备份：
+您可以使用 `restic` 备份 Dify 的文件存储（默认位于 `/data/dify` 目录），使用以下命令进行备份：
 
 ```bash
 export RESTIC_REPOSITORY=/data/backups/dify   # 指定 dify 备份目录
@@ -324,4 +325,4 @@ juicefs umount /data/dify              # 停止挂载
 
 ## 参考 [#reference]
 
-- [Dify 自托管常见问题](https://docs.dify.ai/learn-more/faq/install-faq)
+[Dify 自托管常见问题](https://docs.dify.ai/learn-more/faq/install-faq)

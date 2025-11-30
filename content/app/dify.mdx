@@ -4,9 +4,12 @@ description: setup docker with playbook
 icon: Bot
 ---
 
-[**Dify**](https://dify.ai/zh) is a generative AI application innovation engine and open-source LLM application development platform. It provides capabilities from Agent construction to AI workflow orchestration, RAG retrieval, and model management, helping users easily build and operate generative AI-native applications.
+[**Dify**](https://dify.ai/) is a generative AI application innovation engine and open-source LLM application development platform.
+It provides capabilities from Agent construction to AI workflow orchestration, RAG retrieval, and model management,
+helping users easily build and operate generative AI-native applications.
 
-Pigsty provides support for self-hosting Dify, allowing you to deploy Dify with a single command while storing critical state in externally managed PostgreSQL. You can use pgvector in the same PostgreSQL instance as a vector database, further simplifying deployment.
+Pigsty provides support for self-hosting Dify, allowing you to deploy Dify with a single command while storing critical state in externally managed PostgreSQL.
+You can use pgvector in the same PostgreSQL instance as a vector database, further simplifying deployment.
 
 - [Quick Start](#quick-start)
 - [Why Self-Host](#why-self-host)
@@ -43,11 +46,17 @@ After Dify starts, you can install various extensions, configure system models, 
 
 ## Why Self-Host
 
-There are many reasons to self-host Dify, but the primary motivation is data security. The DockerCompose template provided by Dify uses basic default database images, lacking enterprise-grade features like high availability, disaster recovery, monitoring, IaC, and PITR capabilities.
+There are many reasons to self-host Dify, but the primary motivation is data security.
+The DockerCompose template provided by Dify uses basic default database images, lacking enterprise-grade features
+like high availability, disaster recovery, monitoring, IaC, and PITR capabilities.
 
-Pigsty elegantly solves these issues for Dify, deploying all components with a single command based on configuration files, and using mirrors to resolve China region access challenges. This makes Dify deployment and delivery incredibly smooth. It handles PostgreSQL master database, PGVector vector database, MinIO object storage, Redis, Prometheus monitoring, Grafana visualization, Nginx reverse proxy, and free HTTPS certificates in one go.
+Pigsty elegantly solves these issues for Dify, deploying all components with a single command based on configuration files,
+and using mirrors to resolve China region access challenges. This makes Dify deployment and delivery incredibly smooth.
+It handles PostgreSQL master database, PGVector vector database, MinIO object storage, Redis, Prometheus monitoring,
+Grafana visualization, Nginx reverse proxy, and free HTTPS certificates in one go.
 
-Pigsty ensures all Dify state is stored in externally managed services, including metadata in PostgreSQL and other data in the filesystem. Therefore, the Dify instance launched via Docker Compose becomes a stateless application that can be destroyed and rebuilt at any time, greatly simplifying operations.
+Pigsty ensures all Dify state is stored in externally managed services, including metadata in PostgreSQL and other data in the filesystem.
+Therefore, the Dify instance launched via Docker Compose becomes a stateless application that can be destroyed and rebuilt at any time, greatly simplifying operations.
 
 ------
 
@@ -65,9 +74,12 @@ vi pigsty.yml             # Edit config file, modify domain and passwords
 ./install.yml             # Install Pigsty and various databases
 ```
 
-When you use the `./configure -c app/dify` command, Pigsty automatically generates the configuration file based on the [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) template and your current environment. You should modify passwords, domain, and other relevant parameters in the generated `pigsty.yml` configuration file according to your actual needs, then use `./install.yml` to execute the standard installation process.
+When you use the `./configure -c app/dify` command, Pigsty automatically generates the configuration file based on the [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml)
+template and your current environment. You should modify passwords, domain, and other relevant parameters in the generated `pigsty.yml` configuration file
+according to your actual needs, then use `./install.yml` to execute the standard installation process.
 
-Next, run [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml) to install Docker and Docker Compose, then use [`app.yml`](https://github.com/pgsty/pigsty/blob/main/app.yml) to complete Dify deployment:
+Next, run [`docker.yml`](https://github.com/pgsty/pigsty/blob/main/docker.yml) to install Docker and Docker Compose,
+then use [`app.yml`](https://github.com/pgsty/pigsty/blob/main/app.yml) to complete Dify deployment:
 
 ```bash
 ./docker.yml              # Install Docker and Docker Compose
@@ -84,7 +96,9 @@ You can also use the locally resolved placeholder domain `dify.pigsty`, or follo
 
 ## Configuration
 
-When you use the `./configure -c app/dify` command for configuration, Pigsty automatically generates the configuration file based on the [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) template and your current environment. Here’s a detailed explanation of the default configuration:
+When you use the `./configure -c app/dify` command for configuration,
+Pigsty automatically generates the configuration file based on the [`conf/app/dify.yml`](https://github.com/pgsty/pigsty/blob/main/conf/app/dify.yml) template and your current environment.
+Here’s a detailed explanation of the default configuration:
 
 ```yaml
 all:

@@ -15,7 +15,8 @@ icon: BookDashed
 ./configure -c meta             # 明确使用 meta.yml 1 节点模板
 ./configure -c rich             # 使用包含所有扩展和 minio 的 1 节点模板
 ./configure -c slim             # 使用最小的 1 节点模板
-./configure -c app/supa         # 使用 supabase 1 节点模板
+./configure -c supabase         # 使用 Supabase 自建模板
+./configure -c app/dify         # 使用 dify 1 节点模板
 ```
 
 如果没有给出 `-c|--conf`，默认会自动选择单节点 `meta` 配置模板。
@@ -29,12 +30,12 @@ icon: BookDashed
 
 这里是单节点模板，提供不同的功能和配置。
 
-| 模板                                                              | 节点 | 描述                                                  |
-|:----------------------------------------------------------------------|:----:|--------------------------------------------------------------|
-| [`meta.yml`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) |  1   | 默认 1 节点配置，pgsql、infra、node、etcd，最小扩展 |
-| [`rich.yml`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) |  1   | meta + minio + 所有扩展                               |
-| [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) |  1   | meta - infra - node 监控，最小安装                 |
-| [`pg18.yml`](https://github.com/pgsty/pigsty/blob/main/conf/pg18.yml) |  1   | PostgreSQL 18 集群（测试版）                                 |
+| 模板                                                                    | 节点 | 描述                                   |
+|:----------------------------------------------------------------------|:--:|--------------------------------------|
+| [`meta.yml`](https://github.com/pgsty/pigsty/blob/main/conf/meta.yml) | 1  | 默认 1 节点配置，pgsql、infra、node、etcd，最小扩展 |
+| [`rich.yml`](https://github.com/pgsty/pigsty/blob/main/conf/rich.yml) | 1  | meta + minio + 所有扩展                  |
+| [`slim.yml`](https://github.com/pgsty/pigsty/blob/main/conf/slim.yml) | 1  | meta - infra - node 监控，最小安装          |
+| [`fat.yml`](https://github.com/pgsty/pigsty/blob/main/conf/fat.yml)   | 1  | 下载PG13-18 所有包，安装全部扩展                 |
 
 
 --------

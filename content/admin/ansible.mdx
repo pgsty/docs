@@ -24,6 +24,9 @@ But you can always install it manually, it is available on most OS's official re
     ```bash tab="Debian / Ubuntu"
     sudo apt install -y ansible python3-jmespath
     ```
+    ```bash tab="EL 10"
+    sudo dnf install -y ansible python-jmespath
+    ```
     ```bash tab="EL 8/9"
     sudo dnf install -y ansible python3.12-jmespath
     ```
@@ -36,6 +39,9 @@ But you can always install it manually, it is available on most OS's official re
     ```
 
 </Callout>
+
+Beware that el10 epel does not offer the `ansible` package, which is fixed by [Pigsty PGDG](https://pgext.cloud/repo/pgsql) el10 repo
+
 
 ### macOS
 
@@ -62,7 +68,7 @@ The hashbang at the top of the file makes it directly executable.
 And you can use Args to control the playbook execution:
 
 ```bash title="~/pigsty"
-./node.yml                         # run infra playbook on all hosts
+./node.yml                         # run infra playbook on all nodes
 ./pgsql.yml -l pg-test             # run pgsql playbook on pg-test cluster
 ./infra.yml -t repo                # run subtask repo of infra.yml
 ./pgsql-rm.yml -e pg_rm_pkg=false  # remove pgsql, but keep packages

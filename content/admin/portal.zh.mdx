@@ -27,7 +27,7 @@ infra_portal:  # 域名和上游服务器
   loki         : { endpoint: "${admin_ip}:3100" }
 ```
 
-### Complex Example
+### 复杂示例 [#complex-example]
 
 ```yaml
 infra_portal:
@@ -53,56 +53,56 @@ infra_portal:
 
 --------
 
-## Playbook Configuration
+## Playbook 配置 [#playbook-configuration]
 
-Nginx can be reconfigured using Ansible playbooks:
+可以使用 Ansible playbook 重新配置 Nginx：
 
 ```bash
-./infra.yml -t nginx           # Reconfigure Nginx completely
-./infra.yml -t nginx_config    # Regenerate Nginx configuration files
-./infra.yml -t nginx_launch    # Restart Nginx service
-./infra.yml -t nginx_cert      # Regenerate SSL certificates
+./infra.yml -t nginx           # 完全重新配置 Nginx
+./infra.yml -t nginx_config    # 重新生成 Nginx 配置文件
+./infra.yml -t nginx_launch    # 重启 Nginx 服务
+./infra.yml -t nginx_cert      # 重新生成 SSL 证书
 ```
 
 
 
 -------
 
-## Server
+## 服务器 [#server]
 
-Each server record in `infra_portal` supports the following configuration options:
+`infra_portal` 中的每个服务器记录支持以下配置选项：
 
-### Core Parameters
+### 核心参数 [#core-parameters]
 
-- **`domain`** - Optional proxy domain name
-- **`endpoint`** - Upstream service address (IP:PORT or socket path)
-- **`path`** - Local web server root directory for static content
-- **`scheme`** - Protocol specification (http/https/tcp/udp)
+- **`domain`** - 可选的代理域名
+- **`endpoint`** - 上游服务地址（IP:PORT 或套接字路径）
+- **`path`** - 静态内容的本地 Web 服务器根目录
+- **`scheme`** - 协议规范（http/https/tcp/udp）
 
-### SSL/TLS Parameters
+### SSL/TLS 参数 [#ssl-tls-parameters]
 
-- **`certbot`** - Enable Let's Encrypt certificate management
-- **`cert`** - Custom SSL certificate file path
-- **`key`** - Custom SSL private key file path
+- **`certbot`** - 启用 Let's Encrypt 证书管理
+- **`cert`** - 自定义 SSL 证书文件路径
+- **`key`** - 自定义 SSL 私钥文件路径
 
-### Advanced Parameters
+### 高级参数 [#advanced-parameters]
 
-- **`conf`** - Custom Nginx configuration template
-- **`domains`** - Additional domain names for the service
-- **`index`** - Enable directory listing for static content
-- **`log`** - Custom log file configuration
-- **`websocket`** - Enable WebSocket support for real-time applications
+- **`conf`** - 自定义 Nginx 配置模板
+- **`domains`** - 服务的附加域名
+- **`index`** - 为静态内容启用目录列表
+- **`log`** - 自定义日志文件配置
+- **`websocket`** - 为实时应用启用 WebSocket 支持
 
-### Parameter Usage Examples
+### 参数使用示例 [#parameter-usage-examples]
 
 ```yaml
-# Static file serving with directory listing
+# 带目录列表的静态文件服务
 repo: { domain: repo.pigsty.cc, path: "/www/repo", index: true }
 
-# WebSocket-enabled service
+# 启用 WebSocket 的服务
 grafana: { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true }
 
-# Custom SSL certificate
+# 自定义 SSL 证书
 secure_app: {
   domain: secure.pigsty.cc,
   endpoint: "${admin_ip}:8443",
@@ -110,10 +110,10 @@ secure_app: {
   key: "/etc/ssl/private/custom.key"
 }
 
-# Let's Encrypt managed certificate
+# Let's Encrypt 管理的证书
 public_api: { domain: api.pigsty.cc, endpoint: "${admin_ip}:8080", certbot: true }
 
-# TCP stream proxy
+# TCP 流代理
 pg_primary: { domain: pg.pigsty.cc, endpoint: "10.10.10.11:5432", scheme: tcp }
 ```
 
@@ -121,72 +121,72 @@ pg_primary: { domain: pg.pigsty.cc, endpoint: "10.10.10.11:5432", scheme: tcp }
 
 -------
 
-## Using Domain Names
+## 使用域名 [#using-domain-names]
 
-### DNS Resolution Methods
+### DNS 解析方法 [#dns-resolution-methods]
 
-1. **Public internet domain** via DNS provider
-2. **Internal network DNS** server
-3. **Local `/etc/hosts`** file modification
+1. **公共互联网域名** 通过 DNS 提供商
+2. **内部网络 DNS** 服务器
+3. **本地 `/etc/hosts`** 文件修改
 
-### Recommended Local Configuration
+### 推荐的本地配置 [#recommended-local-configuration]
 
-For local development and testing, add entries to your `/etc/hosts` file:
+对于本地开发和测试，请在您的 `/etc/hosts` 文件中添加条目：
 
 ```bash
-# Add to /etc/hosts
+# 添加到 /etc/hosts
 <your_public_ip_address> h.pigsty g.pigsty p.pigsty a.pigsty
 ```
 
-Replace `<your_public_ip_address>` with your actual admin node IP address.
+将 `<your_public_ip_address>` 替换为您的实际管理节点 IP 地址。
 
-## HTTPS Configuration
+## HTTPS 配置 [#https-configuration]
 
-Configure HTTPS access via the `nginx_sslmode` parameter with the following options:
+通过 `nginx_sslmode` 参数配置 HTTPS 访问，支持以下选项：
 
-- **`disabled`** - HTTP only, no SSL
-- **`self-signed`** - Use self-signed certificates (default)
-- **`provided`** - Use provided certificates
-- **`letsencrypt`** - Use Let's Encrypt certificates
+- **`disabled`** - 仅 HTTP，无 SSL
+- **`self-signed`** - 使用自签名证书（默认）
+- **`provided`** - 使用提供的证书
+- **`letsencrypt`** - 使用 Let's Encrypt 证书
 
-### Certificate Management
+### 证书管理 [#certificate-management]
 
 ```bash
-./infra.yml -t nginx_cert      # Regenerate SSL certificates
+./infra.yml -t nginx_cert      # 重新生成 SSL 证书
 ```
 
-### HTTPS Access Methods
+### HTTPS 访问方法 [#https-access-methods]
 
-For self-signed certificates, you can:
-- **Trust the self-signed CA** in your browser
-- **Use browser security bypass** options (type `thisisunsafe` in Chrome)
-- **Configure proper CA-signed certificates** for production
+对于自签名证书，您可以：
+- **在浏览器中信任自签名 CA**
+- **使用浏览器安全绕过选项**（在 Chrome 中输入 `thisisunsafe`）
+- **为生产环境配置适当的 CA 签名证书**
 
-
-
-
---------
-
-## Service Access Examples
-
-With the default configuration, services are accessible via:
-
-- **Home Page**: `http://h.pigsty` or `https://h.pigsty`
-- **Grafana Dashboard**: `http://g.pigsty` or `https://g.pigsty`
-- **Prometheus Metrics**: `http://p.pigsty` or `https://p.pigsty`
-- **Alertmanager**: `http://a.pigsty` or `https://a.pigsty`
 
 
 
 --------
 
-## Best Practices
+## 服务访问示例 [#service-access-examples]
 
-1. **Use domain names** for service access rather than direct IP:PORT
-2. **Configure DNS resolution** or update local hosts file appropriately
-3. **Enable WebSocket support** for services that require it (like Grafana, Jupyter)
-4. **Use HTTPS** in production environments with proper certificates
-5. **Organize services logically** with meaningful subdomain naming
-6. **Monitor certificate expiration** for Let's Encrypt certificates
-7. **Centralize web service proxy** through Nginx for better management
-8. **Use static file serving** for documentation and repository browsing
+使用默认配置，服务可通过以下方式访问：
+
+- **主页**：`http://h.pigsty` 或 `https://h.pigsty`
+- **Grafana 仪表板**：`http://g.pigsty` 或 `https://g.pigsty`
+- **Prometheus 指标**：`http://p.pigsty` 或 `https://p.pigsty`
+- **Alertmanager**：`http://a.pigsty` 或 `https://a.pigsty`
+
+
+
+--------
+
+## 最佳实践 [#best-practices]
+
+1. **使用域名** 访问服务，而不是直接使用 IP:PORT
+2. **配置 DNS 解析** 或适当更新本地 hosts 文件
+3. **为需要的服务启用 WebSocket 支持**（如 Grafana、Jupyter）
+4. **在生产环境中使用 HTTPS** 并配置适当的证书
+5. **合理组织服务** 使用有意义的子域名命名
+6. **监控 Let's Encrypt 证书过期时间**
+7. **通过 Nginx 集中管理 Web 服务代理** 以获得更好的管理体验
+8. **使用静态文件服务** 用于文档和仓库浏览
