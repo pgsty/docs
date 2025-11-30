@@ -74,7 +74,7 @@ Pigsty 基础设施组件的参数：本地 YUM 仓库、Nginx、DNSMasq、Prome
 | [`blackbox_enabled`](#blackbox_enabled)                     | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 blackbox_exporter？        |
 | [`blackbox_options`](#blackbox_options)                     | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | blackbox_exporter 额外服务器选项             |
 | [`alertmanager_enabled`](#alertmanager_enabled)             | [`PROMETHEUS`](#prometheus)       | `bool`       | G/I   | 在此基础设施节点上设置 alertmanager？             |
-| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager 监听端口，默认 `9093`           |
+| [`alertmanager_port`](#alertmanager_port)                   | [`PROMETHEUS`](#prometheus)       | `port`       | G     | alertmanager 监听端口，默认 `9059`           |
 | [`alertmanager_options`](#alertmanager_options)             | [`PROMETHEUS`](#prometheus)       | `arg`        | G     | alertmanager 额外服务器选项                  |
 | [`exporter_metrics_path`](#exporter_metrics_path)           | [`PROMETHEUS`](#prometheus)       | `path`       | G     | exporter 指标路径，默认 `/metrics`           |
 | [`exporter_install`](#exporter_install)                     | [`PROMETHEUS`](#prometheus)       | `enum`       | G     | 如何安装 exporter？none、yum、binary         |
@@ -273,8 +273,8 @@ infra_portal:                     # 通过门户暴露的基础设施服务
 infra_portal:                     # 通过门户暴露的基础设施服务
   home         : { domain: h.pigsty }
   grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" ,websocket: true }
-  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9059" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
 ```
@@ -864,7 +864,7 @@ pushgateway_options: '--persistence.interval=1m' # pushgateway 额外服务器�
 blackbox_enabled: true            # 在此基础设施节点上设置 blackbox_exporter？
 blackbox_options: ''              # blackbox_exporter 额外服务器选项
 alertmanager_enabled: true        # 在此基础设施节点上设置 alertmanager？
-alertmanager_port: 9093           # alertmanager 监听端口，默认 9093
+alertmanager_port: 9059           # alertmanager 监听端口，默认 9059
 alertmanager_options: ''          # alertmanager 额外服务器选项
 exporter_metrics_path: /metrics   # exporter 指标路径，默认 `/metrics`
 exporter_install: none            # 如何安装 exporter？none、yum、binary
@@ -891,8 +891,7 @@ exporter_repo_url: ''             # 如果通过 yum 安装 exporter 的仓库�
 
 Prometheus 监听的端口号，默认值为 `9058`。
 
-在 3.7 版本中新加入此参数，此前的默认值为 `9090`。
-不使用先前默认值 `9090` 的原因是 EL10 在此端口上启动了一个默认 Web 服务。
+从 3.7 版开始，从此前的默认值 `9090` 修改为新值，原因是 EL10 在此端口上启动了一个默认 Web 服务。
 
 
 ------
@@ -1005,7 +1004,8 @@ blackbox_exporter 额外服务器选项，默认值为空字符串
 
 AlertManager 的监听端口，默认值为 `9059`。
 
-默认值自 Pigsty v3.7 以来从 `9093` 修改为 `9059`，因为 Kafka 的默认端口之一也使用 `9093`。
+默认值自 Pigsty v3.7 起修改为 `9059`，因为 Kafka 的默认端口之一也使用 `9093`。
+
 
 ------
 

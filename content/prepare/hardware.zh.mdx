@@ -165,8 +165,8 @@ Pigsty 为以下具有 WebUI 的服务使用本地静态域名。
 |:----------:|----------------|:----------:|:--------------------------------------------------:|-----------------------------|
 | `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/zh/infra/arch/#nginx)        | 默认服务器，本地仓库  |
 | `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/zh/infra/arch/#grafana)      | 监控和可视化  |
-| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/zh/infra/arch/#prometheus)   | 时间序列数据库              |
-| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/zh/infra/arch/#alertmanager) | 告警聚合和路由 |
+| `p.pigsty` | `prometheus`   |    9058    |   [**Prometheus**](/zh/infra/arch/#prometheus)   | 时间序列数据库              |
+| `a.pigsty` | `alertmanager` |    9059    | [**AlertManager**](/zh/infra/arch/#alertmanager) | 告警聚合和路由 |
 
 域名是可选的，要使用它们，用户有责任将以下记录添加到您的 `/etc/hosts` 文件（本地静态解析），
 或将它们添加到您的 DNS 服务器/公共 DNS 供应商。

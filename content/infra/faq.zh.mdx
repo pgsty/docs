@@ -91,8 +91,8 @@ PGSQL 集群/实例域名默认注册到基础设施节点上的 `/etc/hosts.d/<
 infra_portal:
   home         : { domain: home.pigsty.io }
   grafana      : { domain: g.pgsty.com ,endpoint: "${admin_ip}:3000" ,websocket: true }
-  prometheus   : { domain: p.pigsty.io ,endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty.io ,endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty.io ,endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty.io ,endpoint: "${admin_ip}:9059" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
   # 额外的 Web 门户

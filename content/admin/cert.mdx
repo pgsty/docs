@@ -27,8 +27,8 @@ First, identify which upstream services require public certificates by configuri
 infra_portal:
   home         : { domain: h.pigsty.cc }
   grafana      : { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true }
-  prometheus   : { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty.cc, endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty.cc, endpoint: "${admin_ip}:9059" }
   minio        : { domain: m.pigsty.cc, endpoint: "${admin_ip}:9001", scheme: https, websocket: true }
   web          : { domain: pigsty.cc, path: "/www/web.cc" }
   repo         : { domain: repo.pigsty.cc, path: "/www/repo" }
@@ -104,8 +104,8 @@ After successfully obtaining certificates, update your `infra_portal` configurat
 ```yaml
 infra_portal:
   grafana: { domain: g.pigsty.cc, endpoint: "${admin_ip}:3000", websocket: true, certbot: true }
-  prometheus: { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090", certbot: true }
-  alertmanager: { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093", certbot: true }
+  prometheus: { domain: p.pigsty.cc, endpoint: "${admin_ip}:9058", certbot: true }
+  alertmanager: { domain: a.pigsty.cc, endpoint: "${admin_ip}:9059", certbot: true }
   web: { domain: pigsty.cc, path: "/www/web.cc", certbot: true }
   repo: { domain: repo.pigsty.cc, path: "/www/repo", certbot: true }
 ```

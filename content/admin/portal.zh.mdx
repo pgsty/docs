@@ -21,8 +21,8 @@ Nginx 服务器配置通过 `infra_portal` 参数指定。用户声明要通过 
 infra_portal:  # 域名和上游服务器
   home         : { domain: h.pigsty }
   grafana      : { domain: g.pigsty, endpoint: "${admin_ip}:3000", websocket: true }
-  prometheus   : { domain: p.pigsty, endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty, endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty, endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty, endpoint: "${admin_ip}:9059" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
 ```
@@ -35,8 +35,8 @@ infra_portal:
   grafana      : { domain: g.pgsty.com, endpoint: "${admin_ip}:3000", websocket: true }
   cc           : { domain: pigsty.cc, path: "/www/pigsty.cc" }
   en           : { domain: pigsty.io, path: "/www/pigsty.io" }
-  prometheus   : { domain: p.pigsty.cc, endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty.cc, endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty.cc, endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty.cc, endpoint: "${admin_ip}:9059" }
   minio        : { domain: s3.pigsty.cc, endpoint: "${admin_ip}:9001", websocket: true }
   jupyter      : { domain: lab.pigsty.cc, endpoint: "${admin_ip}:8888", websocket: true }
   repo         : { domain: repo.pigsty.cc, path: "/www/repo", index: true }

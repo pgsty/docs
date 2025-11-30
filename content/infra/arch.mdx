@@ -13,8 +13,8 @@ These are essential for a production-grade PostgreSQL service, and will be insta
 |      Component      |  Port  |   Domain   | Description                       |
 |:-------------------:|:------:|:----------:|-----------------------------------|
 |       `nginx`       |  `80`  | `h.pigsty` | Web Service Portal (YUM/APT Repo) |
-|   `alertmanager`    | `9093` | `a.pigsty` | Alert Aggregation and delivery    |
-|    `prometheus`     | `9090` | `p.pigsty` | Monitoring Time Series Database   |
+|   `alertmanager`    | `9059` | `a.pigsty` | Alert Aggregation and delivery    |
+|    `prometheus`     | `9058` | `p.pigsty` | Monitoring Time Series Database   |
 |      `grafana`      | `3000` | `g.pigsty` | Visualization Platform            |
 |        `lok`        | `3100` |     -      | Logging Collection Server         |
 |    `pushgateway`    | `9091` |     -      | Collect One-Time Job Metrics      |
@@ -64,8 +64,8 @@ Nginx configuration follows [`infra_portal`](/infra/param#infra_portal) definiti
 infra_portal:
   home         : { domain: h.pigsty }
   grafana      : { domain: g.pigsty ,endpoint: "${admin_ip}:3000" ,websocket: true }
-  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty ,endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9059" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
   #minio        : { domain: sss.pigsty  ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
@@ -115,7 +115,7 @@ Local repo configs are in: [Config: INFRA - REPO](/infra/param#repo)
 
 ### Prometheus
 
-Prometheus, our TSDB for monitoring, listens on port 9090 (access via `IP:9090` or `http://p.pigsty`).
+Prometheus, our TSDB for monitoring, listens on port 9058 (access via `IP:9058` or `http://p.pigsty`).
 
 Key features:
 
@@ -127,7 +127,7 @@ Key features:
 
 ## AlertManager
 
-AlertManager handles alerts on port 9093 (`IP:9093` or `http://a.pigsty`). While it receives Prometheus alerts, you’ll need extra config (e.g., SMTP) for notifications.
+AlertManager handles alerts on port 9059 (`IP:9059` or `http://a.pigsty`). While it receives Prometheus alerts, you’ll need extra config (e.g., SMTP) for notifications.
 
 Configs for Prometheus, AlertManager, PushGateway, and BlackboxExporter are in: [Config: INFRA - PROMETHEUS](/infra/arch#prometheus)
 

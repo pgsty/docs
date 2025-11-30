@@ -10,8 +10,8 @@ After installing Pigsty, users can access most Infra components’ web interface
 Let’s say your node’s internal IP is 10.10.10.10, then by default:
 
 - [http://10.10.10.10:3000](http://10.10.10.10:3000/) is Grafana dashboard (**your daily command center**)
-- [http://10.10.10.10:9090](http://10.10.10.10:9090/) is Prometheus TSDB console
-- [http://10.10.10.10:9093](http://10.10.10.10:9093/) is AlertManager console
+- [http://10.10.10.10:9058](http://10.10.10.10:9058/) is Prometheus TSDB console
+- [http://10.10.10.10:9059](http://10.10.10.10:9059/) is AlertManager console
 - [http://10.10.10.10](http://10.10.10.10/) is Nginx HTTP entry point (default port 80)
 
 While IP + Port works fine for dev/test environments (hey, we’re all lazy sometimes!), for more serious deployments, I strongly recommend accessing these services via **domain names**.
@@ -93,8 +93,8 @@ Pigsty configures these four **internal domains** by default:
 |:----------:|----------------|:----------:|:---------------------------------------------:|-----------------------------|
 | `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/infra/arch/#nginx)        | Default server, local repo  |
 | `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/infra/arch/#grafana)      | Monitoring & visualization  |
-| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/infra/arch/#prometheus)   | Time series DB              |
-| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/infra/arch/#alertmanager) | Alert aggregation & routing |
+| `p.pigsty` | `prometheus`   |    9058    |   [**Prometheus**](/infra/arch/#prometheus)   | Time series DB              |
+| `a.pigsty` | `alertmanager` |    9059    | [**AlertManager**](/infra/arch/#alertmanager) | Alert aggregation & routing |
 
 Since these domains don’t use TLDs, you’ll need [**local static**](#local-static-resolution) or [**internal dynamic**](#internal-dynamic-resolution) resolution.
 
@@ -127,8 +127,8 @@ Not a fan of default domains? Modify them in [**`infra_portal`**](/infra/param#i
 infra_portal:
   home         : { domain: h.pigsty.xxx }
   grafana      : { domain: g.pigsty.xxx ,endpoint: "${admin_ip}:3000" ,websocket: true }
-  prometheus   : { domain: p.pigsty.xxx ,endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty.xxx ,endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty.xxx ,endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty.xxx ,endpoint: "${admin_ip}:9059" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
 ```

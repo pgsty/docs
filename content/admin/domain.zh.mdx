@@ -10,8 +10,8 @@ icon: Earth
 假设您的节点内部 IP 是 10.10.10.10，那么默认情况下：
 
 - [http://10.10.10.10:3000](http://10.10.10.10:3000/) 是 Grafana 仪表板（**您的日常指挥中心**）
-- [http://10.10.10.10:9090](http://10.10.10.10:9090/) 是 Prometheus TSDB 控制台
-- [http://10.10.10.10:9093](http://10.10.10.10:9093/) 是 AlertManager 控制台
+- [http://10.10.10.10:9058](http://10.10.10.10:9058/) 是 Prometheus TSDB 控制台
+- [http://10.10.10.10:9059](http://10.10.10.10:9059/) 是 AlertManager 控制台
 - [http://10.10.10.10](http://10.10.10.10/) 是 Nginx HTTP 入口点（默认端口 80）
 
 虽然 IP + 端口对于开发/测试环境来说工作得很好（嘿，我们有时都很懒！），但对于更严肃的部署，我强烈建议通过**域名**访问这些服务。
@@ -93,8 +93,8 @@ Pigsty 默认配置这四个**内部域名**：
 |:----------:|----------------|:----------:|:---------------------------------------------:|-----------------------------|
 | `h.pigsty` | `home`         | **80/443** |        [**Nginx**](/zh/infra/arch/#nginx)        | 默认服务器，本地仓库  |
 | `g.pigsty` | `grafana`      |  **3000**  |      [**Grafana**](/zh/infra/arch/#grafana)      | 监控和可视化  |
-| `p.pigsty` | `prometheus`   |    9090    |   [**Prometheus**](/zh/infra/arch/#prometheus)   | 时间序列数据库              |
-| `a.pigsty` | `alertmanager` |    9093    | [**AlertManager**](/zh/infra/arch/#alertmanager) | 警报聚合和路由 |
+| `p.pigsty` | `prometheus`   |    9058    |   [**Prometheus**](/zh/infra/arch/#prometheus)   | 时间序列数据库              |
+| `a.pigsty` | `alertmanager` |    9059    | [**AlertManager**](/zh/infra/arch/#alertmanager) | 警报聚合和路由 |
 
 由于这些域名不使用 TLD，您需要[**本地静态**](#local-static-resolution)或[**内部动态**](#internal-dynamic-resolution)解析。
 
@@ -127,8 +127,8 @@ Pigsty 默认配置这四个**内部域名**：
 infra_portal:
   home         : { domain: h.pigsty.xxx }
   grafana      : { domain: g.pigsty.xxx ,endpoint: "${admin_ip}:3000" ,websocket: true }
-  prometheus   : { domain: p.pigsty.xxx ,endpoint: "${admin_ip}:9090" }
-  alertmanager : { domain: a.pigsty.xxx ,endpoint: "${admin_ip}:9093" }
+  prometheus   : { domain: p.pigsty.xxx ,endpoint: "${admin_ip}:9058" }
+  alertmanager : { domain: a.pigsty.xxx ,endpoint: "${admin_ip}:9059" }
   blackbox     : { endpoint: "${admin_ip}:9115" }
   loki         : { endpoint: "${admin_ip}:3100" }
 ```
