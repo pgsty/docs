@@ -6,7 +6,7 @@ icon: Zap
 
 Supabase is great, but having your own Supabase is even better.
 Pigsty helps you build enterprise-grade Supabase on your own servers (physical/virtual machines/cloud servers) with one-click deployment —
-[more extensions](https://ext.pgsty.com), better performance, deeper control, and much more cost-effective.
+[more extensions](https://pgext.cloud), better performance, deeper control, and much more cost-effective.
 
 > Pigsty is one of the three 3rd party self-hosting tutorials listed in the [official Supabase docs](https://supabase.com/docs/guides/self-hosting#third-party-guides)
 
@@ -68,7 +68,7 @@ Moreover, currently, sufficiently reliable [local enterprise-grade NVMe SSDs](ht
 
 Another important reason is **functionality** — Supabase cloud service functionality is limited. Many powerful PostgreSQL extensions cannot be provided as cloud services due to multi-tenant security challenges and licensing issues.
 Therefore, although [extensions are PostgreSQL's core feature](https://blog.vonng.com/pg/pg-eat-db-world), only **64** extensions are available on Supabase cloud service.
-Self-built Supabase with Pigsty provides up to [**423**](https://ext.pgsty.com/list) ready-to-use PostgreSQL extensions.
+Self-built Supabase with Pigsty provides up to [**437**](https://pgext.cloud/list) ready-to-use PostgreSQL extensions.
 
 Additionally, autonomy and avoiding vendor lock-in are important reasons for self-hosting — although Supabase aims to provide an open-source alternative to Google Firebase without vendor lock-in, the threshold for self-building enterprise-grade Supabase to high standards is actually quite high.
 Supabase includes a series of PostgreSQL extension plugins developed and maintained by them, and plans to replace the native PostgreSQL kernel with the acquired [OrioleDB](/pgsql/kernel/orioledb), but these kernels and extensions are not provided in the official PGDG repository.
@@ -76,24 +76,24 @@ Supabase includes a series of PostgreSQL extension plugins developed and maintai
 This is actually a form of implicit vendor lock-in, preventing users from self-building using methods other than the supabase/postgres Docker image. Pigsty provides an open-source, transparent, and universal solution to solve this problem.
 We package all 10 missing extensions developed and used by Supabase into ready-to-use RPM/DEB packages, ensuring they are available on all [mainstream Linux operating system distributions](/prepare/linux):
 
-| Extension                                                 | Description                                                                                                      |
-|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| [`pg_graphql`](https://ext.pgsty.com/e/pg_graphql/)       | Provides GraphQL support within PostgreSQL (RUST), Rust extension, provided by PIGSTY                            |
-| [`pg_jsonschema`](https://ext.pgsty.com/e/pg_jsonschema/) | Provides JSON Schema validation capability, Rust extension, provided by PIGSTY                                   |
-| [`wrappers`](https://ext.pgsty.com/e/wrappers/)           | Supabase's external data source wrapper bundle, Rust extension, provided by PIGSTY                               |
-| [`index_advisor`](https://ext.pgsty.com/e/index_advisor/) | Query index advisor, SQL extension, provided by PIGSTY                                                           |
-| [`pg_net`](https://ext.pgsty.com/e/pg_net/)               | Extension for asynchronous non-blocking HTTP/HTTPS requests with SQL (supabase), C extension, provided by PIGSTY |
-| [`vault`](https://ext.pgsty.com/e/supabase_vault/)        | Extension for storing encrypted credentials in Vault (supabase), C extension, provided by PIGSTY                 |
-| [`pgjwt`](https://ext.pgsty.com/e/pgjwt/)                 | PostgreSQL implementation of JSON Web Token API (supabase), SQL extension, provided by PIGSTY                    |
-| [`pgsodium`](https://ext.pgsty.com/e/pgsodium/)           | Table data encryption storage TDE, extension, provided by PIGSTY                                                 |
-| [`supautils`](https://ext.pgsty.com/e/supautils/)         | Used to ensure database cluster security in cloud environments, C extension, provided by PIGSTY                  |
-| [`pg_plan_filter`](https://ext.pgsty.com/e/plan_filter/)  | Filter and block specific query statements using execution plan costs, C extension, provided by PIGSTY           |
+| Extension                                               | Description                                                                                                      |
+|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [`pg_graphql`](https://pgext.cloud/e/pg_graphql/)       | Provides GraphQL support within PostgreSQL (RUST), Rust extension, provided by PIGSTY                            |
+| [`pg_jsonschema`](https://pgext.cloud/e/pg_jsonschema/) | Provides JSON Schema validation capability, Rust extension, provided by PIGSTY                                   |
+| [`wrappers`](https://pgext.cloud/e/wrappers/)           | Supabase's external data source wrapper bundle, Rust extension, provided by PIGSTY                               |
+| [`index_advisor`](https://pgext.cloud/e/index_advisor/) | Query index advisor, SQL extension, provided by PIGSTY                                                           |
+| [`pg_net`](https://pgext.cloud/e/pg_net/)               | Extension for asynchronous non-blocking HTTP/HTTPS requests with SQL (supabase), C extension, provided by PIGSTY |
+| [`vault`](https://pgext.cloud/e/supabase_vault/)        | Extension for storing encrypted credentials in Vault (supabase), C extension, provided by PIGSTY                 |
+| [`pgjwt`](https://pgext.cloud/e/pgjwt/)                 | PostgreSQL implementation of JSON Web Token API (supabase), SQL extension, provided by PIGSTY                    |
+| [`pgsodium`](https://pgext.cloud/e/pgsodium/)           | Table data encryption storage TDE, extension, provided by PIGSTY                                                 |
+| [`supautils`](https://pgext.cloud/e/supautils/)         | Used to ensure database cluster security in cloud environments, C extension, provided by PIGSTY                  |
+| [`pg_plan_filter`](https://pgext.cloud/e/plan_filter/)  | Filter and block specific query statements using execution plan costs, C extension, provided by PIGSTY           |
 
 Meanwhile, we [install](/pgsql/extension/install) most extensions by default in Supabase self-hosting deployment. You can refer to the available extension list to [enable](/pgsql/extension/create) them as needed.
 
 Additionally, Pigsty handles the automatic setup of underlying [high availability](/feat/ha/) [PostgreSQL](/pgsql/) database clusters, high availability [MinIO](/minio/) object storage clusters, and even [Docker](/docker/) container infrastructure deployment and [Nginx](/admin/portal) reverse proxy, [domain configuration](/admin/domain) and [HTTPS certificate issuance](/admin/cert). You can deploy any number of stateless Supabase container clusters using Docker Compose and store state in external Pigsty self-hosted database services.
 
-In this self-hosting deployment architecture, you gain the freedom to use different kernels (PostgreSQL 15-17, OrioleDB), the freedom to install [**423**](https://ext.pgsty.com/list/) extensions, the freedom to scale Supabase/Postgres/MinIO, 
+In this self-hosting deployment architecture, you gain the freedom to use different kernels (PostgreSQL 15-18, OrioleDB), the freedom to install [**437**](https://pgext.cloud/list/) extensions, the freedom to scale Supabase/Postgres/MinIO,
 the freedom from database operational chores, and the freedom from vendor lock-in to run locally indefinitely. Compared to the cost of using cloud services, the price is just preparing servers and typing a few more commands.
 
 
@@ -194,17 +194,19 @@ The above passwords are for Pigsty component modules and are strongly recommende
 
 In addition to Pigsty component passwords, you also need to [modify Supabase keys](https://supabase.com/docs/guides/self-hosting/docker#securing-your-services), including:
 
-- [`JWT_SECRET`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#130)
-- [`ANON_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L131)
-- [`SERVICE_ROLE_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L132)
-- [`DASHBOARD_USERNAME`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L133): Supabase Studio Web interface default username, default is `supabase`
-- [`DASHBOARD_PASSWORD`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L134): Supabase Studio Web interface default password, default is `pigsty`
+- [`JWT_SECRET`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L131)
+- [`ANON_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L132)
+- [`SERVICE_ROLE_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L133)
+- [`PG_META_CRYPTO_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L134)
+- [`DASHBOARD_USERNAME`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L136): Supabase Studio Web interface default username, default is `supabase`
+- [`DASHBOARD_PASSWORD`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L137): Supabase Studio Web interface default password, default is `pigsty`
 
 Please refer to the [Supabase tutorial: Securing your services](https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys) instructions:
 
 - Generate a `JWT_SECRET` longer than 40 characters and use the tools in the tutorial to sign `ANON_KEY` and `SERVICE_ROLE_KEY` JWTs.
 - Use the tools provided in the tutorial to generate an `ANON_KEY` JWT based on `JWT_SECRET` and expiration time attributes. This is the credential for anonymous users.
 - Use the tools provided in the tutorial to generate a `SERVICE_ROLE_KEY` based on `JWT_SECRET` and expiration time attributes. This is the credential for higher-privilege service roles.
+- Setup `PG_META_CRYPTO_KEY` with a random string at least 32 char long  for securing connection strings between Studio and postgres-meta
 - If your PostgreSQL business user uses a password different from the default, please modify the [`POSTGRES_PASSWORD`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L144) value accordingly
 - If your object storage uses a password different from the default, please modify the [`S3_ACCESS_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L154) and [`S3_SECRET_KEY`](https://github.com/pgsty/pigsty/blob/main/conf/supabase.yml#L155) values accordingly
 
@@ -230,7 +232,7 @@ In this case, your server should have a public IP address, you should own a doma
 A simple approach is to batch replace the placeholder domain (`supa.pigsty`) with your actual domain, say `supa.pigsty.cc`:
 
 ```bash
-sed -ie 's/supa.pigsty.cc/supa.pigsty/g' ~/pigsty/pigsty.yml
+sed -ie 's/supa.pigsty/supa.pigsty/g' ~/pigsty/pigsty.yml
 ```
 
 If you haven't configured it beforehand, reload Nginx and Supabase configurations:
