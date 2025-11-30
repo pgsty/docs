@@ -86,33 +86,33 @@ While you only need to consider AGPLv3 when you “distribute” Pigsty or modif
 
 Related Open Source Project and their license.
 
-| Module   | Software Name                                                     | License                                                                                | Usage                                       | Necessity    |
-|----------|-------------------------------------------------------------------|----------------------------------------------------------------------------------------|---------------------------------------------|--------------|
-| PGSQL    | [PostgreSQL](https://www.postgresql.org/)                         | [PostgreSQL](https://www.postgresql.org/about/licence/)                                | the PostgreSQL kernel                       | **Required** |
-| PGSQL    | [patroni](https://patroni.readthedocs.io/en/latest/)              | [MIT](https://github.com/zalando/patroni/blob/master/LICENSE)                          | PostgreSQL high-availability agent          | **Required** |
-| ETCD     | [etcd](https://etcd.io/)                                          | [Apache-2.0](https://github.com/etcd-io/etcd/blob/main/LICENSE)                        | DCS for postgres/patroni HA setup           | **Required** |
-| INFRA    | [Ansible](https://docs.ansible.com/ansible/latest/index.html)     | [GPL-3.0](https://github.com/ansible/ansible/blob/devel/COPYING)                       | Admin tool for running playbooks            | **Required** |
-| INFRA    | [Nginx](https://github.com/nginx/nginx)                           | [BSD-2.0](https://github.com/nginx/nginx/blob/master/LICENSE)                          | Exposes WebUI and serve as local repo       | **Required** |
-| PGSQL    | [pgbackrest](https://pgbackrest.org/)                             | [MIT](https://github.com/pgbackrest/pgbackrest/blob/main/LICENSE)                      | Backup/PITR management tool                 | Recommended  |
-| PGSQL    | [pgbouncer](https://www.pgbouncer.org/community.html)             | [ISC](https://github.com/pgbouncer/pgbouncer/blob/master/COPYRIGHT)                    | PostgreSQL connection pooling               | Recommended  |
-| PGSQL    | [vip-manager](https://github.com/cybertec-postgresql/vip-manager) | [BSD 2-Clause](https://github.com/cybertec-postgresql/vip-manager/blob/master/LICENSE) | Bind L2 VIP to postgres cluster leader      | Recommended  |
-| PGSQL    | [pg_exporter](https://github.com/Vonng/pg_exporter)               | [Apache-2.0](https://github.com/Vonng/pg_exporter/blob/master/LICENSE)                 | Collect metrics from postgres and pgbouncer | Recommended  |
-| NODE     | [node_exporter](https://github.com/prometheus/node_exporter)      | [Apache-2.0](https://github.com/prometheus/node_exporter/blob/master/LICENSE)          | Collect node-level monitoring metrics       | Recommended  |
-| NODE     | [haproxy](https://www.haproxy.org/)                               | [HAPROXY](https://github.com/haproxy/haproxy/blob/master/LICENSE)                      | load balancing and expose service           | Recommended  |
-| INFRA    | [Grafana](https://grafana.com/)                                   | [AGPL-3.0](https://github.com/grafana/grafana/blob/main/LICENSE)                       | Visualization platform                      | Recommended  |
-| INFRA    | [Prometheus](https://prometheus.io/)                              | [Apache-2.0](https://github.com/prometheus/prometheus/blob/main/LICENSE)               | TSDB, metric collection, alerting           | Recommended  |
-| INFRA    | [Loki](https://grafana.com/oss/loki/)                             | [AGPL-3.0](https://github.com/grafana/loki/blob/main/LICENSE)                          | Logging collection platform                 | Recommended  |
-| INFRA    | [DNSMASQ](https://thekelleys.org.uk/dnsmasq/doc.html)             | [GPL-2.0](https://thekelleys.org.uk/dnsmasq/doc.html)                                  | DNS resolution and name lookup              | Recommended  |
-| MINIO    | [MinIO](https://min.io/)                                          | [AGPL-3.0](https://github.com/minio/minio/blob/master/LICENSE)                         | S3-compatible object storage service        | Optional     |
-| NODE     | [keepalived](https://www.keepalived.org/)                         | [MIT](https://github.com/umich-arc/keepalived/blob/master/LICENSE)                     | Binds VIP to node clusters                  | Optional     |
-| REDIS    | [Redis](https://redis.io/)                                        | [Redis](https://redis.io/about/license/)                                          | Fast cache, data structure service (@7.2.6） | Optional     |
-| REDIS    | [RedisExporter](https://github.com/oliver006/redis_exporter)      | [MIT](https://github.com/oliver006/redis_exporter/blob/master/LICENSE)                 | Redis monitoring capabilities               | Optional     |
-| MONGO    | [FerretDB](https://www.ferretdb.io/)                              | [Apache-2.0](https://github.com/FerretDB/FerretDB/blob/main/LICENSE)                   | MongoDB compatibility layer over postgres   | Optional     |
-| DOCKER   | [docker-ce](https://github.com/docker/docker-ce)                  | [Apache-2.0](https://github.com/docker/docker-ce/blob/master/LICENSE)                  | Container management capability             | Optional     |
-| CLOUD    | [SealOS](https://github.com/labring/sealos/blob/main/LICENSE)     | [Apache-2.0](https://github.com/labring/sealos/blob/main/LICENSE)                      | Fast K8S cluster deployment and admin tool  | Optional     |
-| DUCKDB   | [DuckDB](https://github.com/duckdb/duckdb)                        | [MIT](https://github.com/duckdb/duckdb/blob/main/LICENSE)                              | High-performance analytics                  | Optional     |
+| Module | Software Name                                                     | License                                                                                | Usage                                       | Necessity    |
+|--------|-------------------------------------------------------------------|----------------------------------------------------------------------------------------|---------------------------------------------|--------------|
+| PGSQL  | [PostgreSQL](https://www.postgresql.org/)                         | [PostgreSQL](https://www.postgresql.org/about/licence/)                                | the PostgreSQL kernel                       | **Required** |
+| PGSQL  | [patroni](https://patroni.readthedocs.io/en/latest/)              | [MIT](https://github.com/zalando/patroni/blob/master/LICENSE)                          | PostgreSQL high-availability agent          | **Required** |
+| ETCD   | [etcd](https://etcd.io/)                                          | [Apache-2.0](https://github.com/etcd-io/etcd/blob/main/LICENSE)                        | DCS for postgres/patroni HA setup           | **Required** |
+| INFRA  | [Ansible](https://docs.ansible.com/ansible/latest/index.html)     | [GPL-3.0](https://github.com/ansible/ansible/blob/devel/COPYING)                       | Admin tool for running playbooks            | **Required** |
+| INFRA  | [Nginx](https://github.com/nginx/nginx)                           | [BSD-2.0](https://github.com/nginx/nginx/blob/master/LICENSE)                          | Exposes WebUI and serve as local repo       | **Required** |
+| PGSQL  | [pgbackrest](https://pgbackrest.org/)                             | [MIT](https://github.com/pgbackrest/pgbackrest/blob/main/LICENSE)                      | Backup/PITR management tool                 | Recommended  |
+| PGSQL  | [pgbouncer](https://www.pgbouncer.org/community.html)             | [ISC](https://github.com/pgbouncer/pgbouncer/blob/master/COPYRIGHT)                    | PostgreSQL connection pooling               | Recommended  |
+| PGSQL  | [vip-manager](https://github.com/cybertec-postgresql/vip-manager) | [BSD 2-Clause](https://github.com/cybertec-postgresql/vip-manager/blob/master/LICENSE) | Bind L2 VIP to postgres cluster leader      | Recommended  |
+| PGSQL  | [pg_exporter](https://github.com/Vonng/pg_exporter)               | [Apache-2.0](https://github.com/Vonng/pg_exporter/blob/master/LICENSE)                 | Collect metrics from postgres and pgbouncer | Recommended  |
+| NODE   | [node_exporter](https://github.com/prometheus/node_exporter)      | [Apache-2.0](https://github.com/prometheus/node_exporter/blob/master/LICENSE)          | Collect node-level monitoring metrics       | Recommended  |
+| NODE   | [haproxy](https://www.haproxy.org/)                               | [HAPROXY](https://github.com/haproxy/haproxy/blob/master/LICENSE)                      | load balancing and expose service           | Recommended  |
+| INFRA  | [Grafana](https://grafana.com/)                                   | [AGPL-3.0](https://github.com/grafana/grafana/blob/main/LICENSE)                       | Visualization platform                      | Recommended  |
+| INFRA  | [Prometheus](https://prometheus.io/)                              | [Apache-2.0](https://github.com/prometheus/prometheus/blob/main/LICENSE)               | TSDB, metric collection, alerting           | Recommended  |
+| INFRA  | [Loki](https://grafana.com/oss/loki/)                             | [AGPL-3.0](https://github.com/grafana/loki/blob/main/LICENSE)                          | Logging collection platform                 | Recommended  |
+| INFRA  | [DNSMASQ](https://thekelleys.org.uk/dnsmasq/doc.html)             | [GPL-2.0](https://thekelleys.org.uk/dnsmasq/doc.html)                                  | DNS resolution and name lookup              | Recommended  |
+| MINIO  | [MinIO](https://min.io/)                                          | [AGPL-3.0](https://github.com/minio/minio/blob/master/LICENSE)                         | S3-compatible object storage service        | Optional     |
+| NODE   | [keepalived](https://www.keepalived.org/)                         | [MIT](https://github.com/umich-arc/keepalived/blob/master/LICENSE)                     | Binds VIP to node clusters                  | Optional     |
+| REDIS  | [Redis](https://redis.io/)                                        | [Redis](https://redis.io/about/license/)                                               | Fast cache, data structure service (@7.2.6） | Optional     |
+| REDIS  | [RedisExporter](https://github.com/oliver006/redis_exporter)      | [MIT](https://github.com/oliver006/redis_exporter/blob/master/LICENSE)                 | Redis monitoring capabilities               | Optional     |
+| MONGO  | [FerretDB](https://www.ferretdb.io/)                              | [Apache-2.0](https://github.com/FerretDB/FerretDB/blob/main/LICENSE)                   | MongoDB compatibility layer over postgres   | Optional     |
+| DOCKER | [docker-ce](https://github.com/docker/docker-ce)                  | [Apache-2.0](https://github.com/docker/docker-ce/blob/master/LICENSE)                  | Container management capability             | Optional     |
+| CLOUD  | [SealOS](https://github.com/labring/sealos/blob/main/LICENSE)     | [Apache-2.0](https://github.com/labring/sealos/blob/main/LICENSE)                      | Fast K8S cluster deployment and admin tool  | Optional     |
+| DUCKDB | [DuckDB](https://github.com/duckdb/duckdb)                        | [MIT](https://github.com/duckdb/duckdb/blob/main/LICENSE)                              | High-performance analytics                  | Optional     |
 
-For PostgreSQL Extensions License, check the [extension list](https://ext.pgsty.com/list/) for details
+For 437 PostgreSQL Extensions License, check the [extension list](https://pgext.cloud/list/license) for details
 
 **Necessity Levels:**
 
