@@ -81,7 +81,7 @@ which preload these two [Contrib extensions](https://ext.pgsty.com/list/repo#con
 Preload libraries are loaded one by one, so the order of extensions in `shared_preload_libraries` matters,
 Here are some known rules to follow:
 
-- For [**STAT**](https://ext.pgsty.com/cate/stat) extension, add them **AFTER** `pg_stat_statements` to ensure using the same query_id.
+- For [**STAT**](https://pgext.cloud/list) extension, add them **AFTER** `pg_stat_statements` to ensure using the same query_id.
 - [`timescaledb`](https://ext.pgsty.com/e/timescaledb) and [`citus`](https://ext.pgsty.com/e/citus) should be placed at the **BEGINNING** of `shared_preload_libraries`
 - If you use [`citus`](https://ext.pgsty.com/e/citus) and [`timescaledb`](https://ext.pgsty.com/e/timescaledb) together, place `citus` before `timescaledb`.
 - Use `pg_documentdb` and `pg_documentdb_core` as library name for [**documentdb**](https://ext.pgsty.com/e/documentdb).

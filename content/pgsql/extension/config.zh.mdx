@@ -81,7 +81,7 @@ pg restart pg-meta    # 重启以应用更改
 预加载库是逐个加载的，因此 `shared_preload_libraries` 中扩展的顺序很重要，
 以下是一些需要遵循的已知规则：
 
-- 对于 [**STAT**](https://ext.pgsty.com/cate/stat) 扩展，在 `pg_stat_statements` **之后**添加它们以确保使用相同的 query_id。
+- 对于 [**STAT**](https://pgext.cloud/list/cate/#stat) 扩展，在 `pg_stat_statements` **之后**添加它们以确保使用相同的 query_id。
 - [`timescaledb`](https://ext.pgsty.com/e/timescaledb) 和 [`citus`](https://ext.pgsty.com/e/citus) 应该放在 `shared_preload_libraries` 的**开头**
 - 如果您同时使用 [`citus`](https://ext.pgsty.com/e/citus) 和 [`timescaledb`](https://ext.pgsty.com/e/timescaledb)，请将 `citus` 放在 `timescaledb` 之前。
 - 对于 [**documentdb**](https://ext.pgsty.com/e/documentdb)，使用 `pg_documentdb` 和 `pg_documentdb_core` 作为库名称。

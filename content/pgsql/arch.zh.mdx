@@ -84,20 +84,20 @@ patroni 需要您的部署中有一个正常工作的 [ETCD](/zh/etcd)，pgbackr
 
 ![](/img/pigsty/infra.png)
 
-|       组件       |  端口  | 描述                                  |
-|:---------------------:|:------:|----------------------------------------------|
+|          组件           |   端口   | 描述                             |
+|:---------------------:|:------:|--------------------------------|
 |      `postgres`       | `5432` | 由 Patroni 管理的 PostgreSQL 服务器进程 |
-|      `pgbouncer`      | `6432` | Pgbouncer 连接池                    |
-|     `pgbackrest`      |   -    | 备份和时间点恢复工具      |
-|       `patroni`       | `8008` | Patroni 高可用组件，管理 `postgres`      |
-| `primary` @ `haproxy` | `5433` | 主库连接池：读写服务  |
-| `replica` @ `haproxy` | `5434` | 从库连接池：只读服务   |
-| `default` @ `haproxy` | `5436` | 主库直连服务               |
-| `offline` @ `haproxy` | `5438` | 离线直连：离线读取服务 |
-|     `pg_exporter`     | `9630` | PostgreSQL 监控指标导出器         |
-| `pgbouncer_exporter`  | `9631` | pgbouncer 监控指标导出器        |
-| `pgbackrest_exporter` | `9854` | pgbackrest 监控指标导出器       |
-|     `vip-manager`     |   -    | 绑定 VIP 到主库                      |
+|      `pgbouncer`      | `6432` | Pgbouncer 连接池                  |
+|     `pgbackrest`      |   -    | 备份和时间点恢复工具                     |
+|       `patroni`       | `8008` | Patroni 高可用组件，管理 `postgres`    |
+| `primary` @ `haproxy` | `5433` | 主库连接池：读写服务                     |
+| `replica` @ `haproxy` | `5434` | 从库连接池：只读服务                     |
+| `default` @ `haproxy` | `5436` | 主库直连服务                         |
+| `offline` @ `haproxy` | `5438` | 离线直连：离线读取服务                    |
+|     `pg_exporter`     | `9630` | PostgreSQL 监控指标导出器             |
+| `pgbouncer_exporter`  | `9631` | pgbouncer 监控指标导出器              |
+| `pgbackrest_exporter` | `9854` | pgbackrest 监控指标导出器             |
+|     `vip-manager`     |   -    | 绑定 VIP 到主库                     |
 
 
 

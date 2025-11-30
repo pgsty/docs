@@ -18,25 +18,33 @@ curl -fsSL https://repo.pigsty.cc/beta | bash; cd ~/pigsty   # 中国的镜像�
 
 ## Pigsty v3.7.0 (beta)
 
-- PostgreSQL 18 深度支持，扩展已就位！
-- 修复了 Ansible 2.19 引入的大量兼容性问题，确保在新老版本上正常运行。
-  - 为 seq 类变量添加了 int 类型转换，确保兼容
-  - 将大量 with_items 修改为 loop 语法，确保兼容
-  - 为密钥交换变量添加一层列表嵌套，避免在新版本下针对字符串进行字符迭代。
-  - 将 range 用例显式转换为 list 后使用
-  - 修改了 name，port 等标记保留的变量命名
-  - 将 `play_hosts` 修改为 `ansible_play_hosts`
-  - 为部分字符串类型添加了 string 强制类型转换，避免运行时错误。
+**亮点特性**
 
-**应用适配**
-
-- supabase
-- odoo
-- dify
+- PostgreSQL 18 深度支持，成为默认 PG 大版本，扩展已就位！
+- 新增 EL10 / Debian 13 操作系统支持，总数达 14 个！
+- 新增 PostgresQL 扩展数量，总数达到 437 个！
+- 支持了 Ansible 2.19 破坏性重构以后的版本！
+- Supabase，PolarDB 更新至最新版本！
+- 优化了 PG 默认参数的设置逻辑，更充分利用资源。
 
 **版本更新**
 
-详情请参考 INFRA 变更日志， RPM 变更日志，以及 DEB 变更日志。
+- PostgreSQL 18.1, 17.7, 16.11, 15.15, 14.20, 13.23
+- Patroni 4.1.0
+- Pgbouncer 1.25.0
+- pg_exporter 1.0.3
+- pgbackrest 2.57.0
+- Supabase 2025-11
+- PolarDB 15.15.5.0
+- FerretDB 2.7.0
+- DuckDB 1.4.2
+- Etcd 3.6.6
+
+更多软件版本更新信息，请参考：
+
+- [INFRA 变更日志](https://pgext.cloud/zh/release/infra/)
+- [RPM 变更日志](https://pgext.cloud/zh/release/rpm/)
+- [DEB 变更日志](https://pgext.cloud/zh/release/deb/)。
 
 **API变化**
 
@@ -48,3 +56,24 @@ curl -fsSL https://repo.pigsty.cc/beta | bash; cd ~/pigsty   # 中国的镜像�
 - 适当增大连接池默认链接数量
 - 新增 `prometheus_port` 参数，且默认值为 `9058`，避开与 EL10 RHEL Web Console 端口的冲突。
 - 修改 `alertmanager_port` 参数的默认值为 `9059`，避开与 Kafka SSL 端口的潜在冲突。
+- 新增 `pg_pkg` 的 `pg_pre` 子任务，在安装 PG 包前移除 el9+ 上导致 LLVM 冲突的 `bpftool`, `python3-perf`
+- 在 Debian / Ubuntu 的默认仓库定义中新增 llvm 仓库模块
+- 修复了 `infra-rm.yml` 移除软件包的逻辑
+
+**兼容性修复**
+
+- 修复了 EL10 ansible 缺少 ansible-collection-community-crypto 无法生成密钥的问题
+- 修复了 Ansible 2.19 引入的大量兼容性问题，确保在新老版本上正常运行。
+    - 为 seq 类变量添加了 int 类型转换，确保兼容
+    - 将大量 with_items 修改为 loop 语法，确保兼容
+    - 为密钥交换变量添加一层列表嵌套，避免在新版本下针对字符串进行字符迭代。
+    - 将 range 用例显式转换为 list 后使用
+    - 修改了 name，port 等标记保留的变量命名
+    - 将 `play_hosts` 修改为 `ansible_play_hosts`
+    - 为部分字符串类型添加了 string 强制类型转换，避免运行时错误。
+- EL10 逻辑适配：
+    - 移除 modulemd_tools flamegraph timescaledb-tool
+    - 使用 java-21-openjdk 替代 java-17-openjdk
+    - aarch64 YUM 仓库名称问题
+- Debian 13 逻辑适配
+    - 使用 `bind9-dnsutils` 替代 `dnsutils`

@@ -10,7 +10,7 @@ icon: Target
 The Oracle compatibility here refers to compatibility at the PL/SQL, syntax, built-in functions, data types, system views, MERGE, and GUC parameter levels. It’s not a wire protocol compatibility like [**Babelfish**](/pgsql/kernel/babelfish), [**openHalo**](/pgsql/kernel/openhalo/), or [**FerretDB**](/ferret/) that allows using the original client drivers. Users still need to use PostgreSQL client tools to access IvorySQL, but can use Oracle-compatible syntax.
 
 
-Currently, IvorySQL’s latest version **4.4** maintains compatibility with PostgreSQL’s latest minor version 17.4, and provides binary RPM/DEB packages for mainstream Linux distributions. Pigsty offers the option to replace the native PostgreSQL with the IvorySQL kernel in PG RDS.
+Currently, IvorySQL’s latest version **4.4** maintains compatibility with PostgreSQL’s latest minor version 17.5, and provides binary RPM/DEB packages for mainstream Linux distributions. Pigsty offers the option to replace the native PostgreSQL with the IvorySQL kernel in PG RDS.
 
 ------
 
@@ -27,7 +27,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 For production deployments, you should edit the auto-generated `pigsty.yml` configuration file to modify parameters like passwords before executing `./install.yml` for deployment.
 
 
-The latest IvorySQL 4.5 is equivalent to PostgreSQL 17.5 Any client tool compatible with PostgreSQL’s wire protocol can access IvorySQL clusters.
+The latest IvorySQL 4.6 is equivalent to PostgreSQL 17.6 Any client tool compatible with PostgreSQL’s wire protocol can access IvorySQL clusters.
 
 By default, you can use a PostgreSQL client to access through the alternative `1521` port, which enables Oracle compatibility mode by default.
 
@@ -66,7 +66,5 @@ If you need to use them, you need to recompile and install from source code for 
 ## Caveats
 
 - The IvorySQL software package is located in the `pigsty-infra` repository, not in `pigsty-pgsql` or `pigsty-ivory` repositories.
-- The default FHS of IvorySQL 4.4 has changed, please pay attention to users upgrading from older versions.
-- IvorySQL 4.4 requires gibc version >= 2.17, which is currently supported by all Linux distributions in Pigsty.
 - Pigsty does not assume any warranty for using the IvorySQL kernel, and any issues or requests should be addressed to the manufacturer.
 

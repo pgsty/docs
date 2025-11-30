@@ -7,10 +7,11 @@ icon: Target
 
 [IvorySQL](https://www.ivorysql.org/) 是一个开源的"Oracle 兼容"PostgreSQL 内核，由 [**HighGo**](https://www.highgo.com/) 开发，采用 Apache 2.0 许可证。
 
-这里的 Oracle 兼容性是指在 PL/SQL、语法、内置函数、数据类型、系统视图、MERGE 和 GUC 参数级别的兼容性。它不是像 [**Babelfish**](/zh/pgsql/kernel/babelfish)、[**openHalo**](/zh/pgsql/kernel/openhalo/) 或 [**FerretDB**](/zh/ferret/) 那样的线协议兼容性，不能使用原始客户端驱动程序。用户仍需要使用 PostgreSQL 客户端工具访问 IvorySQL，但可以使用 Oracle 兼容的语法。
+这里的 Oracle 兼容性是指在 PL/SQL、语法、内置函数、数据类型、系统视图、MERGE 和 GUC 参数级别的兼容性。它不是像 [**Babelfish**](/zh/pgsql/kernel/babelfish)、[**openHalo**](/zh/pgsql/kernel/openhalo/) 或 [**FerretDB**](/zh/ferret/) 那样的线协议兼容性，
+不能使用原始客户端驱动程序。用户仍需要使用 PostgreSQL 客户端工具访问 IvorySQL，但可以使用 Oracle 兼容的语法。
 
 
-目前，IvorySQL 的最新版本 **4.4** 与 PostgreSQL 的最新次要版本 17.4 保持兼容，并为主流 Linux 发行版提供二进制 RPM/DEB 包。Pigsty 提供了在 PG RDS 中用 IvorySQL 内核替换原生 PostgreSQL 的选项。
+目前，IvorySQL 的最新版本 **4.6** 与 PostgreSQL 的最新次要版本 17.6 保持兼容，并为主流 Linux 发行版提供二进制 RPM/DEB 包。Pigsty 提供了在 PG RDS 中用 IvorySQL 内核替换原生 PostgreSQL 的选项。
 
 ------
 
@@ -67,7 +68,4 @@ IvorySQL 还提供了一系列[新的 GUC 参数](https://docs.ivorysql.org/cn/i
 ## 注意事项 [#caveats]
 
 - IvorySQL 软件包位于 `pigsty-infra` 仓库中，而不在 `pigsty-pgsql` 或 `pigsty-ivory` 仓库中。
-- IvorySQL 4.4 的默认 FHS 已更改，请注意从旧版本升级的用户。
-- IvorySQL 4.4 需要 gibc 版本 >= 2.17，目前由 Pigsty 支持。
-- 支持 EL7 的最后一个 IvorySQL 版本是 3.3，对应 PostgreSQL 16.3，IvorySQL 4.x 不再支持 EL7。
 - Pigsty 不为使用 IvorySQL 内核承担任何保证，任何问题或请求应联系制造商。

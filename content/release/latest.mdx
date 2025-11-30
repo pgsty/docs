@@ -193,7 +193,7 @@ dbe5c1e8a242a62fe6f6e1f6e6b6c281  pigsty-pkg-v3.6.0.u24.x86_64.tgz
 
 The Pigsty team is thrilled to announce **Pigsty v3.6**, our latest step toward a true **meta-PostgreSQL distribution**.  From a single code base you can now launch near 10 distinct PostgreSQL kernels — Babelfish, IvorySQL, OpenHalo, OrioleDB, PolarDB, Supabase-PG, Citus, the brand-new **Percona TDE**, and more.
 
-- [PostgreSQL](https://doc.pgsty.com/pgsql/kernel/postgres) : Vanilla PostgreSQL with 420+ extensions
+- [PostgreSQL](https://doc.pgsty.com/pgsql/kernel/postgres) : Vanilla PostgreSQL with 437 extensions
 - [Citus](https://doc.pgsty.com/pgsql/kernel/citus)         : Distributive PostgreSQL via native extension
 - [WiltonDB](https://doc.pgsty.com/pgsql/kernel/babelfish)  : SQL Server wire-compatibility
 - [IvorySQL](https://doc.pgsty.com/pgsql/kernel/ivorysql)   : Oracle Grammar and PL/SQL compatible
@@ -207,7 +207,7 @@ The Pigsty team is thrilled to announce **Pigsty v3.6**, our latest step toward 
 
 Each kernel is wrapped as a production-ready, RDS-style service: HA with Patroni, PITR via pgBackRest, deep observability with Grafana / Prometheus, and fully repeatable infrastructure-as-code -- all without Docker or Kubernetes. Materialized with idemopent ansible playbooks on bare Linux.
 
-This release also introduces a standalone extension catalog ([ext.pgsty.com](https://ext.pgsty.com), **423** build-tested packages) and a completely rebuilt documentation site ([doc.pgsty.com](https://doc.pgsty.com)).
+This release also introduces a standalone extension catalog ([pgext.cloud](https://pgext.cloud), **437** build-tested packages) and a completely rebuilt documentation site ([doc.pgsty.com](https://doc.pgsty.com)).
 
 ------
 
@@ -229,7 +229,7 @@ Need to rewind the clock?  The new `pgsql-pitr` playbook handles everything auto
 
 Pigsty tracks the latest Supabase containers, fixes Logflare replication-slot bloat, and wires up pgsodium keys by default.  The monitoring stack moves to **Grafana 12 + Prometheus 3.5**, with tuned OS profiles for NVMe servers and an optional plain-HTTP mode for MinIO.
 
-### 423 packaged extensions (and counting)
+### 437 packaged extensions (and counting)
 
 Highlights include **pgactive 2.1.5**, TimescaleDB 2.21, Citus 13.1, FerretDB 2.4, DuckDB 1.3.2, and the new **genai-toolbox**.  Browse the catalog or run `pig install <name>` to get started.
 
