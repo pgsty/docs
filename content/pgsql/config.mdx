@@ -55,10 +55,10 @@ pg_up{cls="pg-test", ins="pg-test-3", ip="10.10.10.13", job="pgsql"}
 
 You can use the **OPTIONAL** `pg_shard` and `pg_group` param to identify horizontal sharded clusters:
 
-|                     Name                     |   Type   | Level | Description                            |
-|:--------------------------------------------:|:--------:|:-----:|----------------------------------------|
-|   [`pg_shard`](/pgsql/param#pg_shard)   | `string` | **C** | **PG database shard name of cluster**  |
-|   [`pg_group`](/pgsql/param#pg_group)   | `number` | **C** | **PG database shard index of cluster** |
+|                Name                 |   Type   | Level | Description                            |
+|:-----------------------------------:|:--------:|:-----:|----------------------------------------|
+| [`pg_shard`](/pgsql/param#pg_shard) | `string` | **C** | **PG database shard name of cluster**  |
+| [`pg_group`](/pgsql/param#pg_group) | `number` | **C** | **PG database shard index of cluster** |
 
 For example, Horizontal sharding with citus, greenplum or sharding it manually
 
@@ -100,7 +100,7 @@ pg-citus:
 
 Pigsty follows the [**PostgreSQL Version Policy**](https://www.postgresql.org/support/versioning/) and "Officially" support the following major versions.
 
-| Major | Minor   | Comment                                      | Ext DEB | Ext RPM |
+| Major | Minor   | Comment                                      | RPM EXT | DEB EXT |
 |-------|---------|----------------------------------------------|:-------:|:-------:|
 | `18`  | `18.1`  | The latest stable version (**RECOMMENDED**)  |   392   |   390   |
 | `17`  | `17.7`  | The sendary stable version (**RECOMMENDED**) |   418   |   413   |

@@ -66,24 +66,8 @@ pg-meta:
 
 ## Client Access
 
-PolarDB for PostgreSQL is essentially equivalent to PostgreSQL 11, and any client tools compatible with the PostgreSQL wire protocol can access the PolarDB cluster.
+PolarDB for PostgreSQL is essentially equivalent to PostgreSQL 15, and any client tools compatible with the PostgreSQL wire protocol can access the PolarDB cluster.
 
-------
-
-## Installation
-
-If your environment has internet access, you can directly add the PolarDB repository to the node and install it as a node package:
-
-```yaml
-node_repo_modules: local,node,pgsql
-node_packages: [ polardb ]
-```
-
-ånd then install the PolarDB kernel pacakge with the following command:
-
-```bash
-./node.yml -t node_repo,node_pkg
-```
 
 ------
 
@@ -93,98 +77,94 @@ Most of the **PGSQL** module’s [**extension**](/pgsql/extension/) (non pure-SQ
 
 Currently, the PolarDB kernel comes with the following **61** extension plugins. In addition to Contrib extensions, the additional extensions provided include:
 
-- `polar_csn` 1.0 : polar_csn
-- `polar_monitor` 1.2 : examine the polardb information
-- `polar_monitor_preload` 1.1 : examine the polardb information
-- `polar_parameter_check` 1.0 : kernel extension for parameter validation
-- `polar_px` 1.0 : Parallel Execution extension
-- `polar_stat_env` 1.0 : env stat functions for PolarDB
-- `polar_stat_sql` 1.3 : Kernel statistics gathering, and sql plan nodes information gathering
-- `polar_tde_utils` 1.0 : Internal extension for TDE
-- `polar_vfs` 1.0 : polar_vfs
-- `polar_worker` 1.0 : polar_worker
-- `timetravel` 1.0 : functions for implementing time travel
-- `vector` 0.5.1 : vector data type and ivfflat and hnsw access methods
-- `smlar` 1.0 : compute similarly of any one-dimensional arrays
-
-Here is the list of extensions provided by the PolarDB kernel:
-
-| name                  | version | comment                                                               |
-|-----------------------|---------|-----------------------------------------------------------------------|
-| hstore_plpython2u     | 1.0     | transform between hstore and plpython2u                               |
-| dict_int              | 1.0     | text search dictionary template for integers                          |
-| adminpack             | 2.0     | administrative functions for PostgreSQL                               |
-| hstore_plpython3u     | 1.0     | transform between hstore and plpython3u                               |
-| amcheck               | 1.1     | functions for verifying relation integrity                            |
-| hstore_plpythonu      | 1.0     | transform between hstore and plpythonu                                |
-| autoinc               | 1.0     | functions for autoincrementing fields                                 |
-| insert_username       | 1.0     | functions for tracking who changed a table                            |
-| bloom                 | 1.0     | bloom access method - signature file based index                      |
-| file_fdw              | 1.0     | foreign-data wrapper for flat file access                             |
-| dblink                | 1.2     | connect to other PostgreSQL databases from within a database          |
-| btree_gin             | 1.3     | support for indexing common datatypes in GIN                          |
-| fuzzystrmatch         | 1.1     | determine similarities and distance between strings                   |
-| lo                    | 1.1     | Large Object maintenance                                              |
-| intagg                | 1.1     | integer aggregator and enumerator (obsolete)                          |
-| btree_gist            | 1.5     | support for indexing common datatypes in GiST                         |
-| hstore                | 1.5     | data type for storing sets of (key, value) pairs                      |
-| intarray              | 1.2     | functions, operators, and index support for 1-D arrays of integers    |
-| citext                | 1.5     | data type for case-insensitive character strings                      |
-| cube                  | 1.4     | data type for multidimensional cubes                                  |
-| hstore_plperl         | 1.0     | transform between hstore and plperl                                   |
-| isn                   | 1.2     | data types for international product numbering standards              |
-| jsonb_plperl          | 1.0     | transform between jsonb and plperl                                    |
-| dict_xsyn             | 1.0     | text search dictionary template for extended synonym processing       |
-| hstore_plperlu        | 1.0     | transform between hstore and plperlu                                  |
-| earthdistance         | 1.1     | calculate great-circle distances on the surface of the Earth          |
-| pg_prewarm            | 1.2     | prewarm relation data                                                 |
-| jsonb_plperlu         | 1.0     | transform between jsonb and plperlu                                   |
-| pg_stat_statements    | 1.6     | track execution statistics of all SQL statements executed             |
-| jsonb_plpython2u      | 1.0     | transform between jsonb and plpython2u                                |
-| jsonb_plpython3u      | 1.0     | transform between jsonb and plpython3u                                |
-| jsonb_plpythonu       | 1.0     | transform between jsonb and plpythonu                                 |
-| pg_trgm               | 1.4     | text similarity measurement and index searching based on trigrams     |
-| pgstattuple           | 1.5     | show tuple-level statistics                                           |
-| ltree                 | 1.1     | data type for hierarchical tree-like structures                       |
-| ltree_plpython2u      | 1.0     | transform between ltree and plpython2u                                |
-| pg_visibility         | 1.2     | examine the visibility map (VM) and page-level visibility info        |
-| ltree_plpython3u      | 1.0     | transform between ltree and plpython3u                                |
-| ltree_plpythonu       | 1.0     | transform between ltree and plpythonu                                 |
-| seg                   | 1.3     | data type for representing line segments or floating-point intervals  |
-| moddatetime           | 1.0     | functions for tracking last modification time                         |
-| pgcrypto              | 1.3     | cryptographic functions                                               |
-| pgrowlocks            | 1.2     | show row-level locking information                                    |
-| pageinspect           | 1.7     | inspect the contents of database pages at a low level                 |
-| pg_buffercache        | 1.3     | examine the shared buffer cache                                       |
-| pg_freespacemap       | 1.2     | examine the free space map (FSM)                                      |
-| tcn                   | 1.0     | Triggered change notifications                                        |
-| plperl                | 1.0     | PL/Perl procedural language                                           |
-| uuid-ossp             | 1.1     | generate universally unique identifiers (UUIDs)                       |
-| plperlu               | 1.0     | PL/PerlU untrusted procedural language                                |
-| refint                | 1.0     | functions for implementing referential integrity (obsolete)           |
-| xml2                  | 1.1     | XPath querying and XSLT                                               |
-| plpgsql               | 1.0     | PL/pgSQL procedural language                                          |
-| plpython3u            | 1.0     | PL/Python3U untrusted procedural language                             |
-| pltcl                 | 1.0     | PL/Tcl procedural language                                            |
-| pltclu                | 1.0     | PL/TclU untrusted procedural language                                 |
-| polar_csn             | 1.0     | polar_csn                                                             |
-| sslinfo               | 1.2     | information about SSL certificates                                    |
-| polar_monitor         | 1.2     | examine the polardb information                                       |
-| polar_monitor_preload | 1.1     | examine the polardb information                                       |
-| polar_parameter_check | 1.0     | kernel extension for parameter validation                             |
-| polar_px              | 1.0     | Parallel Execution extension                                          |
-| tablefunc             | 1.0     | functions that manipulate whole tables, including crosstab            |
-| polar_stat_env        | 1.0     | env stat functions for PolarDB                                        |
-| smlar                 | 1.0     | compute similary of any one-dimensional arrays                        |
-| timetravel            | 1.0     | functions for implementing time travel                                |
-| tsm_system_rows       | 1.0     | TABLESAMPLE method which accepts number of rows as a limit            |
-| polar_stat_sql        | 1.3     | Kernel statistics gathering, and sql plan nodes information gathering |
-| tsm_system_time       | 1.0     | TABLESAMPLE method which accepts time in milliseconds as a limit      |
-| polar_tde_utils       | 1.0     | Internal extension for TDE                                            |
-| polar_vfs             | 1.0     | polar_vfs                                                             |
-| polar_worker          | 1.0     | polar_worker                                                          |
-| unaccent              | 1.1     | text search dictionary that removes accents                           |
-| postgres_fdw          | 1.0     | foreign-data wrapper for remote PostgreSQL servers                    |
+| name                    | Version | comment                                                                 |
+|-------------------------|---------|-------------------------------------------------------------------------|
+| adminpack               | 2.1     | administrative functions for PostgreSQL                                 |
+| amcheck                 | 1.3     | functions for verifying relation integrity                              |
+| autoinc                 | 1.0     | functions for autoincrementing fields                                   |
+| bloom                   | 1.0     | bloom access method - signature file based index                        |
+| bool_plperl             | 1.0     | transform between bool and plperl                                       |
+| bool_plperlu            | 1.0     | transform between bool and plperlu                                      |
+| btree_gin               | 1.3     | support for indexing common datatypes in GIN                            |
+| btree_gist              | 1.7     | support for indexing common datatypes in GiST                           |
+| citext                  | 1.6     | data type for case-insensitive character strings                        |
+| cube                    | 1.5     | data type for multidimensional cubes                                    |
+| dblink                  | 1.2     | connect to other PostgreSQL databases from within a database            |
+| dict_int                | 1.0     | text search dictionary template for integers                            |
+| dict_xsyn               | 1.0     | text search dictionary template for extended synonym processing         |
+| earthdistance           | 1.1     | calculate great-circle distances on the surface of the Earth            |
+| file_fdw                | 1.0     | foreign-data wrapper for flat file access                               |
+| fuzzystrmatch           | 1.1     | determine similarities and distance between strings                     |
+| hll                     | 2.18    | type for storing hyperloglog data                                       |
+| hstore                  | 1.8     | data type for storing sets of (key, value) pairs                        |
+| hstore_plperl           | 1.0     | transform between hstore and plperl                                     |
+| hstore_plperlu          | 1.0     | transform between hstore and plperlu                                    |
+| hstore_plpython3u       | 1.0     | transform between hstore and plpython3u                                 |
+| hypopg                  | 1.3.1   | Hypothetical indexes for PostgreSQL                                     |
+| insert_username         | 1.0     | functions for tracking who changed a table                              |
+| intagg                  | 1.1     | integer aggregator and enumerator (obsolete)                            |
+| intarray                | 1.5     | functions, operators, and index support for 1-D arrays of integers      |
+| isn                     | 1.2     | data types for international product numbering standards                |
+| jsonb_plperl            | 1.0     | transform between jsonb and plperl                                      |
+| jsonb_plperlu           | 1.0     | transform between jsonb and plperlu                                     |
+| jsonb_plpython3u        | 1.0     | transform between jsonb and plpython3u                                  |
+| lo                      | 1.1     | Large Object maintenance                                                |
+| log_fdw                 | 1.4     | foreign-data wrapper for Postgres log file access                       |
+| ltree                   | 1.2     | data type for hierarchical tree-like structures                         |
+| ltree_plpython3u        | 1.0     | transform between ltree and plpython3u                                  |
+| moddatetime             | 1.0     | functions for tracking last modification time                           |
+| old_snapshot            | 1.0     | utilities in support of old_snapshot_threshold                          |
+| pageinspect             | 1.11    | inspect the contents of database pages at a low level                   |
+| pase                    | 0.0.1   | ant ai similarity search                                                |
+| pg_bigm                 | 1.2     | text similarity measurement and index searching based on bigrams        |
+| pg_buffercache          | 1.4     | examine the shared buffer cache                                         |
+| pg_freespacemap         | 1.2     | examine the free space map (FSM)                                        |
+| pg_jieba                | 1.1.0   | a parser for full-text search of Chinese                                |
+| pg_prewarm              | 1.2     | prewarm relation data                                                   |
+| pg_repack               | 1.5.1-1 | Reorganize tables in PostgreSQL databases with minimal locks            |
+| pg_stat_statements      | 1.10    | track planning and execution statistics of all SQL statements executed  |
+| pg_surgery              | 1.0     | extension to perform surgery on a damaged relation                      |
+| pg_trgm                 | 1.6     | text similarity measurement and index searching based on trigrams       |
+| pg_visibility           | 1.2     | examine the visibility map (VM) and page-level visibility info          |
+| pg_walinspect           | 1.0     | functions to inspect contents of PostgreSQL Write-Ahead Log             |
+| pgcrypto                | 1.3     | cryptographic functions                                                 |
+| pgrowlocks              | 1.2     | show row-level locking information                                      |
+| pgstattuple             | 1.5     | show tuple-level statistics                                             |
+| plperl                  | 1.0     | PL/Perl procedural language                                             |
+| plperlu                 | 1.0     | PL/PerlU untrusted procedural language                                  |
+| plpgsql                 | 1.0     | PL/pgSQL procedural language                                            |
+| plpython3u              | 1.0     | PL/Python3U untrusted procedural language                               |
+| pltcl                   | 1.0     | PL/Tcl procedural language                                              |
+| pltclu                  | 1.0     | PL/TclU untrusted procedural language                                   |
+| polar_audit             | 1.0     | provides auditing functionality                                         |
+| polar_feature_utils     | 1.0     | PolarDB feature utilization                                             |
+| polar_io_stat           | 1.0     | polar io stat in multi dimension                                        |
+| polar_login_history     | 1.0     | record user login information                                           |
+| polar_masking           | 1.0.0   | provides data masking for polardb                                       |
+| polar_monitor           | 1.0     | monitor functions for PolarDB                                           |
+| polar_monitor_preload   | 1.0     | examine the polardb information                                         |
+| polar_parameter_manager | 1.1     | Extension to select parameters for manger.                              |
+| polar_password_policy   | 1.0     | create password policies and check user passwords based on the policies |
+| polar_proxy_utils       | 1.0     | Extension to provide operations about proxy.                            |
+| polar_resource_manager  | 1.0     | a background process that forcibly frees user session process memory    |
+| polar_smgrperf          | 1.0     | smgr perf test extension                                                |
+| polar_sql_mapping       | 1.0     | Record error sqls and mapping them to correct one                       |
+| polar_stat_env          | 1.0     | env stat functions for PolarDB                                          |
+| polar_vfs               | 1.0     | polar virtual file system for different storage                         |
+| polar_worker            | 1.0     | polar_worker                                                            |
+| postgres_fdw            | 1.1     | foreign-data wrapper for remote PostgreSQL servers                      |
+| refint                  | 1.0     | functions for implementing referential integrity (obsolete)             |
+| roaringbitmap           | 0.5     | support for Roaring Bitmaps                                             |
+| seg                     | 1.4     | data type for representing line segments or floating-point intervals    |
+| sslinfo                 | 1.2     | information about SSL certificates                                      |
+| tablefunc               | 1.0     | functions that manipulate whole tables, including crosstab              |
+| tcn                     | 1.0     | Triggered change notifications                                          |
+| tsm_system_rows         | 1.0     | TABLESAMPLE method which accepts number of rows as a limit              |
+| tsm_system_time         | 1.0     | TABLESAMPLE method which accepts time in milliseconds as a limit        |
+| unaccent                | 1.1     | text search dictionary that removes accents                             |
+| uuid-ossp               | 1.1     | generate universally unique identifiers (UUIDs)                         |
+| vector                  | 0.6.2   | vector data type and ivfflat and hnsw access methods                    |
+| xml2                    | 1.1     | XPath querying and XSLT                                                 |
 
 
 --------

@@ -1,4 +1,8 @@
 {
+  "title": "Service",
+  "description": "Run playbooks, manage access, setup modules",
+  "icon": "Landmark",
+  "defaultOpen": false,
     "pages": [
         "subscription",
         "expert",
