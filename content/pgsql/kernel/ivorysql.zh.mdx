@@ -10,8 +10,8 @@ icon: Target
 这里的 Oracle 兼容性是指在 PL/SQL、语法、内置函数、数据类型、系统视图、MERGE 和 GUC 参数级别的兼容性。它不是像 [**Babelfish**](/zh/pgsql/kernel/babelfish)、[**openHalo**](/zh/pgsql/kernel/openhalo/) 或 [**FerretDB**](/zh/ferret/) 那样的线协议兼容性，
 不能使用原始客户端驱动程序。用户仍需要使用 PostgreSQL 客户端工具访问 IvorySQL，但可以使用 Oracle 兼容的语法。
 
-
-目前，IvorySQL 的最新版本 **4.6** 与 PostgreSQL 的最新次要版本 17.6 保持兼容，并为主流 Linux 发行版提供二进制 RPM/DEB 包。Pigsty 提供了在 PG RDS 中用 IvorySQL 内核替换原生 PostgreSQL 的选项。
+目前，IvorySQL 的最新版本 **5.0** 与 PostgreSQL 的最新次要版本 18.0 保持兼容，并为主流 Linux 发行版提供二进制 RPM/DEB 包。
+Pigsty 提供了在 PG RDS 中用 IvorySQL 内核替换原生 PostgreSQL 的选项，支持所有 Pigsty 支持的 Linux 系统。
 
 ------
 
@@ -28,9 +28,10 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 对于生产部署，您应该编辑自动生成的 `pigsty.yml` 配置文件，在执行 `./install.yml` 进行部署之前修改密码等参数。
 
 
-最新的 IvorySQL 4.5 等价于 PostgreSQL 17.5。任何与 PostgreSQL 线协议兼容的客户端工具都可以访问 IvorySQL 集群。
+最新的 IvorySQL 5.0 等价于 PostgreSQL 18.0。任何与 PostgreSQL 线协议兼容的客户端工具都可以访问 IvorySQL 集群。
 
 默认情况下，您可以使用 PostgreSQL 客户端通过替代的 `1521` 端口访问，该端口默认启用 Oracle 兼容模式。
+
 
 
 ------

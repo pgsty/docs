@@ -7,10 +7,12 @@ icon: Target
 
 [IvorySQL](https://www.ivorysql.org/) is an open-source “Oracle-compatible” PostgreSQL kernel, developed by [**HighGo**](https://www.highgo.com/), licensed under Apache 2.0.
 
-The Oracle compatibility here refers to compatibility at the PL/SQL, syntax, built-in functions, data types, system views, MERGE, and GUC parameter levels. It’s not a wire protocol compatibility like [**Babelfish**](/pgsql/kernel/babelfish), [**openHalo**](/pgsql/kernel/openhalo/), or [**FerretDB**](/ferret/) that allows using the original client drivers. Users still need to use PostgreSQL client tools to access IvorySQL, but can use Oracle-compatible syntax.
+The Oracle compatibility here refers to compatibility at the PL/SQL, syntax, built-in functions, data types, system views, MERGE, and GUC parameter levels.
+It’s not a wire protocol compatibility like [**Babelfish**](/pgsql/kernel/babelfish), [**openHalo**](/pgsql/kernel/openhalo/), or [**FerretDB**](/ferret/) that allows using the original client drivers.
+Users still need to use PostgreSQL client tools to access IvorySQL, but can use Oracle-compatible syntax.
 
-
-Currently, IvorySQL’s latest version **4.4** maintains compatibility with PostgreSQL’s latest minor version 17.5, and provides binary RPM/DEB packages for mainstream Linux distributions. Pigsty offers the option to replace the native PostgreSQL with the IvorySQL kernel in PG RDS.
+Currently, IvorySQL’s latest version **5.0** maintains compatibility with PostgreSQL's latest minor version 18.0,
+and provides binary RPM/DEB packages for mainstream Linux distributions. Pigsty offers the option to replace the native PostgreSQL with the IvorySQL kernel in PG RDS.
 
 ------
 
@@ -26,8 +28,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
 
 For production deployments, you should edit the auto-generated `pigsty.yml` configuration file to modify parameters like passwords before executing `./install.yml` for deployment.
 
-
-The latest IvorySQL 4.6 is equivalent to PostgreSQL 17.6 Any client tool compatible with PostgreSQL’s wire protocol can access IvorySQL clusters.
+The latest IvorySQL 5.0 is equivalent to PostgreSQL 18.0 Any client tool compatible with PostgreSQL’s wire protocol can access IvorySQL clusters.
 
 By default, you can use a PostgreSQL client to access through the alternative `1521` port, which enables Oracle compatibility mode by default.
 
@@ -52,7 +53,7 @@ pg_libs: 'liboracle_parser, pg_stat_statements, auto_explain'  # Load Oracle com
 repo_extra_packages: [ ivorysql ]        # Download ivorysql packages
 ```
 
-IvorySQL also provides a series of [new GUC parameters](https://docs.ivorysql.org/cn/ivorysql-doc/v4.4/v4.4/15#新增变量目前) that can be specified in [`pg_parameters`](/pgsql/param/#pg_parameters).
+IvorySQL also provides a series of [new GUC parameters](https://docs.ivorysql.org/en/ivorysql-doc/v5.0) that can be specified in [`pg_parameters`](/pgsql/param/#pg_parameters).
 
 ------
 

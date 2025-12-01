@@ -17,7 +17,7 @@ Pigsty supports PostgreSQL 13 ~ 18, and provides 437 extensions alone with it.
 
 ```bash
 curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
-./configure -c pgsql     # use percona postgres kernel
+./configure -c pgsql     # use vanilla postgres kernel
 ./install.yml            # setup everything with pigsty
 ```
 
@@ -51,12 +51,13 @@ pg-meta:
       - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
     node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
     pg_packages: [ pgsql-main, pgsql-common ]   # pg kernel and common utils
-    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ,pg17-olap]
+    #pg_extensions: [ pg18-time ,pg18-gis ,pg18-rag ,pg18-fts ,pg18-olap ,pg18-feat ,pg18-lang ,pg18-type ,pg18-util ,pg18-func ,pg18-admin ,pg18-stat ,pg18-sec ,pg18-fdw ,pg18-sim ,pg18-etl]
 ```
 
 To use a different PostgreSQL major version, you can [configure](/config/configure) with `-v` parameter:
 
 ```bash
+./configure -c pgsql            # the default is postgresql 18
 ./configure -c pgsql -v 17      # use postgresql 17
 ./configure -c pgsql -v 16      # use postgresql 16
 ./configure -c pgsql -v 15      # use postgresql 15
@@ -74,24 +75,21 @@ If PostgreSQL cluster is already installed, you'll need to uninstall it before i
 
 --------
 
-## PostgreSQL 18beta2
+## PostgreSQL beta
 
-To use PostgreSQL 18beta2, you'll also need to add the `beta` repo to your [`node_repo_modules`](/node/param/#node_repo_modules)
+To use PostgreSQL beta version (19 not released), you'll also need to add the `beta` repo to your [`node_repo_modules`](/node/param/#node_repo_modules)
 (or [`repo_modules`](/infra/param/#repo_modules) if you are building a local repo)
 
-The [`configure`](/config/configure) will do that for you if you are use the `-v 18` argument:
+The [`configure`](/config/configure) will do that for you if you are use the `-v 19` argument:
 
 ```bash
-./configure -c pgsql -v 18     # use the postgresql 18beta2 kernel
+./configure -c pgsql -v 19     # use the postgresql 19 kernel (beta not released yet)
 ./install.yml                  # setup everything with pigsty
 ```
 
-Beware Pigsty is not build extensions for PostgreSQL 18beta2 yet, so only those existing extensions in the PGDG repo are currently available.
-We will start building them after the PostgreSQL 18 is released.
-
-So to install PG18 on EL-system (now), you'll have to replace the `pgsql-main` to `pgsql-core` to avoid installing the not-exists `pgvector` extensions.
-
-> Video Demo: Install PostgreSQL 18beta2 with Pigsty v3.6.0 on el9.aarch64
+Beware Pigsty is not build extensions for PostgreSQL 19 yet,
+so only those existing extensions in the PGDG repo are currently available.
+We will start building them after the PostgreSQL 19 is released.
 
 
 --------
