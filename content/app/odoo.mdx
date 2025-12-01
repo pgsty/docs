@@ -10,7 +10,7 @@ and other management functions. Odoo is a typical web application that uses Post
 
 > All your business on one platform, Simple, efficient, yet affordable
 
-
+The latest version of Odoo is 19.0
 
 ------
 
@@ -25,7 +25,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
 ./app.yml                  # launch odoo stateless part with docker
 ```
 
-
+> The default credentials are `admin` : `admin`
 
 
 ------
@@ -59,7 +59,7 @@ all:
               ODOO_DATA: /data/odoo/webdata   # odoo webdata
               ODOO_ADDONS: /data/odoo/addons  # odoo plugins
               ODOO_DBNAME: odoo               # odoo database name
-              ODOO_VERSION: 18.0              # odoo image version
+              ODOO_VERSION: 19.0              # odoo image version
 
     # the odoo database
     pg-odoo:
@@ -81,7 +81,7 @@ all:
     #minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 
   vars:                               # global variables
-    version: v3.3.0                   # pigsty version string
+    version: v3.7.0                   # pigsty version string
     admin_ip: 10.10.10.10             # admin node ip address
     region: default                   # upstream mirror region: default|china|europe
     node_tune: oltp                   # node tuning specs: oltp,olap,tiny,crit
@@ -125,8 +125,8 @@ all:
 
     repo_modules: infra,node,pgsql,docker
     repo_packages: [ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-utility, docker ]
-    repo_extra_packages: [ pg17-main ]
-    pg_version: 17
+    repo_extra_packages: [ pg18-main ]
+    pg_version: 18
 ```
 
 
@@ -234,13 +234,13 @@ volumes:
 
 You can mount the `./addons` dir to the `/mnt/extra-addons` in the container, then download and unzip to the `addons` folder,
 
-To enable addon module, first enter the [Developer mode](https://www.odoo.com/documentation/17.0/applications/general/developer_mode.html)
+To enable addon module, first enter the [Developer mode](https://www.odoo.com/documentation/19.0/applications/general/developer_mode.html)
 
 > Settings -> Generic Settings -> Developer Tools -> Activate the developer Mode
 
 Then go to the > Apps -> Update Apps List, then you can find the extra addons and install from the panel.
 
-Frequently used [free](https://apps.odoo.com/apps/modules/browse?order=Downloads) addons: [Accounting Kit](https://apps.odoo.com/apps/modules/17.0/base_accounting_kit/)
+Frequently used [free](https://apps.odoo.com/apps/modules/browse?order=Downloads) addons: [Accounting Kit](https://apps.odoo.com/apps/modules/19.0/base_accounting_kit/)
 
 
 

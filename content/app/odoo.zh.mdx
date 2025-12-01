@@ -8,7 +8,8 @@ icon: Donut
 它提供一整套业务应用程序，包括 CRM、销售、采购、库存、生产、会计，
 和其他管理功能。Odoo 是一个典型的 Web 应用程序，使用 PostgreSQL 作为底层数据库。
 
-> 您的所有业务在一个平台上，简单、高效且实惠
+> 您的所有业务，都在一个平台上，简单、高效且实惠
+
 
 ------
 
@@ -22,6 +23,8 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
 ./docker.yml               # 安装 docker compose
 ./app.yml                  # 使用 docker 启动 odoo 无状态部分
 ```
+
+默认的用户名和密码都是 `admin`
 
 ------
 
@@ -54,7 +57,7 @@ all:
               ODOO_DATA: /data/odoo/webdata   # odoo webdata
               ODOO_ADDONS: /data/odoo/addons  # odoo 插件
               ODOO_DBNAME: odoo               # odoo 数据库名称
-              ODOO_VERSION: 18.0              # odoo 镜像版本
+              ODOO_VERSION: 19.0              # odoo 镜像版本
 
     # odoo 数据库
     pg-odoo:
@@ -76,7 +79,7 @@ all:
     #minio: { hosts: { 10.10.10.10: { minio_seq: 1 } }, vars: { minio_cluster: minio } }
 
   vars:                               # 全局变量
-    version: v3.3.0                   # pigsty 版本字符串
+    version: v3.7.0                   # pigsty 版本字符串
     admin_ip: 10.10.10.10             # 管理节点 ip 地址
     region: default                   # 上游镜像区域：default|china|europe
     node_tune: oltp                   # 节点调优规格：oltp,olap,tiny,crit
@@ -120,8 +123,8 @@ all:
 
     repo_modules: infra,node,pgsql,docker
     repo_packages: [ node-bootstrap, infra-package, infra-addons, node-package1, node-package2, pgsql-utility, docker ]
-    repo_extra_packages: [ pg17-main ]
-    pg_version: 17
+    repo_extra_packages: [ pg18-main ]
+    pg_version: 18
 ```
 
 --------
@@ -218,13 +221,13 @@ volumes:
 
 您可以将 `./addons` 目录挂载到容器中的 `/mnt/extra-addons`，然后下载并解压到 `addons` 文件夹，
 
-要启用插件模块，首先进入 [开发者模式](https://www.odoo.com/documentation/17.0/applications/general/developer_mode.html)
+要启用插件模块，首先进入 [开发者模式](https://www.odoo.com/documentation/19.0/applications/general/developer_mode.html)
 
 > 设置 -> 通用设置 -> 开发者工具 -> 激活开发者模式
 
 然后转到 > 应用程序 -> 更新应用程序列表，然后您可以找到额外的插件并从面板安装。
 
-常用的 [免费](https://apps.odoo.com/apps/modules/browse?order=Downloads) 插件：[会计套件](https://apps.odoo.com/apps/modules/17.0/base_accounting_kit/)
+常用的 [免费](https://apps.odoo.com/apps/modules/browse?order=Downloads) 插件：[会计套件](https://apps.odoo.com/apps/modules/19.0/base_accounting_kit/)
 
 ------
 
