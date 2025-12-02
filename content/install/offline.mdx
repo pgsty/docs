@@ -43,31 +43,34 @@ it is essentially a snapshot tarball of local APT / YUM repo, taken after a norm
 You can find these packages from the [GitHub release page](https://github.com/pgsty/pigsty/releases/latest), for example:
 
 ```
-045977aff647acbfa77f0df32d863739  pigsty-pkg-v3.6.1.d12.aarch64.tgz
-636b15c2d87830f2353680732e1af9d2  pigsty-pkg-v3.6.1.d12.x86_64.tgz
-700a9f6d0db9c686d371bf1c05b54221  pigsty-pkg-v3.6.1.el8.aarch64.tgz
-2aff03f911dd7be363ba38a392b71a16  pigsty-pkg-v3.6.1.el8.x86_64.tgz
-ce07261b02b02b36a307dab83e460437  pigsty-pkg-v3.6.1.el9.aarch64.tgz
-d598d62a47bbba2e811059a53fe3b2b5  pigsty-pkg-v3.6.1.el9.x86_64.tgz
-13fd68752e59f5fd2a9217e5bcad0acd  pigsty-pkg-v3.6.1.u22.aarch64.tgz
-c25ccfb98840c01eb7a6e18803de55bb  pigsty-pkg-v3.6.1.u22.x86_64.tgz
-0d71e58feebe5299df75610607bf428c  pigsty-pkg-v3.6.1.u24.aarch64.tgz
-4fbbab1f8465166f494110c5ec448937  pigsty-pkg-v3.6.1.u24.x86_64.tgz
-083d8680fa48e9fec3c3fcf481d25d2f  pigsty-v3.6.1.tgz
+d6e9d6fa73620460ceb373a0c2f41ebe  pigsty-v3.7.0.tgz
+987529769d85a3a01776caefefa93ecb  pigsty-pkg-v3.7.0.d12.aarch64.tgz
+2d8272493784ae35abeac84568950623  pigsty-pkg-v3.7.0.d12.x86_64.tgz
+090cc2531dcc25db3302f35cb3076dfa  pigsty-pkg-v3.7.0.d13.x86_64.tgz
+ddc54a9c4a585da323c60736b8560f55  pigsty-pkg-v3.7.0.el10.aarch64.tgz
+d376e75c490e8f326ea0f0fbb4a8fd9b  pigsty-pkg-v3.7.0.el10.x86_64.tgz
+8c2deeba1e1d09ef3d46d77a99494e71  pigsty-pkg-v3.7.0.el8.aarch64.tgz
+9795e059bd884b9d1b2208011abe43cd  pigsty-pkg-v3.7.0.el8.x86_64.tgz
+08b860155d6764ae817ed25f2fcf9e5b  pigsty-pkg-v3.7.0.el9.aarch64.tgz
+1ac430768e488a449d350ce245975baa  pigsty-pkg-v3.7.0.el9.x86_64.tgz
+e033aaf23690755848db255904ab3bcd  pigsty-pkg-v3.7.0.u22.aarch64.tgz
+cc022ea89181d89d271a9aaabca04165  pigsty-pkg-v3.7.0.u22.x86_64.tgz
+0e978598796db3ce96caebd76c76e960  pigsty-pkg-v3.7.0.u24.aarch64.tgz
+48223898ace8812cc4ea79cf3178476a  pigsty-pkg-v3.7.0.u24.x86_64.tgz
 ```
 
 We usually release offline packages for the following [linux distro](/prepare/linux), with the latest OS minor version.
 
 | EL Distribution |                        Code                         |                          Arch                          |                                            OS Code                                            |                                                              Package                                                              |
 |:----------------|:---------------------------------------------------:|:------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|
-| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`el9.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.el9.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.x86_64.tgz)  |
-| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`u24.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.u24.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.u24.x86_64.tgz)  |
-| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`d12.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml)  |  [`pigsty-pkg-v3.6.1.d12.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.d12.x86_64.tgz)  |
-| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> | [`el9.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) | [`pigsty-pkg-v3.6.1.el9.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.aarch64.tgz) |
-| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> | [`u24.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) | [`pigsty-pkg-v3.6.1.u24.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.u24.aarch64.tgz) |
-| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | [`pigsty-pkg-v3.6.1.d12.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.d12.aarch64.tgz) |
+| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`el9.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.x86_64.yml)  |  [`pigsty-pkg-v3.7.0.el9.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.el9.x86_64.tgz)  |
+| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`u24.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.x86_64.yml)  |  [`pigsty-pkg-v3.7.0.u24.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.u24.x86_64.tgz)  |
+| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> |  [`d12.x86_64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.x86_64.yml)  |  [`pigsty-pkg-v3.7.0.d12.x86_64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.d12.x86_64.tgz)  |
+| RockyLinux 9.6  | <span className="font-bold text-sky-700">EL9</span> | <span className="font-bold text-sky-600">x86_64</span> | [`el9.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/el9.aarch64.yml) | [`pigsty-pkg-v3.7.0.el9.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.el9.aarch64.tgz) |
+| Ubuntu 24.04.2  | <span className="font-bold text-sky-700">U24</span> | <span className="font-bold text-sky-600">x86_64</span> | [`u24.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/u24.aarch64.yml) | [`pigsty-pkg-v3.7.0.u24.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.u24.aarch64.tgz) |
+| Debian 12.11    | <span className="font-bold text-sky-700">D12</span> | <span className="font-bold text-sky-600">x86_64</span> | [`d12.aarch64`](https://github.com/pgsty/pigsty/blob/main/roles/node_id/vars/d12.aarch64.yml) | [`pigsty-pkg-v3.7.0.d12.aarch64.tgz`](https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.d12.aarch64.tgz) |
 
-https://github.com/pgsty/pigsty/releases/download/v3.6.1/pigsty-pkg-v3.6.1.el9.x86_64.tgz
+https://github.com/pgsty/pigsty/releases/download/v3.7.0/pigsty-pkg-v3.7.0.el9.x86_64.tgz
 
 <Callout title="Offline Package is made for specific Linux OS Major.Minor Version" type="warn">
 
