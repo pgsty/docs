@@ -5,6 +5,93 @@ icon: Archive
 ---
 
 
+## Pigsty v3.7.0
+
+**Highlights**
+
+- **PostgreSQL 18 Deep Support:** Now the default major PG version, with full extension readiness!
+- **Expanded OS Support:** Added EL10 and Debian 13, bringing the total supported operating systems to 14.
+- **Extension Growth:** The PostgreSQL extension library now includes 437 entries.
+- **Ansible 2.19 Compatibility:** Full support for Ansible 2.19 following its breaking changes.
+- **Kernel Updates:** Latest versions for Supabase, PolarDB, IvorySQL, and Percona kernels.
+- **Optimized Tuning:** Refined logic for default PG parameters to maximize resource utilization.
+
+**Version Updates**
+
+- PostgreSQL 18.1, 17.7, 16.11, 15.15, 14.20, 13.23
+- Patroni 4.1.0
+- Pgbouncer 1.25.0
+- pg_exporter 1.0.3
+- pgbackrest 2.57.0
+- Supabase 2025-11
+- PolarDB 15.15.5.0
+- FerretDB 2.7.0
+- DuckDB 1.4.2
+- Etcd 3.6.6
+- pig 0.7.4
+
+For detailed version changes, please refer to:
+
+- [INFRA Changelog](https://pgext.cloud/release/infra/)
+- [RPM Changelog](https://pgext.cloud/release/rpm/)
+- [DEB Changelog](https://pgext.cloud/release/deb/)
+
+**API Changes**
+
+- Implemented a refined optimization strategy for parallel execution parameters. See **[Tuning Guide](/pgsql/admin/tune)**.
+- The `citus` extension is no longer installed by default in `rich` and `full` templates (PG 18 support pending).
+- Added `duckdb` extension stubs to PostgreSQL parameter templates.
+- Capped `min_wal_size`, `max_wal_size`, and `max_slot_wal_keep_size` at 200 GB, 2000 GB, and 3000 GB, respectively.
+- Capped `temp_file_limit` at 200 GB (2 TB for OLAP workloads).
+- Increased the default connection count for the connection pool.
+- Added `prometheus_port` (default: `9058`) to avoid conflicts with the EL10 RHEL Web Console port.
+- Changed `alertmanager_port` default to `9059` to avoid potential conflicts with Kafka SSL ports.
+- Added a `pg_pre` subtask to `pg_pkg`: removes conflicting LLVM packages (`bpftool`, `python3-perf`) on EL9+ prior to PG installation.
+- Added the `llvm` module to the default repository definition for Debian/Ubuntu.
+- Fixed package removal logic in `infra-rm.yml`.
+
+**Compatibility Fixes**
+
+- **Ubuntu/Debian CA Trust:** Fixed incorrect warning return codes when trusting Certificate Authorities.
+- **Ansible 2.19 Support:** Resolved numerous compatibility issues introduced by Ansible 2.19 to ensure stability across versions:
+- Added explicit `int` type casting for sequence variables.
+- Migrated `with_items` syntax to `loop`.
+- Nested key exchange variables in lists to prevent character iteration on strings in newer versions.
+- Explicitly cast `range` usage to `list`.
+- Renamed reserved variables such as `name` and `port`.
+- Replaced `play_hosts` with `ansible_play_hosts`.
+- Added string casting for specific variables to prevent runtime errors.
+- **EL10 Adaptation:**
+- Fixed missing `ansible-collection-community-crypto` preventing key generation.
+- Fixed missing `ansible` logic packages.
+- Removed `modulemd_tools`, `flamegraph`, and `timescaledb-tool`.
+- Replaced `java-17-openjdk` with `java-21-openjdk`.
+- Resolved aarch64 YUM repository naming issues.
+- **Debian 13 Adaptation:**
+- Replaced `dnsutils` with `bind9-dnsutils`.
+- **Ubuntu 24 Fixes:**
+- Temporarily removed `tcpdump` due to upstream dependency crashes.
+
+
+**Checksums**
+
+```bash
+987529769d85a3a01776caefefa93ecb  pigsty-pkg-v3.7.0.d12.aarch64.tgz
+2d8272493784ae35abeac84568950623  pigsty-pkg-v3.7.0.d12.x86_64.tgz
+090cc2531dcc25db3302f35cb3076dfa  pigsty-pkg-v3.7.0.d13.x86_64.tgz
+ddc54a9c4a585da323c60736b8560f55  pigsty-pkg-v3.7.0.el10.aarch64.tgz
+d376e75c490e8f326ea0f0fbb4a8fd9b  pigsty-pkg-v3.7.0.el10.x86_64.tgz
+8c2deeba1e1d09ef3d46d77a99494e71  pigsty-pkg-v3.7.0.el8.aarch64.tgz
+9795e059bd884b9d1b2208011abe43cd  pigsty-pkg-v3.7.0.el8.x86_64.tgz
+08b860155d6764ae817ed25f2fcf9e5b  pigsty-pkg-v3.7.0.el9.aarch64.tgz
+1ac430768e488a449d350ce245975baa  pigsty-pkg-v3.7.0.el9.x86_64.tgz
+e033aaf23690755848db255904ab3bcd  pigsty-pkg-v3.7.0.u22.aarch64.tgz
+cc022ea89181d89d271a9aaabca04165  pigsty-pkg-v3.7.0.u22.x86_64.tgz
+0e978598796db3ce96caebd76c76e960  pigsty-pkg-v3.7.0.u24.aarch64.tgz
+48223898ace8812cc4ea79cf3178476a  pigsty-pkg-v3.7.0.u24.x86_64.tgz
+d25426ac112a57382710f464aba0c434  pigsty-v3.7.0.tgz
+```
+
 ## v3.6.1
 
 ```bash

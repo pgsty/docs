@@ -4,241 +4,89 @@ description: The latest stable version of Pigsty —— v3.6
 icon: Sparkle
 ---
 
-
-## v3.6.1
-
-```bash
-curl https://repo.pigsty.cc/get | bash -s v3.6.1
-```
+## Pigsty v3.7.0
 
 **Highlights**
 
-- PostgreSQL 17.6, 16.10, 15.14, 14.19, 13.22, and 18 Beta 3 Released!
-- PGDG APT/YUM mirror for Mainland China Users
-- New home website https://pgsty.com
-- Add el10, debian 13 stub, add el10 terraform images
+- **PostgreSQL 18 Deep Support:** Now the default major PG version, with full extension readiness!
+- **Expanded OS Support:** Added EL10 and Debian 13, bringing the total supported operating systems to 14.
+- **Extension Growth:** The PostgreSQL extension library now includes 437 entries.
+- **Ansible 2.19 Compatibility:** Full support for Ansible 2.19 following its breaking changes.
+- **Kernel Updates:** Latest versions for Supabase, PolarDB, IvorySQL, and Percona kernels.
+- **Optimized Tuning:** Refined logic for default PG parameters to maximize resource utilization.
 
-**Infra Package Updates**
+**Version Updates**
 
-- Grafana 12.1.0
-- pg_exporter 1.0.2
-- pig 0.6.1
-- vector 0.49.0
-- redis_exporter 1.75.0
-- mongo_exporter 0.47.0
-- victoriametrics 1.123.0
-- victorialogs: 1.28.0
-- grafana-victoriametrics-ds 0.18.3
-- grafana-victorialogs-ds 0.19.3
-- grafana-infinity-ds 3.4.1
-- etcd 3.6.4
-- ferretdb 2.5.0
-- tigerbeetle 0.16.54
-- genai-toolbox 0.12.0
+- PostgreSQL 18.1, 17.7, 16.11, 15.15, 14.20, 13.23
+- Patroni 4.1.0
+- Pgbouncer 1.25.0
+- pg_exporter 1.0.3
+- pgbackrest 2.57.0
+- Supabase 2025-11
+- PolarDB 15.15.5.0
+- FerretDB 2.7.0
+- DuckDB 1.4.2
+- Etcd 3.6.6
+- pig 0.7.4
 
-**Extension Package Updates**
+For detailed version changes, please refer to:
 
-- pg_search 0.17.3
+- [INFRA Changelog](https://pgext.cloud/release/infra/)
+- [RPM Changelog](https://pgext.cloud/release/rpm/)
+- [DEB Changelog](https://pgext.cloud/release/deb/)
 
 **API Changes**
 
-- remove `br_filter` from default `node_kernel_modules`
-- do not use OS minor version dir for pgdg yum repos
+- Implemented a refined optimization strategy for parallel execution parameters. See **[Tuning Guide](/pgsql/admin/tune)**.
+- The `citus` extension is no longer installed by default in `rich` and `full` templates (PG 18 support pending).
+- Added `duckdb` extension stubs to PostgreSQL parameter templates.
+- Capped `min_wal_size`, `max_wal_size`, and `max_slot_wal_keep_size` at 200 GB, 2000 GB, and 3000 GB, respectively.
+- Capped `temp_file_limit` at 200 GB (2 TB for OLAP workloads).
+- Increased the default connection count for the connection pool.
+- Added `prometheus_port` (default: `9058`) to avoid conflicts with the EL10 RHEL Web Console port.
+- Changed `alertmanager_port` default to `9059` to avoid potential conflicts with Kafka SSL ports.
+- Added a `pg_pre` subtask to `pg_pkg`: removes conflicting LLVM packages (`bpftool`, `python3-perf`) on EL9+ prior to PG installation.
+- Added the `llvm` module to the default repository definition for Debian/Ubuntu.
+- Fixed package removal logic in `infra-rm.yml`.
+
+**Compatibility Fixes**
+
+- **Ubuntu/Debian CA Trust:** Fixed incorrect warning return codes when trusting Certificate Authorities.
+- **Ansible 2.19 Support:** Resolved numerous compatibility issues introduced by Ansible 2.19 to ensure stability across versions:
+  - Added explicit `int` type casting for sequence variables.
+  - Migrated `with_items` syntax to `loop`.
+  - Nested key exchange variables in lists to prevent character iteration on strings in newer versions.
+  - Explicitly cast `range` usage to `list`.
+  - Renamed reserved variables such as `name` and `port`.
+  - Replaced `play_hosts` with `ansible_play_hosts`.
+- Added string casting for specific variables to prevent runtime errors.
+- **EL10 Adaptation:**
+  - Fixed missing `ansible-collection-community-crypto` preventing key generation.
+  - Fixed missing `ansible` logic packages.
+  - Removed `modulemd_tools`, `flamegraph`, and `timescaledb-tool`.
+  - Replaced `java-17-openjdk` with `java-21-openjdk`.
+  - Resolved aarch64 YUM repository naming issues.
+- **Debian 13 Adaptation:**
+  - Replaced `dnsutils` with `bind9-dnsutils`.
+- **Ubuntu 24 Fixes:**
+  - Temporarily removed `tcpdump` due to upstream dependency crashes.
+
 
 **Checksums**
 
 ```bash
-045977aff647acbfa77f0df32d863739  pigsty-pkg-v3.6.1.d12.aarch64.tgz
-636b15c2d87830f2353680732e1af9d2  pigsty-pkg-v3.6.1.d12.x86_64.tgz
-700a9f6d0db9c686d371bf1c05b54221  pigsty-pkg-v3.6.1.el8.aarch64.tgz
-2aff03f911dd7be363ba38a392b71a16  pigsty-pkg-v3.6.1.el8.x86_64.tgz
-ce07261b02b02b36a307dab83e460437  pigsty-pkg-v3.6.1.el9.aarch64.tgz
-d598d62a47bbba2e811059a53fe3b2b5  pigsty-pkg-v3.6.1.el9.x86_64.tgz
-13fd68752e59f5fd2a9217e5bcad0acd  pigsty-pkg-v3.6.1.u22.aarch64.tgz
-c25ccfb98840c01eb7a6e18803de55bb  pigsty-pkg-v3.6.1.u22.x86_64.tgz
-0d71e58feebe5299df75610607bf428c  pigsty-pkg-v3.6.1.u24.aarch64.tgz
-4fbbab1f8465166f494110c5ec448937  pigsty-pkg-v3.6.1.u24.x86_64.tgz
-083d8680fa48e9fec3c3fcf481d25d2f  pigsty-v3.6.1.tgz
+987529769d85a3a01776caefefa93ecb  pigsty-pkg-v3.7.0.d12.aarch64.tgz
+2d8272493784ae35abeac84568950623  pigsty-pkg-v3.7.0.d12.x86_64.tgz
+090cc2531dcc25db3302f35cb3076dfa  pigsty-pkg-v3.7.0.d13.x86_64.tgz
+ddc54a9c4a585da323c60736b8560f55  pigsty-pkg-v3.7.0.el10.aarch64.tgz
+d376e75c490e8f326ea0f0fbb4a8fd9b  pigsty-pkg-v3.7.0.el10.x86_64.tgz
+8c2deeba1e1d09ef3d46d77a99494e71  pigsty-pkg-v3.7.0.el8.aarch64.tgz
+9795e059bd884b9d1b2208011abe43cd  pigsty-pkg-v3.7.0.el8.x86_64.tgz
+08b860155d6764ae817ed25f2fcf9e5b  pigsty-pkg-v3.7.0.el9.aarch64.tgz
+1ac430768e488a449d350ce245975baa  pigsty-pkg-v3.7.0.el9.x86_64.tgz
+e033aaf23690755848db255904ab3bcd  pigsty-pkg-v3.7.0.u22.aarch64.tgz
+cc022ea89181d89d271a9aaabca04165  pigsty-pkg-v3.7.0.u22.x86_64.tgz
+0e978598796db3ce96caebd76c76e960  pigsty-pkg-v3.7.0.u24.aarch64.tgz
+48223898ace8812cc4ea79cf3178476a  pigsty-pkg-v3.7.0.u24.x86_64.tgz
+d25426ac112a57382710f464aba0c434  pigsty-v3.7.0.tgz
 ```
-
-
-
-
-
-## v3.6.0
-
-> Release Note: https://github.com/pgsty/pigsty/releases/tag/v3.6.0
-
-```bash
-curl https://repo.pigsty.cc/get | bash -s v3.6.0
-```
-
-### **Highlights**
-
-- Brand-new documentation site: https://doc.pgsty.com
-- Added `pgsql-pitr` playbook and backup/restore tutorial, improved PITR experience
-- Added kernel support: Percona PG TDE (PG17)
-- Optimized self-hosted Supabase experience, updated to the latest version, and fixed issues with the official template
-- Simplified installation steps, online install by default, bootstrap now part of install script
-
-### **Improvements**
-
-- Refactored `ETCD` module with dedicate remove playbook and bin utils
-- Refactored `MinIO` module with plain HTTP mode, better bucket provisioning options.
-- Reorganized and streamlined all configuration templates for easier use
-- Faster Docker Registry mirror for users in mainland China
-- Optimized tuned OS parameter templates for modern hardware and NVMe disks
-- Added extension `pgactive` for multi-master replication and sub-second failover
-- Adjusted default values for `pg_fs_main` / `pg_fs_backup`, simplified file directory structure design
-
-### **Bug Fixes**
-
-- Fixed pgbouncer configuration file error by @housei-zzy
-- Fixed OrioleDB issues on Debian platform
-- Fixed tuned shm configuration parameter issue
-- Offline packages now use the PGDG source directly, avoiding out-of-sync mirror sites
-- Fix ivorysql [libxcrypt](https://github.com/IvorySQL/IvorySQL/issues/826) dependencies issus
-- Fix Replace the slow and broken epel mirror
-- Fix `haproxy_enabled` flag not working
-
-### **Infra Package Updates**
-
-Added Victoria Metrics / Victoria Logs related packages
-
-- genai-toolbox 0.9.0 (new)
-- victoriametrics 1.120.0 -> 1.121.0 (refactor)
-- vmutils 1.121.0 (rename from victoria-metrics-utils)
-- grafana-victoriametrics-ds 0.15.1 -> 0.17.0
-- victorialogs 1.24.0 -> 1.25.1 (refactor)
-- vslogcli 1.24.0 -> 1.25.1
-- vlagent 1.25.1 (new)
-- grafana-victorialogs-ds 0.16.3 -> 0.18.1
-- prometheus 3.4.1 -> 3.5.0
-- grafana 12.0.0 -> 12.0.2
-- vector 0.47.0 -> 0.48.0
-- grafana-infinity-ds 3.2.1 -> 3.3.0
-- keepalived_exporter 1.7.0
-- blackbox_exporter 0.26.0 -> 0.27.0
-- redis_exporter 1.72.1 -> 1.77.0
-- rclone 1.69.3 -> 1.70.3
-
-### **Database Package Updates**
-
-- PostgreSQL 18 Beta2 update
-- pg_exporter 1.0.1, updated to latest dependencies and provides Docker image
-- pig 0.6.0, updated extension and repository list, with `pig install` subcommand
-- vip-manager 3.0.0 -> 4.0.0
-- ferretdb 2.2.0 -> 2.3.1
-- dblab 0.32.0 -> 0.33.0
-- duckdb 1.3.1 -> 1.3.2
-- etcd 3.6.1 -> 3.6.3
-- ferretdb 2.2.0 -> 2.4.0
-- juicefs 1.2.3 -> 1.3.0
-- tigerbeetle 0.16.41 -> 0.16.50
-- pev2 1.15.0 -> 1.16.0
-
-### **Extension Package Updates**
-
-- OrioleDB 1.5 beta12
-- OriolePG 17.11
-- plv8 3.2.3 -> 3.2.4
-- postgresql_anonymizer 2.1.1 -> 2.3.0
-- pgvectorscale 0.7.1 -> 0.8.0
-- wrappers 0.5.0 -> 0.5.3
-- supautils 2.9.1 -> 2.10.0
-- citus 13.0.3 -> 13.1.0
-- timescaledb 2.20.0 -> 2.21.1
-- vchord 0.3.0 -> [0.4.3](https://github.com/tensorchord/VectorChord/releases/tag/0.4.3)
-- pgactive 2.1.5 (new)
-- documentdb 0.103.0 -> 0.105.0
-- pg_search 0.17.0
-
-### **API Changes**
-
-* `pg_fs_backup`: Renamed to `pg_fs_backup`, default value `/data/backups`.
-* `pg_rm_bkup`: Renamed to `pg_rm_backup`, default value `true`.
-* `pg_fs_main`: Default value adjusted to `/data/postgres`.
-* `nginx_cert_validity`: New parameter to control Nginx self-signed certificate validity, default `397d`.
-* `minio_buckets`: Default value adjusted to create three buckets named `pgsql`, `meta`, `data`.
-* `minio_users`: Removed `dba` user, added `s3user_meta` and `s3user_data` users for `meta` and `data` buckets respectively.
-* `minio_https`: New parameter to allow MinIO to use HTTP mode.
-* `minio_provision`: New parameter to allow skipping MinIO provisioning stage (skip bucket and user creation)
-* `minio_safeguard`: New parameter, abort `minio-rm.yml` when enabled
-* `minio_rm_data`: New parameter, whether to remove minio data directory during `minio-rm.yml`
-* `minio_rm_pkg`: New parameter, whether to uninstall minio package during `minio-rm.yml`
-* `etcd_learner`: New parameter to control whether to init etcd instance as learner
-* `etcd_rm_data`: New parameter, whether to remove etcd data directory during `etcd-rm.yml`
-* `etcd_rm_pkg`: New parameter, whether to uninstall etcd package during `etcd-rm.yml`
-
-### **Checksums**
-
-```bash
-ab91bc05c54b88c455bf66533c1d8d43  pigsty-v3.6.0.tgz
-cea861e2b4ec7ff5318e1b3c30b470cb  pigsty-pkg-v3.6.0.d12.aarch64.tgz
-2f253af87e19550057c0e7fca876d37c  pigsty-pkg-v3.6.0.d12.x86_64.tgz
-0158145b9bbf0e4a120b8bfa8b44f857  pigsty-pkg-v3.6.0.el8.aarch64.tgz
-07330d687d04d26e7d569c8755426c5a  pigsty-pkg-v3.6.0.el8.x86_64.tgz
-311df5a342b39e3288ebb8d14d81e0d1  pigsty-pkg-v3.6.0.el9.aarch64.tgz
-92aad54cc1822b06d3e04a870ae14e29  pigsty-pkg-v3.6.0.el9.x86_64.tgz
-c4fadf1645c8bbe3e83d5a01497fa9ca  pigsty-pkg-v3.6.0.u22.aarch64.tgz
-5477ed6be96f156a43acd740df8a9b9b  pigsty-pkg-v3.6.0.u22.x86_64.tgz
-196169afc1be02f93fcc599d42d005ca  pigsty-pkg-v3.6.0.u24.aarch64.tgz
-dbe5c1e8a242a62fe6f6e1f6e6b6c281  pigsty-pkg-v3.6.0.u24.x86_64.tgz
-```
-
-
-
-
-## Pigsty 3.6 — the meta-distribution for PostgreSQL
-
-The Pigsty team is thrilled to announce **Pigsty v3.6**, our latest step toward a true **meta-PostgreSQL distribution**.  From a single code base you can now launch near 10 distinct PostgreSQL kernels — Babelfish, IvorySQL, OpenHalo, OrioleDB, PolarDB, Supabase-PG, Citus, the brand-new **Percona TDE**, and more.
-
-- [PostgreSQL](https://doc.pgsty.com/pgsql/kernel/postgres) : Vanilla PostgreSQL with 437 extensions
-- [Citus](https://doc.pgsty.com/pgsql/kernel/citus)         : Distributive PostgreSQL via native extension
-- [WiltonDB](https://doc.pgsty.com/pgsql/kernel/babelfish)  : SQL Server wire-compatibility
-- [IvorySQL](https://doc.pgsty.com/pgsql/kernel/ivorysql)   : Oracle Grammar and PL/SQL compatible
-- [OpenHalo](https://doc.pgsty.com/pgsql/kernel/openhalo)   : MySQL wire-protocol compatibility
-- [Percona](https://doc.pgsty.com/pgsql/kernel/percona)     : Percona Patched PG with pg_tde
-- [FerretDB](https://doc.pgsty.com/pgsql/kernel/ferretdb)   : MongoDB wire-protocol compatibility
-- [OrioleDB](https://doc.pgsty.com/pgsql/kernel/orioledb)   : PG without bloat, "cloud-native" with S3 Storage
-- [PolarDB](https://doc.pgsty.com/pgsql/kernel/polardb)     : RAC flavor Postgres
-- [Supabase](https://doc.pgsty.com/app/supabase) : BaaS upon PostgreSQL
-
-
-Each kernel is wrapped as a production-ready, RDS-style service: HA with Patroni, PITR via pgBackRest, deep observability with Grafana / Prometheus, and fully repeatable infrastructure-as-code -- all without Docker or Kubernetes. Materialized with idemopent ansible playbooks on bare Linux.
-
-This release also introduces a standalone extension catalog ([pgext.cloud](https://pgext.cloud), **437** build-tested packages) and a completely rebuilt documentation site ([doc.pgsty.com](https://doc.pgsty.com)).
-
-------
-
-### Built for PostgreSQL 18 (and friends)
-
-Templates, exporters, and client tooling are ready for **PostgreSQL 18 Beta2**, while versions 17.5, 16.9, 15.13, 14.18, and 13.21 remain fully supported.  Percona TDE and OrioleDB 1.5 β12 bring our supported-kernel count into double digits.
-
-### Three-step install, one-command PITR
-
-Online installation is now the default; it just takes three steps to install everything:
-
-```bash
-curl -fsSL https://repo.pigsty.cc/get | bash -s v3.6.0; cd ~/pigsty && ./configure && ./install.yml
-```
-
-Need to rewind the clock?  The new `pgsql-pitr` playbook handles everything automatically — even on multi-node HA clusters. just supply the target timestamp, XID, or LSN, and it does the rest.
-
-### Supabase hardening & modern observability
-
-Pigsty tracks the latest Supabase containers, fixes Logflare replication-slot bloat, and wires up pgsodium keys by default.  The monitoring stack moves to **Grafana 12 + Prometheus 3.5**, with tuned OS profiles for NVMe servers and an optional plain-HTTP mode for MinIO.
-
-### 437 packaged extensions (and counting)
-
-Highlights include **pgactive 2.1.5**, TimescaleDB 2.21, Citus 13.1, FerretDB 2.4, DuckDB 1.3.2, and the new **genai-toolbox**.  Browse the catalog or run `pig install <name>` to get started.
-
-### Cleaner roles, clearer switches
-
-Destructive Etcd and MinIO actions are now isolated in dedicated `*-rm` playbooks, bucket/user provisioning is fully declarative, defaults are rationalised (`/data/postgres`, `/data/backups`), and self-signed-cert validity is controlled by a single variable—resulting in fewer surprises and smoother rolling upgrades.
-
---------
-
-Pigsty 3.6 tarballs and architecture-specific offline package sets are available now.  This is the final stop before 4.0 — look forward to PostgreSQL 18 GA support, a vector-based log shipper, and a unified CLI that fronts every playbook.
-
-> Release Note: https://doc.pgsty.com/release/latest/
