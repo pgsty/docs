@@ -11,19 +11,19 @@ import {File, Folder, Files} from 'fumadocs-ui/components/files';
 import {CpuIcon, FileCode} from 'lucide-react';
 
 
-这是单节点安装指南，请查看 [**多节点**](/zh/install/multinode) 来了解真正的高可用生产环境部署。
+本文是 Pigsty 单节点安装指南，[**多节点安装**](/zh/install/multinode) 介绍了在生产环境进行真正高可用部署的方法。
 
 --------
 
 ## 简化版本 [#short-version]
 
 [准备](#prepare) 一台具有 [SSH权限](/zh/prepare/admin#check-accessibility) 的 [节点](/zh/prepare/hardware#node) 并安装 [兼容的Linux发行版](/zh/prepare/linux)，
-使用免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的用户：
+使用带免密 [`ssh`](/zh/prepare/admin#ssh) 和 [`sudo`](/zh/prepare/admin#sudo-privileges) 权限的用户：
 
 <Steps>
     <Step>
 
-        [**下载**](#download) pigsty，它会自动安装至 `~/pigsty` 目录，并安装 [`ansible`](/zh/admin/ansible)：
+        [**下载**](#download) pigsty，它会自动安装至 `~/pigsty` 目录，并尝试安装 [`ansible`](/zh/admin/ansible)：
 
         ```bash
         curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty;
@@ -31,10 +31,10 @@ import {CpuIcon, FileCode} from 'lucide-react';
 
     </Step>
     <Step>
-        使用 [`configure`](/config/configure) 生成配置清单文件，或直接根据需求调整 [`pigsty.yml`](/zh/config/inventory)：
+        使用 [`configure`](/config/configure) 生成配置文件，或直接根据您的需求调整 [`pigsty.yml`](/zh/config/inventory)：
 
         ```bash
-        ./configure
+        ./configure   # 可以使用 -c [conf] 指定具体的配置模板
         ```
 
     </Step>
@@ -61,17 +61,17 @@ import {CpuIcon, FileCode} from 'lucide-react';
 
 ## 准备 [#prepare]
 
-查看 [**准备工作**](/zh/prepare) 了解所有详细信息，这里是快速摘要：
+安装 Pigsty 涉及一些 [**准备工作**](/zh/prepare) ，以下是简略检查清单：
 
-|                项目                 | 要求                       |                      项目                      | 要求                                             |
-|:---------------------------------:|:-------------------------|:--------------------------------------------:|:-----------------------------------------------|
-|  [节点](/zh/prepare/hardware#node)  | 至少 `1C1G`，推荐 `2C2G`      |       [规格](/zh/prepare/hardware#spec)        | 至少1个节点，2个为半高可用，3个以上真高可用                        |
-|  [磁盘](/zh/prepare/hardware#disk)  | `/data`，主挂载点，`ext4/xfs`  |      [网络](/zh/prepare/hardware#network)      | 静态 IPv4 地址                                     |
-|  [VIP](/zh/prepare/hardware#vip)  | 可选的 L2 VIP               |      [域名](/zh/prepare/hardware#domain)       | 可选的本地/公共域名                                     |
-| [内核](/zh/prepare/software#linux)  | `Linux`                  |           [发行版](/zh/prepare/linux)           | el8, el9, d12, u22, u24 x `x86_64` / `aarch64` |
-| [本地化](/zh/prepare/software#linux) | `C.UTF-8` 或 `C`          |     [防火墙](/zh/prepare/software#firewall)     | 端口：`80` / `443` / `22` / `5432`                |
-|   [用户](/zh/prepare/admin#user)    | 避免使用 `root` 和 `postgres` |  [Sudo](/zh/prepare/admin#sudo-privileges)   | `nopass` sudo 权限                               |
-|   [SSH](/zh/prepare/admin#ssh)    | 通过公钥 `nopass`            | [可达性](/zh/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` 无错误                  |
+|                  项目                  | 要求                       |                      项目                      | 要求                                              |
+|:------------------------------------:|:-------------------------|:--------------------------------------------:|:------------------------------------------------|
+|   [节点](/zh/prepare/hardware#node)    | 至少 `1C1G`，推荐 `2C2G`      |       [规格](/zh/prepare/hardware#spec)        | 至少1个节点，2个为半高可用，3个以上真高可用                         |
+|   [磁盘](/zh/prepare/hardware#disk)    | `/data`，主挂载点，`ext4/xfs`  |      [网络](/zh/prepare/hardware#network)      | 静态 IPv4 地址，单节点可使用 127.0.0.1                     |
+|   [VIP](/zh/prepare/hardware#vip)    | L2 VIP，可选                |      [域名](/zh/prepare/hardware#domain)       | 本地/公网域名，可选                                      |
+|   [内核](/zh/prepare/software#linux)   | `Linux`                  |           [发行版](/zh/prepare/linux)           | el8/9/10，d12/13, u22/u24 x `x86_64` / `aarch64` |
+| [Locale](/zh/prepare/software#linux) | `C.UTF-8` 或 `C`          |     [防火墙](/zh/prepare/software#firewall)     | 端口：`80` / `443` / `22` / `5432`                 |
+|     [用户](/zh/prepare/admin#user)     | 避免使用 `root` 和 `postgres` |  [Sudo](/zh/prepare/admin#sudo-privileges)   | `nopass` sudo 权限                                |
+|     [SSH](/zh/prepare/admin#ssh)     | 通过公钥 `nopass`            | [可达性](/zh/prepare/admin#check-accessibility) | `ssh <ip\|alias> sudo ls` 无错误                   |
 
 
 
@@ -89,7 +89,7 @@ curl -fsSL https://repo.pigsty.io/get | bash; cd ~/pigsty
 curl -fsSL https://repo.pigsty.cc/get | bash; cd ~/pigsty   # 中国镜像
 ```
 ```bash tab="指定版本"
-curl -fsSL https://repo.pigsty.io/get | bash -s v3.6.0; cd ~/pigsty
+curl -fsSL https://repo.pigsty.io/get | bash -s v3.7.0; cd ~/pigsty
 ```
 
 您也可以通过 `git`、`pig` 或直接从 [GitHub](https://github.com/pgsty/pigsty) [**下载源码**](/zh/prepare/software#pigsty) 和 [离线软件包](/zh/install/offline#what-is-offline-package) 压缩包的方式安装。
@@ -116,9 +116,9 @@ curl -fsSL https://repo.pigsty.io/get | bash -s v3.6.0; cd ~/pigsty
 有许多 [**配置模板**](/zh/config/template) 供您参考，以下是一些快速示例：
 
 ```bash
-./configure                  # 使用默认模板，PG 17 带最少扩展
-./configure -v 16            # 使用 PG 16 而非 17 的默认元数据模板
-./configure -c rich          # PG 17 带所有可用扩展和更多演示数据库
+./configure                  # 使用默认模板，安装默认的 PG 18，带有必要扩展
+./configure -v 17            # 使用 PG 17 的版本，而非默认的 PG18
+./configure -c rich          # 创建本地软件仓库，下载所有扩展，安装主要扩展
 ./configure -c slim          # 最小安装模板，与 ./slim.yml 剧本一起使用
 ./configure -c app/supa      # 使用 app/supa 自托管 supabase 配置模板
 ./configure -c ivory         # 使用 ivorysql 内核而非原生 PG
@@ -137,7 +137,7 @@ configure pigsty v3.6.0 begin
 [ OK ] machine = x86_64
 [ OK ] package = rpm,dnf
 [ OK ] vendor  = rocky (Rocky Linux)
-[ OK ] version = 9 (9.5)
+[ OK ] version = 9 (9.6)
 [ OK ] sudo = vagrant ok
 [ OK ] ssh = vagrant@127.0.0.1 ok
 [WARN] Multiple IP address candidates found:
@@ -167,7 +167,6 @@ proceed with ./install.yml
 然后修改默认 [密码](/zh/config/security#passwords) 并进行必要的调整，最终的 `pigsty.yml` 可能如下所示：
 
 ```yaml title="~/pigsty/pigsty.yml"
----
 all:
 
   #==============================================================#
@@ -175,108 +174,97 @@ all:
   #==============================================================#
   children:
 
-    #----------------------------------#
-    # infra: monitor, alert, repo, etc..
-    #----------------------------------#
-    infra:
-      hosts:
-        10.10.10.12: { infra_seq: 1 }
-      vars:
-        docker_enabled: true      # enabled docker with ./docker.yml
-        docker_registry_mirrors: ["https://docker.1ms.run", "https://docker.m.daocloud.io"]
-
-    #----------------------------------#
-    # etcd cluster for HA postgres DCS
-    #----------------------------------#
-    etcd:
-      hosts:
-        10.10.10.12: { etcd_seq: 1 }
-      vars:
-        etcd_cluster: etcd
-
-    #----------------------------------#
-    # minio (OPTIONAL backup repo)
-    #----------------------------------#
-    #minio:
-    #  hosts:
-    #    10.10.10.12: { minio_seq: 1 }
-    #  vars:
-    #    minio_cluster: minio
-
-    #----------------------------------#
-    # pgsql (singleton on current node)
-    #----------------------------------#
+    #----------------------------------------------#
+    # PGSQL : https://doc.pgsty.com/pgsql
+    #----------------------------------------------#
     # this is an example single-node postgres cluster with pgvector installed, with one biz database & two biz users
     pg-meta:
       hosts:
-        10.10.10.12: { pg_seq: 1, pg_role: primary } # <---- primary instance with read-write capability
+        10.10.10.10: { pg_seq: 1, pg_role: primary } # <---- primary instance with read-write capability
         #x.xx.xx.xx: { pg_seq: 2, pg_role: replica } # <---- read only replica for read-only online traffic
         #x.xx.xx.xy: { pg_seq: 3, pg_role: offline } # <---- offline instance of ETL & interactive queries
       vars:
-        pg_cluster: pg-meta                 # required identity parameter, usually same as group name
+        pg_cluster: pg-meta
 
-        # define business databases here: https://pgsty.com/pgsql/db
-        pg_databases:                       # define business databases on this cluster, array of database definition
-          - name: meta                      # REQUIRED, `name` is the only mandatory field of a database definition
-            baseline: cmdb.sql              # optional, database sql baseline path, (relative path among ansible search path, e.g: files/)
-            schemas: [ pigsty ]             # optional, additional schemas to be created, array of schema names
-            extensions:                     # optional, additional extensions to be installed: array of `{name[,schema]}`
-              - { name: vector }            # install pgvector extension on this database by default
-            comment: pigsty meta database   # optional, comment string for this database
-            #pgbouncer: true                # optional, add this database to pgbouncer database list? true by default
-            #owner: postgres                # optional, database owner, postgres by default
-            #template: template1            # optional, which template to use, template1 by default
-            #encoding: UTF8                 # optional, database encoding, UTF8 by default. (MUST same as template database)
-            #locale: C                      # optional, database locale, C by default.  (MUST same as template database)
-            #lc_collate: C                  # optional, database collate, C by default. (MUST same as template database)
-            #lc_ctype: C                    # optional, database ctype, C by default.   (MUST same as template database)
-            #tablespace: pg_default         # optional, default tablespace, 'pg_default' by default.
-            #allowconn: true                # optional, allow connection, true by default. false will disable connect at all
-            #revokeconn: false              # optional, revoke public connection privilege. false by default. (leave connect with grant option to owner)
-            #register_datasource: true      # optional, register this database to grafana datasources? true by default
-            #connlimit: -1                  # optional, database connection limit, default -1 disable limit
-            #pool_auth_user: dbuser_meta    # optional, all connection to this pgbouncer database will be authenticated by this user
-            #pool_mode: transaction         # optional, pgbouncer pool mode at database level, default transaction
-            #pool_size: 64                  # optional, pgbouncer pool size at database level, default 64
-            #pool_size_reserve: 32          # optional, pgbouncer pool size reserve at database level, default 32
-            #pool_size_min: 0               # optional, pgbouncer pool size min at database level, default 0
-            #pool_max_db_conn: 100          # optional, max database connections at database level, default 100
-          #- { name: grafana  ,owner: dbuser_grafana  ,revokeconn: true ,comment: grafana primary database }  # define another database
+        # install, load, create pg extensions: https://doc.pgsty.com/pgsql/extension
+        pg_extensions: [ postgis, pgvector ]
 
-        # define business users here: https://pgsty.com/pgsql/user
-        pg_users:                           # define business users/roles on this cluster, array of user definition
-          - name: dbuser_meta               # REQUIRED, `name` is the only mandatory field of a user definition
-            password: DBUser.Meta           # optional, password, can be a scram-sha-256 hash string or plain text
-            login: true                     # optional, can log in, true by default  (new biz ROLE should be false)
-            superuser: false                # optional, is superuser? false by default
-            createdb: false                 # optional, can create database? false by default
-            createrole: false               # optional, can create role? false by default
-            inherit: true                   # optional, can this role use inherited privileges? true by default
-            replication: false              # optional, can this role do replication? false by default
-            bypassrls: false                # optional, can this role bypass row level security? false by default
-            pgbouncer: true                 # optional, add this user to pgbouncer user-list? false by default (production user should be true explicitly)
-            connlimit: -1                   # optional, user connection limit, default -1 disable limit
-            expire_in: 3650                 # optional, now + n days when this role is expired (OVERWRITE expire_at)
-            expire_at: '2030-12-31'         # optional, YYYY-MM-DD 'timestamp' when this role is expired  (OVERWRITTEN by expire_in)
-            comment: pigsty admin user      # optional, comment string for this user/role
-            roles: [dbrole_admin]           # optional, belonged roles. default roles are: dbrole_{admin,readonly,readwrite,offline}
-            parameters: {}                  # optional, role level parameters with `ALTER ROLE SET`
-            pool_mode: transaction          # optional, pgbouncer pool mode at user level, transaction by default
-            pool_connlimit: -1              # optional, max database connections at user level, default -1 disable limit
-          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly], comment: read-only viewer for meta database }
+        # define business users/roles : https://doc.pgsty.com/pgsql/user
+        pg_users:
+          - { name: dbuser_meta ,password: DBUser.Meta   ,pgbouncer: true ,roles: [dbrole_admin   ] ,comment: pigsty admin user }
+          - { name: dbuser_view ,password: DBUser.Viewer ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer  }
 
-        # define pg extensions: https://pgsty.com/pgsql/extension
-        pg_libs: 'pg_stat_statements, auto_explain' # add timescaledb to shared_preload_libraries
-        pg_extensions: [ pgvector ] # check list for available extension for your pg & os combination: https://pgext.cloud/list
+        # define business databases : https://doc.pgsty.com/pgsql/db
+        pg_databases:
+          - name: meta
+            baseline: cmdb.sql
+            comment: "pigsty meta database"
+            schemas: [pigsty]
+            # define extensions in database : https://doc.pgsty.com/pgsql/extension/create
+            extensions: [ postgis, vector ]
 
-        # define HBA rules here: https://pgsty.com/pgsql/hba
-        pg_hba_rules:                       # example hba rules
-          - {user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes'}
+        # define HBA rules : https://doc.pgsty.com/pgsql/hba
+        pg_hba_rules:
+          - { user: dbuser_view , db: all ,addr: infra ,auth: pwd ,title: 'allow grafana dashboard access cmdb from infra nodes' }
 
-        #pg_vip_enabled: true               # define a L2 VIP which bind to cluster primary instance
-        #pg_vip_address: 10.10.10.2/24      # L2 VIP Address and netmask
-        #pg_vip_interface: eth1             # L2 VIP Network interface, overwrite on host vars if member have different network interface names
-        node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every 1am
+        # define backup policies: https://doc.pgsty.com/pgsql/backup
+        node_crontab: [ '00 01 * * * postgres /pg/bin/pg-backup full' ] # make a full backup every day 1am
+
+        # define (OPTIONAL) L2 VIP that bind to primary
+        #pg_vip_enabled: true
+        #pg_vip_address: 10.10.10.2/24
+        #pg_vip_interface: eth1
+
+
+    #----------------------------------------------#
+    # INFRA : https://doc.pgsty.com/infra
+    #----------------------------------------------#
+    infra:
+      hosts:
+        10.10.10.10: { infra_seq: 1 }
+      vars:
+        repo_enabled: false   # disable in 1-node mode :  https://doc.pgsty.com/admin/repo
+        #repo_extra_packages: [ pg18-main ,pg18-time ,pg18-gis ,pg18-rag ,pg18-fts ,pg18-olap ,pg18-feat ,pg18-lang ,pg18-type ,pg18-util ,pg18-func ,pg18-admin ,pg18-stat ,pg18-sec ,pg18-fdw ,pg18-sim ,pg18-etl]
+
+    #----------------------------------------------#
+    # ETCD : https://doc.pgsty.com/etcd
+    #----------------------------------------------#
+    etcd:
+      hosts:
+        10.10.10.10: { etcd_seq: 1 }
+      vars:
+        etcd_cluster: etcd
+        etcd_safeguard: false             # prevent purging running etcd instance?
+
+    #----------------------------------------------#
+    # MINIO : https://doc.pgsty.com/minio
+    #----------------------------------------------#
+    #minio:
+    #  hosts:
+    #    10.10.10.10: { minio_seq: 1 }
+    #  vars:
+    #    minio_cluster: minio
+    #    minio_users:                      # list of minio user to be created
+    #      - { access_key: pgbackrest  ,secret_key: S3User.Backup ,policy: pgsql }
+    #      - { access_key: s3user_meta ,secret_key: S3User.Meta   ,policy: meta  }
+    #      - { access_key: s3user_data ,secret_key: S3User.Data   ,policy: data  }
+
+    #----------------------------------------------#
+    # DOCKER : https://doc.pgsty.com/docker
+    # APP    : https://doc.pgsty.com/app
+    #----------------------------------------------#
+    # launch example pgadmin app with: ./app.yml (http://10.10.10.10:8885 admin@pigsty.cc / pigsty)
+    app:
+      hosts: { 10.10.10.10: {} }
+      vars:
+        docker_enabled: true                # enabled docker with ./docker.yml
+        docker_registry_mirrors: ["https://docker.1panel.live","https://docker.1ms.run","https://docker.xuanyuan.me","https://registry-1.docker.io"]
+        app: pgadmin                        # specify the default app name to be installed (in the apps)
+        apps:                               # define all applications, appname: definition
+          pgadmin:                          # pgadmin app definition (app/pgadmin -> /opt/pgadmin)
+            conf:                           # override /opt/pgadmin/.env
+              PGADMIN_DEFAULT_EMAIL: admin@pigsty.cc
+              PGADMIN_DEFAULT_PASSWORD: pigsty
 
 
   #==============================================================#
@@ -284,18 +272,12 @@ all:
   #==============================================================#
   vars:
 
-    #----------------------------------#
-    # Meta Data
-    #----------------------------------#
-    version: v3.6.0                   # pigsty version string
-    admin_ip: 10.10.10.12             # admin node ip address
+    #----------------------------------------------#
+    # INFRA : https://doc.pgsty.com/infra
+    #----------------------------------------------#
+    version: v3.7.0                   # pigsty version string
+    admin_ip: 10.10.10.10             # admin node ip address
     region: china                     # upstream mirror region: default|china|europe
-    pg_locale: C.UTF-8                # overwrite default C local
-    pg_lc_collate: C.UTF-8            # overwrite default C lc_collate
-    pg_lc_ctype: C.UTF-8              # overwrite default C lc_ctype
-
-    node_tune: oltp                   # node tuning specs: oltp,olap,tiny,crit
-    pg_conf: oltp.yml                 # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
     proxy_env:                        # global proxy env when downloading packages
       no_proxy: "localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.myqcloud.com,*.tsinghua.edu.cn"
       # http_proxy:  # set your proxy here: e.g http://user:pass@proxy.xxx.com
@@ -308,66 +290,52 @@ all:
       alertmanager : { domain: a.pigsty ,endpoint: "${admin_ip}:9059" }
       blackbox     : { endpoint: "${admin_ip}:9115" }
       loki         : { endpoint: "${admin_ip}:3100" }
-      #minio        : { domain: m.pigsty ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
+      pgadmin      : { domain: adm.pigsty ,endpoint: "${admin_ip}:8885" }
+      #minio       : { domain: m.pigsty ,endpoint: "${admin_ip}:9001" ,scheme: https ,websocket: true }
 
-    #----------------------------------#
-    # MinIO Related Options
-    #----------------------------------#
-    #pgbackrest_method: minio          # if you want to use minio as backup repo instead of 'local' fs, uncomment this
-    #minio_users:                      # and configure `pgbackrest_repo` & `minio_users` accordingly
-    #  - { access_key: dba , secret_key: S3User.DBA, policy: consoleAdmin }
-    #  - { access_key: pgbackrest , secret_key: S3User.Backup, policy: readwrite }
-    #pgbackrest_repo:                  # pgbackrest repo: https://pgbackrest.org/configuration.html#section-repository
-    #  minio: ...                      # optional minio repo for pgbackrest ...
-    #    s3_key: pgbackrest            # minio user access key for pgbackrest
-    #    s3_key_secret: S3User.Backup  # minio user secret key for pgbackrest
-    #    cipher_pass: pgBackRest       # AES encryption password, default is 'pgBackRest'
-    # if you want to use minio as backup repo instead of 'local' fs, uncomment this, and configure `pgbackrest_repo`
-    #pgbackrest_method: minio
-    #node_etc_hosts: [ '10.10.10.12 h.pigsty a.pigsty p.pigsty g.pigsty sss.pigsty' ]
+    #----------------------------------------------#
+    # PASSWORD : https://doc.pgsty.com/config/security
+    #----------------------------------------------#
+    grafana_admin_password: pigsty               # <-------- CHANGE ME!
+    pg_admin_password: DBUser.DBA                # <-------- CHANGE ME!
+    pg_monitor_password: DBUser.Monitor          # <-------- CHANGE ME!
+    pg_replication_password: DBUser.Replicator   # <-------- CHANGE ME!
+    patroni_password: Patroni.API                # <-------- CHANGE ME!
+    haproxy_admin_password: pigsty               # <-------- CHANGE ME!
+    minio_secret_key: minioadmin                 # <-------- CHANGE ME!
 
-    #----------------------------------#
-    # Credential: CHANGE THESE PASSWORDS
-    #----------------------------------#
-    #grafana_admin_username: admin
-    grafana_admin_password: pigsty             # <----- CHANGE ME
-    #pg_admin_username: dbuser_dba
-    pg_admin_password: DBUser.DBA              # <----- CHANGE ME
-    #pg_monitor_username: dbuser_monitor
-    pg_monitor_password: DBUser.Monitor        # <----- CHANGE ME
-    #pg_replication_username: replicator
-    pg_replication_password: DBUser.Replicator # <----- CHANGE ME
-    #patroni_username: postgres
-    patroni_password: Patroni.API              # <----- CHANGE ME
-    #haproxy_admin_username: admin
-    haproxy_admin_password: pigsty             # <----- CHANGE ME
-    #minio_access_key: minioadmin
-    minio_secret_key: minioadmin               # <----- CHANGE ME
+    #----------------------------------------------#
+    # NODE : https://doc.pgsty.com/node/param
+    #----------------------------------------------#
+    nodename_overwrite: false             # do not overwrite node hostname on single node mode
+    node_tune: tiny                       # node tuning specs: oltp,olap,tiny,crit
+    node_etc_hosts: [ '10.10.10.10 h.pigsty a.pigsty p.pigsty g.pigsty sss.pigsty' ]
+    node_repo_modules: 'node,infra,pgsql' # add these repos directly to the singleton node
+    #node_repo_modules: local             # use this if you want to build & user local repo
+    node_repo_remove: true                # remove existing node repo for node managed by pigsty
+    #node_packages: [openssh-server]      # packages to be installed current nodes with the latest version
 
-    #----------------------------------#
-    # Safe Guard
-    #----------------------------------#
-    # you can enable these flags after bootstrap, to prevent purging running etcd / pgsql instances
-    etcd_safeguard: false             # prevent purging running etcd instance?
-    pg_safeguard: false               # prevent purging running postgres instance? false by default
+    #----------------------------------------------#
+    # PGSQL : https://doc.pgsty.com/pgsql/param
+    #----------------------------------------------#
+    pg_version: 18                      # default postgres version
+    pg_locale: C.UTF-8                  # overwrite default C local
+    pg_lc_collate: C.UTF-8              # overwrite default C lc_collate
+    pg_lc_ctype: C.UTF-8                # overwrite default C lc_ctype
 
-    #----------------------------------#
-    # Repo, Node, Packages
-    #----------------------------------#
-    repo_remove: true                 # remove existing repo on admin node during repo bootstrap
-    node_repo_remove: true            # remove existing node repo for node managed by pigsty
-    repo_extra_packages: [ pg17-main ] #,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
-    pg_version: 17                    # default postgres version
-    #pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+    pg_conf: tiny.yml                   # pgsql tuning specs: {oltp,olap,tiny,crit}.yml
+    pg_safeguard: false                 # prevent purging running postgres instance?
+    pg_packages: [ pgsql-main, pgsql-common ]                 # pg kernel and common utils
+    #pg_extensions: [ pg18-time ,pg18-gis ,pg18-rag ,pg18-fts ,pg18-olap ,pg18-feat ,pg18-lang ,pg18-type ,pg18-util ,pg18-func ,pg18-admin ,pg18-stat ,pg18-sec ,pg18-fdw ,pg18-sim ,pg18-etl]
+
 ```
 
 <Callout title="如果想要更多扩展怎么办？" type="info">
 
-    只需在 `pigsty.yml` 中取消注释以下两个参数，使其看起来像这样：
+    只需在 `pigsty.yml` 中取消注释以下参数，使其看起来像这样：
 
 ```yaml
-repo_extra_packages: [ pg17-main ,pg17-core ,pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-olap ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl]
-pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,pg17-type ,pg17-util ,pg17-func ,pg17-admin ,pg17-stat ,pg17-sec ,pg17-fdw ,pg17-sim ,pg17-etl ] #,pg17-olap]
+pg_extensions: [ pg18-time ,pg18-gis ,pg18-rag ,pg18-fts ,pg18-olap ,pg18-feat ,pg18-lang ,pg18-type ,pg18-util ,pg18-func ,pg18-admin ,pg18-stat ,pg18-sec ,pg18-fdw ,pg18-sim ,pg18-etl]
 ```
 
     您可以用配置文件做更多神奇的事情，查看 [**配置**](/zh/config) 了解详情。
@@ -380,15 +348,15 @@ pg_extensions: [pg17-time ,pg17-gis ,pg17-rag ,pg17-fts ,pg17-feat ,pg17-lang ,p
 
 ## 安装 [#install]
 
-Pigsty 中的一切都在 [配置清单](/zh/config/inventory) 中描述：即 [上面](#configure) 生成的 `pigsty.yml` 蓝图。
+Pigsty 中的一切都由 [配置清单](/zh/config/inventory) 所定义，也就是 [上面](#configure) 生成的 `pigsty.yml` 配置。
 
-运行 [`install.yml`](/zh/admin/playbook#deployment) [副本](/zh/admin/playbook) 将其实现为现实。
+运行 [`install.yml`](/zh/admin/playbook#deployment) [剧本](/zh/admin/playbook) 会实施这个部署计划。
 
 ```bash title="~/pigsty"
 ./install.yml
 ```
 
-如果您在输出中看到类似 `pgsql init done` 或 `grafana datasource meta`、`PLAY RECAP` 等内容，说明安装已经完成！
+输出尾部如果带有 `pgsql init done`，`PLAY RECAP` 等字样，说明安装已经完成！
 
 ```bash
 ......
@@ -408,20 +376,20 @@ localhost                  : ok=6    changed=3    unreachable=0    failed=0    s
 ```
 
 
-有时上游仓库（如 linux / pgdg 仓库）可能会损坏，这确实会时不时发生，并导致安装失败。
-您可以使用预制的 [离线软件包](/zh/install/offline#what-is-offline-package) 来解决这个问题。
+上游仓库（如 Linux / PGDG 仓库）可能会因为更新而进入崩溃状态并导致安装失败（有过多次先例）！
+您可以选择等待上游仓库修复后安装，或者使用预制的 [离线软件包](/zh/install/offline#what-is-offline-package) 来解决这个问题。
 
 
-<Callout title="在现有部署上绝不要再次运行这个！" type="error">
+<Callout title="不要在已经部署好的环境中重新运行 install.yml！" type="error">
 
-完整重新运行这个副本将会摧毁（清除）当前部署并创建一个新的！
+重新运行整个 `install.yml` 剧本将会覆盖式创建所有组件，有可能导致数据丢失和服务中断！
 
-如果您对 [ansible](/zh/admin/ansible) 有足够的了解并知道自己在做什么，仍请谨慎操作！
+如果您熟悉 [ansible](/zh/admin/ansible) 并清楚的知道自己在做什么，请谨慎使用。
 
 </Callout>
 
 
-安装完成后，您可以探索 [**界面**](/zh/install/interface) 并部署 [**更多节点**](#more) 和更多高可用数据库集群。
+安装完成后，您可以探索 [**用户界面**](/zh/install/interface)，纳管 [**更多节点**](#more) 并部署更多高可用数据库集群。
 
 
 

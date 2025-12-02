@@ -4,10 +4,66 @@ description: 世界上最先进的开源关系型数据库！
 icon: Database
 ---
 
+import {
+    Blocks,
+CodeXml,
+    Variable,
 
-## 概念 [#concept]
+    Wrench,
+    ScrollText,
+    Telescope,
+    MessageCircleQuestion
+} from 'lucide-react';
 
-> Pigsty 中的 PostgreSQL 概述
+
+<Cards>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='配置' href={"/zh/pgsql/config"}>
+        定义不同类型的 PostgreSQL 实例和集群。
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='参数' href={"/zh/pgsql/param"}>
+        使用 120 个参数来深度定制 PostgreSQL 集群
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='管理' href={"/zh/pgsql/admin"}>
+        管理 PostgreSQL 集群，实例，用户，数据库
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='剧本' href={"/zh/pgsql/playbook"}>
+        可在此模块中使用的 Ansible 剧本
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='监控' href={"/zh/pgsql/monitor"}>
+        仪表板、指标、指标计算规则和告警规则。
+    </Card>
+    <Card icon={<MessageCircleQuestion className="text-emerald-600"/>} title='答疑' href={"/zh/pgsql/faq"}>
+        PostgreSQL 模块中的常见问题
+    </Card>
+</Cards>
+
+
+## 架构与概念 [#concept]
+
+了解高可用 PostgreSQL 集群的架构，与管理涉及到的关键概念。
+
+<Cards>
+    <Card icon={<Blocks className="text-red-600"/>} title='架构' href={"/zh/infra/arch"}>
+        实体关系，架构、高可用、组件与交互
+    </Card>
+    <Card icon={<Wrench className={"text-violet-500"}/>} title='服务' href={"/zh/pgsql/hba"}>
+        接入 PostgreSQL 集群提供的服务
+    </Card>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='用户' href={"/zh/pgsql/user"}>
+        定义，创建，管理业务用户与角色
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='数据库' href={"/zh/pgsql/db"}>
+        定义，创建，管理业务数据库
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='认证' href={"/zh/pgsql/auth"}>
+        使用 HBA 规则进行认证与访问控制
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='权限' href={"/zh/pgsql/monitor"}>
+        开箱即用的基础权限模型
+    </Card>
+</Cards>
+
+
 
 
 - [架构](/zh/pgsql/arch/)
