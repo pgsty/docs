@@ -147,13 +147,11 @@ PostgreSQL 使用 [LSN](https://www.postgresql.org/docs/current/datatype-pg-lsn.
 
 --------
 
-## 恢复源 [#recovery-source]
+## 恢复来源 [#recovery-source]
 
 - `cluster`：恢复哪个集群？默认使用当前的 `pg_cluster`，您可以在同一个 pgbackrest 仓库中使用任何其他集群
 - `repo`：覆盖备份仓库，使用与 `pgbackrest_repo` 相同的格式
 - `set`：默认使用 `latest` 备份集，但您可以指定特定的 pgbackrest 备份标签
-
-
 
 Pigsty 将从 pgbackrest 备份仓库恢复，如果您使用集中式备份仓库（如 MinIO/S3），
 您可以指定另一个"stanza"（另一个集群的备份目录）来恢复。
@@ -233,7 +231,7 @@ pg-meta:
 `pg_pitr` 参数中有更多可用选项，以下是一些可用的参考项：
 
 ```yaml
-pg_pitr:                        # 定义 PITR 任务
+pg_pitr:                          # 定义 PITR 任务
     cluster: "some_pg_cls_name"   # 源集群名称
     type: latest                  # 恢复目标类型：time、xid、name、lsn、immediate、latest
     time: "2025-01-01 10:00:00+00" # 恢复目标：时间，与 xid、name、lsn 互斥

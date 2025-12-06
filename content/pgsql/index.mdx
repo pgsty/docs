@@ -4,107 +4,84 @@ description: The most advanced open source relational database in the world!
 icon: Database
 ---
 
+import {
+    Boxes,
+    CodeXml,
+    Package,
+    Database,
+    Users,
+    ConciergeBell,
+    KeySquare,
+    Fingerprint,
+    Wrench,
+    DatabaseBackup,
+    Telescope,
+    Truck,
+    Variable,
+    ScrollText,
+    CircleGauge,
+    MessageCircleQuestion,
+    Cpu
+} from 'lucide-react';
 
-> **The most advanced open-source relational database in the world!**
->
-> With battery-included observability, reliability, and maintainability powered by Pigsty
 
 ## Concept
 
-> Overview of PostgreSQL in Pigsty
-
-- [Architecture](/pgsql/arch/)
-- [Configuration](/pgsql/config/)
-- [Extensions](/pgsql/extension/)
-- [Databases](/pgsql/db/)
-- [Users](/pgsql/user/)
-- [Services](/pgsql/service/)
-- [HBA Rules](/pgsql/hba/)
-- [Access Control](/pgsql/acl)
-- [Administration](/pgsql/admin/)
-- [Backup & PITR](/pgsql/backup/)
-- [Monitor](/pgsql/monitor/)
-- [Migration](/pgsql/migration/)
-
-------
-
-## Configuration
-
-> [Describe](/pgsql/config/) the cluster you want
-
-- [Identity](/pgsql/config/#identity-parameters): Parameters used for describing a PostgreSQL cluster
-- [Primary](/pgsql/config/#primary): Define a single instance cluster
-- [Replica](/pgsql/config/#replica): Define a basic HA cluster with one primary & one replica
-- [Offline](/pgsql/config/#offline): Define a dedicated instance for OLAP/ETL/Interactive queries.
-- [Sync Standby](/pgsql/config/#sync-standby): Enable synchronous commit to ensure no data loss
-- [Quorum Commit](/pgsql/config/#quorum-commit): Use quorum sync commit for an even higher consistency level
-- [Standby Cluster](/pgsql/config/#standby-cluster): Clone an existing cluster and follow it
-- [Delayed Cluster](/pgsql/config/#delayed-cluster): Clone an existing cluster for emergency data recovery
-- [Citus Cluster](/pgsql/config/#citus-cluster): Define a Citus distributed database cluster
+<Cards>
+    <Card icon={<Boxes className="text-red-600"/>} title='Architecture' href={"/pgsql/arch"}>
+        PostgreSQL cluster architecture and concept
+    </Card>
+    <Card icon={<ConciergeBell className="text-orange-500"/>} title='Service' href={"/pgsql/service"}>
+        Reliable service access via lb, proxy, pool
+    </Card>
+    <Card icon={<Database className="text-blue-500"/>} title='Database' href={"/pgsql/db"}>
+        Define, create, and manage business databases
+    </Card>
+    <Card icon={<Users className="text-indigo-600"/>} title='User Role' href={"/pgsql/user"}>
+        Define, create, and manage users and roles
+    </Card>
+    <Card icon={<KeySquare className="text-teal-600"/>} title='Auth / HBA' href={"/pgsql/hba"}>
+        Host-Based Authentication in Pigsty
+    </Card>
+    <Card icon={<Fingerprint className="text-purple-600"/>} title='Privileges' href={"/pgsql/acl"}>
+        Access Control with default roles and privileges
+    </Card>
+</Cards>
 
 ------
 
 ## Administration
 
-> [Admin](/pgsql/admin/) your existing clusters
+<Cards>
+    <Card icon={<Cpu className="text-cyan-600"/>} title='Kernel' href={"/pgsql/kernel"}>
+        Replace vanilla PostgreSQL with exotic kernel forks
+    </Card>
+    <Card icon={<Package className="text-emerald-600"/>} title='Extension' href={"/pgsql/extension"}>
+        Harness the synergistic power of PostgreSQL extensions
+    </Card>
+    <Card icon={<CodeXml className="text-sky-700"/>} title='Configure' href={"/pgsql/config"}>
+        Describe and configure PostgreSQL clusters
+    </Card>
+    <Card icon={<Variable className="text-amber-500"/>} title='Parameter' href={"/pgsql/param"}>
+        Customize postgres cluster with 120 parameters
+    </Card>
+    <Card icon={<Wrench className="text-violet-500"/>} title='Administration' href={"/pgsql/admin"}>
+        Run administrative tasks on PostgreSQL clusters
+    </Card>
+    <Card icon={<ScrollText className="text-blue-400"/>} title='Playbook' href={"/pgsql/playbook"}>
+        Control primitives with Ansible playbooks
+    </Card>
+    <Card icon={<DatabaseBackup className="text-green-600"/>} title='Backup & PITR' href={"/pgsql/backup"}>
+        Backup and point-in-time recovery
+    </Card>
+    <Card icon={<Truck className="text-pink-600"/>} title='Migration' href={"/pgsql/migration"}>
+        Zero-downtime blue-green deployment
+    </Card>
+    <Card icon={<Telescope className="text-orange-600"/>} title='Monitor' href={"/pgsql/monitor"}>
+        Monitor existing PostgreSQL or RDS
+    </Card>
+    <Card icon={<CircleGauge className="text-yellow-600"/>} title='Dashboard' href={"/pgsql/dashboard"}>
+        Visualized information with Grafana dashboards
+    </Card>
+</Cards>
 
-- [`Admin Cheatsheet`](/pgsql/admin#cheatsheet)
-- [`Create Cluster`](/pgsql/admin#create-cluster)
-- [`Create User`](/pgsql/admin#create-user)
-- [`Create Database`](/pgsql/admin#create-database)
-- [`Reload Service`](/pgsql/admin#reload-service)
-- [`Reload HBARule`](/pgsql/admin#reload-hbarule)
-- [`Config Cluster`](/pgsql/admin#config-cluster)
-- [`Append Replica`](/pgsql/admin#append-replica)
-- [`Remove Replica`](/pgsql/admin#remove-replica)
-- [`Remove Cluster`](/pgsql/admin#remove-cluster)
-- [`Switchover Cluster`](/pgsql/admin#switchover)
-- [`Backup Cluster`](/pgsql/admin#backup-cluster)
-- [`Restore Cluster`](/pgsql/admin#restore-cluster)
-
-------
-
-## Playbook
-
-> Materialize the cluster with idempotent [playbooks](/pgsql/playbook/)
-
-- [`pgsql.yml`](/pgsql/playbook/#pgsqlyml) : Init HA PostgreSQL clusters or add new replicas.
-- [`pgsql-rm.yml`](/pgsql/playbook/#pgsql-rmyml) : Remove PostgreSQL cluster, or remove replicas
-- [`pgsql-user.yml`](/pgsql/playbook/#pgsql-useryml) : Add new business user to existing PostgreSQL cluster
-- [`pgsql-db.yml`](/pgsql/playbook/#pgsql-dbyml) : Add new business database to existing PostgreSQL cluster
-- [`pgsql-monitor.yml`](/pgsql/playbook/#pgsql-monitoryml) : Monitor remote PostgreSQL instance with local exporters
-- [`pgsql-migration.yml`](/pgsql/playbook/#pgsql-migrationyml) : Generate Migration manual & scripts for existing PostgreSQL
-
-
-------
-
-## Dashboard
-
-There are 26 default grafana dashboards about PostgreSQL and categorized into 4 levels. Check [Dashboards](/pgsql/dashboard/) for details.
-
-|                         Overview                          |                             Cluster                             |                          Instance                           |                         Database                          |
-|:---------------------------------------------------------:|:---------------------------------------------------------------:|:-----------------------------------------------------------:|:---------------------------------------------------------:|
-| [PGSQL Overview](https://g.pgsty.com/d/pgsql-overview) |     [PGSQL Cluster](https://g.pgsty.com/d/pgsql-cluster)     |  [PGSQL Instance](https://g.pgsty.com/d/pgsql-instance)  | [PGSQL Database](https://g.pgsty.com/d/pgsql-database) |
-|    [PGSQL Alert](https://g.pgsty.com/d/pgsql-alert)    |     [PGRDS Cluster](https://g.pgsty.com/d/pgrds-cluster)     |  [PGRDS Instance](https://g.pgsty.com/d/pgrds-instance)  | [PGCAT Database](https://g.pgsty.com/d/pgcat-database) |
-|    [PGSQL Shard](https://g.pgsty.com/d/pgsql-shard)    |    [PGSQL Activity](https://g.pgsty.com/d/pgsql-activity)    |  [PGCAT Instance](https://g.pgsty.com/d/pgcat-instance)  |   [PGSQL Tables](https://g.pgsty.com/d/pgsql-tables)   |
-|                                                           | [PGSQL Replication](https://g.pgsty.com/d/pgsql-replication) |   [PGSQL Persist](https://g.pgsty.com/d/pgsql-persist)   |    [PGSQL Table](https://g.pgsty.com/d/pgsql-table)    |
-|                                                           |     [PGSQL Service](https://g.pgsty.com/d/pgsql-service)     |     [PGSQL Proxy](https://g.pgsty.com/d/pgsql-proxy)     |    [PGCAT Table](https://g.pgsty.com/d/pgcat-table)    |
-|                                                           |   [PGSQL Databases](https://g.pgsty.com/d/pgsql-databases)   | [PGSQL Pgbouncer](https://g.pgsty.com/d/pgsql-pgbouncer) |    [PGSQL Query](https://g.pgsty.com/d/pgsql-query)    |
-|                                                           |     [PGSQL Patroni](https://g.pgsty.com/d/pgsql-patroni)     |   [PGSQL Session](https://g.pgsty.com/d/pgsql-session)   |    [PGCAT Query](https://g.pgsty.com/d/pgcat-query)    |
-|                                                           |        [PGSQL PITR](https://g.pgsty.com/d/pgsql-pitr)        |     [PGSQL Xacts](https://g.pgsty.com/d/pgsql-xacts)     |    [PGCAT Locks](https://g.pgsty.com/d/pgcat-locks)    |
-|                                                           |                                                                 |  [PGSQL Exporter](https://g.pgsty.com/d/pgsql-exporter)  |   [PGCAT Schema](https://g.pgsty.com/d/pgcat-schema)   |
-
-## Tutorials
-
-- Fork an existing PostgreSQL cluster.
-- Create a standby cluster of an existing PostgreSQL cluster.
-- Create a delayed cluster of another pgsql cluster?
-- Monitoring an existing postgres instance?
-- Migration from an external PostgreSQL with logical replication?
-- Use MinIO as a central pgBackRest repo.
-- Use dedicate etcd cluster for DCS?
-- Use dedicated haproxy for exposing PostgreSQL service.
-- Deploy a multi-node MinIO cluster?
-- Use CMDB instead of Config as inventory.
-- Use PostgreSQL as grafana backend storage ?
-- Use PostgreSQL as prometheus backend storage ?

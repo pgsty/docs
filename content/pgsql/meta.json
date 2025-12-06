@@ -19,7 +19,6 @@
     "hba",
     "acl",
     "database",
-    "service",
     "dashboard",
     "migration",
     "backup",
