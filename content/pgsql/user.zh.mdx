@@ -18,7 +18,7 @@ icon: Users
 - [`pg_users`](/zh/pgsql/param#pg_users)：在集群级别定义业务用户和角色（**集群定义**）
 - [`pg_default_roles`](/zh/pgsql/param#pg_default_roles)：定义系统范围的角色和全局用户（**全局默认值**）
 
-前者定义整个环境中共享的全局角色和用户，后者定义特定于单个集群的业务角色和用户。
+前者定义特定于单个集群的业务角色和用户，后者定义整个环境中共享的全局角色和用户。
 以下是一些用户定义的示例：
 
 ```yaml
@@ -26,7 +26,7 @@ pg-meta:
   hosts: { 10.10.10.10: { pg_seq: 1, pg_role: primary } }
   vars:
     pg_cluster: pg-meta
-    pg_databases:
+    pg_users:
       - {name: dbuser_meta     ,password: DBUser.Meta     ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: pigsty admin user }
       - {name: dbuser_view     ,password: DBUser.Viewer   ,pgbouncer: true ,roles: [dbrole_readonly] ,comment: read-only viewer for meta database }
       - {name: dbuser_grafana  ,password: DBUser.Grafana  ,pgbouncer: true ,roles: [dbrole_admin]    ,comment: admin user for grafana database    }
